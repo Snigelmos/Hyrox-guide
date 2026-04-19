@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AffiliateCard from "../../components/AffiliateCard.astro";
 import AdSlot from "../../components/AdSlot.astro";
+import GeoAffiliateButton from "../../components/GeoAffiliateButton";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -64,6 +64,13 @@ const productSchema = products.length > 0 ? {
     },
   })),
 } : null;
+
+// Map category to geo affiliate productKey
+const productKey =
+  entry.data.category === "protein" ? "protein-powder" :
+  entry.data.category === "gels" ? "energy-gels" :
+  entry.data.category === "creatine" ? "creatine-monohydrate" :
+  entry.data.category;
 
 // Page title with year for SEO freshness
 const pageTitle = entry.data.title.includes("2026")
@@ -138,20 +145,31 @@ const pageTitle = entry.data.title.includes("2026")
                 Our Top Picks
               </h2>
               <p class="text-text-muted text-sm mb-6">
-                Tested and recommended. Affiliate links — we may earn a
-                commission at no extra cost to you.
+                Tested and recommended. Buy links match your country automatically — no redirects.
               </p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {products.map((product) => (
-                  <AffiliateCard
-                    name={product.name}
-                    description={product.description}
-                    price={product.price}
-                    rating={product.rating}
-                    image={product.image}
-                    affiliateUrl={product.affiliateUrl}
-                    badge={product.badge}
-                  />
+                  <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col hover:border-accent/30 transition-all">
+                    {product.badge && (
+                      <span class="self-start mb-3 px-2.5 py-1 text-xs font-bold rounded-full bg-accent/10 text-accent border border-accent/20">
+                        {product.badge}
+                      </span>
+                    )}
+                    <h3 class="font-bold text-text-heading mb-2">{product.name}</h3>
+                    <p class="text-sm text-text-muted leading-relaxed flex-1 mb-4">{product.description}</p>
+                    <div class="flex items-center gap-3 mb-4">
+                      {product.rating && (
+                        <div class="flex items-center gap-1">
+                          <span class="text-amber-400 text-sm">★</span>
+                          <span class="text-sm font-bold text-text-heading">{product.rating}</span>
+                        </div>
+                      )}
+                      {product.price && (
+                        <span class="text-sm text-text-muted">{product.price}</span>
+                      )}
+                    </div>
+                    <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
+                  </div>
                 ))}
               </div>
             </section>
@@ -210,27 +228,7 @@ const pageTitle = entry.data.title.includes("2026")
                           )}
                         </td>
                         <td class="py-3 text-right">
-                          <a
-                            href={product.affiliateUrl}
-                            target="_blank"
-                            rel="noopener noreferrer sponsored"
-                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-accent text-bg text-xs font-bold rounded-lg hover:bg-accent-dim transition-colors no-underline"
-                          >
-                            Buy
-                            <svg
-                              class="w-3 h-3"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                              />
-                            </svg>
-                          </a>
+                          <GeoAffiliateButton productKey={productKey} variant="secondary" client:visible />
                         </td>
                       </tr>
                     ))}
