@@ -1,0 +1,290 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionCard from "../../components/SectionCard.astro";
+import AffiliateCard from "../../components/AffiliateCard.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import { getCollection } from "astro:content";
+
+const supplementGuides = (await getCollection("supplements")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const icons: Record<string, string> = {
+  creatine: "💪",
+  protein: "🥤",
+  gels: "⚡",
+  "pre-workout": "🔥",
+  electrolytes: "💧",
+  recovery: "🔄",
+};
+
+type Product = {
+  name: string;
+  description: string;
+  price?: string;
+  rating?: number;
+  affiliateUrl: string;
+  badge?: string;
+  image?: string;
+  category: string;
+  guideUrl: string;
+};
+
+const featuredProducts: Product[] = supplementGuides.flatMap((guide) =>
+  (guide.data.products ?? [])
+    .filter((p) => p.badge)
+    .slice(0, 1)
+    .map((p) => ({
+      ...p,
+      category: guide.data.category,
+      guideUrl: `/supplements/${guide.id}/`,
+    }))
+);
+
+const raceDayEssentials = supplementGuides
+  .filter((g) =>
+    ["gels", "electrolytes", "pre-workout"].includes(g.data.category)
+  )
+  .flatMap((guide) =>
+    (guide.data.products ?? []).slice(0, 1).map((p) => ({
+      ...p,
+      category: guide.data.category,
+      guideUrl: `/supplements/${guide.id}/`,
+    }))
+  );
+---
+
+<BaseLayout
+  title="Best Supplements for Hyrox Athletes | Hyrox Guide"
+  description="The best supplements for Hyrox athletes — creatine, protein, energy gels, pre-workout, electrolytes, and recovery. Evidence-based recommendations with honest reviews."
+>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/5 to-transparent"
+  >
+    <div class="container-main py-16 md:py-24">
+      <div class="max-w-3xl">
+        <span
+          class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full border border-accent/20 uppercase tracking-wider mb-6"
+        >
+          Tested by Athletes
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
+          The <span class="text-gradient-accent">Supplements</span> That Actually
+          Matter for Hyrox
+        </h1>
+        <p class="text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
+          Cut through the noise. These are the only supplements worth your money
+          — backed by research, tested by Hyrox athletes, and ranked by real
+          impact on race performance.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <a
+            href="#featured"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors"
+          >
+            See Our Top Picks
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+          </a>
+          <a
+            href="#categories"
+            class="inline-flex items-center gap-2 px-6 py-3 border border-border text-text font-bold rounded-xl hover:border-accent/40 hover:text-accent transition-colors"
+          >
+            Browse by Category
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Picks -->
+  <section id="featured" class="container-main py-16">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-black text-text-heading">
+          Editor's Picks
+        </h2>
+        <p class="text-text-muted mt-2">
+          The #1 product in each category — if you only buy one thing, make it
+          this.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {
+        featuredProducts.map((product) => (
+          <AffiliateCard
+            name={product.name}
+            description={product.description}
+            price={product.price}
+            rating={product.rating}
+            image={product.image}
+            affiliateUrl={product.affiliateUrl}
+            badge={product.badge}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <AdSlot id="supplements-mid-1" format="banner" />
+
+  <!-- Race Day Essentials -->
+  <section class="container-main py-16">
+    <div
+      class="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border border-accent/20 rounded-3xl p-8 md:p-12"
+    >
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-3xl">🏁</span>
+        <span
+          class="px-3 py-1 bg-accent/15 text-accent text-xs font-bold rounded-full uppercase tracking-wider"
+          >Race Day Must-Haves</span
+        >
+      </div>
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        Your Hyrox Race Day Kit
+      </h2>
+      <p class="text-text-muted mb-8 max-w-xl">
+        Don't show up without these three. Caffeine for the start, gels for
+        mid-race fuel, electrolytes to keep cramps at bay.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {
+          raceDayEssentials.map((product) => (
+            <AffiliateCard
+              name={product.name}
+              description={product.description}
+              price={product.price}
+              rating={product.rating}
+              image={product.image}
+              affiliateUrl={product.affiliateUrl}
+              badge={product.badge}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Priority Stack -->
+  <section class="container-main py-16">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl md:text-4xl font-black text-text-heading">
+          The Hyrox Supplement Stack
+        </h2>
+        <p class="text-text-muted mt-3">
+          Ranked by evidence and impact. Start at #1 and work your way down.
+        </p>
+      </div>
+      <ol class="space-y-4">
+        {
+          supplementGuides.map((guide, i) => (
+            <li>
+              <a
+                href={`/supplements/${guide.id}/`}
+                class="flex items-center gap-4 p-5 bg-bg-card border border-border rounded-2xl hover:border-accent/30 hover:-translate-y-0.5 transition-all group"
+              >
+                <span class="flex-shrink-0 w-10 h-10 bg-accent/10 text-accent font-black rounded-xl flex items-center justify-center text-lg">
+                  {i + 1}
+                </span>
+                <span class="text-2xl">
+                  {icons[guide.data.category] ?? "💊"}
+                </span>
+                <div class="flex-1 min-w-0">
+                  <span class="font-bold text-text-heading group-hover:text-accent transition-colors block">
+                    {guide.data.title
+                      .replace("Best ", "")
+                      .replace(" for Hyrox Athletes", "")
+                      .replace(" for Hyrox", "")
+                      .replace(" for Hyrox Race Day", "")}
+                  </span>
+                  <span class="text-text-muted text-sm block mt-0.5 truncate">
+                    {guide.data.description
+                      .split("—")[0]
+                      ?.trim()
+                      .replace(/\.$/, "")}
+                  </span>
+                </div>
+                <span class="hidden sm:flex items-center gap-1 text-xs font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                  View guide
+                  <svg
+                    class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <AdSlot id="supplements-mid-2" format="banner" />
+
+  <!-- Browse by Category -->
+  <section id="categories" class="container-main py-16">
+    <h2 class="text-3xl md:text-4xl font-black text-text-heading mb-3">
+      Browse by Category
+    </h2>
+    <p class="text-text-muted mb-8">
+      Dive deep into each supplement type — what the science says, what to look
+      for, and our tested picks.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        supplementGuides.map((guide, i) => (
+          <SectionCard
+            title={guide.data.title}
+            description={guide.data.description}
+            href={`/supplements/${guide.id}/`}
+            icon={icons[guide.data.category] ?? "💊"}
+            accent={i === 0}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Affiliate Disclosure (compact) -->
+  <section class="container-main pb-16">
+    <div
+      class="flex items-start gap-4 p-6 bg-bg-card border border-border rounded-xl"
+    >
+      <span class="text-2xl flex-shrink-0">💰</span>
+      <div>
+        <h3 class="text-sm font-bold text-text-heading mb-1">
+          Affiliate Disclosure
+        </h3>
+        <p class="text-text-muted text-xs leading-relaxed">
+          Some links on this page are affiliate links — we may earn a small
+          commission if you purchase through them, at no extra cost to you. We
+          only recommend products we've researched and genuinely believe in.
+          Editorial content is never influenced by partnerships.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

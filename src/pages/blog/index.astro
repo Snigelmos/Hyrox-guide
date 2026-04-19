@@ -1,0 +1,63 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+---
+
+<BaseLayout
+  title="Hyrox Blog — Training Tips, Race Strategy & News"
+  description="Hyrox blog — race recaps, training tips, strategy guides, and the latest Hyrox news."
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-16">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Blog</span>
+      </h1>
+      <p class="text-xl text-text-muted leading-relaxed">
+        Training tips, race strategies, comparisons, and everything Hyrox.
+      </p>
+    </div>
+
+    <AdSlot id="blog-top" format="banner" />
+
+    <div class="mt-12 max-w-3xl space-y-8">
+      {posts.map((post, i) => (
+        <a
+          href={`/blog/${post.id}/`}
+          class="group block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300"
+        >
+          {i === 0 && (
+            <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full mb-4 border border-accent/20">
+              Latest
+            </span>
+          )}
+          <h2 class="text-2xl font-bold text-text-heading mb-3 group-hover:text-accent transition-colors leading-tight">
+            {post.data.title}
+          </h2>
+          <p class="text-text-muted leading-relaxed mb-4">{post.data.description}</p>
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-sm text-text-muted">{formatDate(post.data.pubDate)}</span>
+            {post.data.author && <span class="text-sm text-text-muted">· {post.data.author}</span>}
+            {post.data.tags?.map((tag) => (
+              <span class="px-2.5 py-0.5 bg-white/5 text-text-muted text-xs font-medium rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

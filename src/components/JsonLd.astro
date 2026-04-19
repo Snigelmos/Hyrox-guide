@@ -1,0 +1,64 @@
+---
+interface Props {
+  type?: "WebSite" | "Article" | "FAQPage";
+  title?: string;
+  description?: string;
+  url?: string;
+  datePublished?: string;
+  dateModified?: string;
+  author?: string;
+}
+
+const {
+  type = "WebSite",
+  title = "Hyrox Guide",
+  description = "Your complete guide to Hyrox racing, training, and gear.",
+  url,
+  datePublished,
+  dateModified,
+  author = "HyroxGuide Team",
+} = Astro.props;
+
+const canonicalUrl = url ?? new URL(Astro.url.pathname, Astro.site).toString();
+
+let schema: Record<string, unknown>;
+
+if (type === "WebSite") {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Hyrox Guide",
+    url: Astro.site?.toString(),
+    description,
+  };
+} else if (type === "Article") {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url: canonicalUrl,
+    author: {
+      "@type": "Person",
+      name: author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "HyroxGuide",
+      url: Astro.site?.toString(),
+    },
+    ...(datePublished && { datePublished }),
+    ...(dateModified && { dateModified }),
+  };
+} else {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": type,
+    name: title,
+    description,
+    url: canonicalUrl,
+  };
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

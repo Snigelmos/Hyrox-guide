@@ -1,0 +1,241 @@
+---
+interface Props {
+  station: string;
+  size?: number;
+  class?: string;
+}
+
+const { station, size = 80, class: className = "" } = Astro.props;
+const color = "currentColor";
+---
+
+{station === "skierg" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* SkiErg machine frame */}
+    <line x1="60" y1="10" x2="60" y2="95" stroke={color} opacity="0.3" />
+    <rect x="52" y="6" width="16" height="8" rx="3" stroke={color} fill="none" />
+    {/* Figure pulling down */}
+    <circle cx="60" cy="38" r="7" />
+    <line x1="60" y1="45" x2="60" y2="72" />
+    {/* Arms pulling handles down */}
+    <line x1="48" y1="22" x2="52" y2="52" />
+    <line x1="72" y1="22" x2="68" y2="52" />
+    {/* Legs */}
+    <line x1="60" y1="72" x2="50" y2="92" />
+    <line x1="60" y1="72" x2="70" y2="92" />
+    {/* Feet */}
+    <line x1="50" y1="92" x2="44" y2="92" />
+    <line x1="70" y1="92" x2="76" y2="92" />
+    {/* Cable lines */}
+    <line x1="54" y1="14" x2="48" y2="22" stroke-dasharray="3 3" opacity="0.5" />
+    <line x1="66" y1="14" x2="72" y2="22" stroke-dasharray="3 3" opacity="0.5" />
+  </svg>
+)}
+
+{station === "sled-push" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Sled */}
+    <rect x="10" y="60" width="30" height="30" rx="4" opacity="0.4" />
+    <rect x="14" y="64" width="22" height="10" rx="2" opacity="0.2" fill={color} />
+    <line x1="40" y1="68" x2="40" y2="85" />
+    {/* Figure pushing at 45deg */}
+    <circle cx="72" cy="42" r="7" />
+    <line x1="68" y1="48" x2="56" y2="72" />
+    {/* Arms extended to sled */}
+    <line x1="62" y1="55" x2="40" y2="68" />
+    <line x1="64" y1="58" x2="40" y2="72" />
+    {/* Back leg extended */}
+    <line x1="56" y1="72" x2="78" y2="92" />
+    {/* Front leg driving */}
+    <line x1="56" y1="72" x2="52" y2="92" />
+    {/* Feet */}
+    <line x1="78" y1="92" x2="84" y2="92" />
+    <line x1="52" y1="92" x2="46" y2="92" />
+    {/* Motion lines */}
+    <line x1="100" y1="55" x2="90" y2="55" opacity="0.3" />
+    <line x1="105" y1="65" x2="92" y2="65" opacity="0.2" />
+    <line x1="100" y1="75" x2="90" y2="75" opacity="0.3" />
+  </svg>
+)}
+
+{station === "sled-pull" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Sled far away */}
+    <rect x="85" y="70" width="22" height="20" rx="3" opacity="0.3" />
+    {/* Rope */}
+    <line x1="85" y1="78" x2="55" y2="62" stroke-dasharray="4 3" opacity="0.5" />
+    {/* Figure in squat pulling rope */}
+    <circle cx="40" cy="40" r="7" />
+    <line x1="40" y1="47" x2="40" y2="68" />
+    {/* Arms pulling rope */}
+    <line x1="40" y1="55" x2="55" y2="58" />
+    <line x1="40" y1="60" x2="55" y2="62" />
+    {/* Legs in wide squat */}
+    <line x1="40" y1="68" x2="26" y2="88" />
+    <line x1="40" y1="68" x2="54" y2="88" />
+    {/* Feet planted */}
+    <line x1="26" y1="88" x2="20" y2="88" />
+    <line x1="54" y1="88" x2="60" y2="88" />
+    {/* Pull direction arrow */}
+    <line x1="78" y1="78" x2="65" y2="78" opacity="0.3" />
+    <polyline points="68,74 65,78 68,82" opacity="0.3" />
+  </svg>
+)}
+
+{station === "burpee-broad-jump" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure mid-jump */}
+    <circle cx="55" cy="30" r="7" />
+    <line x1="55" y1="37" x2="55" y2="58" />
+    {/* Arms forward/up */}
+    <line x1="55" y1="44" x2="70" y2="35" />
+    <line x1="55" y1="44" x2="72" y2="40" />
+    {/* Legs tucked for jump */}
+    <line x1="55" y1="58" x2="42" y2="72" />
+    <line x1="55" y1="58" x2="62" y2="72" />
+    <line x1="42" y1="72" x2="38" y2="68" />
+    <line x1="62" y1="72" x2="66" y2="68" />
+    {/* Ground line */}
+    <line x1="10" y1="95" x2="110" y2="95" opacity="0.2" />
+    {/* Jump arc */}
+    <path d="M 25 95 Q 55 55 85 95" stroke={color} opacity="0.15" stroke-dasharray="4 4" fill="none" />
+    {/* Landing markers */}
+    <line x1="25" y1="93" x2="25" y2="97" opacity="0.3" />
+    <line x1="85" y1="93" x2="85" y2="97" opacity="0.3" />
+    {/* Direction arrow */}
+    <line x1="90" y1="88" x2="105" y2="88" opacity="0.3" />
+    <polyline points="102,84 105,88 102,92" opacity="0.3" />
+  </svg>
+)}
+
+{station === "rowing" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Rower base */}
+    <line x1="15" y1="82" x2="105" y2="82" opacity="0.3" />
+    <rect x="20" y="78" width="10" height="8" rx="2" opacity="0.2" fill={color} />
+    {/* Sliding seat */}
+    <rect x="55" y="72" width="14" height="6" rx="3" opacity="0.4" />
+    {/* Figure seated, pulling */}
+    <circle cx="62" cy="48" r="7" />
+    <line x1="62" y1="55" x2="62" y2="72" />
+    {/* Arms pulling handle */}
+    <line x1="62" y1="60" x2="42" y2="55" />
+    <line x1="42" y1="55" x2="30" y2="60" />
+    {/* Handle bar */}
+    <line x1="28" y1="58" x2="28" y2="62" stroke-width="3" />
+    {/* Chain/cable to flywheel */}
+    <line x1="28" y1="60" x2="22" y2="72" stroke-dasharray="3 2" opacity="0.4" />
+    {/* Legs extended */}
+    <line x1="62" y1="72" x2="82" y2="78" />
+    <line x1="62" y1="72" x2="80" y2="82" />
+    {/* Feet in straps */}
+    <rect x="80" y="74" width="12" height="12" rx="2" opacity="0.2" />
+  </svg>
+)}
+
+{station === "farmers-carry" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure walking upright */}
+    <circle cx="60" cy="22" r="7" />
+    <line x1="60" y1="29" x2="60" y2="60" />
+    {/* Arms straight down holding weights */}
+    <line x1="60" y1="38" x2="38" y2="72" />
+    <line x1="60" y1="38" x2="82" y2="72" />
+    {/* Kettlebells */}
+    <circle cx="36" cy="78" r="8" opacity="0.4" />
+    <line x1="33" y1="70" x2="39" y2="70" stroke-width="3" />
+    <circle cx="84" cy="78" r="8" opacity="0.4" />
+    <line x1="81" y1="70" x2="87" y2="70" stroke-width="3" />
+    {/* Walking legs */}
+    <line x1="60" y1="60" x2="48" y2="90" />
+    <line x1="60" y1="60" x2="72" y2="90" />
+    {/* Feet */}
+    <line x1="48" y1="90" x2="42" y2="90" />
+    <line x1="72" y1="90" x2="78" y2="90" />
+    {/* Motion dots */}
+    <circle cx="95" cy="45" r="1.5" opacity="0.2" fill={color} />
+    <circle cx="100" cy="55" r="1.5" opacity="0.15" fill={color} />
+    <circle cx="95" cy="65" r="1.5" opacity="0.2" fill={color} />
+  </svg>
+)}
+
+{station === "sandbag-lunges" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Sandbag on shoulder */}
+    <ellipse cx="55" cy="32" rx="18" ry="8" opacity="0.3" fill={color} stroke="none" />
+    <ellipse cx="55" cy="32" rx="18" ry="8" />
+    {/* Figure in lunge position */}
+    <circle cx="60" cy="22" r="7" />
+    <line x1="60" y1="29" x2="58" y2="58" />
+    {/* Arm holding sandbag */}
+    <line x1="58" y1="38" x2="48" y2="32" />
+    <line x1="58" y1="38" x2="68" y2="35" />
+    {/* Front leg bent */}
+    <line x1="58" y1="58" x2="40" y2="72" />
+    <line x1="40" y1="72" x2="38" y2="92" />
+    {/* Back leg extended back, knee touching */}
+    <line x1="58" y1="58" x2="78" y2="78" />
+    <line x1="78" y1="78" x2="82" y2="92" />
+    {/* Knee marker */}
+    <circle cx="78" cy="78" r="2" opacity="0.4" fill={color} />
+    {/* Ground */}
+    <line x1="15" y1="95" x2="105" y2="95" opacity="0.15" />
+    {/* Feet */}
+    <line x1="38" y1="92" x2="32" y2="92" />
+    <line x1="82" y1="92" x2="85" y2="88" />
+  </svg>
+)}
+
+{station === "wall-balls" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Wall */}
+    <line x1="88" y1="5" x2="88" y2="100" opacity="0.15" stroke-width="4" />
+    {/* Target line on wall */}
+    <line x1="84" y1="22" x2="92" y2="22" stroke-width="2" opacity="0.4" />
+    {/* Ball in air going to target */}
+    <circle cx="78" cy="18" r="7" opacity="0.3" fill={color} />
+    <circle cx="78" cy="18" r="7" />
+    {/* Ball trajectory */}
+    <path d="M 55 45 Q 68 15 78 18" stroke-dasharray="3 3" opacity="0.2" />
+    {/* Figure in squat position throwing */}
+    <circle cx="48" cy="38" r="7" />
+    <line x1="48" y1="45" x2="46" y2="68" />
+    {/* Arms throwing up */}
+    <line x1="48" y1="50" x2="55" y2="42" />
+    <line x1="48" y1="50" x2="58" y2="45" />
+    {/* Legs in squat */}
+    <line x1="46" y1="68" x2="32" y2="82" />
+    <line x1="32" y1="82" x2="30" y2="92" />
+    <line x1="46" y1="68" x2="58" y2="82" />
+    <line x1="58" y1="82" x2="60" y2="92" />
+    {/* Feet */}
+    <line x1="30" y1="92" x2="24" y2="92" />
+    <line x1="60" y1="92" x2="66" y2="92" />
+  </svg>
+)}
+
+{station === "running" && (
+  <svg viewBox="0 0 120 120" width={size} height={size} fill="none" stroke={color} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure running */}
+    <circle cx="55" cy="24" r="7" />
+    <line x1="55" y1="31" x2="52" y2="56" />
+    {/* Arms pumping */}
+    <line x1="52" y1="40" x2="38" y2="35" />
+    <line x1="52" y1="40" x2="66" y2="50" />
+    {/* Front leg forward */}
+    <line x1="52" y1="56" x2="70" y2="72" />
+    <line x1="70" y1="72" x2="76" y2="90" />
+    {/* Back leg pushing off */}
+    <line x1="52" y1="56" x2="34" y2="74" />
+    <line x1="34" y1="74" x2="28" y2="82" />
+    {/* Feet */}
+    <line x1="76" y1="90" x2="82" y2="90" />
+    <line x1="28" y1="82" x2="22" y2="82" />
+    {/* Speed lines */}
+    <line x1="18" y1="30" x2="30" y2="30" opacity="0.2" />
+    <line x1="14" y1="42" x2="28" y2="42" opacity="0.15" />
+    <line x1="18" y1="54" x2="30" y2="54" opacity="0.2" />
+    {/* Ground */}
+    <line x1="10" y1="95" x2="110" y2="95" opacity="0.12" />
+  </svg>
+)}

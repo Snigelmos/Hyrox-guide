@@ -1,0 +1,182 @@
+---
+title: "Beginner Hyrox Training Program"
+description: "An 8-week training program for your first Hyrox race. Build running fitness, learn every station, and cross the finish line with confidence."
+difficulty: "beginner"
+duration: "8 weeks"
+order: 1
+icon: "🌱"
+---
+
+import WorkoutWeekVisual from "../../components/WorkoutWeekVisual.astro";
+
+## Your First Hyrox: 8-Week Plan
+
+This program assumes you can run 5km and have basic gym experience. By week 8, you'll be ready to complete your first Hyrox race confidently.
+
+**Training schedule:** 4 sessions per week (2 running, 2 gym/functional)
+
+---
+
+## Program Overview
+
+| Week | Focus | Running Volume | Gym Sessions |
+|------|-------|----------------|--------------|
+| 1–2 | Foundation | 3×3km | 2× station practice |
+| 3–4 | Build | 3×4km | 2× station combos |
+| 5–6 | Race Simulation | 2×5km + intervals | 2× race simulation |
+| 7 | Peak | Race simulation | Taper gym work |
+| 8 | Race Week | Light running only | Rest & prep |
+
+---
+
+## Weeks 1–2: Foundation
+
+<WorkoutWeekVisual
+  weekNumber={1}
+  focus="Foundation — Learn the Basics"
+  sessions={[
+    { day: "Mon", type: "run", title: "Easy Run — 3km", highlights: ["Conversational pace", "Focus on upright posture & mid-foot strike"], stations: ["running"] },
+    { day: "Tue", type: "gym", title: "Station Introduction A", highlights: ["SkiErg: 3×500m", "Sled Push: 5×25m light", "Rowing: 3×500m", "Wall Balls: 3×15 reps"], stations: ["skierg", "sled-push", "rowing", "wall-balls"] },
+    { day: "Wed", type: "rest", title: "Rest Day", highlights: ["Recovery walk or stretching"] },
+    { day: "Thu", type: "combo", title: "Run + Strength — 3km", highlights: ["3km easy run", "3 rounds: squats, push-ups, lunges, plank"], stations: ["running"] },
+    { day: "Fri", type: "gym", title: "Station Introduction B", highlights: ["Sled Pull: 5×25m light", "Burpee Broad Jumps: 3×20m", "Farmers Carry: 3×50m", "Sandbag Lunges: 3×20m"], stations: ["sled-pull", "burpee-broad-jump", "farmers-carry", "sandbag-lunges"] },
+    { day: "Sat", type: "rest", title: "Rest Day" },
+    { day: "Sun", type: "rest", title: "Rest Day" },
+  ]}
+/>
+
+### Day 1 — Easy Run
+- 3km at conversational pace (you can talk while running)
+- Focus on form: upright posture, relaxed shoulders, mid-foot strike
+
+### Day 2 — Station Introduction A
+- 10 min warm-up (jog + dynamic stretching)
+- **SkiErg:** 3×500m with 2 min rest (learn the movement)
+- **Sled Push:** 5×25m at light weight (focus on body angle)
+- **Rowing:** 3×500m with 2 min rest (practice drive sequence)
+- **Wall Balls:** 3×15 reps with 1 min rest
+
+### Day 3 — Run + Strength
+- 3km easy run
+- Then: 3 rounds of 10 squats, 10 push-ups, 10 lunges (each leg), 30s plank
+
+### Day 4 — Station Introduction B
+- 10 min warm-up
+- **Sled Pull:** 5×25m at light weight (learn hand-over-hand technique)
+- **Burpee Broad Jumps:** 3×20m (focus on efficient movement)
+- **Farmers Carry:** 3×50m with moderate weight
+- **Sandbag Lunges:** 3×20m with light sandbag
+
+---
+
+## Weeks 3–4: Build
+
+### Day 1 — Tempo Run
+- 4km total: 1km easy, 2km at moderate effort, 1km easy
+
+### Day 2 — Station Combos A
+- **Combo 1:** 500m SkiErg → 400m run → 500m Row → 400m run
+- Rest 3 min, repeat 2×
+- **Combo 2:** 15 Wall Balls → 25m Sled Push → 15 Wall Balls → 25m Sled Push
+
+### Day 3 — Interval Run
+- 4km easy run
+- Then: 6×200m at fast pace with 1 min recovery jog
+
+### Day 4 — Station Combos B
+- **Combo 1:** 25m Sled Pull → 200m run → 30m Burpee Broad Jumps → 200m run
+- Rest 3 min, repeat 2×
+- **Combo 2:** 50m Farmers Carry → 50m Sandbag Lunges → 50m Farmers Carry → 50m Sandbag Lunges
+
+---
+
+## Weeks 5–6: Race Simulation
+
+<WorkoutWeekVisual
+  weekNumber={5}
+  focus="Race Simulation — Put It Together"
+  sessions={[
+    { day: "Mon", type: "run", title: "Long Run — 5km", highlights: ["Steady pace", "Build to 6km in week 6"], stations: ["running"] },
+    { day: "Tue", type: "race-sim", title: "Half Race Simulation (Stations 1–4)", highlights: ["1km run between each station", "SkiErg → Sled Push → Sled Pull → Burpees"], stations: ["skierg", "sled-push", "sled-pull", "burpee-broad-jump"] },
+    { day: "Wed", type: "rest", title: "Rest Day" },
+    { day: "Thu", type: "run", title: "Speed Work — 4×1km Intervals", highlights: ["Target race pace: 5:00–5:30/km", "2 min walk recovery between"], stations: ["running"] },
+    { day: "Fri", type: "race-sim", title: "Half Race Simulation (Stations 5–8)", highlights: ["1km run between each station", "Rowing → Farmers → Lunges → Wall Balls"], stations: ["rowing", "farmers-carry", "sandbag-lunges", "wall-balls"] },
+    { day: "Sat", type: "rest", title: "Rest Day" },
+    { day: "Sun", type: "rest", title: "Rest Day" },
+  ]}
+/>
+
+### Day 1 — Long Run
+- 5km at steady pace
+- Build to 6km in week 6
+
+### Day 2 — Half Race Simulation
+- Run 1km → SkiErg 1,000m → Run 1km → Sled Push 50m → Run 1km → Sled Pull 50m → Run 1km → Burpee Broad Jumps 40m
+- Rest as needed between stations, but try to minimize breaks
+
+### Day 3 — Speed Work
+- 1km warm-up
+- 4×1km at target race pace (5:00–5:30/km) with 2 min walk recovery
+- 1km cool-down
+
+### Day 4 — Second Half Simulation
+- Run 1km → Rowing 1,000m → Run 1km → Farmers Carry 200m → Run 1km → Sandbag Lunges 50m → Run 1km → Wall Balls 50 reps
+
+---
+
+## Week 7: Peak
+
+### Day 1 — Full Race Simulation
+- Complete the entire race format at practice weights
+- Don't aim for a fast time — focus on pacing, transitions, and completion
+- This is your dress rehearsal
+
+### Day 2 — Easy Run
+- 3km very easy, shake out the legs
+
+### Day 3 — Light Station Work
+- 2 rounds: 500m SkiErg, 500m Row, 30 Wall Balls, 50m Farmers Carry
+- Keep intensity moderate
+
+### Day 4 — Rest or light walk
+
+---
+
+## Week 8: Race Week
+
+### Monday — Easy 2km jog
+### Tuesday — 15 min of light station practice (SkiErg, Row, Wall Balls only)
+### Wednesday — Rest
+### Thursday — 20 min easy jog with 3×100m strides
+### Friday — Rest
+### Saturday/Sunday — **RACE DAY!** 🏁
+
+---
+
+## Nutrition Basics for Beginners
+
+- **Daily:** Eat balanced meals with protein at every meal (chicken, fish, eggs, legumes)
+- **Pre-workout:** Light carbs 1–2 hours before (banana, toast, oatmeal)
+- **Post-workout:** Protein + carbs within 30 minutes (shake, yogurt with granola)
+- **Hydration:** Aim for 2–3 liters of water daily, more on training days
+- **Race week:** Increase carbs slightly, reduce fiber
+
+---
+
+## Equipment You'll Need
+
+Starting out, you don't need much:
+- Good running shoes (see our [shoe guide](/gear/shoes/))
+- Comfortable workout clothing
+- A gym membership with SkiErg, rower, sleds, and wall balls
+
+Check our [complete gear guide](/gear/) for specific recommendations.
+
+---
+
+## What's Next?
+
+After your first Hyrox, you'll know your time and your weak stations. From there:
+- **Improve overall:** Move to the [Intermediate Program](/training/intermediate/)
+- **Fix weak stations:** Check our [Station-Specific Drills](/training/stations/)
+- **Improve running:** See our [Running for Hyrox](/training/running/) guide

@@ -1,0 +1,22 @@
+---
+interface Props {
+  id: string;
+  format?: "banner" | "sidebar" | "in-article";
+}
+
+const { id, format = "banner" } = Astro.props;
+
+const heightMap = {
+  banner: "h-24",
+  sidebar: "h-64",
+  "in-article": "h-32",
+};
+---
+
+<div
+  class={`ad-slot ${heightMap[format]} bg-bg-card/50 border border-dashed border-border/50 rounded-xl flex items-center justify-center`}
+  data-ad-slot={id}
+  data-ad-format={format}
+>
+  <span class="text-xs text-text-muted/30 select-none">Ad Space</span>
+</div>

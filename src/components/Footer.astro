@@ -1,0 +1,99 @@
+---
+const year = new Date().getFullYear();
+
+const footerLinks = {
+  Guide: [
+    { label: "What is Hyrox?", href: "/racing-guide/what-is-hyrox/" },
+    { label: "The 8 Stations", href: "/racing-guide/stations/" },
+    { label: "Race Categories", href: "/racing-guide/categories/" },
+    { label: "Race Day Tips", href: "/racing-guide/race-day-tips/" },
+  ],
+  Training: [
+    { label: "Beginner Program", href: "/training/beginner/" },
+    { label: "Intermediate Program", href: "/training/intermediate/" },
+    { label: "Advanced Program", href: "/training/advanced/" },
+    { label: "Supplements", href: "/supplements/" },
+  ],
+  More: [
+    { label: "Competitions", href: "/competitions/" },
+    { label: "Gear Reviews", href: "/gear/" },
+    { label: "Supplements", href: "/supplements/" },
+    { label: "Blog", href: "/blog/" },
+    { label: "About", href: "/about/" },
+  ],
+};
+---
+
+<footer class="bg-bg-card border-t border-border mt-24">
+  <div class="container-main py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div>
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <div
+            class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center font-black text-bg text-sm"
+          >
+            H
+          </div>
+          <span class="font-black text-xl text-text-heading tracking-tight"
+            >HYROX<span class="text-accent">GUIDE</span></span
+          >
+        </a>
+        <p class="text-text-muted text-sm leading-relaxed mb-6">
+          The most comprehensive Hyrox resource online. Race guides, training
+          programs, gear reviews, and competition calendars.
+        </p>
+        <div id="newsletter" class="space-y-3">
+          <p class="text-sm font-semibold text-text-heading">
+            Stay in the loop
+          </p>
+          <form class="flex gap-2" onsubmit="return false;">
+            <input
+              type="email"
+              placeholder="your@email.com"
+              aria-label="Email address"
+              class="flex-1 px-4 py-2.5 bg-bg border border-border rounded-lg text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-accent min-h-[44px]"
+            />
+            <button
+              type="submit"
+              class="px-5 py-2.5 bg-accent text-bg font-bold text-sm rounded-lg hover:bg-accent-dim transition-colors min-h-[44px]"
+            >
+              Join
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {
+        Object.entries(footerLinks).map(([title, links]) => (
+          <div>
+            <h3 class="font-bold text-text-heading mb-4">{title}</h3>
+            <ul class="space-y-2">
+              {links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-sm text-text-muted hover:text-accent transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4"
+    >
+      <p class="text-text-muted text-sm">
+        &copy; {year} HyroxGuide. Not affiliated with Hyrox GmbH.
+      </p>
+      <p class="text-text-muted text-xs">
+        Some links are affiliate links. We may earn a commission at no extra
+        cost to you.
+      </p>
+    </div>
+  </div>
+</footer>

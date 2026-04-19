@@ -1,0 +1,143 @@
+---
+interface Props {
+  variant: string;
+  size?: number;
+  class?: string;
+}
+
+const { variant, size = 120, class: className = "" } = Astro.props;
+const color = "currentColor";
+---
+
+{variant === "beginner" && (
+  <svg viewBox="0 0 160 160" width={size} height={size} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure jogging lightly */}
+    <circle cx="70" cy="40" r="10" />
+    <line x1="70" y1="50" x2="68" y2="80" />
+    <line x1="68" y1="60" x2="52" y2="55" />
+    <line x1="68" y1="60" x2="84" y2="68" />
+    <line x1="68" y1="80" x2="56" y2="105" />
+    <line x1="68" y1="80" x2="82" y2="100" />
+    <line x1="56" y1="105" x2="50" y2="105" />
+    <line x1="82" y1="100" x2="88" y2="100" />
+    {/* Heart rate / easy effort indicator */}
+    <path d="M 110 35 L 115 25 L 120 40 L 125 30 L 130 35" opacity="0.4" />
+    {/* Gentle speed lines */}
+    <line x1="30" y1="50" x2="42" y2="50" opacity="0.15" />
+    <line x1="26" y1="62" x2="40" y2="62" opacity="0.12" />
+    {/* Star - achievement */}
+    <polygon points="115,70 118,78 127,78 120,84 122,93 115,88 108,93 110,84 103,78 112,78" fill={color} opacity="0.1" stroke={color} opacity="0.3" />
+    {/* Ground */}
+    <line x1="20" y1="120" x2="140" y2="120" opacity="0.1" />
+  </svg>
+)}
+
+{variant === "intermediate" && (
+  <svg viewBox="0 0 160 160" width={size} height={size} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure in athletic stance, more dynamic */}
+    <circle cx="65" cy="32" r="10" />
+    <line x1="65" y1="42" x2="62" y2="72" />
+    {/* Arms pumping harder */}
+    <line x1="62" y1="52" x2="42" y2="42" />
+    <line x1="62" y1="52" x2="80" y2="60" />
+    {/* Powerful stride */}
+    <line x1="62" y1="72" x2="82" y2="90" />
+    <line x1="82" y1="90" x2="90" y2="108" />
+    <line x1="62" y1="72" x2="42" y2="88" />
+    <line x1="42" y1="88" x2="35" y2="95" />
+    <line x1="90" y1="108" x2="96" y2="108" />
+    <line x1="35" y1="95" x2="28" y2="95" />
+    {/* Kettlebell nearby */}
+    <circle cx="118" cy="90" r="10" opacity="0.25" />
+    <line x1="114" y1="80" x2="122" y2="80" stroke-width="3" opacity="0.3" />
+    {/* Timer */}
+    <circle cx="120" cy="38" r="14" opacity="0.2" />
+    <line x1="120" y1="28" x2="120" y2="38" opacity="0.4" />
+    <line x1="120" y1="38" x2="128" y2="34" opacity="0.4" />
+    {/* Speed lines - more aggressive */}
+    <line x1="20" y1="40" x2="38" y2="40" opacity="0.2" />
+    <line x1="15" y1="52" x2="36" y2="52" opacity="0.15" />
+    <line x1="20" y1="64" x2="38" y2="64" opacity="0.2" />
+    {/* Ground */}
+    <line x1="20" y1="120" x2="140" y2="120" opacity="0.1" />
+  </svg>
+)}
+
+{variant === "advanced" && (
+  <svg viewBox="0 0 160 160" width={size} height={size} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Figure explosive / sprinting */}
+    <circle cx="60" cy="28" r="10" />
+    <line x1="60" y1="38" x2="55" y2="65" />
+    {/* Arms in full sprint motion */}
+    <line x1="55" y1="48" x2="35" y2="35" />
+    <line x1="55" y1="48" x2="75" y2="58" />
+    {/* Explosive legs */}
+    <line x1="55" y1="65" x2="80" y2="80" />
+    <line x1="80" y1="80" x2="90" y2="100" />
+    <line x1="55" y1="65" x2="32" y2="80" />
+    <line x1="32" y1="80" x2="25" y2="85" />
+    <line x1="90" y1="100" x2="96" y2="100" />
+    <line x1="25" y1="85" x2="18" y2="85" />
+    {/* Barbell overhead (strength) */}
+    <line x1="100" y1="25" x2="145" y2="25" stroke-width="2.5" opacity="0.3" />
+    <circle cx="102" cy="25" r="6" opacity="0.2" />
+    <circle cx="143" cy="25" r="6" opacity="0.2" />
+    {/* Lightning bolt - intensity */}
+    <polygon points="120,55 126,55 122,68 130,68 116,85 120,72 112,72" fill={color} opacity="0.15" stroke={color} opacity="0.35" />
+    {/* Speed lines - aggressive */}
+    <line x1="10" y1="35" x2="32" y2="35" opacity="0.25" />
+    <line x1="5" y1="48" x2="30" y2="48" opacity="0.2" />
+    <line x1="10" y1="60" x2="32" y2="60" opacity="0.25" />
+    <line x1="8" y1="72" x2="28" y2="72" opacity="0.15" />
+    {/* Ground */}
+    <line x1="20" y1="120" x2="140" y2="120" opacity="0.1" />
+  </svg>
+)}
+
+{variant === "nutrition" && (
+  <svg viewBox="0 0 160 160" width={size} height={size} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Shaker bottle */}
+    <rect x="55" y="30" width="30" height="55" rx="6" />
+    <line x1="55" y1="42" x2="85" y2="42" opacity="0.4" />
+    <rect x="58" y="24" width="24" height="8" rx="3" />
+    {/* Liquid level */}
+    <rect x="57" y="55" width="26" height="28" rx="4" fill={color} opacity="0.08" />
+    {/* Banana */}
+    <path d="M 105 50 Q 125 35 130 60 Q 128 55 108 55 Z" opacity="0.3" />
+    {/* Plate with food */}
+    <ellipse cx="110" cy="90" rx="25" ry="10" opacity="0.2" />
+    <circle cx="105" cy="86" r="4" opacity="0.15" fill={color} />
+    <circle cx="115" cy="88" r="3" opacity="0.15" fill={color} />
+    {/* Energy bar */}
+    <rect x="20" y="70" width="28" height="12" rx="3" opacity="0.25" />
+    <line x1="30" y1="70" x2="30" y2="82" opacity="0.15" />
+    {/* Water drops */}
+    <path d="M 30 40 Q 28 48 30 52 Q 32 48 30 40" fill={color} opacity="0.15" />
+    <path d="M 22 50 Q 20 56 22 60 Q 24 56 22 50" fill={color} opacity="0.1" />
+  </svg>
+)}
+
+{variant === "supplements" && (
+  <svg viewBox="0 0 160 160" width={size} height={size} fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className}>
+    {/* Pill bottle */}
+    <rect x="35" y="40" width="30" height="50" rx="5" />
+    <rect x="38" y="32" width="24" height="10" rx="3" />
+    <line x1="50" y1="55" x2="50" y2="55" />
+    <text x="50" y="70" text-anchor="middle" font-size="14" fill={color} opacity="0.3" stroke="none">Cr</text>
+    {/* Capsules scattered */}
+    <ellipse cx="90" cy="55" rx="10" ry="5" transform="rotate(-20 90 55)" opacity="0.3" />
+    <line x1="90" y1="50" x2="90" y2="60" transform="rotate(-20 90 55)" opacity="0.2" />
+    <ellipse cx="105" cy="70" rx="8" ry="4" transform="rotate(15 105 70)" opacity="0.25" />
+    {/* Scoop of powder */}
+    <path d="M 80 95 Q 90 80 100 95 Z" fill={color} opacity="0.1" />
+    <line x1="90" y1="95" x2="90" y2="110" opacity="0.3" />
+    {/* Shaker */}
+    <rect x="25" y="95" width="20" height="30" rx="4" opacity="0.25" />
+    <line x1="25" y1="102" x2="45" y2="102" opacity="0.2" />
+    {/* Plus signs for health */}
+    <line x1="120" y1="35" x2="120" y2="47" opacity="0.2" />
+    <line x1="114" y1="41" x2="126" y2="41" opacity="0.2" />
+    <line x1="130" y1="85" x2="130" y2="95" opacity="0.15" />
+    <line x1="125" y1="90" x2="135" y2="90" opacity="0.15" />
+  </svg>
+)}

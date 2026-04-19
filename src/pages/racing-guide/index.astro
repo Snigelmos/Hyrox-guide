@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionCard from "../../components/SectionCard.astro";
+import StationIcons from "../../components/icons/StationIcons.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import { getCollection } from "astro:content";
+
+const guides = (await getCollection("racing-guide")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const guideIllustrations: Record<string, string> = {
+  "what-is-hyrox": "running",
+  stations: "sled-push",
+  categories: "rowing",
+  "race-day-tips": "wall-balls",
+  times: "skierg",
+};
+---
+
+<BaseLayout
+  title="Hyrox Racing Guide — Format, Stations, Categories & Race Day Tips"
+  description="Your complete Hyrox racing guide — understand the format, master the stations, pick your category, and prepare for race day."
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-16">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Racing Guide</span>
+      </h1>
+      <p class="text-xl text-text-muted leading-relaxed">
+        Everything you need to know about the Hyrox race format — from the basics to advanced race-day strategy.
+      </p>
+    </div>
+
+    <AdSlot id="racing-guide-top" format="banner" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+      {guides.map((guide, i) => {
+        const stationId = guideIllustrations[guide.id];
+        return (
+          <a
+            href={`/racing-guide/${guide.id}/`}
+            class="group relative block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+          >
+            {stationId && (
+              <div class="absolute -right-4 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
+                <StationIcons station={stationId} size={160} />
+              </div>
+            )}
+            <div class="relative z-10">
+              <div class="flex items-center gap-3 mb-4">
+                {stationId ? (
+                  <div class="text-accent/60 group-hover:text-accent transition-colors">
+                    <StationIcons station={stationId} size={48} />
+                  </div>
+                ) : (
+                  <span class="text-3xl">{guide.data.icon ?? "📖"}</span>
+                )}
+                {i === 0 && (
+                  <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
+                    Start Here
+                  </span>
+                )}
+              </div>
+              <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
+                {guide.data.title}
+              </h3>
+              <p class="text-text-muted text-sm leading-relaxed">{guide.data.description}</p>
+              <div class="mt-4 flex items-center gap-1 text-sm font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                Read Guide
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>

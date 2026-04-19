@@ -1,0 +1,26 @@
+---
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const guides = await getCollection("gear");
+  return guides.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<GuideLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  breadcrumbs={[
+    { label: "Gear", href: "/gear/" },
+    { label: entry.data.title },
+  ]}
+>
+  <Content />
+</GuideLayout>

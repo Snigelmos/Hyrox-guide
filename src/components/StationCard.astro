@@ -1,0 +1,47 @@
+---
+import StationIcons from "./icons/StationIcons.astro";
+
+interface Props {
+  number: number;
+  name: string;
+  metric: string;
+  description: string;
+  icon: string;
+  stationId?: string;
+}
+
+const { number, name, metric, description, icon, stationId } = Astro.props;
+
+const stationMap: Record<string, string> = {
+  "SkiErg": "skierg",
+  "Sled Push": "sled-push",
+  "Sled Pull": "sled-pull",
+  "Burpee Broad Jumps": "burpee-broad-jump",
+  "Rowing": "rowing",
+  "Farmers Carry": "farmers-carry",
+  "Sandbag Lunges": "sandbag-lunges",
+  "Wall Balls": "wall-balls",
+};
+
+const resolvedId = stationId ?? stationMap[name] ?? "";
+---
+
+<div
+  class="group relative bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 overflow-hidden"
+>
+  <div class="absolute top-3 right-3 text-5xl font-black text-white/[0.03] select-none leading-none">
+    {number}
+  </div>
+
+  {resolvedId ? (
+    <div class="text-accent/70 group-hover:text-accent transition-colors mb-4">
+      <StationIcons station={resolvedId} size={64} />
+    </div>
+  ) : (
+    <div class="text-3xl mb-3">{icon}</div>
+  )}
+
+  <h3 class="text-lg font-bold text-text-heading mb-1">{name}</h3>
+  <div class="text-accent text-sm font-semibold mb-2">{metric}</div>
+  <p class="text-text-muted text-sm leading-relaxed">{description}</p>
+</div>

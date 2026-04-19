@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionCard from "../../components/SectionCard.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import { getCollection } from "astro:content";
+
+const gearGuides = (await getCollection("gear")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const icons: Record<string, string> = {
+  shoes: "👟",
+  clothing: "👕",
+  accessories: "⌚",
+  "home-gym": "🏋️",
+};
+---
+
+<BaseLayout
+  title="Best Hyrox Gear — Shoes, Clothing & Equipment Reviews (2026)"
+  description="The best gear for Hyrox — shoes, clothing, accessories, and home gym equipment. Tested and recommended by experienced Hyrox athletes."
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-16">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Gear & Equipment</span>
+      </h1>
+      <p class="text-xl text-text-muted leading-relaxed">
+        The right gear makes a difference. Our tested recommendations for shoes, clothing,
+        accessories, and home gym setups.
+      </p>
+    </div>
+
+    <AdSlot id="gear-top" format="banner" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+      {gearGuides.map((guide, i) => (
+        <SectionCard
+          title={guide.data.title}
+          description={guide.data.description}
+          href={`/gear/${guide.id}/`}
+          icon={icons[guide.data.category] ?? "📦"}
+          accent={i === 0}
+        />
+      ))}
+    </div>
+
+    <div class="mt-16 p-8 bg-bg-card border border-border rounded-2xl">
+      <div class="flex items-start gap-4 max-w-lg mx-auto">
+        <span class="text-3xl shrink-0">💰</span>
+        <div>
+          <h2 class="text-lg font-bold text-text-heading mb-2">Affiliate Disclosure</h2>
+          <p class="text-text-muted text-sm leading-relaxed">
+            Some of the links on this site are affiliate links. This means we may earn a small
+            commission if you make a purchase through our links, at no additional cost to you.
+            We only recommend products we've tested or genuinely believe in.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

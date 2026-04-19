@@ -1,0 +1,45 @@
+---
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import StationIcons from "../../components/icons/StationIcons.astro";
+import TrainingIcons from "../../components/icons/TrainingIcons.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const guides = await getCollection("racing-guide");
+  return guides.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const illustrationMap: Record<string, { type: "station" | "training"; variant: string }> = {
+  "what-is-hyrox": { type: "station", variant: "running" },
+  stations: { type: "station", variant: "sled-push" },
+  categories: { type: "station", variant: "rowing" },
+  "race-day-tips": { type: "station", variant: "wall-balls" },
+  times: { type: "station", variant: "skierg" },
+};
+
+const illustration = illustrationMap[entry.id];
+---
+
+<GuideLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  breadcrumbs={[
+    { label: "Racing Guide", href: "/racing-guide/" },
+    { label: entry.data.title },
+  ]}
+  showIllustration={!!illustration}
+>
+  {illustration?.type === "station" && (
+    <StationIcons slot="illustration" station={illustration.variant} size={240} />
+  )}
+  {illustration?.type === "training" && (
+    <TrainingIcons slot="illustration" variant={illustration.variant} size={240} />
+  )}
+  <Content />
+</GuideLayout>

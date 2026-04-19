@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionCard from "../../components/SectionCard.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import TrainingIcons from "../../components/icons/TrainingIcons.astro";
+import { getCollection } from "astro:content";
+
+const guides = (await getCollection("training")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
+);
+
+const difficultyConfig: Record<string, { color: string; bg: string; border: string; variant: string }> = {
+  beginner: { color: "text-green-400", bg: "bg-green-400/10", border: "border-green-400/20", variant: "beginner" },
+  intermediate: { color: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", variant: "intermediate" },
+  advanced: { color: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/20", variant: "advanced" },
+};
+---
+
+<BaseLayout
+  title="Hyrox Training Plans — Beginner, Intermediate & Advanced Programs"
+  description="Structured Hyrox training programs for every level — beginner to advanced. Get race-ready with our proven plans."
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-16">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Training Programs</span>
+      </h1>
+      <p class="text-xl text-text-muted leading-relaxed">
+        Structured plans to get you race-ready, no matter where you're starting from. Pick your level and start training today.
+      </p>
+    </div>
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-6">Choose Your Level</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      {guides.filter(g => g.data.difficulty).map((guide) => {
+        const config = difficultyConfig[guide.data.difficulty ?? "beginner"];
+        return (
+          <a
+            href={`/training/${guide.id}/`}
+            class="group relative block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+          >
+            <div class="absolute -right-4 -top-2 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
+              <TrainingIcons variant={config.variant} size={180} />
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-accent/60 group-hover:text-accent transition-colors">
+                  <TrainingIcons variant={config.variant} size={56} />
+                </div>
+                <span class={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${config.color} ${config.bg} ${config.border} border`}>
+                  {guide.data.difficulty}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
+                {guide.data.title}
+              </h3>
+              <p class="text-text-muted text-sm leading-relaxed mb-4">{guide.data.description}</p>
+              {guide.data.duration && (
+                <div class="flex items-center gap-2 text-xs text-text-muted">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {guide.data.duration}
+                </div>
+              )}
+              <div class="mt-5 flex items-center gap-1 text-sm font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                Start Program
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    {/* Featured: Sample Workouts */}
+    <div class="mt-16 mb-12">
+      <a
+        href="/training/workouts/"
+        class="group block bg-bg-card border-2 border-accent/20 rounded-2xl p-8 hover:border-accent/40 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1"
+      >
+        <div class="md:flex md:items-center md:gap-8">
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-amber-400 bg-amber-400/10 border border-amber-400/20">
+              Just want a workout?
+            </span>
+            <h2 class="text-2xl font-black text-text-heading mt-3 mb-2 group-hover:text-accent transition-colors">
+              Sample Hyrox Workouts
+            </h2>
+            <p class="text-text-muted text-sm leading-relaxed mb-4 md:mb-0">
+              No multi-week commitment needed. 7 ready-to-go gym sessions — full race simulations, station-focused circuits, and 20-minute blasts. Pick one and train.
+            </p>
+          </div>
+          <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0">
+            View Workouts
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <AdSlot id="training-mid" format="banner" />
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-6">Specialized Guides</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {guides.filter(g => !g.data.difficulty).map((guide) => (
+        <SectionCard
+          title={guide.data.title}
+          description={guide.data.description}
+          href={`/training/${guide.id}/`}
+          icon={guide.data.icon ?? "📖"}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,150 @@
+---
+const navLinks = [
+  { label: "Racing Guide", href: "/racing-guide/", highlight: false },
+  { label: "Training", href: "/training/", highlight: false },
+  { label: "Supplements", href: "/supplements/", highlight: true },
+  { label: "Competitions", href: "/competitions/", highlight: false },
+  { label: "Gear", href: "/gear/", highlight: false },
+  { label: "Blog", href: "/blog/", highlight: false },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 bg-bg/80 backdrop-blur-xl border-b border-border"
+>
+  <div class="container-main">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <a href="/" class="flex items-center gap-2 group">
+        <div
+          class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center font-black text-bg text-sm group-hover:glow-accent transition-shadow"
+        >
+          H
+        </div>
+        <span class="font-black text-xl text-text-heading tracking-tight"
+          >HYROX<span class="text-accent">GUIDE</span></span
+        >
+      </a>
+
+      <nav class="hidden md:flex items-center gap-1">
+        {
+          navLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-current={currentPath.startsWith(link.href) ? "page" : undefined}
+              class:list={[
+                "px-4 py-2 rounded-lg text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
+                currentPath.startsWith(link.href)
+                  ? "bg-accent/10 text-accent"
+                  : link.highlight
+                    ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/5 border border-amber-400/20"
+                    : "text-text-muted hover:text-text hover:bg-white/5",
+              ]}
+            >
+              {link.highlight && (
+                <span class="inline-flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  {link.label}
+                </span>
+              )}
+              {!link.highlight && link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden p-3 -mr-1 text-text-muted hover:text-text min-w-[44px] min-h-[44px] flex items-center justify-center"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <nav
+      id="mobile-menu"
+      class="md:hidden hidden pb-4 border-t border-border mt-2 pt-4"
+      aria-label="Mobile navigation"
+    >
+      <div class="flex flex-col gap-1">
+        {
+          navLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-current={currentPath.startsWith(link.href) ? "page" : undefined}
+              class:list={[
+                "px-4 py-3 rounded-lg text-sm font-medium transition-all min-h-[44px] flex items-center focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
+                currentPath.startsWith(link.href)
+                  ? "bg-accent/10 text-accent"
+                  : link.highlight
+                    ? "text-amber-400 hover:bg-amber-400/5"
+                    : "text-text-muted hover:text-text hover:bg-white/5",
+              ]}
+            >
+              {link.highlight && (
+                <span class="inline-flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  {link.label}
+                </span>
+              )}
+              {!link.highlight && link.label}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+
+  function openMenu() {
+    menu?.classList.remove("hidden");
+    btn?.setAttribute("aria-expanded", "true");
+    btn?.setAttribute("aria-label", "Close menu");
+  }
+
+  function closeMenu() {
+    menu?.classList.add("hidden");
+    btn?.setAttribute("aria-expanded", "false");
+    btn?.setAttribute("aria-label", "Open menu");
+  }
+
+  btn?.addEventListener("click", () => {
+    const isOpen = btn.getAttribute("aria-expanded") === "true";
+    isOpen ? closeMenu() : openMenu();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && btn?.getAttribute("aria-expanded") === "true") {
+      closeMenu();
+      btn?.focus();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      btn?.getAttribute("aria-expanded") === "true" &&
+      !menu?.contains(e.target as Node) &&
+      !btn?.contains(e.target as Node)
+    ) {
+      closeMenu();
+    }
+  });
+</script>

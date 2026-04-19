@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CompetitionTable from "../components/CompetitionTable";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import competitions from "../data/competitions.json";
+---
+
+<BaseLayout
+  title="Upcoming Hyrox Competitions | Hyrox Guide"
+  description="Find upcoming Hyrox races worldwide. Filter by region, check registration status, and sign up for your next event."
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-12">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Upcoming Competitions</span>
+      </h1>
+      <p class="text-xl text-text-muted">
+        Find your next Hyrox race. Filter by region, check dates, and register before spots fill up.
+      </p>
+    </div>
+
+    <AdSlot id="competitions-top" format="banner" />
+
+    <div class="mt-8">
+      <CompetitionTable competitions={competitions} client:load />
+    </div>
+
+    <div class="mt-8 p-6 bg-bg-card border border-border rounded-2xl">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">💡</span>
+        <div>
+          <h3 class="font-bold text-text-heading mb-1">Pro Tip</h3>
+          <p class="text-text-muted text-sm">
+            Hyrox events sell out fast, especially in popular cities like London, New York, and Hamburg.
+            Register as soon as your target event opens. You can usually transfer or sell your spot
+            if plans change.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-16">
+      <NewsletterForm
+        heading="Get Notified About New Races"
+        subtext="Be the first to know when registration opens for new Hyrox events. Weekly updates, no spam."
+      />
+    </div>
+  </section>
+</BaseLayout>

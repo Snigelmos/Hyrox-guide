@@ -1,0 +1,125 @@
+---
+interface StationBenchmark {
+  station: string;
+  metric: string;
+  beginner: string;
+  average: string;
+  competitive: string;
+  elite: string;
+}
+
+interface Props {
+  title?: string;
+  gender: "men" | "women";
+  benchmarks: StationBenchmark[];
+  totals?: {
+    beginner: string;
+    average: string;
+    competitive: string;
+    elite: string;
+  };
+}
+
+const { title, gender, benchmarks, totals } = Astro.props;
+---
+
+<div class="not-prose my-10">
+  <div class="bg-bg-card border border-border rounded-2xl overflow-hidden">
+    {title && (
+      <div class="px-6 py-4 border-b border-border flex items-center gap-3">
+        <span class="text-lg">{gender === "men" ? "🚹" : "🚺"}</span>
+        <h3 class="text-base font-bold text-text-heading">{title}</h3>
+      </div>
+    )}
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="text-left py-3 px-4 text-text-muted font-semibold text-xs uppercase tracking-wider">Station</th>
+            <th class="text-center py-3 px-3 min-w-[90px]">
+              <div class="flex flex-col items-center gap-0.5">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <span class="text-emerald-400 font-bold text-xs uppercase tracking-wider">Elite</span>
+              </div>
+            </th>
+            <th class="text-center py-3 px-3 min-w-[90px]">
+              <div class="flex flex-col items-center gap-0.5">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                <span class="text-sky-400 font-bold text-xs uppercase tracking-wider">Competitive</span>
+              </div>
+            </th>
+            <th class="text-center py-3 px-3 min-w-[90px]">
+              <div class="flex flex-col items-center gap-0.5">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <span class="text-amber-400 font-bold text-xs uppercase tracking-wider">Average</span>
+              </div>
+            </th>
+            <th class="text-center py-3 px-3 min-w-[90px]">
+              <div class="flex flex-col items-center gap-0.5">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                <span class="text-rose-400 font-bold text-xs uppercase tracking-wider">Beginner</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border/50">
+          {benchmarks.map((row) => (
+            <tr class="hover:bg-accent/[0.02] transition-colors">
+              <td class="py-3 px-4">
+                <div class="font-semibold text-text-heading text-sm">{row.station}</div>
+                <div class="text-xs text-text-muted">{row.metric}</div>
+              </td>
+              <td class="py-3 px-3 text-center text-emerald-400 font-mono font-semibold text-sm">{row.elite}</td>
+              <td class="py-3 px-3 text-center text-sky-400 font-mono font-semibold text-sm">{row.competitive}</td>
+              <td class="py-3 px-3 text-center text-amber-400 font-mono font-semibold text-sm">{row.average}</td>
+              <td class="py-3 px-3 text-center text-rose-400 font-mono font-semibold text-sm">{row.beginner}</td>
+            </tr>
+          ))}
+          <tr class="hover:bg-accent/[0.02] transition-colors">
+            <td class="py-3 px-4">
+              <div class="font-semibold text-text-heading text-sm">8 × 1km Run</div>
+              <div class="text-xs text-text-muted">between stations</div>
+            </td>
+            <td class="py-3 px-3 text-center text-emerald-400 font-mono font-semibold text-sm">{gender === "men" ? "31:00" : "35:00"}</td>
+            <td class="py-3 px-3 text-center text-sky-400 font-mono font-semibold text-sm">{gender === "men" ? "36:00" : "40:00"}</td>
+            <td class="py-3 px-3 text-center text-amber-400 font-mono font-semibold text-sm">{gender === "men" ? "42:00" : "48:00"}</td>
+            <td class="py-3 px-3 text-center text-rose-400 font-mono font-semibold text-sm">{gender === "men" ? "48:00" : "54:00"}</td>
+          </tr>
+          <tr class="hover:bg-accent/[0.02] transition-colors">
+            <td class="py-3 px-4">
+              <div class="font-semibold text-text-heading text-sm">Transitions</div>
+              <div class="text-xs text-text-muted">moving between zones</div>
+            </td>
+            <td class="py-3 px-3 text-center text-emerald-400 font-mono font-semibold text-sm">{gender === "men" ? "3:00" : "3:00"}</td>
+            <td class="py-3 px-3 text-center text-sky-400 font-mono font-semibold text-sm">{gender === "men" ? "5:00" : "5:00"}</td>
+            <td class="py-3 px-3 text-center text-amber-400 font-mono font-semibold text-sm">{gender === "men" ? "8:00" : "10:00"}</td>
+            <td class="py-3 px-3 text-center text-rose-400 font-mono font-semibold text-sm">{gender === "men" ? "12:00" : "14:00"}</td>
+          </tr>
+        </tbody>
+        {totals && (
+          <tfoot>
+            <tr class="border-t-2 border-accent/20 bg-accent/[0.03]">
+              <td class="py-4 px-4">
+                <div class="font-black text-text-heading">Total Race Time</div>
+              </td>
+              <td class="py-4 px-3 text-center text-emerald-400 font-mono font-black text-base">{totals.elite}</td>
+              <td class="py-4 px-3 text-center text-sky-400 font-mono font-black text-base">{totals.competitive}</td>
+              <td class="py-4 px-3 text-center text-amber-400 font-mono font-black text-base">{totals.average}</td>
+              <td class="py-4 px-3 text-center text-rose-400 font-mono font-black text-base">{totals.beginner}</td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
+    </div>
+
+    <div class="px-6 py-3 border-t border-border/50 bg-bg-card">
+      <div class="flex flex-wrap items-center gap-4 text-xs text-text-muted">
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Elite = Top 5%</span>
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-400"></span> Competitive = Top 25%</span>
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Average = Middle 50%</span>
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Beginner = First Hyrox</span>
+      </div>
+    </div>
+  </div>
+</div>

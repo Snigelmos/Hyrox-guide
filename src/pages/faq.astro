@@ -1,0 +1,121 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const faqItems = [
+  { question: "What is Hyrox?", answer: "Hyrox is a global indoor fitness race that combines 8km of running with 8 functional workout stations. Every race follows the same format worldwide: run 1km, complete a station, repeat 8 times. It's the fastest-growing mass participation fitness event in the world, held in 30+ cities." },
+  { question: "How long does a Hyrox race take?", answer: "Most first-timers finish between 1:30 and 2:00 hours. The average men's Open time is around 1:25-1:40, and women's Open is around 1:35-1:50. Elite athletes finish in under 1:05 (men) or 1:15 (women). Your time depends on running fitness and station strength." },
+  { question: "Can beginners do Hyrox?", answer: "Absolutely. Hyrox is designed to be inclusive — you don't need to qualify, and there's no cut-off time. If you can jog 5km and do basic gym exercises, you can finish a Hyrox. The Doubles format (splitting stations with a partner) is especially beginner-friendly." },
+  { question: "How much does a Hyrox race cost?", answer: "Entry fees typically range from $80-$130 USD depending on the city, category, and how early you register. Early bird pricing is usually cheapest. Doubles and Relay entries are priced per person at similar rates." },
+  { question: "What do I need to bring on race day?", answer: "Running shoes (not trail shoes), comfortable athletic clothing, a water bottle, and your race bib. Optional: gloves for the sled pull and farmers carry, energy gels, and a change of clothes. The venue provides all equipment — sleds, SkiErgs, rowers, wall balls, sandbags, and kettlebells." },
+  { question: "What are the 8 Hyrox stations?", answer: "In order: (1) SkiErg 1,000m, (2) Sled Push 50m, (3) Sled Pull 50m, (4) Burpee Broad Jumps 80m, (5) Rowing 1,000m, (6) Farmers Carry 200m, (7) Sandbag Lunges 100m, (8) Wall Balls 75-100 reps. You run 1km between each station." },
+  { question: "How heavy are the sleds in Hyrox?", answer: "Sled Push: Men's Open 102kg, Women's Open 72kg, Men's Pro 152kg, Women's Pro 102kg. Sled Pull: Men's Open 78kg, Women's Open 48kg, Men's Pro 118kg, Women's Pro 78kg. Pro weights are significantly heavier." },
+  { question: "What's the difference between Open and Pro?", answer: "Pro uses heavier weights on all weighted stations (sled push, sled pull, farmers carry, sandbag lunges, wall balls). Open is the standard category for most competitors. You choose your category when you register — no qualification needed for either." },
+  { question: "Can I walk during the running sections?", answer: "Yes. There are no rules against walking during any part of the race. Many beginners walk portions of the later runs when fatigue sets in. Your time still counts either way, and finishing is what matters most." },
+  { question: "What is Hyrox Doubles?", answer: "Doubles is a team format where two athletes race together. You both run every 1km segment, but you alternate stations — one person does stations 1, 3, 5, 7 while the other does 2, 4, 6, 8. It's a great option for beginners or couples." },
+  { question: "How long should I train before my first Hyrox?", answer: "We recommend 8-12 weeks of dedicated training if you already have a basic fitness base (can run 5km, comfortable in a gym). Complete beginners should allow 12-16 weeks. Our beginner program is designed as an 8-week plan." },
+  { question: "Do I need a gym membership to train for Hyrox?", answer: "A gym with a SkiErg, rowing machine, sled, and wall ball target is ideal. Many CrossFit boxes and functional fitness gyms have this equipment. If your gym doesn't have sleds, you can substitute with heavy leg presses and weighted lunges." },
+  { question: "What's a typical Hyrox training week look like?", answer: "Most athletes train 4-5 days per week: 2-3 running sessions (including intervals), 2 station/strength sessions, and 1 rest day. On weekends, a full or half race simulation is ideal. Check our sample workouts for ready-to-use sessions." },
+  { question: "What supplements help for Hyrox?", answer: "The top evidence-based supplements are: creatine (improves station power), protein powder (recovery), caffeine/pre-workout (2-6% performance boost on race day), electrolytes (hydration), and energy gels (mid-race fuel for races over 60 minutes)." },
+  { question: "What's a good Hyrox time for beginners?", answer: "For a first-time racer, anything under 2 hours is solid. Men typically finish between 1:40-2:00 and women between 1:50-2:10 on their first attempt. The most important thing is finishing — you can always improve next time." },
+  { question: "What's the average Hyrox finish time?", answer: "The average men's Open finish time is approximately 1:30-1:35, and women's Open is approximately 1:40-1:50. These averages include repeat racers, so first-timers are typically 10-20 minutes slower than the overall average." },
+  { question: "What's the Hyrox world record?", answer: "Men's Open world record times are under 55 minutes, and women's under 1:02. These are held by professional athletes with years of specialized training. Pro division records are slightly slower due to the heavier weights." },
+  { question: "How can I check my Hyrox results?", answer: "After your race, results are posted on the official Hyrox app and website. You get a full breakdown of every 1km split, every station time, and transition times. This data is invaluable for planning your next race — it shows exactly where you're strong and where you can improve." },
+];
+
+const categories = [
+  { title: "Getting Started", icon: "🚀", items: faqItems.slice(0, 5) },
+  { title: "Race Format", icon: "🏁", items: faqItems.slice(5, 10) },
+  { title: "Training", icon: "💪", items: faqItems.slice(10, 14) },
+  { title: "Results & Times", icon: "⏱️", items: faqItems.slice(14) },
+];
+
+const linkMap: Record<string, string> = {
+  "What is Hyrox?": "/racing-guide/what-is-hyrox/",
+  "How long does a Hyrox race take?": "/racing-guide/times/",
+  "Can beginners do Hyrox?": "/training/beginner/",
+  "What do I need to bring on race day?": "/racing-guide/race-day-tips/",
+  "What are the 8 Hyrox stations?": "/racing-guide/stations/",
+  "How heavy are the sleds in Hyrox?": "/racing-guide/stations/",
+  "What's the difference between Open and Pro?": "/racing-guide/categories/",
+  "How long should I train before my first Hyrox?": "/training/beginner/",
+  "What's a typical Hyrox training week look like?": "/training/workouts/",
+  "What supplements help for Hyrox?": "/supplements/",
+  "What's a good Hyrox time for beginners?": "/racing-guide/times/",
+  "What's the average Hyrox finish time?": "/racing-guide/times/",
+};
+---
+
+<BaseLayout
+  title="Hyrox FAQ — Frequently Asked Questions | Hyrox Guide"
+  description="Answers to the most common questions about Hyrox — race format, training, times, equipment, and more."
+  faqItems={faqItems}
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mb-16">
+      <h1 class="text-4xl md:text-6xl font-black mb-6">
+        <span class="text-gradient-accent">Frequently Asked Questions</span>
+      </h1>
+      <p class="text-xl text-text-muted leading-relaxed">
+        Everything you need to know about Hyrox — from "what is it?" to "how do I get faster?"
+      </p>
+    </div>
+
+    <div class="space-y-10 max-w-3xl">
+      {categories.map((category) => (
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">{category.icon}</span>
+            <h2 class="text-lg font-bold text-text-heading">{category.title}</h2>
+          </div>
+          <div class="space-y-2">
+            {category.items.map((item) => (
+              <details class="group bg-bg-card border border-border rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer min-h-[44px] text-sm font-semibold text-text-heading hover:text-accent transition-colors select-none">
+                  <span class="pr-4">{item.question}</span>
+                  <svg class="w-4 h-4 flex-shrink-0 text-text-muted transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-text-muted leading-relaxed border-t border-border/50 pt-4">
+                  <p>{item.answer}</p>
+                  {linkMap[item.question] && (
+                    <a
+                      href={linkMap[item.question]}
+                      class="inline-flex items-center gap-1 mt-3 text-accent text-xs font-semibold hover:underline"
+                    >
+                      Learn more
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="max-w-3xl mt-16 bg-accent/5 border border-accent/10 rounded-2xl p-8 text-center">
+      <h2 class="text-xl font-black text-text-heading mb-2">Still have questions?</h2>
+      <p class="text-text-muted text-sm mb-6">
+        Start with our comprehensive racing guide or jump into a training program.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href="/racing-guide/"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-bg font-bold text-sm rounded-xl hover:bg-accent-dim transition-colors min-h-[44px]"
+        >
+          Racing Guide
+        </a>
+        <a
+          href="/training/"
+          class="inline-flex items-center gap-2 px-6 py-3 border border-border text-text font-bold text-sm rounded-xl hover:border-accent/50 hover:bg-accent/5 transition-colors min-h-[44px]"
+        >
+          Training Programs
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

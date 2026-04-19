@@ -1,0 +1,179 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import AdSlot from "../components/AdSlot.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  breadcrumbs?: { label: string; href?: string }[];
+  showIllustration?: boolean;
+}
+
+const { title, description, breadcrumbs = [], showIllustration = false } = Astro.props;
+
+const schemaBreadcrumbs = breadcrumbs.map((crumb) => ({
+  name: crumb.label,
+  ...(crumb.href ? { url: crumb.href } : {}),
+}));
+
+const sidebarLinks = [
+  { href: "/racing-guide/", icon: "🏁", label: "Racing Guide" },
+  { href: "/training/", icon: "💪", label: "Training Programs" },
+  { href: "/competitions/", icon: "📅", label: "Competitions" },
+  { href: "/gear/", icon: "👟", label: "Gear Reviews" },
+  { href: "/supplements/", icon: "💊", label: "Supplements" },
+  { href: "/blog/", icon: "📰", label: "Blog" },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Guide`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={schemaBreadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    {
+      breadcrumbs.length > 0 && (
+        <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+          <ol class="flex items-center gap-2 flex-wrap">
+            <li>
+              <a
+                href="/"
+                class="text-text-muted hover:text-accent transition-colors no-underline"
+              >
+                Home
+              </a>
+            </li>
+            {breadcrumbs.map((crumb, i) => (
+              <li class="flex items-center gap-2">
+                <span class="text-text-muted/40">/</span>
+                {crumb.href && i < breadcrumbs.length - 1 ? (
+                  <a
+                    href={crumb.href}
+                    class="text-text-muted hover:text-accent transition-colors no-underline"
+                  >
+                    {crumb.label}
+                  </a>
+                ) : (
+                  <span class="text-text">{crumb.label}</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    {/* Mobile guide nav — visible below lg */}
+    <details class="lg:hidden mb-8 bg-bg-card border border-border rounded-xl group">
+      <summary class="flex items-center justify-between px-5 py-3 cursor-pointer min-h-[44px] text-sm font-semibold text-text-heading select-none">
+        <span class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          Explore Guides
+        </span>
+        <svg class="w-4 h-4 text-text-muted transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <div class="px-5 pb-4 pt-1 border-t border-border/50">
+        <ul class="space-y-1">
+          {sidebarLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="flex items-center gap-2 text-sm text-text-muted hover:text-accent transition-colors no-underline py-2 min-h-[44px]"
+              >
+                <span class="text-base">{link.icon}</span> {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
+
+    <div class="lg:grid lg:grid-cols-[1fr_280px] lg:gap-16">
+      <article class="min-w-0">
+        <header class="mb-10 pb-8 border-b border-border relative overflow-hidden">
+          {showIllustration && (
+            <div class="absolute -right-6 -top-6 opacity-[0.06] pointer-events-none hidden md:block">
+              <slot name="illustration" />
+            </div>
+          )}
+          <div class="relative z-10">
+            <h1
+              class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent"
+            >
+              {title}
+            </h1>
+            {
+              description && (
+                <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+                  {description}
+                </p>
+              )
+            }
+          </div>
+        </header>
+
+        <div class="prose prose-lg max-w-none">
+          <slot />
+        </div>
+      </article>
+
+      <aside class="hidden lg:block">
+        <div class="sticky top-24 space-y-6">
+          <div class="bg-bg-card border border-border rounded-2xl p-6">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">
+              Explore
+            </h3>
+            <ul class="space-y-3 text-sm">
+              {sidebarLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="flex items-center gap-2 text-text-muted hover:text-accent transition-colors no-underline"
+                  >
+                    <span class="text-base">{link.icon}</span> {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <AdSlot id="sidebar-top" format="sidebar" />
+
+          <div class="bg-accent/5 border border-accent/10 rounded-2xl p-6">
+            <h3 class="text-sm font-bold text-accent mb-2">
+              Ready to race?
+            </h3>
+            <p class="text-xs text-text-muted mb-4 leading-relaxed">
+              Find upcoming Hyrox events and register before they sell out.
+            </p>
+            <a
+              href="/competitions/"
+              class="inline-flex items-center gap-1 px-5 py-2.5 bg-accent text-bg text-xs font-bold rounded-lg hover:bg-accent-dim transition-colors no-underline min-h-[44px]"
+            >
+              Find a Race
+              <svg
+                class="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
