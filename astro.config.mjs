@@ -3,10 +3,12 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://hyroxvault.com",
   output: "static",
+  adapter: vercel(),
   integrations: [react(), mdx(), sitemap()],
   prefetch: true,
   vite: {
