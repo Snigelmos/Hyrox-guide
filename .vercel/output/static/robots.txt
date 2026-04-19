@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://hyroxvault.com/sitemap-index.xml
