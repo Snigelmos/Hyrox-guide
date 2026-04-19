@@ -1,74 +1,26 @@
 ---
-interface Props {
-  title?: string;
-  subtitle?: string;
-}
-
-const {
-  title = "Your Complete Guide to Hyrox",
-  subtitle = "Everything you need to race, train, and fuel your performance. From your first Hyrox to the podium.",
-} = Astro.props;
 ---
 
-<section class="relative overflow-hidden">
-  <div class="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl"></div>
+<section class="relative overflow-hidden border-b border-border">
+  <!-- Lighter gradient background — sky tint at top, fading to site bg -->
+  <div class="absolute inset-0 bg-gradient-to-b from-sky-500/10 via-bg-card/20 to-bg"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.08),transparent)]"></div>
 
-  <div class="container-main relative z-10 py-24 md:py-36 text-center">
+  <div class="container-main relative z-10 pt-14 pb-10 text-center">
     <div class="max-w-3xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full mb-6">
         <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-        <span class="text-accent text-sm font-medium">The #1 Hyrox Resource Online</span>
+        <span class="text-accent text-sm font-medium">Free Hyrox Tools & Evidence-Based Guides</span>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-6 leading-[1.1]">
-        <span class="text-text-heading">Your Complete</span><br />
-        <span class="text-gradient-accent">Guide to Hyrox</span>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4 leading-[1.1]">
+        <span class="text-text-heading">Predict Your</span><br />
+        <span class="text-gradient-accent">Hyrox Finish Time</span>
       </h1>
 
-      <p class="text-xl md:text-2xl text-text-muted mb-10 max-w-2xl mx-auto">{subtitle}</p>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto">
-        <a
-          href="/racing-guide/what-is-hyrox/"
-          class="inline-flex flex-col items-center justify-center gap-1 px-3 py-3.5 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim hover:-translate-y-0.5 transition-all text-sm min-h-[52px]"
-        >
-          <span class="text-xs font-bold">What is Hyrox?</span>
-        </a>
-        <a
-          href="/training/"
-          class="inline-flex flex-col items-center justify-center gap-1 px-3 py-3.5 border border-border text-text font-bold rounded-xl hover:border-accent/50 hover:bg-accent/5 hover:-translate-y-0.5 transition-all text-sm min-h-[52px]"
-        >
-          <span class="text-xs font-bold">Training Plans</span>
-        </a>
-        <a
-          href="/supplements/"
-          class="inline-flex flex-col items-center justify-center gap-1 px-3 py-3.5 border border-border text-text font-bold rounded-xl hover:border-accent/50 hover:bg-accent/5 hover:-translate-y-0.5 transition-all text-sm min-h-[52px]"
-        >
-          <span class="text-xs font-bold">Supplements</span>
-        </a>
-        <a
-          href="/racing-guide/"
-          class="inline-flex flex-col items-center justify-center gap-1 px-3 py-3.5 border border-border text-text font-bold rounded-xl hover:border-accent/50 hover:bg-accent/5 hover:-translate-y-0.5 transition-all text-sm min-h-[52px]"
-        >
-          <span class="text-xs font-bold">Racing Guide</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-6 mt-20 max-w-xl mx-auto">
-      <div class="text-center">
-        <div class="text-4xl font-black text-accent">8</div>
-        <div class="text-sm text-text-muted mt-1">Stations</div>
-      </div>
-      <div class="text-center">
-        <div class="text-4xl font-black text-accent">8km</div>
-        <div class="text-sm text-text-muted mt-1">Running</div>
-      </div>
-      <div class="text-center">
-        <div class="text-4xl font-black text-accent">1</div>
-        <div class="text-sm text-text-muted mt-1">Epic Race</div>
-      </div>
+      <p class="text-lg md:text-xl text-text-muted max-w-xl mx-auto">
+        Enter your 5K pace and strength numbers — get a full race split breakdown and know exactly where to focus training.
+      </p>
     </div>
   </div>
 </section>

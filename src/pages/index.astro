@@ -1,12 +1,59 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
+import HyroxCalculator from "../components/HyroxCalculator";
+import GeoAffiliateButton from "../components/GeoAffiliateButton";
 import StationCard from "../components/StationCard.astro";
-import AffiliateCard from "../components/AffiliateCard.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import AdSlot from "../components/AdSlot.astro";
-import TrainingIcons from "../components/icons/TrainingIcons.astro";
-import StationIcons from "../components/icons/StationIcons.astro";
+
+const supplementStrip = [
+  { icon: "💪", name: "Creatine", productKey: "creatine-monohydrate", href: "/supplements/creatine/" },
+  { icon: "🥤", name: "Protein", productKey: "protein-powder", href: "/supplements/protein-powder/" },
+  { icon: "⚡", name: "Energy Gels", productKey: "energy-gels", href: "/supplements/energy-gels/" },
+  { icon: "🔥", name: "Pre-Workout", productKey: "pre-workout", href: "/supplements/pre-workout/" },
+  { icon: "💧", name: "Electrolytes", productKey: "electrolytes", href: "/supplements/electrolytes/" },
+  { icon: "🔄", name: "Recovery", productKey: "recovery", href: "/supplements/recovery/" },
+];
+
+const workoutCategories = [
+  {
+    id: "full-simulations",
+    icon: "🏁",
+    label: "Full Simulations",
+    description: "Mini, half, and full Hyrox race simulations. The single most effective training sessions you can do.",
+    count: "3 workouts",
+    color: "border-sky-400/30 hover:border-sky-400/60",
+    badge: "text-sky-400 bg-sky-400/10 border-sky-400/20",
+  },
+  {
+    id: "running",
+    icon: "🏃",
+    label: "Running",
+    description: "Intervals, tempo runs, and race-pace treadmill work. Fix the 8km of running that connects every station.",
+    count: "3 workouts",
+    color: "border-emerald-400/30 hover:border-emerald-400/60",
+    badge: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  },
+  {
+    id: "station-work",
+    icon: "🏋️",
+    label: "Station Work",
+    description: "Targeted sessions for your weak stations — sled, wall balls, burpees, farmers carry, and sandbag lunges.",
+    count: "4 workouts",
+    color: "border-amber-400/30 hover:border-amber-400/60",
+    badge: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  },
+  {
+    id: "strength-power",
+    icon: "💥",
+    label: "Strength & Power",
+    description: "Heavy gym days for station capacity — back squat, deadlift, posterior chain, and SkiErg pulling strength.",
+    count: "3 workouts",
+    color: "border-red-400/30 hover:border-red-400/60",
+    badge: "text-red-400 bg-red-400/10 border-red-400/20",
+  },
+];
 
 const stations = [
   { number: 1, name: "SkiErg", metric: "1,000m", description: "Full-body pull simulation that torches your shoulders and core.", icon: "🎿" },
@@ -18,363 +65,187 @@ const stations = [
   { number: 7, name: "Sandbag Lunges", metric: "100m", description: "Lunges with a sandbag on your shoulder. Legs on fire.", icon: "🎒" },
   { number: 8, name: "Wall Balls", metric: "75–100 reps", description: "The final station. Squat, throw, catch, repeat until done.", icon: "🏐" },
 ];
-
-const featuredProducts = [
-  {
-    name: "Thorne Creatine",
-    description: "NSF Certified for Sport. The gold standard for Hyrox athletes — boosts power on sled pushes, wall balls, and carries.",
-    price: "$32",
-    rating: 4.9,
-    affiliateUrl: "https://www.amazon.com/s?k=Thorne+Creatine+Monohydrate&tag=hyroxvault-20",
-    badge: "Editor's Pick",
-    category: "Creatine",
-  },
-  {
-    name: "Optimum Nutrition Gold Standard Whey",
-    description: "24g protein per scoop, world's best-selling whey. Essential for recovery between heavy training sessions.",
-    price: "$35",
-    rating: 4.8,
-    affiliateUrl: "https://www.amazon.com/s?k=Optimum+Nutrition+Gold+Standard+Whey&tag=hyroxvault-20",
-    badge: "Most Popular",
-    category: "Protein",
-  },
-  {
-    name: "SiS GO Isotonic Gel",
-    description: "No water needed. Fast-absorbing carbs for mid-race energy. Used by elite Hyrox athletes worldwide.",
-    price: "$28/pack",
-    rating: 4.7,
-    affiliateUrl: "https://www.amazon.com/s?k=SiS+GO+Isotonic+Energy+Gel&tag=hyroxvault-20",
-    badge: "Race Day Pick",
-    category: "Energy Gel",
-  },
-  {
-    name: "Transparent Labs Bulk Pre-Workout",
-    description: "200mg caffeine + citrulline + beta-alanine. Proven 2–6% performance boost on race day.",
-    price: "$50",
-    rating: 4.6,
-    affiliateUrl: "https://www.transparentlabs.com/products/preseries-bulk",
-    badge: "Best Pre-Workout",
-    category: "Pre-Workout",
-  },
-];
 ---
 
-<BaseLayout title="Hyrox Guide — Race Format, Training Plans, Gear Reviews & Supplements (2026)">
+<BaseLayout
+  title="Hyrox Calculator, Workouts & Supplement Guide (2026)"
+  description="Free Hyrox calculator, workout library, and evidence-based supplement guide. Predict your finish time, train every station, and pick the supplements that actually work."
+>
+  <!-- HERO — lighter gradient, focused H1 -->
   <Hero />
 
-  {/* === WHAT IS HYROX — brief explainer for new visitors === */}
-  <section class="border-b border-border bg-bg-card/40">
-    <div class="container-main py-10 md:py-12">
-      <div class="max-w-3xl mx-auto text-center">
-        <p class="text-base md:text-lg text-text-muted leading-relaxed mb-6">
-          <strong class="text-text-heading">Hyrox is a global fitness race</strong> — every event follows the exact same format: 8 rounds of 1 km running, each followed by one functional workout station. The stations are always SkiErg, Sled Push, Sled Pull, Burpee Broad Jumps, Rowing, Farmers Carry, Sandbag Lunges, and Wall Balls — in that order, at standardised weights.
-        </p>
-        <p class="text-base md:text-lg text-text-muted leading-relaxed">
-          It's the fastest-growing indoor fitness race in the world with events in 50+ countries. Whether you're a first-timer or chasing a personal best, this guide covers everything you need: how to train, what to eat, how to race, and where to sign up next.
-        </p>
+  <!-- CALCULATOR — immediately below hero, no scroll needed -->
+  <section class="container-main py-10 md:py-14">
+    <HyroxCalculator client:only="react" />
+  </section>
+
+  <!-- SUPPLEMENT GEO STRIP — 6 tiles, geo-aware buy buttons -->
+  <section class="border-y border-border bg-bg-card/40">
+    <div class="container-main py-10">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl md:text-2xl font-black text-text-heading">Fuel Your Race</h2>
+          <p class="text-sm text-text-muted mt-0.5">Evidence-based picks — buy links match your country automatically.</p>
+        </div>
+        <a href="/supplements/" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+          Full guide
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
       </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {supplementStrip.map((s) => (
+          <div class="bg-bg-card border border-border rounded-xl p-4 flex flex-col items-center text-center hover:border-accent/30 transition-all">
+            <a href={s.href} class="flex flex-col items-center mb-3">
+              <span class="text-2xl mb-1.5">{s.icon}</span>
+              <span class="text-xs font-bold text-text-heading">{s.name}</span>
+            </a>
+            <GeoAffiliateButton productKey={s.productKey} variant="card" client:visible />
+          </div>
+        ))}
+      </div>
+      <p class="text-xs text-text-muted/50 mt-4 text-center">
+        Affiliate links — we may earn a commission at no extra cost to you.
+      </p>
     </div>
   </section>
 
-  {/* === SECTION 1: FOUR PILLARS === */}
-  <section class="container-main py-16 md:py-20">
-    <div class="text-center mb-10">
-      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Everything you need, in one place</h2>
-      <p class="text-text-muted">New to Hyrox? Start with "What is Hyrox?". Returning racer? Jump straight to Training or Racing Guide.</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-
-      {/* Pillar 1: What is Hyrox */}
-      <a
-        href="/racing-guide/what-is-hyrox/"
-        class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-      >
-        <div class="absolute -right-6 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-          <StationIcons station="running" size={200} />
-        </div>
-        <div class="relative z-10 flex flex-col flex-1">
-          <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20 self-start">
-            Start Here
-          </span>
-          <h2 class="text-xl font-black text-text-heading mt-4 mb-2 group-hover:text-accent transition-colors">
-            What is Hyrox?
-          </h2>
-          <p class="text-text-muted text-sm leading-relaxed mb-4 flex-1">
-            New to Hyrox? Learn the race format, the 8 stations, categories, and what makes it the fastest-growing fitness race in the world.
-          </p>
-          <div class="flex items-center gap-1 text-sm font-semibold text-accent mt-auto">
-            Read the Intro
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </a>
-
-      {/* Pillar 2: Training Programs */}
-      <a
-        href="/training/"
-        class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-      >
-        <div class="absolute -right-6 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-          <TrainingIcons variant="intermediate" size={200} />
-        </div>
-        <div class="relative z-10 flex flex-col flex-1">
-          <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 self-start">
-            Get Race-Ready
-          </span>
-          <h2 class="text-xl font-black text-text-heading mt-4 mb-2 group-hover:text-accent transition-colors">
-            Training Plans
-          </h2>
-          <p class="text-text-muted text-sm leading-relaxed mb-4 flex-1">
-            Beginner to advanced programs with week-by-week sessions, station drills, and race simulations. Pick your level.
-          </p>
-          <div class="flex items-center gap-1 text-sm font-semibold text-accent mt-auto">
-            Start Training
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </a>
-
-      {/* Pillar 3: Supplements */}
-      <a
-        href="/supplements/"
-        class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-amber-400/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-      >
-        <div class="absolute -right-6 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-          <TrainingIcons variant="supplements" size={200} />
-        </div>
-        <div class="relative z-10 flex flex-col flex-1">
-          <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-amber-400 bg-amber-400/10 border border-amber-400/20 self-start">
-            Fuel Your Race
-          </span>
-          <h2 class="text-xl font-black text-text-heading mt-4 mb-2 group-hover:text-accent transition-colors">
-            Supplements
-          </h2>
-          <p class="text-text-muted text-sm leading-relaxed mb-4 flex-1">
-            What actually moves the needle — creatine, protein, energy gels, pre-workout. Evidence-based picks, honest reviews.
-          </p>
-          <div class="flex items-center gap-1 text-sm font-semibold text-amber-400 mt-auto">
-            See Our Picks
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </a>
-
-      {/* Pillar 4: Racing Guide */}
-      <a
-        href="/racing-guide/"
-        class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-      >
-        <div class="absolute -right-6 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-          <StationIcons station="wall-balls" size={200} />
-        </div>
-        <div class="relative z-10 flex flex-col flex-1">
-          <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-sky-400 bg-sky-400/10 border border-sky-400/20 self-start">
-            Race Day
-          </span>
-          <h2 class="text-xl font-black text-text-heading mt-4 mb-2 group-hover:text-accent transition-colors">
-            Racing Guide
-          </h2>
-          <p class="text-text-muted text-sm leading-relaxed mb-4 flex-1">
-            Pacing strategy, station tips, transitions, and what to do the week before. Everything you need to race well.
-          </p>
-          <div class="flex items-center gap-1 text-sm font-semibold text-accent mt-auto">
-            Prepare to Race
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  {/* === SECTION 2: FEATURED SUPPLEMENTS (AFFILIATE) === */}
-  <section class="container-main pb-16 md:pb-20">
+  <!-- WORKOUT LIBRARY — 4 category cards -->
+  <section class="container-main py-16">
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h2 class="text-2xl md:text-3xl font-black text-text-heading">
-          Top Picks for Hyrox Athletes
-        </h2>
-        <p class="text-text-muted mt-1">
-          Tested supplements that make a real difference on race day.
-        </p>
+        <h2 class="text-3xl md:text-4xl font-black text-text-heading">Hyrox Workouts</h2>
+        <p class="text-text-muted mt-1">4 categories. All levels. Drop in and train.</p>
       </div>
-      <a
-        href="/supplements/"
-        class="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline"
-      >
-        View All Supplements
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <a href="/training/workouts/" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+        All workouts
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </a>
     </div>
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      {featuredProducts.map((product) => (
-        <div class="bg-bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/30 transition-all group flex flex-col">
-          <div class="p-5 flex flex-col flex-1">
-            <div class="flex items-center justify-between mb-3">
-              {product.badge && (
-                <span class="inline-block px-2.5 py-0.5 bg-accent/10 text-accent text-xs font-bold rounded-full uppercase tracking-wider">
-                  {product.badge}
-                </span>
-              )}
-              <span class="text-xs text-text-muted uppercase tracking-wider ml-auto">{product.category}</span>
-            </div>
-            <h3 class="text-base font-bold text-text-heading mb-1.5">{product.name}</h3>
-            <p class="text-text-muted text-xs leading-relaxed mb-4 flex-1">{product.description}</p>
-            {product.rating && (
-              <div class="flex items-center gap-0.5 mb-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    class:list={["w-3.5 h-3.5", i < Math.round(product.rating!) ? "text-accent" : "text-border"]}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-                <span class="text-xs text-text-muted ml-0.5">{product.rating}</span>
-              </div>
-            )}
-            {product.price && <div class="text-accent font-bold text-sm mb-3">{product.price}</div>}
-            <a
-              href={product.affiliateUrl}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              class="inline-flex items-center justify-center gap-1 w-full px-4 py-2.5 bg-accent text-bg text-xs font-bold rounded-lg hover:bg-accent-dim transition-colors min-h-[44px] mt-auto"
-            >
-              View Deal
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
+      {workoutCategories.map((cat) => (
+        <a
+          href={`/training/workouts/#${cat.id}`}
+          class={`group flex flex-col bg-bg-card border ${cat.color} rounded-2xl p-6 transition-all hover:-translate-y-0.5`}
+        >
+          <span class="text-3xl mb-3">{cat.icon}</span>
+          <span class={`self-start mb-3 px-2 py-0.5 text-xs font-bold rounded-full border ${cat.badge}`}>
+            {cat.count}
+          </span>
+          <h3 class="text-lg font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
+            {cat.label}
+          </h3>
+          <p class="text-sm text-text-muted leading-relaxed flex-1">{cat.description}</p>
+          <div class="flex items-center gap-1 text-xs font-semibold text-accent mt-4">
+            See workouts
+            <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
-        </div>
+        </a>
       ))}
     </div>
-
-    <div class="mt-4 text-center md:hidden">
-      <a
-        href="/supplements/"
-        class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline"
-      >
-        View All Supplements
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
+    <div class="sm:hidden mt-6 text-center">
+      <a href="/training/workouts/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+        All workouts →
       </a>
     </div>
-
-    <p class="text-xs text-text-muted/50 mt-4 text-center">
-      Affiliate links — we may earn a commission at no extra cost to you. All picks are independently selected.
-    </p>
   </section>
 
   <AdSlot id="home-top" format="banner" />
 
-  {/* === SECTION 3: THE 8 STATIONS === */}
-  <section class="container-main py-16 md:py-20">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-black text-text-heading mb-4">
-        The 8 Hyrox Stations
-      </h2>
-      <p class="text-text-muted text-lg max-w-2xl mx-auto">
-        Every Hyrox race alternates between 1km runs and these 8 functional workout stations.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stations.map((station) => (
-        <StationCard {...station} />
-      ))}
-    </div>
-
-    <div class="text-center mt-8">
-      <a
-        href="/racing-guide/stations/"
-        class="inline-flex items-center gap-2 text-accent font-semibold hover:underline"
-      >
-        Deep dive into each station
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </div>
-  </section>
-
-  <div class="container-main">
-    <AdSlot id="home-mid" format="in-article" />
-  </div>
-
-  {/* === SECTION 4: TRAINING CTA === */}
-  <section class="container-main py-16 md:py-20">
+  <!-- TRAINING PROGRAMS -->
+  <section class="container-main pb-16">
     <div class="bg-bg-card border border-border rounded-2xl p-8 md:p-12 lg:flex lg:items-center lg:gap-12">
-      <div class="lg:flex-1">
-        <h2 class="text-3xl md:text-4xl font-black text-text-heading mb-4">
-          Ready to Train?
-        </h2>
-        <p class="text-text-muted text-lg mb-6 lg:mb-0">
-          Choose from beginner, intermediate, or advanced programs designed specifically for Hyrox performance.
+      <div class="lg:flex-1 mb-6 lg:mb-0">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Need a full training plan?</h2>
+        <p class="text-text-muted">
+          Structured week-by-week programs from beginner to advanced — built specifically for Hyrox.
         </p>
       </div>
-      <div class="grid grid-cols-3 sm:flex sm:flex-wrap gap-3">
-        <a
-          href="/training/beginner/"
-          class="inline-flex items-center justify-center px-6 py-3 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors text-sm min-h-[44px]"
-        >
+      <div class="flex flex-wrap gap-3">
+        <a href="/training/beginner/" class="inline-flex items-center justify-center px-5 py-2.5 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors text-sm">
           Beginner
         </a>
-        <a
-          href="/training/intermediate/"
-          class="inline-flex items-center justify-center px-6 py-3 border border-accent/30 text-accent font-bold rounded-xl hover:bg-accent/10 transition-colors text-sm min-h-[44px]"
-        >
+        <a href="/training/intermediate/" class="inline-flex items-center justify-center px-5 py-2.5 border border-accent/30 text-accent font-bold rounded-xl hover:bg-accent/10 transition-colors text-sm">
           Intermediate
         </a>
-        <a
-          href="/training/advanced/"
-          class="inline-flex items-center justify-center px-6 py-3 border border-border text-text font-bold rounded-xl hover:border-accent/30 transition-colors text-sm min-h-[44px]"
-        >
+        <a href="/training/advanced/" class="inline-flex items-center justify-center px-5 py-2.5 border border-border text-text font-bold rounded-xl hover:border-accent/30 transition-colors text-sm">
           Advanced
         </a>
       </div>
     </div>
   </section>
 
-  {/* === SECTION 5: SECONDARY NAVIGATION === */}
-  <section class="container-main pb-16 md:pb-20">
+  <!-- WHAT IS HYROX — moved lower, for context after calculator/workouts -->
+  <section class="border-t border-border bg-bg-card/30">
+    <div class="container-main py-12">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-xl font-black text-text-heading mb-4">What is Hyrox?</h2>
+        <p class="text-base text-text-muted leading-relaxed mb-4">
+          <strong class="text-text-heading">Hyrox is a global indoor fitness race</strong> — every event follows the exact same format: 8 rounds of 1 km running, each followed by one functional workout station. The stations are always SkiErg, Sled Push, Sled Pull, Burpee Broad Jumps, Rowing, Farmers Carry, Sandbag Lunges, and Wall Balls — in that order, at standardised weights.
+        </p>
+        <p class="text-base text-text-muted leading-relaxed">
+          It's the fastest-growing indoor fitness race in the world with events in 50+ countries. Whether you're a first-timer or chasing a personal best, this site covers everything you need: how to train, what to eat, how to race, and where to sign up next.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-6">
+          <a href="/racing-guide/what-is-hyrox/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+            Full beginner guide →
+          </a>
+          <a href="/racing-guide/stations/" class="inline-flex items-center gap-1 text-sm font-semibold text-text-muted hover:text-accent transition-colors">
+            The 8 stations →
+          </a>
+          <a href="/competitions/" class="inline-flex items-center gap-1 text-sm font-semibold text-text-muted hover:text-accent transition-colors">
+            Find your next race →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE 8 STATIONS — compact -->
+  <section class="container-main py-16">
+    <h2 class="text-2xl font-black text-text-heading mb-6 text-center">The 8 Stations</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+      {stations.map((station) => (
+        <a
+          href="/racing-guide/stations/"
+          class="group flex flex-col items-center text-center p-3 bg-bg-card border border-border rounded-xl hover:border-accent/30 transition-all"
+        >
+          <span class="text-2xl mb-1.5">{station.icon}</span>
+          <span class="text-xs font-bold text-text-heading group-hover:text-accent transition-colors leading-tight">{station.name}</span>
+          <span class="text-xs text-text-muted mt-0.5">{station.metric}</span>
+        </a>
+      ))}
+    </div>
+    <div class="text-center mt-6">
+      <a href="/racing-guide/stations/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+        Deep dive into each station →
+      </a>
+    </div>
+  </section>
+
+  <!-- SECONDARY NAV -->
+  <section class="container-main pb-16">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <a
-        href="/competitions/"
-        class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
-      >
+      <a href="/competitions/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
         <span class="text-2xl">📅</span>
         <div>
           <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Upcoming Competitions</h3>
           <p class="text-text-muted text-xs">Find your next race & sign up</p>
         </div>
       </a>
-      <a
-        href="/calculator/"
-        class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
-      >
-        <span class="text-2xl">⏱️</span>
+      <a href="/supplements/protocol/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
+        <span class="text-2xl">🗓️</span>
         <div>
-          <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Time Calculator</h3>
-          <p class="text-text-muted text-xs">Predict your finish time</p>
+          <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Race Day Protocol</h3>
+          <p class="text-text-muted text-xs">Exact supplement timing guide</p>
         </div>
       </a>
-      <a
-        href="/faq/"
-        class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
-      >
+      <a href="/faq/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
         <span class="text-2xl">❓</span>
         <div>
           <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">FAQ</h3>

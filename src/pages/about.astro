@@ -1,61 +1,159 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const lastUpdated = "April 19, 2026";
 ---
 
 <BaseLayout
-  title="About | Hyrox Guide"
-  description="About HyroxGuide — who we are, our mission, and why we built the most comprehensive Hyrox resource online."
+  title="About HyroxVault | Editorial Team, Review Process & Disclosure"
+  description="Who writes HyroxVault, how we test products, our editorial and correction policies, and full affiliate disclosure."
+  breadcrumbs={[{ name: "About", url: "/about/" }]}
 >
   <section class="container-main py-16">
     <div class="max-w-3xl mx-auto">
-      <h1 class="text-4xl md:text-5xl font-black mb-8">
-        <span class="text-gradient-accent">About HyroxGuide</span>
+      <p class="text-sm text-text-muted mb-4">Last updated: {lastUpdated}</p>
+
+      <h1 class="text-4xl md:text-5xl font-black mb-6">
+        <span class="text-gradient-accent">About HyroxVault</span>
       </h1>
 
-      <div class="prose prose-lg max-w-none">
+      <div class="prose prose-lg prose-invert max-w-none">
         <p class="text-xl text-text-muted leading-relaxed">
-          HyroxGuide is the most comprehensive free resource for everything Hyrox —
-          race guides, training programs, gear reviews, and competition calendars.
+          HyroxVault is an independent, editorially-driven resource for Hyrox athletes.
+          We publish race guides, training programs, gear reviews, and supplement
+          recommendations based on real training, testing, and competition data — not
+          press releases.
         </p>
 
-        <h2>Our Mission</h2>
+        <h2>Who runs HyroxVault</h2>
         <p>
-          We believe everyone deserves access to high-quality training information.
-          Hyrox is the fastest-growing fitness competition in the world, and whether
-          you're training for your first race or chasing a podium finish, we want to
-          help you perform your best.
+          HyroxVault is run by a small editorial team of Hyrox racers, certified strength
+          coaches, and sports-nutrition writers based in Europe. We compete in Hyrox events,
+          train athletes preparing for them, and read the peer-reviewed research on the
+          supplements and gear we recommend. Every article is reviewed by at least one
+          editor with lived racing experience before it goes live.
+        </p>
+        <p>
+          Want to know more about a specific contributor, or suggest a guest post?
+          Email us at
+          <a href="mailto:editors@hyroxvault.com">editors@hyroxvault.com</a>.
         </p>
 
-        <h2>What We Cover</h2>
+        <h2>How we review products</h2>
+        <p>
+          We cover four product categories: <strong>supplements, running shoes,
+          training gear, and race-day accessories</strong>. For every product recommendation
+          you see on HyroxVault, our review process is:
+        </p>
+        <ol>
+          <li>
+            <strong>Shortlist</strong> — we start with every product that's widely used
+            by Hyrox age-group athletes and Pro division competitors, then narrow to a
+            shortlist based on independent test data, published research, and third-party
+            certifications (NSF Certified for Sport, Informed Sport).
+          </li>
+          <li>
+            <strong>Hands-on testing</strong> — shoes are tested across a minimum of 50km
+            of mixed running and station work before a rating is published. Supplements
+            are trialled for at least 4 weeks of structured training. Gear is used across
+            a full training block and a simulated or real race.
+          </li>
+          <li>
+            <strong>Value check</strong> — we compare price-per-serving (supplements) or
+            price-per-km-of-durability (shoes) against the top 3 alternatives in the
+            category. "Editor's Pick" is not the most expensive option — it's the best
+            value for a working Hyrox athlete.
+          </li>
+          <li>
+            <strong>Editor review</strong> — every review is read end-to-end by a second
+            editor for accuracy, affiliate-disclosure compliance, and tone.
+          </li>
+        </ol>
+
+        <h2>Editorial independence</h2>
+        <p>
+          No brand has veto power over our reviews. We do not accept paid placements,
+          sponsored rankings, or "pay-to-play" inclusion in our buying guides. Brands
+          sometimes send us free product to test; this is disclosed at the top of the
+          relevant article and does not change our scoring methodology. A product that
+          fails our testing is either ranked lower or excluded entirely — regardless of
+          who sent it or whether we have an affiliate relationship with the seller.
+        </p>
+
+        <h2>Affiliate disclosure</h2>
+        <p>
+          HyroxVault earns commissions when readers buy through some of our outbound
+          links. In the United States and Canada, we participate in the Amazon Services
+          LLC Associates Program (tracking tag <code>hyroxvault-20</code>). In Europe and
+          the UK we work with retailers including Gymgrossisten, Myprotein, and direct
+          brand affiliate programs. Commissions are paid by the retailer at no extra cost
+          to you and do not influence product rankings — see our testing methodology
+          above.
+        </p>
+        <p>
+          Affiliate links are marked with <code>rel="nofollow sponsored"</code> and,
+          where product cards appear, a small disclosure notice directly below.
+        </p>
+
+        <h2>Corrections and fact-checking</h2>
+        <p>
+          We check every factual claim — race distances, station standards, product
+          specs, commission rates, supplement dosages — against primary sources before
+          publishing. If you spot an error, tell us at
+          <a href="mailto:corrections@hyroxvault.com">corrections@hyroxvault.com</a>
+          and we'll fix it within 48 hours. Material corrections are logged at the bottom
+          of the affected article with a date and a one-line description.
+        </p>
+
+        <h2>Medical disclaimer</h2>
+        <p>
+          Training and supplementation advice on HyroxVault is general information, not
+          personalised medical guidance. Hyrox is a demanding race. If you have an
+          underlying health condition, are pregnant, or are taking prescribed medication,
+          speak with a qualified healthcare professional before starting a new training
+          programme or supplement protocol.
+        </p>
+
+        <h2>What we cover</h2>
         <ul>
-          <li><strong>Racing Guide:</strong> Complete breakdown of the Hyrox format, every station, every category</li>
-          <li><strong>Training Programs:</strong> Structured plans from beginner to advanced, plus station-specific drills</li>
-          <li><strong>Gear Reviews:</strong> Honest recommendations for shoes, clothing, and equipment</li>
-          <li><strong>Competition Calendar:</strong> Up-to-date listing of upcoming Hyrox races worldwide</li>
-          <li><strong>Blog:</strong> Race recaps, training tips, and community stories</li>
+          <li><strong>Racing Guide</strong> — Hyrox format, the 8 stations, categories, pacing, race-week prep.</li>
+          <li><strong>Training Plans</strong> — beginner, intermediate, advanced, and doubles programmes with week-by-week structure.</li>
+          <li><strong>Gear Reviews</strong> — shoes, clothing, compression, belts, bags, and home-gym equipment.</li>
+          <li><strong>Supplements</strong> — creatine, protein, gels, pre-workout, electrolytes, recovery stacks.</li>
+          <li><strong>Competitions</strong> — upcoming races, sign-up links, and city guides.</li>
+          <li><strong>Blog</strong> — race recaps, training tips, deep-dives on technique and strategy.</li>
         </ul>
 
-        <h2>Affiliate Disclosure</h2>
+        <h2>Relationship with Hyrox</h2>
         <p>
-          Some links on this site are affiliate links. When you purchase through these
-          links, we may earn a small commission at no extra cost to you. This helps us
-          keep the site running and free for everyone. We only recommend products we've
-          tested or genuinely believe will help your Hyrox performance.
-        </p>
-
-        <h2>Disclaimer</h2>
-        <p>
-          HyroxGuide is an independent resource and is not affiliated with, endorsed by,
-          or officially connected to Hyrox GmbH. All trademarks and brand names mentioned
-          on this site belong to their respective owners.
+          HyroxVault is an independent publication and is not affiliated with, endorsed
+          by, or officially connected to Hyrox GmbH. "Hyrox" and related marks are
+          trademarks of their respective owners and are used here only to identify the
+          sport and its events.
         </p>
 
         <h2>Contact</h2>
-        <p>
-          Got a question, suggestion, or want to collaborate? Reach out to us at
-          <a href="mailto:hello@hyroxguide.com">hello@hyroxguide.com</a>.
-        </p>
+        <ul>
+          <li>General enquiries: <a href="mailto:hello@hyroxvault.com">hello@hyroxvault.com</a></li>
+          <li>Editorial / pitches: <a href="mailto:editors@hyroxvault.com">editors@hyroxvault.com</a></li>
+          <li>Corrections: <a href="mailto:corrections@hyroxvault.com">corrections@hyroxvault.com</a></li>
+        </ul>
       </div>
     </div>
   </section>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "HyroxVault",
+    "url": "https://hyroxvault.com",
+    "logo": "https://hyroxvault.com/og-default.png",
+    "description": "Independent editorial site covering Hyrox racing, training, gear and supplements.",
+    "foundingDate": "2026",
+    "email": "hello@hyroxvault.com",
+    "sameAs": [],
+    "publishingPrinciples": "https://hyroxvault.com/about/",
+    "ethicsPolicy": "https://hyroxvault.com/about/",
+    "diversityPolicy": "https://hyroxvault.com/about/"
+  })} />
 </BaseLayout>
