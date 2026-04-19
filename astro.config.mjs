@@ -5,7 +5,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://hyroxguide.com",
+  site: "https://hyroxvault.com",
   integrations: [react(), mdx(), sitemap()],
   prefetch: true,
   vite: {

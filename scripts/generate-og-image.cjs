@@ -17,7 +17,7 @@ const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <rect x="80" y="200" width="64" height="64" rx="12" fill="#38bdf8"/>
   <text x="112" y="245" font-family="Arial,Helvetica,sans-serif" font-size="36" font-weight="900" fill="#09090b" text-anchor="middle">H</text>
   <text x="170" y="248" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="900" fill="#fafafa" letter-spacing="1">HYROX</text>
-  <text x="410" y="248" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="900" fill="#38bdf8" letter-spacing="1">GUIDE</text>
+  <text x="410" y="248" font-family="Arial,Helvetica,sans-serif" font-size="42" font-weight="900" fill="#38bdf8" letter-spacing="1">VAULT</text>
   <text x="80" y="340" font-family="Arial,Helvetica,sans-serif" font-size="52" font-weight="900" fill="#fafafa">Race. Train. Compete.</text>
   <text x="80" y="400" font-family="Arial,Helvetica,sans-serif" font-size="24" fill="#a1a1aa">The complete resource for Hyrox racing, training &amp; gear.</text>
   <line x1="80" y1="440" x2="400" y2="440" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
