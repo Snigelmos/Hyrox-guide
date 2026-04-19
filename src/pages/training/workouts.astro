@@ -3,10 +3,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import TrainingIcons from "../../components/icons/TrainingIcons.astro";
 import GuideCrossSell from "../../components/GuideCrossSell.astro";
 
+const categories = [
+  { id: "full-simulations", label: "Full Simulations", icon: "🏁", color: "text-sky-400 bg-sky-400/10 border-sky-400/20", count: 3 },
+  { id: "running",          label: "Running",          icon: "🏃", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20", count: 3 },
+  { id: "station-work",     label: "Station Work",     icon: "🏋️", color: "text-amber-400 bg-amber-400/10 border-amber-400/20", count: 4 },
+  { id: "strength-power",   label: "Strength & Power", icon: "💥", color: "text-red-400 bg-red-400/10 border-red-400/20", count: 3 },
+];
+
 const workouts = [
+  // ─── FULL SIMULATIONS ────────────────────────────────────────────────────────
   {
     id: "full-send",
-    category: "Full Simulation",
+    category: "full-simulations",
+    categoryLabel: "Full Simulation",
     name: '"The Full Send" — Complete Race Simulation',
     time: "60–75 min",
     level: "Intermediate–Advanced",
@@ -36,12 +45,13 @@ const workouts = [
   },
   {
     id: "front-four",
-    category: "Half Simulation",
+    category: "full-simulations",
+    categoryLabel: "Half Simulation",
     name: '"The Front Four" — First Half Simulation',
     time: "30–40 min",
     level: "All levels",
     equipment: "SkiErg, sled, treadmill",
-    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    tagColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
     description: "Focus on the first four stations where most people go out too fast and blow up. Practise starting conservative — if you sprint the SkiErg, the sled push will destroy you.",
     table: {
       headers: ["Order","Exercise","Target"],
@@ -55,12 +65,13 @@ const workouts = [
   },
   {
     id: "back-four",
-    category: "Half Simulation",
+    category: "full-simulations",
+    categoryLabel: "Half Simulation",
     name: '"The Back Four" — Second Half Simulation',
     time: "30–40 min",
     level: "All levels",
     equipment: "Rower, kettlebells, sandbag, wall ball, treadmill",
-    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    tagColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
     description: "The back half is where races are won or lost. Your grip is gone, legs are heavy, and you still have four brutal stations left. Practise switching the sandbag shoulder every 25 m.",
     table: {
       headers: ["Order","Exercise","Target"],
@@ -72,9 +83,86 @@ const workouts = [
     },
     notes: ["Scale: Reduce runs to 600 m, carry lighter kettlebells, do 50 wall balls, lunge 50 m."],
   },
+
+  // ─── RUNNING ─────────────────────────────────────────────────────────────────
+  {
+    id: "cardio-killer",
+    category: "running",
+    categoryLabel: "Cardio",
+    name: '"The Cardio Killer" — Maximum Heart Rate',
+    time: "30 min",
+    level: "All levels",
+    equipment: "SkiErg, rower, treadmill",
+    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    description: "Pure cardiovascular punishment. This gets your heart rate to race-day levels and keeps it there. Two parts: an EMOM (every minute on the minute) followed by intervals.",
+    warmup: "400 m jog, 10 burpees at easy pace, dynamic stretching",
+    bullets: [
+      "Part 1 — EMOM for 12 minutes (repeat 4 times): Minute 1: 15 cal SkiErg · Minute 2: 15 cal Row · Minute 3: 6 Burpee Broad Jumps",
+      "Part 2 — 4 Intervals: 400 m treadmill at 90% · 250 m Row at max · 60 s rest",
+    ],
+    notes: ["Scale: Reduce EMOM calories to 10, burpees to 4. In intervals, run 200 m and row 150 m."],
+  },
+  {
+    id: "race-pace-intervals",
+    category: "running",
+    categoryLabel: "Running",
+    name: '"Race Pace Intervals" — 8×1 km at Target Pace',
+    time: "45–55 min",
+    level: "Intermediate–Advanced",
+    equipment: "Treadmill or track",
+    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    description: "Hyrox running totals 8 km across 8 separate 1 km efforts with functional work in between. This session trains your body to hit target 1 km pace over and over, even when fatigued. The 90-second rest simulates the time you spend transitioning to a station.",
+    warmup: "10 min easy jog, 4 strides at race pace",
+    table: {
+      headers: ["Rep","Distance","Pace","Rest"],
+      rows: [
+        ["1–3","1 km","5K race pace","90 s"],
+        ["4–6","1 km","5K race pace + 10 s/km","90 s"],
+        ["7–8","1 km","Max sustainable effort","90 s"],
+      ]
+    },
+    pacing: {
+      headers: ["Goal Hyrox Time","Target 1 km Pace"],
+      rows: [
+        ["Under 75 min","4:15–4:30/km"],
+        ["75–90 min","4:45–5:00/km"],
+        ["90–110 min","5:15–5:45/km"],
+        ["First finisher","5:45–6:30/km"],
+      ]
+    },
+    notes: ["Do this once a week at most — it's high intensity.", "Replace intervals 7–8 with easy 1 km if you're a beginner."],
+  },
+  {
+    id: "run-bricks",
+    category: "running",
+    categoryLabel: "Running",
+    name: '"Hyrox Run Bricks" — Run Into Stations',
+    time: "35–45 min",
+    level: "All levels",
+    equipment: "Treadmill, wall ball, rower",
+    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    description: "The specific challenge of Hyrox is going straight from running into a functional station without slowing down. This session trains that transition — your legs are already burning when you hit the station. Repeat 4 rounds with minimal rest.",
+    table: {
+      headers: ["Exercise","Target"],
+      rows: [
+        ["Treadmill Run","1 km at race pace"],
+        ["Wall Balls","25 reps"],
+        ["Treadmill Run","1 km at race pace"],
+        ["Rowing","500 m"],
+        ["Treadmill Run","1 km at race pace"],
+        ["Burpee Broad Jumps","15 reps"],
+        ["Treadmill Run","1 km at race pace"],
+        ["Farmers Carry","100 m"],
+      ]
+    },
+    notes: ["Rest 2–3 minutes between rounds. Do 2 rounds for beginners.", "Focus on the first 30 seconds of each station — don't let the run slow your station start."],
+  },
+
+  // ─── STATION WORK ────────────────────────────────────────────────────────────
   {
     id: "push-grind",
-    category: "Station Focus",
+    category: "station-work",
+    categoryLabel: "Station Focus",
     name: '"Push & Grind" — Legs and Shoulders',
     time: "30 min",
     level: "All levels",
@@ -94,7 +182,8 @@ const workouts = [
   },
   {
     id: "grip-carry",
-    category: "Station Focus",
+    category: "station-work",
+    categoryLabel: "Station Focus",
     name: '"Grip & Carry" — Forearm Endurance',
     time: "30 min",
     level: "All levels",
@@ -114,29 +203,33 @@ const workouts = [
     notes: ["4 rounds, 2 minutes rest between rounds.", "Finisher: 3 sets of towel pull-ups (max reps) or plate pinch holds.", "Scale: Reduce sled to 25 m, carry to 50 m, lunges to 25 m."],
   },
   {
-    id: "cardio-killer",
-    category: "Cardio",
-    name: '"The Cardio Killer" — Maximum Heart Rate',
-    time: "30 min",
+    id: "burpee-basher",
+    category: "station-work",
+    categoryLabel: "Station Focus",
+    name: '"Burpee Basher" — Survive Station 4',
+    time: "25 min",
     level: "All levels",
-    equipment: "SkiErg, rower, treadmill",
-    tagColor: "text-red-400 bg-red-400/10 border-red-400/20",
-    description: "Pure cardiovascular punishment. This gets your heart rate to race-day levels and keeps it there. Two parts: an EMOM (every minute on the minute) followed by intervals.",
-    warmup: "400 m jog, 10 burpees at easy pace, dynamic stretching",
+    equipment: "Floor space, treadmill",
+    tagColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    description: "Burpee Broad Jumps destroy most Hyrox athletes because they go too hard early and can't sustain 80 m. This session builds the pacing discipline and specific endurance to get through all 80 m without stopping.",
+    warmup: "5 min easy jog, 10 inchworms",
     bullets: [
-      "Part 1 — EMOM for 12 minutes (repeat 4 times): Minute 1: 15 cal SkiErg · Minute 2: 15 cal Row · Minute 3: 6 Burpee Broad Jumps",
-      "Part 2 — 4 Intervals: 400 m treadmill at 90% · 250 m Row at max · 60 s rest",
+      "Set 1: 20 Burpee Broad Jumps at easy/conversational pace — learn the rhythm.",
+      "Set 2: 1 km treadmill run (race pace) → immediately into 20 Burpee Broad Jumps.",
+      "Set 3: 1 km treadmill run (race pace) → 30 Burpee Broad Jumps → 1 km cool-down run.",
+      "Finisher: 3 × 10 Burpees (standard, no jump) for upper-body fatigue.",
     ],
-    notes: ["Scale: Reduce EMOM calories to 10, burpees to 4. In intervals, run 200 m and row 150 m."],
+    notes: ["Rest 2 min between sets.", "Aim for constant forward motion — never stop mid-rep. Slow is fine.", "Scale: Do standard burpees with a small hop forward instead of broad jump."],
   },
   {
     id: "lunch-break",
-    category: "Quick Combo",
+    category: "station-work",
+    categoryLabel: "Quick Combo",
     name: '"Lunch Break Hyrox" — 20-Minute Blitz',
     time: "20 min",
     level: "All levels",
     equipment: "SkiErg, rower, wall ball, floor space",
-    tagColor: "text-purple-400 bg-purple-400/10 border-purple-400/20",
+    tagColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
     description: "When you only have 20 minutes but want to feel like you just raced. 4 rounds for time — no warm-up needed beyond the first easy round.",
     table: {
       headers: ["Exercise","Reps / Distance"],
@@ -150,12 +243,87 @@ const workouts = [
     ],
     notes: ["No SkiErg? Substitute 30 cal assault bike. No sled? Heavy dumbbell bear crawls (10 m)."],
   },
+
+  // ─── STRENGTH & POWER ────────────────────────────────────────────────────────
+  {
+    id: "posterior-chain",
+    category: "strength-power",
+    categoryLabel: "Strength",
+    name: '"Posterior Chain Power" — Sled & Pull Strength',
+    time: "45–55 min",
+    level: "All levels",
+    equipment: "Barbell, kettlebells, rower",
+    tagColor: "text-red-400 bg-red-400/10 border-red-400/20",
+    description: "Your sled push, sled pull, and farmers carry all run on posterior chain strength. This heavy gym day builds the deadlift, hip-hinge, and row power that directly transfers to your worst stations. Do this once a week in your base training phase.",
+    warmup: "400 m easy row, 10 KB Romanian deadlifts, 10 glute bridges",
+    table: {
+      headers: ["Exercise","Sets × Reps","Rest"],
+      rows: [
+        ["Deadlift (or trap bar DL)","4 × 4–6 @ 80–85% 1RM","3 min"],
+        ["Romanian Deadlift","3 × 8–10 @ moderate","90 s"],
+        ["Single-leg KB Deadlift","3 × 10 each side","60 s"],
+        ["Seated Cable Row (heavy)","4 × 8","90 s"],
+        ["Farmers Carry","4 × 40 m heavy","90 s"],
+        ["GHD Back Extensions / Good Mornings","3 × 12","60 s"],
+      ]
+    },
+    notes: ["Heavy = 80%+ of your 1 rep max.", "Keep rep quality high — no rounding the lower back on deadlifts.", "Substitute trap bar if you're newer to conventional deadlifts."],
+  },
+  {
+    id: "push-pull-power",
+    category: "strength-power",
+    categoryLabel: "Strength",
+    name: '"Upper Push-Pull" — SkiErg & Wall Ball Strength',
+    time: "45–55 min",
+    level: "All levels",
+    equipment: "Barbell, dumbbells, cable machine, pull-up bar",
+    tagColor: "text-red-400 bg-red-400/10 border-red-400/20",
+    description: "SkiErg is all about lat strength and shoulder endurance. Wall balls need shoulder stability under load. This session builds the vertical pulling and pressing capacity your upper body stations demand.",
+    warmup: "400 m easy row, 10 shoulder circles each direction, band pull-aparts",
+    table: {
+      headers: ["Exercise","Sets × Reps","Rest"],
+      rows: [
+        ["Weighted Pull-ups (or lat pulldown)","4 × 5–6","3 min"],
+        ["Incline DB Press or Bench Press","4 × 6–8","2 min"],
+        ["Single-arm DB Row","3 × 10 each side","60 s"],
+        ["Cable Tricep Pressdown","3 × 12","60 s"],
+        ["Face Pulls (cable)","3 × 15","60 s"],
+        ["Overhead Carry (plate or KB)","3 × 30 m","60 s"],
+      ]
+    },
+    notes: ["Overhead Carry directly mimics the shoulder demand of wall balls.", "Pull-ups are the best single exercise for SkiErg. If you can't do them yet, lat pulldowns are the right sub."],
+  },
+  {
+    id: "squat-lunge-power",
+    category: "strength-power",
+    categoryLabel: "Strength",
+    name: '"Squat & Lunge Power" — Wall Balls & Sandbag Lunges',
+    time: "45–50 min",
+    level: "All levels",
+    equipment: "Barbell, dumbbells, sandbag, wall ball",
+    tagColor: "text-red-400 bg-red-400/10 border-red-400/20",
+    description: "Wall Balls (75–100 reps) and Sandbag Lunges (100 m) are stations 7 and 8 — when your legs have nothing left. Strength-train your quad and glute capacity to still push hard at the end of a race.",
+    warmup: "400 m easy jog, 10 goblet squats, 10 walking lunges, hip flexor stretch",
+    table: {
+      headers: ["Exercise","Sets × Reps","Rest"],
+      rows: [
+        ["Back Squat","4 × 5 @ 80% 1RM","3 min"],
+        ["Bulgarian Split Squat (DB)","3 × 8 each leg","90 s"],
+        ["Walking Lunges (weighted vest or DBs)","3 × 20 steps","90 s"],
+        ["Goblet Squat to Pause (3 s bottom)","3 × 12","60 s"],
+        ["Wall Ball — light (6–8 kg)","3 × 25 reps","90 s"],
+        ["Sandbag Carry + Lunge finisher","2 × 40 m lunge","2 min"],
+      ]
+    },
+    notes: ["The pause goblet squat builds the bottom position strength for wall balls.", "Do sandbag carry + lunge last when you're already fatigued — that's race specificity.", "Scale: Remove load, focus on technique and range of motion."],
+  },
 ];
 ---
 
 <BaseLayout
-  title="Sample Hyrox Workouts — Ready-to-Use Gym Sessions | Hyrox Guide"
-  description="Ready-to-use gym sessions that simulate Hyrox race conditions. Full simulations, station-focused sessions, and quick combos for every schedule."
+  title="Hyrox Workouts — Full Simulations, Running, Station Work & Strength (2026)"
+  description="13 ready-to-use Hyrox workouts across 4 categories: Full Simulations, Running, Station Work, and Strength & Power. All levels, with pacing benchmarks."
+  schemaType="Article"
 >
   <article class="container-main py-16">
 
@@ -177,7 +345,7 @@ const workouts = [
         <div class="flex items-start justify-between gap-6 mb-6">
           <div>
             <h1 class="text-4xl md:text-5xl font-black mb-4 text-text-heading">
-              Sample <span class="text-gradient-accent">Hyrox Workouts</span>
+              Hyrox <span class="text-gradient-accent">Workout Library</span>
             </h1>
           </div>
           <div class="hidden md:block text-accent/20 flex-shrink-0">
@@ -186,145 +354,165 @@ const workouts = [
         </div>
 
         <!-- Intro -->
-        <div class="mb-10 space-y-4 max-w-2xl">
+        <div class="mb-8 space-y-3 max-w-2xl">
           <p class="text-lg text-text-muted leading-relaxed">
-            No multi-week commitment needed. These are standalone sessions you can drop into any training week — from a 20-minute lunch break blast to a full race simulation.
+            13 standalone sessions across 4 categories — from a 20-minute lunch break to a full race simulation. Drop any of these into your training week.
           </p>
           <p class="text-base text-text-muted leading-relaxed">
-            Each workout is designed around the actual Hyrox race structure: running plus functional stations. Use full simulations to gauge your race readiness, station-focused sessions to target your weak spots, and quick combos when you're short on time. Every session includes pacing targets for Competitive, Average, and Beginner athletes — find your level and track progress over time.
+            Use <strong class="text-text">Full Simulations</strong> to gauge race readiness, <strong class="text-text">Running</strong> sessions to fix your 8 km, <strong class="text-text">Station Work</strong> to target your weak spots, and <strong class="text-text">Strength & Power</strong> for the gym days that build your station capacity from the ground up.
           </p>
-          <div class="flex flex-wrap gap-2 pt-2">
-            {[
-              {label:"3 Full/Half Simulations",color:"bg-sky-400/10 text-sky-400 border-sky-400/20"},
-              {label:"3 Station Focus Sessions",color:"bg-amber-400/10 text-amber-400 border-amber-400/20"},
-              {label:"1 Quick 20-min Combo",color:"bg-purple-400/10 text-purple-400 border-purple-400/20"},
-            ].map(({label,color}) => (
-              <span class={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full border ${color}`}>{label}</span>
-            ))}
-          </div>
         </div>
 
-        <!-- Accordions -->
-        {workouts.map(w => (
-          <details class="accordion" id={w.id}>
-            <summary>
-              <div class="flex items-center gap-3 min-w-0">
-                <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
-                  {w.category}
-                </span>
-                <span class="text-sm md:text-base leading-snug">{w.name}</span>
-              </div>
-              <div class="flex items-center gap-4 flex-shrink-0">
-                <span class="hidden md:block text-xs text-text-muted">{w.time}</span>
-                <svg class="accordion-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </summary>
-            <div class="accordion-body">
-              <!-- Meta row -->
-              <div class="flex flex-wrap gap-4 py-4 text-xs text-text-muted border-b border-border mb-5">
-                <span><strong class="text-text">Time:</strong> {w.time}</span>
-                <span><strong class="text-text">Level:</strong> {w.level}</span>
-                <span><strong class="text-text">Equipment:</strong> {w.equipment}</span>
-              </div>
+        <!-- Category filter chips -->
+        <div class="flex flex-wrap gap-2 mb-10" id="filter-chips">
+          <button
+            data-filter="all"
+            class="filter-chip active inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-accent bg-accent/10 text-accent"
+          >
+            All (13)
+          </button>
+          {categories.map((cat) => (
+            <button
+              data-filter={cat.id}
+              class={`filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent`}
+            >
+              {cat.icon} {cat.label} ({cat.count})
+            </button>
+          ))}
+        </div>
 
-              <p class="text-text-muted text-sm leading-relaxed mb-5">{w.description}</p>
-
-              {w.warmup && (
-                <p class="text-sm mb-5"><strong class="text-text">Warm-up (5 min):</strong> <span class="text-text-muted">{w.warmup}</span></p>
-              )}
-
-              {w.bullets && (
-                <ul class="space-y-2 mb-5">
-                  {w.bullets.map(b => (
-                    <li class="flex items-start gap-2 text-sm text-text-muted">
-                      <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {w.table && (
-                <div class="overflow-x-auto mb-5">
-                  <table class="w-full text-sm border-collapse">
-                    <thead>
-                      <tr class="bg-bg-card-hover">
-                        {w.table.headers.map(h => (
-                          <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border/50">
-                      {w.table.rows.map(row => (
-                        <tr class="hover:bg-bg-card/50 transition-colors">
-                          {row.map((cell, ci) => (
-                            <td class:list={["px-4 py-2.5 text-sm", ci === 0 ? "text-text font-medium" : "text-text-muted"]}>{cell}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {w.pacing && (
-                <>
-                  <p class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Pacing guide (Men's Open)</p>
-                  <div class="overflow-x-auto mb-5">
-                    <table class="w-full text-sm border-collapse">
-                      <thead>
-                        <tr class="bg-bg-card-hover">
-                          {w.pacing.headers.map(h => (
-                            <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y divide-border/50">
-                        {w.pacing.rows.map(row => (
-                          <tr class="hover:bg-bg-card/50 transition-colors">
-                            <td class="px-4 py-2.5 text-text font-medium text-sm">{row[0]}</td>
-                            <td class="px-4 py-2.5 font-mono text-xs text-sky-400">{row[1]}</td>
-                            <td class="px-4 py-2.5 font-mono text-xs text-amber-400">{row[2]}</td>
-                            <td class="px-4 py-2.5 font-mono text-xs text-red-400">{row[3]}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-
-              {w.benchmarks && (
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                  {w.benchmarks.map(({label,time,color}) => (
-                    <div class="bg-bg border border-border rounded-xl p-3 text-center">
-                      <div class:list={["text-sm font-bold", color]}>{label}</div>
-                      <div class="text-xs text-text-muted mt-0.5">{time}</div>
+        <!-- Category sections -->
+        {categories.map((cat) => {
+          const catWorkouts = workouts.filter(w => w.category === cat.id);
+          return (
+            <section class="category-section mb-12" id={cat.id} data-category={cat.id}>
+              <h2 class="flex items-center gap-3 text-xl font-black text-text-heading mb-5 pb-3 border-b border-border">
+                <span>{cat.icon}</span>
+                <span>{cat.label}</span>
+                <span class={`text-xs font-bold px-2 py-0.5 rounded-full border ${cat.color}`}>{cat.count} workouts</span>
+              </h2>
+              {catWorkouts.map(w => (
+                <details class="accordion workout-item" id={w.id} data-category={w.category}>
+                  <summary>
+                    <div class="flex items-center gap-3 min-w-0">
+                      <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
+                        {w.categoryLabel}
+                      </span>
+                      <span class="text-sm md:text-base leading-snug">{w.name}</span>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <div class="flex items-center gap-4 flex-shrink-0">
+                      <span class="hidden md:block text-xs text-text-muted">{w.time}</span>
+                      <svg class="accordion-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </summary>
+                  <div class="accordion-body">
+                    <!-- Meta row -->
+                    <div class="flex flex-wrap gap-4 py-4 text-xs text-text-muted border-b border-border mb-5">
+                      <span><strong class="text-text">Time:</strong> {w.time}</span>
+                      <span><strong class="text-text">Level:</strong> {w.level}</span>
+                      <span><strong class="text-text">Equipment:</strong> {w.equipment}</span>
+                    </div>
 
-              {w.notes && w.notes.length > 0 && (
-                <div class="space-y-1.5 pt-2 border-t border-border/50">
-                  {w.notes.map(note => (
-                    <p class="text-xs text-text-muted flex items-start gap-2">
-                      <span class="text-accent flex-shrink-0">•</span>
-                      {note}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </details>
-        ))}
+                    <p class="text-text-muted text-sm leading-relaxed mb-5">{w.description}</p>
+
+                    {w.warmup && (
+                      <p class="text-sm mb-5"><strong class="text-text">Warm-up (5 min):</strong> <span class="text-text-muted">{w.warmup}</span></p>
+                    )}
+
+                    {w.bullets && (
+                      <ul class="space-y-2 mb-5">
+                        {w.bullets.map(b => (
+                          <li class="flex items-start gap-2 text-sm text-text-muted">
+                            <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {w.table && (
+                      <div class="overflow-x-auto mb-5">
+                        <table class="w-full text-sm border-collapse">
+                          <thead>
+                            <tr class="bg-bg-card-hover">
+                              {w.table.headers.map(h => (
+                                <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody class="divide-y divide-border/50">
+                            {w.table.rows.map(row => (
+                              <tr class="hover:bg-bg-card/50 transition-colors">
+                                {row.map((cell, ci) => (
+                                  <td class:list={["px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {w.pacing && (
+                      <div class="mb-5">
+                        <p class="text-xs font-bold text-accent uppercase tracking-wider mb-2">Target Pacing</p>
+                        <div class="overflow-x-auto">
+                          <table class="w-full text-sm border-collapse">
+                            <thead>
+                              <tr class="bg-bg-card-hover">
+                                {w.pacing.headers.map(h => (
+                                  <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border/50">
+                              {w.pacing.rows.map(row => (
+                                <tr class="hover:bg-bg-card/50 transition-colors">
+                                  {row.map((cell, ci) => (
+                                    <td class:list={["px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {w.benchmarks && (
+                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                        {w.benchmarks.map(({label,time,color}) => (
+                          <div class="bg-bg border border-border rounded-xl p-3 text-center">
+                            <div class:list={["text-sm font-bold", color]}>{label}</div>
+                            <div class="text-xs text-text-muted mt-0.5">{time}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {w.notes && w.notes.length > 0 && (
+                      <div class="space-y-1.5 pt-2 border-t border-border/50">
+                        {w.notes.map(note => (
+                          <p class="text-xs text-text-muted flex items-start gap-2">
+                            <span class="text-accent flex-shrink-0">•</span>
+                            {note}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </details>
+              ))}
+            </section>
+          );
+        })}
 
         <!-- Weekly template -->
-        <div class="mt-10 bg-bg-card border border-border rounded-2xl p-6">
+        <div class="mt-4 bg-bg-card border border-border rounded-2xl p-6">
           <h2 class="text-lg font-black text-text-heading mb-2">How to fit these into your week</h2>
-          <p class="text-sm text-text-muted mb-5">Build your week around 3–4 sessions. A balanced template:</p>
+          <p class="text-sm text-text-muted mb-5">Build your week around 4–5 sessions. A balanced template:</p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border-collapse">
               <thead>
@@ -336,13 +524,13 @@ const workouts = [
               </thead>
               <tbody class="divide-y divide-border/50">
                 {[
-                  ["Monday","Station-focused","Push & Grind or Grip & Carry"],
-                  ["Tuesday","Easy run","5–8 km conversational pace"],
-                  ["Wednesday","Rest or mobility",""],
-                  ["Thursday","Cardio session","The Cardio Killer"],
-                  ["Friday","Easy run","5–8 km + 4 strides"],
-                  ["Saturday","Simulation","The Full Send (every 2–3 weeks)"],
-                  ["Sunday","Rest",""],
+                  ["Monday","Strength & Power","Posterior Chain Power or Squat & Lunge Power"],
+                  ["Tuesday","Running","Race Pace Intervals or easy 6–8 km"],
+                  ["Wednesday","Station Work","Push & Grind or Grip & Carry"],
+                  ["Thursday","Rest or mobility","Stretching, foam rolling"],
+                  ["Friday","Strength & Power","Upper Push-Pull"],
+                  ["Saturday","Simulation","The Full Send (every 2–3 weeks) or Lunch Break"],
+                  ["Sunday","Easy run","5–8 km conversational pace"],
                 ].map(([d,s,e]) => (
                   <tr class="hover:bg-bg-card/50 transition-colors">
                     <td class="px-4 py-2.5 text-text font-semibold">{d}</td>
@@ -363,17 +551,23 @@ const workouts = [
 
       <!-- Sidebar -->
       <aside class="hidden lg:block sticky top-8 space-y-4">
-        <div class="bg-bg-card border border-border rounded-2xl p-5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-4">Workouts</h3>
-          <nav class="space-y-1">
-            {workouts.map(w => (
-              <a href={`#${w.id}`} class="flex items-center gap-2 text-sm text-text-muted hover:text-accent transition-colors py-1.5 border-b border-border/30 last:border-0">
-                <span class:list={["w-1.5 h-1.5 rounded-full flex-shrink-0", w.tagColor.split(" ")[0].replace("text","bg")]}></span>
-                <span class="leading-tight text-xs">{w.name.replace(/^"|"$/g,"").split(" — ")[0]}</span>
-              </a>
-            ))}
-          </nav>
-        </div>
+        {categories.map((cat) => {
+          const catWorkouts = workouts.filter(w => w.category === cat.id);
+          return (
+            <div class="bg-bg-card border border-border rounded-2xl p-5">
+              <h3 class="text-xs font-bold uppercase tracking-wider mb-3">
+                <a href={`#${cat.id}`} class={`hover:underline ${cat.color.split(" ")[0]}`}>{cat.icon} {cat.label}</a>
+              </h3>
+              <nav class="space-y-1">
+                {catWorkouts.map(w => (
+                  <a href={`#${w.id}`} class="flex items-center gap-2 text-xs text-text-muted hover:text-accent transition-colors py-1.5 border-b border-border/30 last:border-0 leading-tight">
+                    {w.name.replace(/^"|"$/g,"").split(" — ")[0]}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          );
+        })}
         <div class="bg-bg-card border border-border rounded-2xl p-5 space-y-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">More Training</h3>
           {[
@@ -393,4 +587,33 @@ const workouts = [
 
     </div>
   </article>
+
+  <!-- Filter chip script -->
+  <script>
+    const chips = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
+    const sections = document.querySelectorAll<HTMLElement>('.category-section');
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const filter = chip.dataset.filter!;
+
+        // Update active chip styles
+        chips.forEach(c => {
+          c.classList.remove('active', 'border-accent', 'bg-accent/10', 'text-accent');
+          c.classList.add('border-border', 'text-text-muted');
+        });
+        chip.classList.add('active', 'border-accent', 'bg-accent/10', 'text-accent');
+        chip.classList.remove('border-border', 'text-text-muted');
+
+        // Show/hide sections
+        sections.forEach(section => {
+          if (filter === 'all' || section.dataset.category === filter) {
+            section.style.display = '';
+          } else {
+            section.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
 </BaseLayout>

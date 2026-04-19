@@ -65,6 +65,34 @@ const productSchema = products.length > 0 ? {
   })),
 } : null;
 
+// Quick Answer TL;DR boxes for featured snippet SEO
+const quickAnswers: Record<string, { question: string; answer: string }> = {
+  creatine: {
+    question: "Should you take creatine for Hyrox?",
+    answer: "Yes. Creatine monohydrate (5g/day) is the most evidence-backed supplement for Hyrox. It directly improves power output on sled pushes, wall balls, and burpees, and speeds recovery between stations. No loading phase needed — just take 5g daily.",
+  },
+  protein: {
+    question: "How much protein do you need for Hyrox training?",
+    answer: "Aim for 1.6–2.0g of protein per kg of bodyweight per day. A whey protein shake (20–30g) post-training is the most practical way to hit your target. Prioritise food first, supplement to close the gap.",
+  },
+  gels: {
+    question: "Should you take energy gels during a Hyrox race?",
+    answer: "Yes. Take 1 gel (20–25g carbs) every 25–30 minutes from the start. Isotonic gels (no water needed) are best. Plan 2–3 gels for a race under 90 minutes, 3–4 for longer races.",
+  },
+  "pre-workout": {
+    question: "Is pre-workout worth it for Hyrox?",
+    answer: "Caffeine (3–6 mg/kg) 30–60 min before your race is the most evidence-backed performance booster — 2–6% improvement in endurance. Keep it simple: caffeine + citrulline. Take pre-workout 45–60 min before race start.",
+  },
+  electrolytes: {
+    question: "Do you need electrolytes for Hyrox?",
+    answer: "Yes — especially if you sweat heavily. Sodium is the key electrolyte lost in sweat. Take an electrolyte tablet in your water 30–60 min before racing, and drink to thirst (not beyond) during the event.",
+  },
+  recovery: {
+    question: "What helps recovery after a Hyrox race?",
+    answer: "Prioritise: 20–40g protein within 30 min post-race, tart cherry juice or omega-3s for inflammation, and sleep. Creatine also speeds muscle glycogen replenishment. Most recovery happens in the 24–48h after the race.",
+  },
+};
+
 // Map category to geo affiliate productKey
 const productKey =
   entry.data.category === "protein" ? "protein-powder" :
@@ -81,6 +109,7 @@ const pageTitle = entry.data.title.includes("2026")
 <BaseLayout
   title={`${pageTitle} | Hyrox Guide`}
   description={entry.data.description}
+  schemaType="Article"
   faqItems={faqs.length > 0 ? faqs : undefined}
   dateModified={dateModified}
 >
@@ -138,42 +167,50 @@ const pageTitle = entry.data.title.includes("2026")
           </p>
         </header>
 
+        {/* Quick Answer TL;DR box — helps Google featured snippets */}
+        {quickAnswers[entry.data.category] && (() => {
+          const qa = quickAnswers[entry.data.category];
+          return (
+            <div class="mb-10 bg-accent/5 border-l-4 border-accent rounded-r-xl p-5">
+              <p class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Quick Answer</p>
+              <p class="font-bold text-text-heading mb-1">{qa.question}</p>
+              <p class="text-text-muted text-sm leading-relaxed">{qa.answer}</p>
+            </div>
+          );
+        })()}
+
         {
-          products.length > 0 && (
-            <section class="mb-12">
-              <h2 class="text-2xl font-black text-text-heading mb-2">
-                Our Top Picks
-              </h2>
-              <p class="text-text-muted text-sm mb-6">
-                Tested and recommended. Buy links match your country automatically — no redirects.
-              </p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {products.map((product) => (
-                  <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col hover:border-accent/30 transition-all">
-                    {product.badge && (
-                      <span class="self-start mb-3 px-2.5 py-1 text-xs font-bold rounded-full bg-accent/10 text-accent border border-accent/20">
-                        {product.badge}
-                      </span>
-                    )}
-                    <h3 class="font-bold text-text-heading mb-2">{product.name}</h3>
-                    <p class="text-sm text-text-muted leading-relaxed flex-1 mb-4">{product.description}</p>
-                    <div class="flex items-center gap-3 mb-4">
-                      {product.rating && (
+          products.length > 0 && (() => {
+            const hero = products[0];
+            return (
+              <section class="mb-12">
+                <div class="bg-bg-card border border-accent/20 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 items-start">
+                  <div class="flex-1 min-w-0">
+                    <span class="inline-block mb-3 px-2.5 py-1 text-xs font-bold rounded-full bg-accent/10 text-accent border border-accent/20">
+                      Editor's Pick
+                    </span>
+                    <h2 class="text-xl font-black text-text-heading mb-2">{hero.name}</h2>
+                    <p class="text-sm text-text-muted leading-relaxed mb-4">{hero.description}</p>
+                    <div class="flex items-center gap-3 mb-5">
+                      {hero.rating && (
                         <div class="flex items-center gap-1">
                           <span class="text-amber-400 text-sm">★</span>
-                          <span class="text-sm font-bold text-text-heading">{product.rating}</span>
+                          <span class="text-sm font-bold text-text-heading">{hero.rating}/5</span>
                         </div>
                       )}
-                      {product.price && (
-                        <span class="text-sm text-text-muted">{product.price}</span>
+                      {hero.price && (
+                        <span class="text-sm font-semibold text-accent">{hero.price}</span>
                       )}
                     </div>
                     <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
+                    <p class="text-xs text-text-muted/60 mt-3">
+                      Buy link matched to your country automatically. We may earn a small commission.
+                    </p>
                   </div>
-                ))}
-              </div>
-            </section>
-          )
+                </div>
+              </section>
+            );
+          })()
         }
 
         <AdSlot id={`supplement-${entry.id}-mid`} format="in-article" />
@@ -184,57 +221,9 @@ const pageTitle = entry.data.title.includes("2026")
 
         {
           products.length > 0 && (
-            <section class="mt-12 bg-bg-card border border-accent/20 rounded-2xl p-8">
-              <h2 class="text-xl font-bold text-text-heading mb-4">
-                Quick Comparison
-              </h2>
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="border-b border-border">
-                      <th class="text-left py-3 pr-4 text-accent font-bold">
-                        Product
-                      </th>
-                      <th class="text-left py-3 pr-4 text-accent font-bold">
-                        Price
-                      </th>
-                      <th class="text-left py-3 pr-4 text-accent font-bold">
-                        Rating
-                      </th>
-                      <th class="text-right py-3 text-accent font-bold" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.map((product) => (
-                      <tr class="border-b border-border/50 hover:bg-accent/3 transition-colors">
-                        <td class="py-3 pr-4">
-                          <div class="font-semibold text-text-heading">
-                            {product.name}
-                          </div>
-                          {product.badge && (
-                            <span class="text-xs text-accent">
-                              {product.badge}
-                            </span>
-                          )}
-                        </td>
-                        <td class="py-3 pr-4 text-text-muted">
-                          {product.price ?? "—"}
-                        </td>
-                        <td class="py-3 pr-4">
-                          {product.rating && (
-                            <span class="text-accent font-semibold">
-                              {product.rating}/5
-                            </span>
-                          )}
-                        </td>
-                        <td class="py-3 text-right">
-                          <GeoAffiliateButton productKey={productKey} variant="secondary" client:visible />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <section class="mt-12 p-6 bg-bg-card border border-border rounded-2xl">
+              <p class="text-sm text-text-muted mb-3">Ready to buy? Our top pick for this category — link automatically routed to the best store in your country.</p>
+              <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
             </section>
           )
         }

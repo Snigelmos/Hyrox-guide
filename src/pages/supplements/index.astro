@@ -56,8 +56,8 @@ const raceDayEssentials = supplementGuides
 ---
 
 <BaseLayout
-  title="Best Supplements for Hyrox Athletes | Hyrox Guide"
-  description="The best supplements for Hyrox athletes — creatine, protein, energy gels, pre-workout, electrolytes, and recovery. Evidence-based recommendations with honest reviews."
+  title="Best Hyrox Supplements 2026 — What Actually Works"
+  description="The only supplements worth taking for Hyrox — creatine, protein, energy gels, pre-workout, and electrolytes. Evidence-based, no hype. Buy links matched to your country."
 >
   <!-- Hero -->
   <section class="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/5 to-transparent">
@@ -232,47 +232,6 @@ const raceDayEssentials = supplementGuides
   </section>
 
   <AdSlot id="supplements-mid-1" format="banner" />
-
-  <!-- Race Day Essentials -->
-  <section class="container-main py-16">
-    <div class="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border border-accent/20 rounded-3xl p-8 md:p-12">
-      <div class="flex items-center gap-3 mb-2">
-        <span class="text-3xl">🏁</span>
-        <span class="px-3 py-1 bg-accent/15 text-accent text-xs font-bold rounded-full uppercase tracking-wider">
-          Race Day Must-Haves
-        </span>
-      </div>
-      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
-        Your Hyrox Race Day Kit
-      </h2>
-      <p class="text-text-muted mb-8 max-w-xl">
-        Don't show up without these three. Caffeine for the start, gels for
-        mid-race fuel, electrolytes to keep cramps at bay.
-      </p>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {
-          raceDayEssentials.map((product) => {
-            const productKey =
-              product.category === "protein" ? "protein-powder" :
-              product.category === "gels" ? "energy-gels" :
-              product.category;
-            return (
-              <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col">
-                {product.badge && (
-                  <span class="self-start mb-3 px-2.5 py-1 text-xs font-bold rounded-full bg-accent/10 text-accent border border-accent/20">
-                    {product.badge}
-                  </span>
-                )}
-                <h3 class="font-bold text-text-heading mb-2">{product.name}</h3>
-                <p class="text-sm text-text-muted leading-relaxed flex-1 mb-4">{product.description}</p>
-                <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
-              </div>
-            );
-          })
-        }
-      </div>
-    </div>
-  </section>
 
   <!-- Priority Stack with Geo Buy Buttons -->
   <section class="container-main py-16">
