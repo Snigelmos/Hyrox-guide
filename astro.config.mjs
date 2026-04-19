@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://hyroxvault.com",
+  output: "static",
   integrations: [react(), mdx(), sitemap()],
   prefetch: true,
   vite: {
