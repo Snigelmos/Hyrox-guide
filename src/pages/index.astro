@@ -1,11 +1,87 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
-import HyroxCalculator from "../components/HyroxCalculator";
 import GeoAffiliateButton from "../components/GeoAffiliateButton";
-import StationCard from "../components/StationCard.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import AdSlot from "../components/AdSlot.astro";
+import TrainingIcons from "../components/icons/TrainingIcons.astro";
+import StationIcons from "../components/icons/StationIcons.astro";
+import { getCollection } from "astro:content";
+
+// Latest blog posts
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+const latestPosts = allPosts.slice(0, 3);
+
+const modules = [
+  {
+    href: "/racing-guide/what-is-hyrox/",
+    icon: "🏁",
+    badge: "Start Here",
+    badgeColor: "text-accent bg-accent/10 border-accent/20",
+    title: "What is Hyrox?",
+    description: "New to Hyrox? Learn the race format, the 8 stations, categories, and what makes it the fastest-growing fitness race in the world.",
+    cta: "Read the Intro",
+    hoverBorder: "hover:border-accent/30",
+    svgBg: null,
+  },
+  {
+    href: "/training/",
+    icon: "💪",
+    badge: "Get Race-Ready",
+    badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    title: "Training Plans",
+    description: "Beginner to advanced programs with week-by-week sessions, station drills, and race simulations. Pick your level.",
+    cta: "Start Training",
+    hoverBorder: "hover:border-accent/30",
+    svgBg: null,
+  },
+  {
+    href: "/training/workouts/",
+    icon: "🏋️",
+    badge: "13 Workouts",
+    badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
+    title: "Workout Library",
+    description: "Full simulations, running sessions, station-specific work, and strength days. Drop any session into your training week.",
+    cta: "Browse Workouts",
+    hoverBorder: "hover:border-accent/30",
+    svgBg: null,
+  },
+  {
+    href: "/supplements/",
+    icon: "⚡",
+    badge: "Fuel Your Race",
+    badgeColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    title: "Supplements",
+    description: "What actually moves the needle — creatine, protein, energy gels, pre-workout. Evidence-based picks, honest reviews.",
+    cta: "See Our Picks",
+    hoverBorder: "hover:border-amber-400/30",
+    svgBg: null,
+  },
+  {
+    href: "/calculator/",
+    icon: "⏱️",
+    badge: "Free Tool",
+    badgeColor: "text-accent bg-accent/10 border-accent/20",
+    title: "Race Calculator",
+    description: "Enter your 5K pace and strength numbers. Get a full race split breakdown — instantly. Know your target time before race day.",
+    cta: "Calculate My Time",
+    hoverBorder: "hover:border-accent/30",
+    svgBg: null,
+  },
+  {
+    href: "/racing-guide/",
+    icon: "📋",
+    badge: "Race Day",
+    badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
+    title: "Racing Guide",
+    description: "Pacing strategy, station tips, transitions, and what to do the week before. Everything you need to race well.",
+    cta: "Prepare to Race",
+    hoverBorder: "hover:border-accent/30",
+    svgBg: null,
+  },
+];
 
 const supplementStrip = [
   { icon: "💪", name: "Creatine", productKey: "creatine-monohydrate", href: "/supplements/creatine/" },
@@ -15,77 +91,113 @@ const supplementStrip = [
   { icon: "💧", name: "Electrolytes", productKey: "electrolytes", href: "/supplements/electrolytes/" },
   { icon: "🔄", name: "Recovery", productKey: "recovery", href: "/supplements/recovery/" },
 ];
-
-const workoutCategories = [
-  {
-    id: "full-simulations",
-    icon: "🏁",
-    label: "Full Simulations",
-    description: "Mini, half, and full Hyrox race simulations. The single most effective training sessions you can do.",
-    count: "3 workouts",
-    color: "border-sky-400/30 hover:border-sky-400/60",
-    badge: "text-sky-400 bg-sky-400/10 border-sky-400/20",
-  },
-  {
-    id: "running",
-    icon: "🏃",
-    label: "Running",
-    description: "Intervals, tempo runs, and race-pace treadmill work. Fix the 8km of running that connects every station.",
-    count: "3 workouts",
-    color: "border-emerald-400/30 hover:border-emerald-400/60",
-    badge: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-  },
-  {
-    id: "station-work",
-    icon: "🏋️",
-    label: "Station Work",
-    description: "Targeted sessions for your weak stations — sled, wall balls, burpees, farmers carry, and sandbag lunges.",
-    count: "4 workouts",
-    color: "border-amber-400/30 hover:border-amber-400/60",
-    badge: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-  },
-  {
-    id: "strength-power",
-    icon: "💥",
-    label: "Strength & Power",
-    description: "Heavy gym days for station capacity — back squat, deadlift, posterior chain, and SkiErg pulling strength.",
-    count: "3 workouts",
-    color: "border-red-400/30 hover:border-red-400/60",
-    badge: "text-red-400 bg-red-400/10 border-red-400/20",
-  },
-];
-
-const stations = [
-  { number: 1, name: "SkiErg", metric: "1,000m", description: "Full-body pull simulation that torches your shoulders and core.", icon: "🎿" },
-  { number: 2, name: "Sled Push", metric: "50m", description: "Raw leg power. Push a weighted sled across the floor.", icon: "🛷" },
-  { number: 3, name: "Sled Pull", metric: "50m", description: "Rope pull a heavy sled toward you, hand over hand.", icon: "🪢" },
-  { number: 4, name: "Burpee Broad Jumps", metric: "80m", description: "The most dreaded station. Burpee, jump forward, repeat.", icon: "🤸" },
-  { number: 5, name: "Rowing", metric: "1,000m", description: "A full-body grind that tests your aerobic engine.", icon: "🚣" },
-  { number: 6, name: "Farmers Carry", metric: "200m", description: "Grip strength and mental grit. Carry heavy kettlebells.", icon: "🏋️" },
-  { number: 7, name: "Sandbag Lunges", metric: "100m", description: "Lunges with a sandbag on your shoulder. Legs on fire.", icon: "🎒" },
-  { number: 8, name: "Wall Balls", metric: "75–100 reps", description: "The final station. Squat, throw, catch, repeat until done.", icon: "🏐" },
-];
 ---
 
 <BaseLayout
-  title="Hyrox Calculator, Workouts & Supplement Guide (2026)"
-  description="Free Hyrox calculator, workout library, and evidence-based supplement guide. Predict your finish time, train every station, and pick the supplements that actually work."
+  title="Hyrox Vault — Race Guide, Training Plans, Calculator & Supplements (2026)"
+  description="The complete Hyrox resource: race format guide, training programs, finish time calculator, supplement picks, and workout library. All evidence-based, all in one vault."
 >
-  <!-- HERO — lighter gradient, focused H1 -->
+  <!-- HERO — Vault branding, 6 module quick-links, stats -->
   <Hero />
 
-  <!-- CALCULATOR — immediately below hero, no scroll needed -->
-  <section class="container-main py-10 md:py-14">
-    <HyroxCalculator client:only="react" />
+  <!-- WHAT IS HYROX — brief explainer -->
+  <section class="border-b border-border bg-bg-card/30">
+    <div class="container-main py-10">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-base md:text-lg text-text-muted leading-relaxed mb-4">
+          <strong class="text-text-heading">Hyrox is a global indoor fitness race</strong> — 8 rounds of 1 km running, each followed by one functional workout station. Always the same format, always the same 8 stations, everywhere in the world.
+        </p>
+        <p class="text-base md:text-lg text-text-muted leading-relaxed">
+          The Hyrox Vault covers everything: how to train, what to eat, how to pace, and what gear actually matters.
+        </p>
+      </div>
+    </div>
   </section>
 
-  <!-- SUPPLEMENT GEO STRIP — 6 tiles, geo-aware buy buttons -->
+  <!-- THE VAULT — 6 module cards -->
+  <section class="container-main py-16 md:py-20">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Inside the Vault</h2>
+      <p class="text-text-muted">Six modules. Everything you need to race your best Hyrox.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      {modules.map((mod) => (
+        <a
+          href={mod.href}
+          class={`group relative flex flex-col bg-bg-card border border-border ${mod.hoverBorder} rounded-2xl p-7 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-0.5`}
+        >
+          <div class="flex items-start justify-between mb-4">
+            <span class="text-3xl">{mod.icon}</span>
+            <span class={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${mod.badgeColor}`}>
+              {mod.badge}
+            </span>
+          </div>
+          <h2 class="text-xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
+            {mod.title}
+          </h2>
+          <p class="text-text-muted text-sm leading-relaxed mb-5 flex-1">
+            {mod.description}
+          </p>
+          <div class="flex items-center gap-1 text-sm font-semibold text-accent mt-auto">
+            {mod.cta}
+            <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <AdSlot id="home-top" format="banner" />
+
+  <!-- BLOG — Latest Insights -->
+  <section class="container-main pb-16 md:pb-20">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading">Latest Insights</h2>
+        <p class="text-text-muted mt-1">Race strategy, training tips, and evidence-based guides.</p>
+      </div>
+      <a href="/blog/" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+        All articles
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      {latestPosts.map((post) => (
+        <a
+          href={`/blog/${post.id}/`}
+          class="group flex flex-col bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/30 hover:-translate-y-0.5 transition-all duration-200"
+        >
+          <p class="text-xs text-text-muted mb-3">
+            {new Date(post.data.pubDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </p>
+          <h3 class="font-black text-text-heading mb-2 leading-snug group-hover:text-accent transition-colors">
+            {post.data.title}
+          </h3>
+          <p class="text-sm text-text-muted leading-relaxed flex-1 mb-4">
+            {post.data.description}
+          </p>
+          <span class="text-xs font-semibold text-accent">Read more →</span>
+        </a>
+      ))}
+    </div>
+    <div class="sm:hidden mt-6 text-center">
+      <a href="/blog/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
+        All articles →
+      </a>
+    </div>
+  </section>
+
+  <!-- SUPPLEMENT GEO STRIP -->
   <section class="border-y border-border bg-bg-card/40">
     <div class="container-main py-10">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="text-xl md:text-2xl font-black text-text-heading">Fuel Your Race</h2>
-          <p class="text-sm text-text-muted mt-0.5">Evidence-based picks — buy links match your country automatically.</p>
+          <h2 class="text-lg md:text-xl font-black text-text-heading">Fuel Your Race</h2>
+          <p class="text-xs text-text-muted mt-0.5">Buy links matched to your country automatically.</p>
         </div>
         <a href="/supplements/" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
           Full guide
@@ -94,142 +206,25 @@ const stations = [
           </svg>
         </a>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
         {supplementStrip.map((s) => (
-          <div class="bg-bg-card border border-border rounded-xl p-4 flex flex-col items-center text-center hover:border-accent/30 transition-all">
-            <a href={s.href} class="flex flex-col items-center mb-3">
-              <span class="text-2xl mb-1.5">{s.icon}</span>
-              <span class="text-xs font-bold text-text-heading">{s.name}</span>
+          <div class="bg-bg-card border border-border rounded-xl p-3 flex flex-col items-center text-center hover:border-accent/30 transition-all">
+            <a href={s.href} class="flex flex-col items-center mb-2.5">
+              <span class="text-xl mb-1">{s.icon}</span>
+              <span class="text-xs font-bold text-text-heading leading-tight">{s.name}</span>
             </a>
             <GeoAffiliateButton productKey={s.productKey} variant="card" client:visible />
           </div>
         ))}
       </div>
-      <p class="text-xs text-text-muted/50 mt-4 text-center">
+      <p class="text-xs text-text-muted/50 mt-3 text-center">
         Affiliate links — we may earn a commission at no extra cost to you.
       </p>
     </div>
   </section>
 
-  <!-- WORKOUT LIBRARY — 4 category cards -->
-  <section class="container-main py-16">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <h2 class="text-3xl md:text-4xl font-black text-text-heading">Hyrox Workouts</h2>
-        <p class="text-text-muted mt-1">4 categories. All levels. Drop in and train.</p>
-      </div>
-      <a href="/training/workouts/" class="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
-        All workouts
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      {workoutCategories.map((cat) => (
-        <a
-          href={`/training/workouts/#${cat.id}`}
-          class={`group flex flex-col bg-bg-card border ${cat.color} rounded-2xl p-6 transition-all hover:-translate-y-0.5`}
-        >
-          <span class="text-3xl mb-3">{cat.icon}</span>
-          <span class={`self-start mb-3 px-2 py-0.5 text-xs font-bold rounded-full border ${cat.badge}`}>
-            {cat.count}
-          </span>
-          <h3 class="text-lg font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
-            {cat.label}
-          </h3>
-          <p class="text-sm text-text-muted leading-relaxed flex-1">{cat.description}</p>
-          <div class="flex items-center gap-1 text-xs font-semibold text-accent mt-4">
-            See workouts
-            <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </a>
-      ))}
-    </div>
-    <div class="sm:hidden mt-6 text-center">
-      <a href="/training/workouts/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
-        All workouts →
-      </a>
-    </div>
-  </section>
-
-  <AdSlot id="home-top" format="banner" />
-
-  <!-- TRAINING PROGRAMS -->
-  <section class="container-main pb-16">
-    <div class="bg-bg-card border border-border rounded-2xl p-8 md:p-12 lg:flex lg:items-center lg:gap-12">
-      <div class="lg:flex-1 mb-6 lg:mb-0">
-        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Need a full training plan?</h2>
-        <p class="text-text-muted">
-          Structured week-by-week programs from beginner to advanced — built specifically for Hyrox.
-        </p>
-      </div>
-      <div class="flex flex-wrap gap-3">
-        <a href="/training/beginner/" class="inline-flex items-center justify-center px-5 py-2.5 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors text-sm">
-          Beginner
-        </a>
-        <a href="/training/intermediate/" class="inline-flex items-center justify-center px-5 py-2.5 border border-accent/30 text-accent font-bold rounded-xl hover:bg-accent/10 transition-colors text-sm">
-          Intermediate
-        </a>
-        <a href="/training/advanced/" class="inline-flex items-center justify-center px-5 py-2.5 border border-border text-text font-bold rounded-xl hover:border-accent/30 transition-colors text-sm">
-          Advanced
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHAT IS HYROX — moved lower, for context after calculator/workouts -->
-  <section class="border-t border-border bg-bg-card/30">
-    <div class="container-main py-12">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-xl font-black text-text-heading mb-4">What is Hyrox?</h2>
-        <p class="text-base text-text-muted leading-relaxed mb-4">
-          <strong class="text-text-heading">Hyrox is a global indoor fitness race</strong> — every event follows the exact same format: 8 rounds of 1 km running, each followed by one functional workout station. The stations are always SkiErg, Sled Push, Sled Pull, Burpee Broad Jumps, Rowing, Farmers Carry, Sandbag Lunges, and Wall Balls — in that order, at standardised weights.
-        </p>
-        <p class="text-base text-text-muted leading-relaxed">
-          It's the fastest-growing indoor fitness race in the world with events in 50+ countries. Whether you're a first-timer or chasing a personal best, this site covers everything you need: how to train, what to eat, how to race, and where to sign up next.
-        </p>
-        <div class="flex flex-wrap gap-3 mt-6">
-          <a href="/racing-guide/what-is-hyrox/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
-            Full beginner guide →
-          </a>
-          <a href="/racing-guide/stations/" class="inline-flex items-center gap-1 text-sm font-semibold text-text-muted hover:text-accent transition-colors">
-            The 8 stations →
-          </a>
-          <a href="/competitions/" class="inline-flex items-center gap-1 text-sm font-semibold text-text-muted hover:text-accent transition-colors">
-            Find your next race →
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE 8 STATIONS — compact -->
-  <section class="container-main py-16">
-    <h2 class="text-2xl font-black text-text-heading mb-6 text-center">The 8 Stations</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-      {stations.map((station) => (
-        <a
-          href="/racing-guide/stations/"
-          class="group flex flex-col items-center text-center p-3 bg-bg-card border border-border rounded-xl hover:border-accent/30 transition-all"
-        >
-          <span class="text-2xl mb-1.5">{station.icon}</span>
-          <span class="text-xs font-bold text-text-heading group-hover:text-accent transition-colors leading-tight">{station.name}</span>
-          <span class="text-xs text-text-muted mt-0.5">{station.metric}</span>
-        </a>
-      ))}
-    </div>
-    <div class="text-center mt-6">
-      <a href="/racing-guide/stations/" class="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
-        Deep dive into each station →
-      </a>
-    </div>
-  </section>
-
   <!-- SECONDARY NAV -->
-  <section class="container-main pb-16">
+  <section class="container-main py-12">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <a href="/competitions/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
         <span class="text-2xl">📅</span>
@@ -255,7 +250,7 @@ const stations = [
     </div>
   </section>
 
-  <div class="container-main py-12">
+  <div class="container-main pb-16">
     <NewsletterForm />
   </div>
 </BaseLayout>
