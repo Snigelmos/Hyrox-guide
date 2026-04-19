@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export type GeoRegion = "SE" | "NO" | "DK" | "FI" | "DE" | "AT" | "CH" | "GB" | "US" | "AU" | "default";
 
-const CACHE_KEY = "hyrox_user_region";
+const CACHE_KEY = "hyrox_user_region_v2";
 
 function mapCountryToRegion(countryCode: string): GeoRegion {
   const map: Record<string, GeoRegion> = {
