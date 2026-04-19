@@ -62,6 +62,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <title>{title}</title>
     <JsonLd title={title} description={description} type={schemaType} datePublished={datePublished} dateModified={dateModified} author={author} />
+    <slot name="head" />
 
     {breadcrumbs && breadcrumbs.length > 0 && (
       <script type="application/ld+json" set:html={JSON.stringify({

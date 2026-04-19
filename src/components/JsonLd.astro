@@ -1,4 +1,9 @@
 ---
+interface FAQ {
+  question: string;
+  answer: string;
+}
+
 interface Props {
   type?: "WebSite" | "Article" | "FAQPage";
   title?: string;
@@ -7,6 +12,7 @@ interface Props {
   datePublished?: string;
   dateModified?: string;
   author?: string;
+  faqs?: FAQ[];
 }
 
 const {
@@ -17,6 +23,7 @@ const {
   datePublished,
   dateModified,
   author = "HyroxGuide Team",
+  faqs,
 } = Astro.props;
 
 const canonicalUrl = url ?? new URL(Astro.url.pathname, Astro.site).toString();
@@ -49,6 +56,19 @@ if (type === "WebSite") {
     },
     ...(datePublished && { datePublished }),
     ...(dateModified && { dateModified }),
+  };
+} else if (type === "FAQPage" && faqs && faqs.length > 0) {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 } else {
   schema = {

@@ -41,6 +41,7 @@ const supplements = defineCollection({
     category: z.string(),
     order: z.number().optional(),
     icon: z.string().optional(),
+    dateModified: z.string().optional(),
     products: z
       .array(
         z.object({
@@ -51,6 +52,14 @@ const supplements = defineCollection({
           affiliateUrl: z.string(),
           badge: z.string().optional(),
           image: z.string().optional(),
+        })
+      )
+      .optional(),
+    faqs: z
+      .array(
+        z.object({
+          question: z.string(),
+          answer: z.string(),
         })
       )
       .optional(),

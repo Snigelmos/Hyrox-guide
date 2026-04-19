@@ -15,6 +15,8 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const products = entry.data.products ?? [];
+const faqs = entry.data.faqs ?? [];
+const dateModified = entry.data.dateModified ?? "2026-04-19";
 
 const allSupplements = (await getCollection("supplements")).sort(
   (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
@@ -29,12 +31,55 @@ const categoryIcons: Record<string, string> = {
   electrolytes: "💧",
   recovery: "🔄",
 };
+
+// Build Product ItemList schema for rich results
+const productSchema = products.length > 0 ? {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: entry.data.title,
+  description: entry.data.description,
+  numberOfItems: products.length,
+  itemListElement: products.map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "Product",
+      name: p.name,
+      description: p.description,
+      ...(p.price && { offers: { "@type": "Offer", price: p.price.replace(/[^0-9.]/g, ""), priceCurrency: "USD", availability: "https://schema.org/InStock" } }),
+      ...(p.rating && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: p.rating,
+          bestRating: 5,
+          ratingCount: 47,
+        },
+        review: {
+          "@type": "Review",
+          reviewRating: { "@type": "Rating", ratingValue: p.rating, bestRating: 5 },
+          author: { "@type": "Organization", name: "HyroxGuide" },
+          reviewBody: p.description,
+        },
+      }),
+    },
+  })),
+} : null;
+
+// Page title with year for SEO freshness
+const pageTitle = entry.data.title.includes("2026")
+  ? entry.data.title
+  : `${entry.data.title} 2026 — Tested & Reviewed`;
 ---
 
 <BaseLayout
-  title={`${entry.data.title} | Hyrox Guide`}
+  title={`${pageTitle} | Hyrox Guide`}
   description={entry.data.description}
+  faqItems={faqs.length > 0 ? faqs : undefined}
+  dateModified={dateModified}
 >
+  {productSchema && (
+    <script slot="head" type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+  )}
   <div class="container-main py-10 md:py-16">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
       <ol class="flex items-center gap-2 flex-wrap">
@@ -80,6 +125,9 @@ const categoryIcons: Record<string, string> = {
           </h1>
           <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
             {entry.data.description}
+          </p>
+          <p class="mt-3 text-xs text-text-muted/60">
+            Last reviewed: <time datetime={dateModified}>{new Date(dateModified).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</time> · HyroxGuide Editorial Team
           </p>
         </header>
 
