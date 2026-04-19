@@ -5,32 +5,42 @@ import HyroxCalculator from "../components/HyroxCalculator";
 
 <BaseLayout
   title="Hyrox Time Calculator — Predict Your Finish Time | Hyrox Guide"
-  description="Estimate your Hyrox finish time based on your running pace, gym strength, and equipment experience. Get a station-by-station breakdown and see where you can improve."
+  description="Estimate your Hyrox finish time based on your 5km pace, bench press and deadlift. Get a station-by-station breakdown in seconds."
 >
-  <section class="container-main py-16">
-    <div class="max-w-3xl mb-12">
-      <h1 class="text-4xl md:text-6xl font-black mb-6">
-        <span class="text-gradient-accent">Time Calculator</span>
+  <section class="container-main py-12">
+
+    <!-- Compact header -->
+    <div class="mb-8">
+      <nav class="mb-4 text-sm" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 flex-wrap">
+          <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Calculator</span></li>
+        </ol>
+      </nav>
+      <h1 class="text-3xl md:text-5xl font-black">
+        <span class="text-gradient-accent">Race Time Calculator</span>
       </h1>
-      <p class="text-xl text-text-muted leading-relaxed">
-        Enter your fitness profile and get a predicted Hyrox finish time with a full station-by-station breakdown.
+      <p class="text-base text-text-muted mt-2 max-w-xl">
+        Enter your 5 km time, max bench press, and max deadlift — get your predicted Hyrox finish time with a full station breakdown.
       </p>
     </div>
 
-    <HyroxCalculator client:load />
+    <!-- Calculator first, immediately visible -->
+    <HyroxCalculator client:only="react" />
 
-    <div class="max-w-3xl mt-16 space-y-8">
-      <div class="bg-bg-card border border-border rounded-2xl p-8">
-        <h2 class="text-xl font-black text-text-heading mb-4">How accurate is this?</h2>
-        <p class="text-text-muted text-sm leading-relaxed mb-4">
-          This calculator uses your 5km running time as a baseline and adjusts for fatigue across 8 segments. Station times are estimated based on typical performance at your strength level and equipment experience. The predictions align with real-world Hyrox race data from thousands of finishers.
+    <!-- Accuracy note below -->
+    <div class="max-w-3xl mt-12 space-y-6">
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <h2 class="text-base font-black text-text-heading mb-3">How accurate is this?</h2>
+        <p class="text-text-muted text-sm leading-relaxed mb-3">
+          The calculator uses your 5 km pace as the running baseline, then adjusts station times based on your strength profile. Bench press drives upper-body stations (SkiErg, carries, wall balls); deadlift drives lower-body stations (sled, lunges, burpees).
         </p>
         <p class="text-text-muted text-sm leading-relaxed">
-          <strong class="text-text-heading">Accuracy range:</strong> Most users find their actual race time within 5-15 minutes of the prediction. The biggest variable is pacing strategy — going too hard early can add 10+ minutes to your total. Race-day adrenaline typically makes running splits slightly faster but station times slightly slower than training.
+          <strong class="text-text-heading">Accuracy range:</strong> Most athletes land within 5–15 minutes of their actual finish time. The biggest variable is race-day pacing — going out too hard in the first two stations can add 10+ minutes to your total.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <a
           href="/racing-guide/times/"
           class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
@@ -38,7 +48,7 @@ import HyroxCalculator from "../components/HyroxCalculator";
           <span class="text-2xl">⏱️</span>
           <div>
             <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Full Time Benchmarks</h3>
-            <p class="text-text-muted text-xs">See detailed benchmark tables for every level</p>
+            <p class="text-text-muted text-xs">Detailed benchmark tables for every level</p>
           </div>
         </a>
         <a
@@ -53,5 +63,6 @@ import HyroxCalculator from "../components/HyroxCalculator";
         </a>
       </div>
     </div>
+
   </section>
 </BaseLayout>

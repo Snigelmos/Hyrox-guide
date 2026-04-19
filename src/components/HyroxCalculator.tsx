@@ -1,8 +1,6 @@
 import { useState } from "react";
 
 type Gender = "men" | "women";
-type Experience = "none" | "some" | "regular";
-type Strength = "beginner" | "intermediate" | "advanced";
 
 interface StationResult {
   name: string;
@@ -27,13 +25,13 @@ function getLevel(totalSeconds: number, gender: Gender): { label: string; color:
   const mins = totalSeconds / 60;
   if (gender === "men") {
     if (mins < 65) return { label: "Elite", color: "#10b981" };
-    if (mins < 78) return { label: "Competitive", color: "#38bdf8" };
-    if (mins < 95) return { label: "Average", color: "#f59e0b" };
+    if (mins < 85) return { label: "Competitive", color: "#38bdf8" };
+    if (mins < 100) return { label: "Average", color: "#f59e0b" };
     return { label: "Beginner", color: "#f87171" };
   }
   if (mins < 75) return { label: "Elite", color: "#10b981" };
-  if (mins < 88) return { label: "Competitive", color: "#38bdf8" };
-  if (mins < 106) return { label: "Average", color: "#f59e0b" };
+  if (mins < 95) return { label: "Competitive", color: "#38bdf8" };
+  if (mins < 110) return { label: "Average", color: "#f59e0b" };
   return { label: "Beginner", color: "#f87171" };
 }
 
@@ -41,42 +39,43 @@ function calculate(
   gender: Gender,
   fiveKmMinutes: number,
   fiveKmSeconds: number,
-  skiErg: Experience,
-  rowing: Experience,
-  strength: Strength
+  benchKg: number,
+  deadliftKg: number,
 ) {
   const fiveKmTotal = fiveKmMinutes * 60 + fiveKmSeconds;
   const pacePerKm = fiveKmTotal / 5;
 
-  const fatigueFactor = strength === "advanced" ? 1.12 : strength === "intermediate" ? 1.18 : 1.25;
+  // Upper-body bench strength affects SkiErg, wall balls, farmers carry
+  // Lower-body deadlift strength affects sled, lunges, burpees
+  // Normalise: male open bench 80kg avg, deadlift 120kg avg; women 50/70
+  const benchNorm = gender === "men" ? benchKg / 80 : benchKg / 50;
+  const deadliftNorm = gender === "men" ? deadliftKg / 120 : deadliftKg / 70;
+
+  // Strength factor 0.75 (very strong) → 1.30 (weak)
+  const upperFactor = Math.max(0.75, Math.min(1.30, 1.5 - benchNorm * 0.5));
+  const lowerFactor = Math.max(0.75, Math.min(1.30, 1.5 - deadliftNorm * 0.5));
+  const combinedFactor = (upperFactor + lowerFactor) / 2;
+
+  // Fatigue on run pace: stronger athletes fatigue less
+  const fatigueFactor = combinedFactor < 0.90 ? 1.10 : combinedFactor < 1.05 ? 1.18 : 1.26;
   const runTimePerKm = pacePerKm * fatigueFactor;
   const totalRunning = runTimePerKm * 8;
 
-  const expMultiplier = { none: 1.3, some: 1.0, regular: 0.85 };
-  const strMultiplier = { beginner: 1.35, intermediate: 1.0, advanced: 0.78 };
   const genderBase = gender === "men" ? 1.0 : 1.12;
 
-  const baseStations = [
-    { name: "SkiErg", base: 240 },
-    { name: "Sled Push", base: 120 },
-    { name: "Sled Pull", base: 120 },
-    { name: "Burpee Broad Jumps", base: 240 },
-    { name: "Rowing", base: 225 },
-    { name: "Farmers Carry", base: 150 },
-    { name: "Sandbag Lunges", base: 240 },
-    { name: "Wall Balls", base: 240 },
-  ];
-
-  const stations: StationResult[] = baseStations.map((s) => {
-    let time = s.base * genderBase * strMultiplier[strength];
-    if (s.name === "SkiErg") time *= expMultiplier[skiErg];
-    if (s.name === "Rowing") time *= expMultiplier[rowing];
-    const clamped = Math.max(time, s.base * 0.55);
-    return { name: s.name, time: clamped };
-  });
+  const stations: StationResult[] = [
+    { name: "SkiErg",            time: 240 * genderBase * upperFactor },
+    { name: "Sled Push",         time: 120 * genderBase * lowerFactor },
+    { name: "Sled Pull",         time: 120 * genderBase * upperFactor },
+    { name: "Burpee Broad Jumps",time: 240 * genderBase * lowerFactor },
+    { name: "Rowing",            time: 225 * genderBase * combinedFactor },
+    { name: "Farmers Carry",     time: 150 * genderBase * upperFactor },
+    { name: "Sandbag Lunges",    time: 240 * genderBase * lowerFactor },
+    { name: "Wall Balls",        time: 240 * genderBase * upperFactor },
+  ].map(s => ({ ...s, time: Math.max(s.time, s.time * 0.55) }));
 
   const totalStations = stations.reduce((sum, s) => sum + s.time, 0);
-  const transitions = strength === "advanced" ? 180 : strength === "intermediate" ? 360 : 600;
+  const transitions = combinedFactor < 0.90 ? 180 : combinedFactor < 1.05 ? 360 : 600;
   const total = totalRunning + totalStations + transitions;
 
   return { totalRunning, totalStations, transitions, total, stations, runTimePerKm };
@@ -86,86 +85,111 @@ export default function HyroxCalculator() {
   const [gender, setGender] = useState<Gender>("men");
   const [fiveKmMin, setFiveKmMin] = useState(25);
   const [fiveKmSec, setFiveKmSec] = useState(0);
-  const [skiErg, setSkiErg] = useState<Experience>("some");
-  const [rowing, setRowing] = useState<Experience>("some");
-  const [strength, setStrength] = useState<Strength>("intermediate");
-  const [showResults, setShowResults] = useState(false);
+  const [benchKg, setBenchKg] = useState(80);
+  const [deadliftKg, setDeadliftKg] = useState(120);
 
-  const result = calculate(gender, fiveKmMin, fiveKmSec, skiErg, rowing, strength);
+  const result = calculate(gender, fiveKmMin, fiveKmSec, benchKg, deadliftKg);
   const level = getLevel(result.total, gender);
 
-  const inputClass =
-    "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-sm text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]";
-  const labelClass = "block text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2";
-
-  const btnActive = "bg-[#38bdf8] text-[#09090b] font-bold";
-  const btnInactive = "bg-[#131316] border border-[#27272a] text-[#a1a1aa] hover:border-[#38bdf8]/30";
-  const btnBase = "px-4 py-2.5 rounded-lg text-sm transition-all min-h-[44px] cursor-pointer";
+  const s = {
+    card: "bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6",
+    label: "block text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2",
+    input: "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-sm text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]",
+    btnActive: "bg-[#38bdf8] text-[#09090b] font-bold",
+    btnInactive: "bg-[#131316] border border-[#27272a] text-[#a1a1aa] hover:border-[#38bdf8]/40 hover:text-[#e4e4e7]",
+    btn: "px-4 py-2.5 rounded-lg text-sm transition-all min-h-[44px] cursor-pointer w-full",
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Inputs */}
-        <div className="bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6">
+
+        {/* ── INPUTS ── */}
+        <div className={s.card}>
           <h3 className="text-lg font-bold text-[#f4f4f5]">Your Fitness Profile</h3>
 
+          {/* Gender */}
           <div>
-            <label className={labelClass}>Gender</label>
+            <label className={s.label}>Gender</label>
             <div className="grid grid-cols-2 gap-2">
-              <button className={`${btnBase} ${gender === "men" ? btnActive : btnInactive}`} onClick={() => setGender("men")}>Men</button>
-              <button className={`${btnBase} ${gender === "women" ? btnActive : btnInactive}`} onClick={() => setGender("women")}>Women</button>
+              {(["men", "women"] as Gender[]).map(v => (
+                <button
+                  key={v}
+                  type="button"
+                  className={`${s.btn} ${gender === v ? s.btnActive : s.btnInactive}`}
+                  onClick={() => setGender(v)}
+                >
+                  {v === "men" ? "Men" : "Women"}
+                </button>
+              ))}
             </div>
           </div>
 
+          {/* 5km run time */}
           <div>
-            <label className={labelClass}>5km Run Time</label>
+            <label className={s.label}>5 km Run Time</label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <input type="number" min={15} max={45} value={fiveKmMin} onChange={(e) => { setFiveKmMin(Number(e.target.value)); setShowResults(true); }} className={inputClass} />
+                <input
+                  type="number" min={15} max={55}
+                  value={fiveKmMin}
+                  onChange={e => setFiveKmMin(Number(e.target.value))}
+                  className={s.input}
+                />
                 <span className="text-xs text-[#a1a1aa] mt-1 block">Minutes</span>
               </div>
               <div>
-                <input type="number" min={0} max={59} value={fiveKmSec} onChange={(e) => { setFiveKmSec(Number(e.target.value)); setShowResults(true); }} className={inputClass} />
+                <input
+                  type="number" min={0} max={59}
+                  value={fiveKmSec}
+                  onChange={e => setFiveKmSec(Number(e.target.value))}
+                  className={s.input}
+                />
                 <span className="text-xs text-[#a1a1aa] mt-1 block">Seconds</span>
               </div>
             </div>
           </div>
 
+          {/* Bench press */}
           <div>
-            <label className={labelClass}>SkiErg Experience</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(["none", "some", "regular"] as Experience[]).map((v) => (
-                <button key={v} className={`${btnBase} text-xs ${skiErg === v ? btnActive : btnInactive}`} onClick={() => { setSkiErg(v); setShowResults(true); }}>
-                  {v === "none" ? "Never used" : v === "some" ? "A few times" : "Regular"}
-                </button>
-              ))}
+            <label className={s.label}>
+              Max Bench Press (kg)
+              <span className="ml-2 normal-case font-normal text-[#52525b]">— affects SkiErg, carries, wall balls</span>
+            </label>
+            <input
+              type="number" min={20} max={250}
+              value={benchKg}
+              onChange={e => setBenchKg(Number(e.target.value))}
+              className={s.input}
+            />
+            <div className="flex justify-between text-xs text-[#52525b] mt-1">
+              <span>Beginner ~40 kg</span>
+              <span>Average ~80 kg</span>
+              <span>Strong ~120 kg+</span>
             </div>
           </div>
 
+          {/* Deadlift */}
           <div>
-            <label className={labelClass}>Rowing Experience</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(["none", "some", "regular"] as Experience[]).map((v) => (
-                <button key={v} className={`${btnBase} text-xs ${rowing === v ? btnActive : btnInactive}`} onClick={() => { setRowing(v); setShowResults(true); }}>
-                  {v === "none" ? "Never used" : v === "some" ? "A few times" : "Regular"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>Gym Strength Level</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(["beginner", "intermediate", "advanced"] as Strength[]).map((v) => (
-                <button key={v} className={`${btnBase} text-xs ${strength === v ? btnActive : btnInactive}`} onClick={() => { setStrength(v); setShowResults(true); }}>
-                  {v.charAt(0).toUpperCase() + v.slice(1)}
-                </button>
-              ))}
+            <label className={s.label}>
+              Max Deadlift (kg)
+              <span className="ml-2 normal-case font-normal text-[#52525b]">— affects sled, lunges, burpees</span>
+            </label>
+            <input
+              type="number" min={20} max={350}
+              value={deadliftKg}
+              onChange={e => setDeadliftKg(Number(e.target.value))}
+              className={s.input}
+            />
+            <div className="flex justify-between text-xs text-[#52525b] mt-1">
+              <span>Beginner ~60 kg</span>
+              <span>Average ~120 kg</span>
+              <span>Strong ~180 kg+</span>
             </div>
           </div>
         </div>
 
-        {/* Results */}
+        {/* ── RESULTS ── */}
         <div className="bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8">
           <h3 className="text-lg font-bold text-[#f4f4f5] mb-6">Predicted Race Time</h3>
 
@@ -173,55 +197,74 @@ export default function HyroxCalculator() {
             <div className="text-5xl md:text-6xl font-black font-mono" style={{ color: level.color }}>
               {formatTimeHM(result.total)}
             </div>
-            <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold" style={{ backgroundColor: level.color + "15", color: level.color }}>
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: level.color }}></span>
+            <div
+              className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold"
+              style={{ backgroundColor: level.color + "18", color: level.color }}
+            >
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: level.color }} />
               {level.label} Level
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-8 text-center">
-            <div className="bg-[#09090b] rounded-xl p-3">
-              <div className="text-lg font-bold text-[#f4f4f5] font-mono">{formatTime(result.totalRunning)}</div>
-              <div className="text-xs text-[#a1a1aa]">Running</div>
-            </div>
-            <div className="bg-[#09090b] rounded-xl p-3">
-              <div className="text-lg font-bold text-[#f4f4f5] font-mono">{formatTime(result.totalStations)}</div>
-              <div className="text-xs text-[#a1a1aa]">Stations</div>
-            </div>
-            <div className="bg-[#09090b] rounded-xl p-3">
-              <div className="text-lg font-bold text-[#f4f4f5] font-mono">{formatTime(result.transitions)}</div>
-              <div className="text-xs text-[#a1a1aa]">Transitions</div>
-            </div>
+          {/* Split summary */}
+          <div className="grid grid-cols-3 gap-3 mb-6 text-center">
+            {[
+              { label: "Running", val: result.totalRunning },
+              { label: "Stations", val: result.totalStations },
+              { label: "Transitions", val: result.transitions },
+            ].map(({ label, val }) => (
+              <div key={label} className="bg-[#09090b] rounded-xl p-3">
+                <div className="text-base font-bold text-[#f4f4f5] font-mono">{formatTime(val)}</div>
+                <div className="text-xs text-[#a1a1aa]">{label}</div>
+              </div>
+            ))}
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#a1a1aa] px-1 mb-1">
-              <span>Station</span>
-              <span>Est. Time</span>
+          {/* Per-station breakdown */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#52525b] px-1 mb-1">
+              <span>Station</span><span>Est. Time</span>
             </div>
-            <div className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2.5">
-              <span className="text-[#e4e4e7]">8 x 1km Run</span>
+            <div className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2">
+              <span className="text-[#e4e4e7]">8 × 1 km Run</span>
               <span className="font-mono font-semibold text-[#38bdf8]">{formatTime(result.totalRunning)}</span>
             </div>
-            {result.stations.map((s) => (
-              <div key={s.name} className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2.5">
+            {result.stations.map(s => (
+              <div key={s.name} className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2">
                 <span className="text-[#e4e4e7]">{s.name}</span>
                 <span className="font-mono font-semibold text-[#38bdf8]">{formatTime(s.time)}</span>
               </div>
             ))}
-            <div className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2.5">
-              <span className="text-[#e4e4e7]">Transitions</span>
-              <span className="font-mono font-semibold text-[#38bdf8]">{formatTime(result.transitions)}</span>
-            </div>
           </div>
 
-          <div className="mt-6 p-4 bg-[#09090b] rounded-xl border border-[#27272a]">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">Biggest improvement areas</h4>
+          {/* Improvement tips */}
+          <div className="mt-5 p-4 bg-[#09090b] rounded-xl border border-[#27272a]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">Key improvement areas</h4>
             <ul className="space-y-1.5 text-sm text-[#e4e4e7]">
-              {strength === "beginner" && <li className="flex items-start gap-2"><span className="text-[#f59e0b]">&#x25B6;</span> Build gym strength — sled, lunge, and wall ball times will drop significantly</li>}
-              {(skiErg === "none" || rowing === "none") && <li className="flex items-start gap-2"><span className="text-[#f59e0b]">&#x25B6;</span> Practice on the machines you haven't used — technique saves minutes</li>}
-              {fiveKmMin >= 28 && <li className="flex items-start gap-2"><span className="text-[#f59e0b]">&#x25B6;</span> Improving your 5km time by 2 min would save ~4 minutes on race day</li>}
-              {fiveKmMin < 28 && strength !== "beginner" && <li className="flex items-start gap-2"><span className="text-[#10b981]">&#x25B6;</span> You have a solid base — focus on race simulations and pacing strategy</li>}
+              {benchKg < 60 && (
+                <li className="flex items-start gap-2">
+                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                  Improve upper body strength — bigger bench = faster SkiErg and carries
+                </li>
+              )}
+              {deadliftKg < 80 && (
+                <li className="flex items-start gap-2">
+                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                  Build lower body strength — sled and lunge times will drop significantly
+                </li>
+              )}
+              {fiveKmMin >= 28 && (
+                <li className="flex items-start gap-2">
+                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                  Improving your 5 km by 2 min saves ~4 min in race running splits
+                </li>
+              )}
+              {benchKg >= 80 && deadliftKg >= 120 && fiveKmMin < 28 && (
+                <li className="flex items-start gap-2">
+                  <span className="text-[#10b981] flex-shrink-0">▶</span>
+                  Solid base — focus on race simulations and pacing strategy
+                </li>
+              )}
             </ul>
           </div>
         </div>

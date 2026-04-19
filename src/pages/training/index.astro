@@ -9,10 +9,10 @@ const guides = (await getCollection("training")).sort(
   (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)
 );
 
-const difficultyConfig: Record<string, { color: string; bg: string; border: string; variant: string }> = {
-  beginner: { color: "text-green-400", bg: "bg-green-400/10", border: "border-green-400/20", variant: "beginner" },
-  intermediate: { color: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/20", variant: "intermediate" },
-  advanced: { color: "text-red-400", bg: "bg-red-400/10", border: "border-red-400/20", variant: "advanced" },
+const difficultyConfig: Record<string, { label: string; variant: string }> = {
+  beginner:     { label: "8 weeks · First Hyrox",          variant: "beginner" },
+  intermediate: { label: "10 weeks · Drop 10–20 min",      variant: "intermediate" },
+  advanced:     { label: "12 weeks · Sub 1:10 / 1:20",     variant: "advanced" },
 };
 ---
 
@@ -21,81 +21,39 @@ const difficultyConfig: Record<string, { color: string; bg: string; border: stri
   description="Structured Hyrox training programs for every level — beginner to advanced. Get race-ready with our proven plans."
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-16">
+    <div class="max-w-3xl mb-10">
       <h1 class="text-4xl md:text-6xl font-black mb-6">
         <span class="text-gradient-accent">Training Programs</span>
       </h1>
-      <p class="text-xl text-text-muted leading-relaxed">
+      <p class="text-xl text-text-muted leading-relaxed mb-5">
         Structured plans to get you race-ready, no matter where you're starting from. Pick your level and start training today.
+      </p>
+      <p class="text-base text-text-muted leading-relaxed">
+        Hyrox rewards athletes who train specifically for it — you can't wing a sled push after 8km of running if you've never practised it. Our programs combine running fitness with station-specific strength so you're genuinely prepared for race day, not just fit enough to survive it. If you're not ready to commit to a full program, scroll down to our Sample Workouts — pick one session and train like a Hyrox athlete today.
       </p>
     </div>
 
-    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-6">Choose Your Level</h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-      {guides.filter(g => g.data.difficulty).map((guide) => {
-        const config = difficultyConfig[guide.data.difficulty ?? "beginner"];
-        return (
-          <a
-            href={`/training/${guide.id}/`}
-            class="group relative block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-          >
-            <div class="absolute -right-4 -top-2 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
-              <TrainingIcons variant={config.variant} size={180} />
-            </div>
-
-            <div class="relative z-10">
-              <div class="flex items-center justify-between mb-4">
-                <div class="text-accent/60 group-hover:text-accent transition-colors">
-                  <TrainingIcons variant={config.variant} size={56} />
-                </div>
-                <span class={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${config.color} ${config.bg} ${config.border} border`}>
-                  {guide.data.difficulty}
-                </span>
-              </div>
-              <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
-                {guide.data.title}
-              </h3>
-              <p class="text-text-muted text-sm leading-relaxed mb-4">{guide.data.description}</p>
-              {guide.data.duration && (
-                <div class="flex items-center gap-2 text-xs text-text-muted">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {guide.data.duration}
-                </div>
-              )}
-              <div class="mt-5 flex items-center gap-1 text-sm font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                Start Program
-                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </a>
-        );
-      })}
-    </div>
-
-    {/* Featured: Sample Workouts */}
-    <div class="mt-16 mb-12">
+    {/* Sample Workouts — featured at the top */}
+    <div class="mb-12">
       <a
         href="/training/workouts/"
         class="group block bg-bg-card border-2 border-accent/20 rounded-2xl p-8 hover:border-accent/40 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1"
       >
         <div class="md:flex md:items-center md:gap-8">
           <div class="flex-1">
-            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-amber-400 bg-amber-400/10 border border-amber-400/20">
-              Just want a workout?
-            </span>
-            <h2 class="text-2xl font-black text-text-heading mt-3 mb-2 group-hover:text-accent transition-colors">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-accent bg-accent/10 border border-accent/20">
+                No commitment needed
+              </span>
+            </div>
+            <h2 class="text-2xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
               Sample Hyrox Workouts
             </h2>
-            <p class="text-text-muted text-sm leading-relaxed mb-4 md:mb-0">
-              No multi-week commitment needed. 7 ready-to-go gym sessions — full race simulations, station-focused circuits, and 20-minute blasts. Pick one and train.
+            <p class="text-text-muted text-sm leading-relaxed mb-0">
+              7 ready-to-go gym sessions — full race simulations, station-focused circuits, and 20-minute blasts. Pick one and train. Includes pacing targets for all levels.
             </p>
           </div>
-          <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0">
+          <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0 mt-4 md:mt-0">
             View Workouts
             <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -103,6 +61,47 @@ const difficultyConfig: Record<string, { color: string; bg: string; border: stri
           </div>
         </div>
       </a>
+    </div>
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-6">Multi-Week Programs — Choose Your Level</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      {guides.filter(g => g.data.difficulty).map((guide, i) => {
+        const config = difficultyConfig[guide.data.difficulty ?? "beginner"];
+        return (
+          <a
+            href={`/training/${guide.id}/`}
+            class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+          >
+            <div class="absolute -right-4 -top-2 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
+              <TrainingIcons variant={config.variant} size={180} />
+            </div>
+            <div class="relative z-10 flex flex-col flex-1">
+              <div class="flex items-start justify-between mb-5">
+                <div class="text-accent/50 group-hover:text-accent/80 transition-colors">
+                  <TrainingIcons variant={config.variant} size={48} />
+                </div>
+                <span class="text-xs font-bold uppercase tracking-wider text-text-muted border border-border px-2 py-0.5 rounded">
+                  Level {i + 1}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
+                {guide.data.title}
+              </h3>
+              <p class="text-text-muted text-sm leading-relaxed flex-1">{guide.data.description}</p>
+              <div class="mt-4 pt-4 border-t border-border/50 flex items-center justify-between">
+                <span class="text-xs text-text-muted">{config.label}</span>
+                <span class="flex items-center gap-1 text-sm font-semibold text-accent opacity-60 group-hover:opacity-100 transition-opacity">
+                  Start
+                  <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </a>
+        );
+      })}
     </div>
 
     <AdSlot id="training-mid" format="banner" />

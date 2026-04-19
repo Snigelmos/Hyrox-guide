@@ -1,0 +1,396 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TrainingIcons from "../../components/icons/TrainingIcons.astro";
+import GuideCrossSell from "../../components/GuideCrossSell.astro";
+
+const workouts = [
+  {
+    id: "full-send",
+    category: "Full Simulation",
+    name: '"The Full Send" — Complete Race Simulation',
+    time: "60–75 min",
+    level: "Intermediate–Advanced",
+    equipment: "Full gym",
+    tagColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
+    description: "The closest you can get to race day without an entry fee. Complete every station in race order with 1 km treadmill runs between each. Do this once every 2–3 weeks — it's the single most effective Hyrox training session you can do.",
+    warmup: "800 m easy jog, 10 leg swings each side, 10 arm circles, 5 inchworms",
+    table: {
+      headers: ["Order", "Exercise", "Target"],
+      rows: [
+        ["1","Treadmill Run","1 km"],["2","SkiErg","1,000 m"],["3","Treadmill Run","1 km"],["4","Sled Push","50 m at race weight"],
+        ["5","Treadmill Run","1 km"],["6","Sled Pull","50 m at race weight"],["7","Treadmill Run","1 km"],["8","Burpee Broad Jumps","80 m (or 30 reps)"],
+        ["9","Treadmill Run","1 km"],["10","Rowing","1,000 m"],["11","Treadmill Run","1 km"],["12","Farmers Carry","200 m at race weight"],
+        ["13","Treadmill Run","1 km"],["14","Sandbag Lunges","100 m"],["15","Treadmill Run","1 km"],["16","Wall Balls","100 reps men / 75 reps women"],
+      ]
+    },
+    pacing: {
+      headers: ["Station","Competitive","Average","Beginner"],
+      rows: [
+        ["Each 1 km run","4:30","5:15","6:00"],
+        ["SkiErg","4:00","4:40","5:45"],["Sled Push","2:00","3:00","4:15"],["Sled Pull","2:00","3:00","4:15"],
+        ["Burpee Broad Jumps","4:00","5:15","7:30"],["Rowing","3:45","4:20","5:20"],
+        ["Farmers Carry","2:30","3:30","5:00"],["Sandbag Lunges","4:00","5:15","7:00"],["Wall Balls","4:00","5:15","7:00"],
+      ]
+    },
+    notes: ["Women's Open: Add ~15–30 s per station and ~30–45 s per 1 km run.", "Beginners: Cut runs to 800 m, halve burpee distance, reduce wall balls to 50, use lighter weights."],
+  },
+  {
+    id: "front-four",
+    category: "Half Simulation",
+    name: '"The Front Four" — First Half Simulation',
+    time: "30–40 min",
+    level: "All levels",
+    equipment: "SkiErg, sled, treadmill",
+    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    description: "Focus on the first four stations where most people go out too fast and blow up. Practise starting conservative — if you sprint the SkiErg, the sled push will destroy you.",
+    table: {
+      headers: ["Order","Exercise","Target"],
+      rows: [
+        ["1","Treadmill Run","1 km"],["2","SkiErg","1,000 m"],["3","Treadmill Run","1 km"],
+        ["4","Sled Push","50 m"],["5","Treadmill Run","1 km"],["6","Sled Pull","50 m"],
+        ["7","Treadmill Run","1 km"],["8","Burpee Broad Jumps","80 m or 30 reps"],
+      ]
+    },
+    notes: ["Key focus: Aim for 75% effort on the first two stations.", "Scale: Reduce runs to 600 m, use light sled weight, do 20 burpee broad jumps."],
+  },
+  {
+    id: "back-four",
+    category: "Half Simulation",
+    name: '"The Back Four" — Second Half Simulation',
+    time: "30–40 min",
+    level: "All levels",
+    equipment: "Rower, kettlebells, sandbag, wall ball, treadmill",
+    tagColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+    description: "The back half is where races are won or lost. Your grip is gone, legs are heavy, and you still have four brutal stations left. Practise switching the sandbag shoulder every 25 m.",
+    table: {
+      headers: ["Order","Exercise","Target"],
+      rows: [
+        ["1","Treadmill Run","1 km"],["2","Rowing","1,000 m"],["3","Treadmill Run","1 km"],
+        ["4","Farmers Carry","200 m"],["5","Treadmill Run","1 km"],["6","Sandbag Lunges","100 m"],
+        ["7","Treadmill Run","1 km"],["8","Wall Balls","100 reps men / 75 reps women"],
+      ]
+    },
+    notes: ["Scale: Reduce runs to 600 m, carry lighter kettlebells, do 50 wall balls, lunge 50 m."],
+  },
+  {
+    id: "push-grind",
+    category: "Station Focus",
+    name: '"Push & Grind" — Legs and Shoulders',
+    time: "30 min",
+    level: "All levels",
+    equipment: "Sled, wall ball, SkiErg",
+    tagColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    description: "A 4-round circuit that hammers the push stations. Your legs and shoulders will be on fire. Total volume: 150 m sled push, 70 wall balls, 1,400 m SkiErg.",
+    warmup: "400 m jog, 10 bodyweight squats, 10 push-ups, 20 shoulder circles",
+    table: {
+      headers: ["Exercise","Round 1","Round 2","Round 3","Round 4"],
+      rows: [
+        ["Sled Push","50 m","50 m","25 m","25 m"],
+        ["Wall Balls","25 reps","20 reps","15 reps","10 reps"],
+        ["SkiErg","500 m","400 m","300 m","200 m"],
+      ]
+    },
+    notes: ["4 rounds, 90 seconds rest between rounds.", "Scale: Use 60–70% of race weight on sled. Beginners rest 2 minutes."],
+  },
+  {
+    id: "grip-carry",
+    category: "Station Focus",
+    name: '"Grip & Carry" — Forearm Endurance',
+    time: "30 min",
+    level: "All levels",
+    equipment: "Sled with rope, kettlebells, sandbag, pull-up bar",
+    tagColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+    description: "Most people fail Hyrox because their grip gives out by station 6. This session trains the forearm endurance your sled pull, farmers carry, and lunges demand.",
+    warmup: "400 m jog, wrist circles, 30 s dead hang, 10 light KB swings",
+    table: {
+      headers: ["Exercise","Reps / Distance"],
+      rows: [
+        ["Sled Pull","50 m at race weight"],
+        ["Farmers Carry","100 m at race weight"],
+        ["Sandbag Lunges","50 m"],
+        ["Dead Hang","Max time (aim 30–60 s)"],
+      ]
+    },
+    notes: ["4 rounds, 2 minutes rest between rounds.", "Finisher: 3 sets of towel pull-ups (max reps) or plate pinch holds.", "Scale: Reduce sled to 25 m, carry to 50 m, lunges to 25 m."],
+  },
+  {
+    id: "cardio-killer",
+    category: "Cardio",
+    name: '"The Cardio Killer" — Maximum Heart Rate',
+    time: "30 min",
+    level: "All levels",
+    equipment: "SkiErg, rower, treadmill",
+    tagColor: "text-red-400 bg-red-400/10 border-red-400/20",
+    description: "Pure cardiovascular punishment. This gets your heart rate to race-day levels and keeps it there. Two parts: an EMOM (every minute on the minute) followed by intervals.",
+    warmup: "400 m jog, 10 burpees at easy pace, dynamic stretching",
+    bullets: [
+      "Part 1 — EMOM for 12 minutes (repeat 4 times): Minute 1: 15 cal SkiErg · Minute 2: 15 cal Row · Minute 3: 6 Burpee Broad Jumps",
+      "Part 2 — 4 Intervals: 400 m treadmill at 90% · 250 m Row at max · 60 s rest",
+    ],
+    notes: ["Scale: Reduce EMOM calories to 10, burpees to 4. In intervals, run 200 m and row 150 m."],
+  },
+  {
+    id: "lunch-break",
+    category: "Quick Combo",
+    name: '"Lunch Break Hyrox" — 20-Minute Blitz',
+    time: "20 min",
+    level: "All levels",
+    equipment: "SkiErg, rower, wall ball, floor space",
+    tagColor: "text-purple-400 bg-purple-400/10 border-purple-400/20",
+    description: "When you only have 20 minutes but want to feel like you just raced. 4 rounds for time — no warm-up needed beyond the first easy round.",
+    table: {
+      headers: ["Exercise","Reps / Distance"],
+      rows: [["SkiErg","250 m"],["Rowing","250 m"],["Wall Balls","10 reps"],["Burpee Broad Jumps","10 reps"],["Treadmill Run","400 m"]]
+    },
+    benchmarks: [
+      {label:"Elite",time:"under 16 min",color:"text-emerald-400"},
+      {label:"Competitive",time:"16–20 min",color:"text-sky-400"},
+      {label:"Average",time:"20–25 min",color:"text-amber-400"},
+      {label:"Beginner",time:"25–30 min",color:"text-red-400"},
+    ],
+    notes: ["No SkiErg? Substitute 30 cal assault bike. No sled? Heavy dumbbell bear crawls (10 m)."],
+  },
+];
+---
+
+<BaseLayout
+  title="Sample Hyrox Workouts — Ready-to-Use Gym Sessions | Hyrox Guide"
+  description="Ready-to-use gym sessions that simulate Hyrox race conditions. Full simulations, station-focused sessions, and quick combos for every schedule."
+>
+  <article class="container-main py-16">
+
+    <!-- Breadcrumb -->
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><a href="/training/" class="text-text-muted hover:text-accent transition-colors">Training</a></li>
+        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Sample Workouts</span></li>
+      </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12 items-start">
+
+      <!-- Main content -->
+      <div class="min-w-0">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between gap-6 mb-6">
+          <div>
+            <h1 class="text-4xl md:text-5xl font-black mb-4 text-text-heading">
+              Sample <span class="text-gradient-accent">Hyrox Workouts</span>
+            </h1>
+          </div>
+          <div class="hidden md:block text-accent/20 flex-shrink-0">
+            <TrainingIcons variant="intermediate" size={120} />
+          </div>
+        </div>
+
+        <!-- Intro -->
+        <div class="mb-10 space-y-4 max-w-2xl">
+          <p class="text-lg text-text-muted leading-relaxed">
+            No multi-week commitment needed. These are standalone sessions you can drop into any training week — from a 20-minute lunch break blast to a full race simulation.
+          </p>
+          <p class="text-base text-text-muted leading-relaxed">
+            Each workout is designed around the actual Hyrox race structure: running plus functional stations. Use full simulations to gauge your race readiness, station-focused sessions to target your weak spots, and quick combos when you're short on time. Every session includes pacing targets for Competitive, Average, and Beginner athletes — find your level and track progress over time.
+          </p>
+          <div class="flex flex-wrap gap-2 pt-2">
+            {[
+              {label:"3 Full/Half Simulations",color:"bg-sky-400/10 text-sky-400 border-sky-400/20"},
+              {label:"3 Station Focus Sessions",color:"bg-amber-400/10 text-amber-400 border-amber-400/20"},
+              {label:"1 Quick 20-min Combo",color:"bg-purple-400/10 text-purple-400 border-purple-400/20"},
+            ].map(({label,color}) => (
+              <span class={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full border ${color}`}>{label}</span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Accordions -->
+        {workouts.map(w => (
+          <details class="accordion" id={w.id}>
+            <summary>
+              <div class="flex items-center gap-3 min-w-0">
+                <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
+                  {w.category}
+                </span>
+                <span class="text-sm md:text-base leading-snug">{w.name}</span>
+              </div>
+              <div class="flex items-center gap-4 flex-shrink-0">
+                <span class="hidden md:block text-xs text-text-muted">{w.time}</span>
+                <svg class="accordion-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </summary>
+            <div class="accordion-body">
+              <!-- Meta row -->
+              <div class="flex flex-wrap gap-4 py-4 text-xs text-text-muted border-b border-border mb-5">
+                <span><strong class="text-text">Time:</strong> {w.time}</span>
+                <span><strong class="text-text">Level:</strong> {w.level}</span>
+                <span><strong class="text-text">Equipment:</strong> {w.equipment}</span>
+              </div>
+
+              <p class="text-text-muted text-sm leading-relaxed mb-5">{w.description}</p>
+
+              {w.warmup && (
+                <p class="text-sm mb-5"><strong class="text-text">Warm-up (5 min):</strong> <span class="text-text-muted">{w.warmup}</span></p>
+              )}
+
+              {w.bullets && (
+                <ul class="space-y-2 mb-5">
+                  {w.bullets.map(b => (
+                    <li class="flex items-start gap-2 text-sm text-text-muted">
+                      <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {w.table && (
+                <div class="overflow-x-auto mb-5">
+                  <table class="w-full text-sm border-collapse">
+                    <thead>
+                      <tr class="bg-bg-card-hover">
+                        {w.table.headers.map(h => (
+                          <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/50">
+                      {w.table.rows.map(row => (
+                        <tr class="hover:bg-bg-card/50 transition-colors">
+                          {row.map((cell, ci) => (
+                            <td class:list={["px-4 py-2.5 text-sm", ci === 0 ? "text-text font-medium" : "text-text-muted"]}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {w.pacing && (
+                <>
+                  <p class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Pacing guide (Men's Open)</p>
+                  <div class="overflow-x-auto mb-5">
+                    <table class="w-full text-sm border-collapse">
+                      <thead>
+                        <tr class="bg-bg-card-hover">
+                          {w.pacing.headers.map(h => (
+                            <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-border/50">
+                        {w.pacing.rows.map(row => (
+                          <tr class="hover:bg-bg-card/50 transition-colors">
+                            <td class="px-4 py-2.5 text-text font-medium text-sm">{row[0]}</td>
+                            <td class="px-4 py-2.5 font-mono text-xs text-sky-400">{row[1]}</td>
+                            <td class="px-4 py-2.5 font-mono text-xs text-amber-400">{row[2]}</td>
+                            <td class="px-4 py-2.5 font-mono text-xs text-red-400">{row[3]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+
+              {w.benchmarks && (
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                  {w.benchmarks.map(({label,time,color}) => (
+                    <div class="bg-bg border border-border rounded-xl p-3 text-center">
+                      <div class:list={["text-sm font-bold", color]}>{label}</div>
+                      <div class="text-xs text-text-muted mt-0.5">{time}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {w.notes && w.notes.length > 0 && (
+                <div class="space-y-1.5 pt-2 border-t border-border/50">
+                  {w.notes.map(note => (
+                    <p class="text-xs text-text-muted flex items-start gap-2">
+                      <span class="text-accent flex-shrink-0">•</span>
+                      {note}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </details>
+        ))}
+
+        <!-- Weekly template -->
+        <div class="mt-10 bg-bg-card border border-border rounded-2xl p-6">
+          <h2 class="text-lg font-black text-text-heading mb-2">How to fit these into your week</h2>
+          <p class="text-sm text-text-muted mb-5">Build your week around 3–4 sessions. A balanced template:</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="bg-bg-card-hover">
+                  {["Day","Session","Example"].map(h => (
+                    <th class="text-left px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border/50">
+                {[
+                  ["Monday","Station-focused","Push & Grind or Grip & Carry"],
+                  ["Tuesday","Easy run","5–8 km conversational pace"],
+                  ["Wednesday","Rest or mobility",""],
+                  ["Thursday","Cardio session","The Cardio Killer"],
+                  ["Friday","Easy run","5–8 km + 4 strides"],
+                  ["Saturday","Simulation","The Full Send (every 2–3 weeks)"],
+                  ["Sunday","Rest",""],
+                ].map(([d,s,e]) => (
+                  <tr class="hover:bg-bg-card/50 transition-colors">
+                    <td class="px-4 py-2.5 text-text font-semibold">{d}</td>
+                    <td class="px-4 py-2.5 text-text-muted">{s}</td>
+                    <td class="px-4 py-2.5 text-text-muted text-xs">{e}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-text-muted mt-4">Want a full 8–12 week structured plan? → <a href="/training/beginner/" class="text-accent hover:underline">Beginner</a>, <a href="/training/intermediate/" class="text-accent hover:underline">Intermediate</a>, <a href="/training/advanced/" class="text-accent hover:underline">Advanced</a></p>
+        </div>
+
+        <div class="mt-8">
+          <GuideCrossSell context="training" />
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="hidden lg:block sticky top-8 space-y-4">
+        <div class="bg-bg-card border border-border rounded-2xl p-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-4">Workouts</h3>
+          <nav class="space-y-1">
+            {workouts.map(w => (
+              <a href={`#${w.id}`} class="flex items-center gap-2 text-sm text-text-muted hover:text-accent transition-colors py-1.5 border-b border-border/30 last:border-0">
+                <span class:list={["w-1.5 h-1.5 rounded-full flex-shrink-0", w.tagColor.split(" ")[0].replace("text","bg")]}></span>
+                <span class="leading-tight text-xs">{w.name.replace(/^"|"$/g,"").split(" — ")[0]}</span>
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div class="bg-bg-card border border-border rounded-2xl p-5 space-y-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">More Training</h3>
+          {[
+            {href:"/training/beginner/",label:"Beginner Program"},
+            {href:"/training/intermediate/",label:"Intermediate Program"},
+            {href:"/training/advanced/",label:"Advanced Program"},
+            {href:"/calculator/",label:"Time Calculator"},
+            {href:"/supplements/protocol/",label:"Supplement Protocol"},
+          ].map(({href,label}) => (
+            <a href={href} class="flex items-center justify-between text-xs text-text-muted hover:text-accent transition-colors py-1.5 border-b border-border/30 last:border-0">
+              {label}
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          ))}
+        </div>
+      </aside>
+
+    </div>
+  </article>
+</BaseLayout>

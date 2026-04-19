@@ -1,15 +1,18 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import AdSlot from "../components/AdSlot.astro";
+import ShareButtons from "../components/ShareButtons.astro";
+import GuideCrossSell from "../components/GuideCrossSell.astro";
 
 interface Props {
   title: string;
   description?: string;
   breadcrumbs?: { label: string; href?: string }[];
   showIllustration?: boolean;
+  crossSellContext?: "training" | "racing" | "general";
 }
 
-const { title, description, breadcrumbs = [], showIllustration = false } = Astro.props;
+const { title, description, breadcrumbs = [], showIllustration = false, crossSellContext = "general" } = Astro.props;
 
 const schemaBreadcrumbs = breadcrumbs.map((crumb) => ({
   name: crumb.label,
@@ -19,10 +22,10 @@ const schemaBreadcrumbs = breadcrumbs.map((crumb) => ({
 const sidebarLinks = [
   { href: "/racing-guide/", icon: "🏁", label: "Racing Guide" },
   { href: "/training/", icon: "💪", label: "Training Programs" },
-  { href: "/competitions/", icon: "📅", label: "Competitions" },
-  { href: "/gear/", icon: "👟", label: "Gear Reviews" },
   { href: "/supplements/", icon: "💊", label: "Supplements" },
-  { href: "/blog/", icon: "📰", label: "Blog" },
+  { href: "/calculator/", icon: "⏱️", label: "Time Calculator" },
+  { href: "/competitions/", icon: "📅", label: "Competitions" },
+  { href: "/faq/", icon: "❓", label: "FAQ" },
 ];
 ---
 
@@ -99,7 +102,7 @@ const sidebarLinks = [
       <article class="min-w-0">
         <header class="mb-10 pb-8 border-b border-border relative overflow-hidden">
           {showIllustration && (
-            <div class="absolute -right-6 -top-6 opacity-[0.06] pointer-events-none hidden md:block">
+            <div class="absolute -right-6 -top-6 opacity-[0.06] pointer-events-none hidden md:block z-0">
               <slot name="illustration" />
             </div>
           )}
@@ -119,9 +122,12 @@ const sidebarLinks = [
           </div>
         </header>
 
-        <div class="prose prose-lg max-w-none">
+        <div class="prose md:prose-lg max-w-none">
           <slot />
         </div>
+
+        <ShareButtons title={title} />
+        <GuideCrossSell context={crossSellContext} />
       </article>
 
       <aside class="hidden lg:block">

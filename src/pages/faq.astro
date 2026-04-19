@@ -7,26 +7,28 @@ const faqItems = [
   { question: "Can beginners do Hyrox?", answer: "Absolutely. Hyrox is designed to be inclusive — you don't need to qualify, and there's no cut-off time. If you can jog 5km and do basic gym exercises, you can finish a Hyrox. The Doubles format (splitting stations with a partner) is especially beginner-friendly." },
   { question: "How much does a Hyrox race cost?", answer: "Entry fees typically range from $80-$130 USD depending on the city, category, and how early you register. Early bird pricing is usually cheapest. Doubles and Relay entries are priced per person at similar rates." },
   { question: "What do I need to bring on race day?", answer: "Running shoes (not trail shoes), comfortable athletic clothing, a water bottle, and your race bib. Optional: gloves for the sled pull and farmers carry, energy gels, and a change of clothes. The venue provides all equipment — sleds, SkiErgs, rowers, wall balls, sandbags, and kettlebells." },
-  { question: "What are the 8 Hyrox stations?", answer: "In order: (1) SkiErg 1,000m, (2) Sled Push 50m, (3) Sled Pull 50m, (4) Burpee Broad Jumps 80m, (5) Rowing 1,000m, (6) Farmers Carry 200m, (7) Sandbag Lunges 100m, (8) Wall Balls 75-100 reps. You run 1km between each station." },
+  { question: "What are the 8 Hyrox stations?", answer: "In order: (1) SkiErg 1,000m, (2) Sled Push 50m, (3) Sled Pull 50m, (4) Burpee Broad Jumps 80m, (5) Rowing 1,000m, (6) Farmers Carry 200m, (7) Sandbag Lunges 100m, (8) Wall Balls 100 reps (men) / 75 reps (women). You run 1km between each station." },
   { question: "How heavy are the sleds in Hyrox?", answer: "Sled Push: Men's Open 102kg, Women's Open 72kg, Men's Pro 152kg, Women's Pro 102kg. Sled Pull: Men's Open 78kg, Women's Open 48kg, Men's Pro 118kg, Women's Pro 78kg. Pro weights are significantly heavier." },
   { question: "What's the difference between Open and Pro?", answer: "Pro uses heavier weights on all weighted stations (sled push, sled pull, farmers carry, sandbag lunges, wall balls). Open is the standard category for most competitors. You choose your category when you register — no qualification needed for either." },
   { question: "Can I walk during the running sections?", answer: "Yes. There are no rules against walking during any part of the race. Many beginners walk portions of the later runs when fatigue sets in. Your time still counts either way, and finishing is what matters most." },
-  { question: "What is Hyrox Doubles?", answer: "Doubles is a team format where two athletes race together. You both run every 1km segment, but you alternate stations — one person does stations 1, 3, 5, 7 while the other does 2, 4, 6, 8. It's a great option for beginners or couples." },
+  { question: "What is Hyrox Doubles?", answer: "Doubles is a team format where two athletes race together. You both run every 1km segment together, but you split the 8 workout stations however you like — only one athlete works a station at a time. You can divide stations by strength (e.g., one does all sled work, the other does rowing and carries). It's a great option for beginners or couples." },
   { question: "How long should I train before my first Hyrox?", answer: "We recommend 8-12 weeks of dedicated training if you already have a basic fitness base (can run 5km, comfortable in a gym). Complete beginners should allow 12-16 weeks. Our beginner program is designed as an 8-week plan." },
   { question: "Do I need a gym membership to train for Hyrox?", answer: "A gym with a SkiErg, rowing machine, sled, and wall ball target is ideal. Many CrossFit boxes and functional fitness gyms have this equipment. If your gym doesn't have sleds, you can substitute with heavy leg presses and weighted lunges." },
   { question: "What's a typical Hyrox training week look like?", answer: "Most athletes train 4-5 days per week: 2-3 running sessions (including intervals), 2 station/strength sessions, and 1 rest day. On weekends, a full or half race simulation is ideal. Check our sample workouts for ready-to-use sessions." },
   { question: "What supplements help for Hyrox?", answer: "The top evidence-based supplements are: creatine (improves station power), protein powder (recovery), caffeine/pre-workout (2-6% performance boost on race day), electrolytes (hydration), and energy gels (mid-race fuel for races over 60 minutes)." },
   { question: "What's a good Hyrox time for beginners?", answer: "For a first-time racer, anything under 2 hours is solid. Men typically finish between 1:40-2:00 and women between 1:50-2:10 on their first attempt. The most important thing is finishing — you can always improve next time." },
-  { question: "What's the average Hyrox finish time?", answer: "The average men's Open finish time is approximately 1:30-1:35, and women's Open is approximately 1:40-1:50. These averages include repeat racers, so first-timers are typically 10-20 minutes slower than the overall average." },
-  { question: "What's the Hyrox world record?", answer: "Men's Open world record times are under 55 minutes, and women's under 1:02. These are held by professional athletes with years of specialized training. Pro division records are slightly slower due to the heavier weights." },
+  { question: "What's the average Hyrox finish time?", answer: "The average men's Open finish time falls in the 1:25-1:40 range, and women's Open in the 1:35-1:50 range. These averages include repeat racers, so first-timers are typically 10-20 minutes slower than the overall average." },
+  { question: "What's the Hyrox world record?", answer: "The fastest men's Open times are under 58 minutes, and women's under 1:08. These are set by professional athletes with years of specialized training. Pro division world-class times are under 1:02 (men) and under 1:10 (women) — slower due to the significantly heavier weights." },
   { question: "How can I check my Hyrox results?", answer: "After your race, results are posted on the official Hyrox app and website. You get a full breakdown of every 1km split, every station time, and transition times. This data is invaluable for planning your next race — it shows exactly where you're strong and where you can improve." },
+  { question: "Where can I find the official Hyrox rules?", answer: "The complete official rules and regulations are published on the Hyrox website at hyrox.com/rules/. This covers everything from equipment specifications and station weights to transition zone procedures, penalties, and disqualification criteria. Always check the official rules before race day — Hyrox occasionally updates weights and format details between seasons." },
 ];
 
 const categories = [
   { title: "Getting Started", icon: "🚀", items: faqItems.slice(0, 5) },
   { title: "Race Format", icon: "🏁", items: faqItems.slice(5, 10) },
   { title: "Training", icon: "💪", items: faqItems.slice(10, 14) },
-  { title: "Results & Times", icon: "⏱️", items: faqItems.slice(14) },
+  { title: "Results & Times", icon: "⏱️", items: faqItems.slice(14, 18) },
+  { title: "Official Resources", icon: "📋", items: faqItems.slice(18) },
 ];
 
 const linkMap: Record<string, string> = {
@@ -42,6 +44,7 @@ const linkMap: Record<string, string> = {
   "What supplements help for Hyrox?": "/supplements/",
   "What's a good Hyrox time for beginners?": "/racing-guide/times/",
   "What's the average Hyrox finish time?": "/racing-guide/times/",
+  "Where can I find the official Hyrox rules?": "https://hyrox.com/rules/",
 };
 ---
 
@@ -82,10 +85,14 @@ const linkMap: Record<string, string> = {
                     <a
                       href={linkMap[item.question]}
                       class="inline-flex items-center gap-1 mt-3 text-accent text-xs font-semibold hover:underline"
+                      {...(linkMap[item.question].startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
-                      Learn more
+                      {linkMap[item.question].startsWith("http") ? "Visit official site" : "Learn more"}
                       <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        {linkMap[item.question].startsWith("http")
+                          ? <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          : <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        }
                       </svg>
                     </a>
                   )}

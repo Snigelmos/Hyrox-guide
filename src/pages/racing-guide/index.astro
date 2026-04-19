@@ -27,8 +27,14 @@ const guideIllustrations: Record<string, string> = {
       <h1 class="text-4xl md:text-6xl font-black mb-6">
         <span class="text-gradient-accent">Racing Guide</span>
       </h1>
-      <p class="text-xl text-text-muted leading-relaxed">
-        Everything you need to know about the Hyrox race format — from the basics to advanced race-day strategy.
+      <p class="text-xl text-text-muted leading-relaxed mb-6">
+        Everything you need to know about the Hyrox race format — from understanding the basics to executing a smart race-day strategy.
+      </p>
+      <p class="text-base text-text-muted leading-relaxed mb-6">
+        A Hyrox race consists of 8 rounds of 1km running, each followed by one functional workout station. The stations are always in the same order and use standardised weights, so you can train specifically for what's coming. Whether you're running your first race or chasing a personal best, the guides below cover everything: what each station demands, how to pace your effort, which category to enter, and a complete step-by-step race day plan.
+      </p>
+      <p class="text-sm text-text-muted leading-relaxed">
+        <strong class="text-text">New here?</strong> Start with "What is Hyrox?" and work your way through. Returning racer? Jump straight to the Race Day Guide or Station benchmarks.
       </p>
     </div>
 
@@ -40,14 +46,14 @@ const guideIllustrations: Record<string, string> = {
         return (
           <a
             href={`/racing-guide/${guide.id}/`}
-            class="group relative block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+            class="group relative flex flex-col bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1 overflow-hidden"
           >
             {stationId && (
-              <div class="absolute -right-4 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none">
+              <div class="absolute -right-4 -top-4 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity pointer-events-none z-0">
                 <StationIcons station={stationId} size={160} />
               </div>
             )}
-            <div class="relative z-10">
+            <div class="relative z-10 flex flex-col flex-1">
               <div class="flex items-center gap-3 mb-4">
                 {stationId ? (
                   <div class="text-accent/60 group-hover:text-accent transition-colors">
@@ -65,8 +71,8 @@ const guideIllustrations: Record<string, string> = {
               <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
                 {guide.data.title}
               </h3>
-              <p class="text-text-muted text-sm leading-relaxed">{guide.data.description}</p>
-              <div class="mt-4 flex items-center gap-1 text-sm font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+              <p class="text-text-muted text-sm leading-relaxed flex-1">{guide.data.description}</p>
+              <div class="mt-4 flex items-center gap-1 text-sm font-semibold text-accent opacity-60 group-hover:opacity-100 transition-opacity">
                 Read Guide
                 <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -76,6 +82,74 @@ const guideIllustrations: Record<string, string> = {
           </a>
         );
       })}
+    </div>
+
+    {/* Official Resources */}
+    <div class="mt-16 bg-bg-card border border-border rounded-2xl p-8">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-1">Official Resources</h2>
+      <p class="text-xs text-text-muted mb-6">Links to the official Hyrox website — rules, registration, results, and more.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <a
+          href="https://hyrox.com/rules/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
+        >
+          <span class="text-lg">📋</span>
+          <div>
+            <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Official Rules</span>
+            <span class="block text-xs text-text-muted">hyrox.com</span>
+          </div>
+          <svg class="w-3.5 h-3.5 ml-auto text-text-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <a
+          href="https://hyrox.com/find-your-race/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
+        >
+          <span class="text-lg">🗓️</span>
+          <div>
+            <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Find a Race</span>
+            <span class="block text-xs text-text-muted">hyrox.com</span>
+          </div>
+          <svg class="w-3.5 h-3.5 ml-auto text-text-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <a
+          href="https://hyrox.com/results/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
+        >
+          <span class="text-lg">🏆</span>
+          <div>
+            <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Race Results</span>
+            <span class="block text-xs text-text-muted">hyrox.com</span>
+          </div>
+          <svg class="w-3.5 h-3.5 ml-auto text-text-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <a
+          href="https://hyrox.com/world-rankings/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
+        >
+          <span class="text-lg">🌍</span>
+          <div>
+            <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">World Rankings</span>
+            <span class="block text-xs text-text-muted">hyrox.com</span>
+          </div>
+          <svg class="w-3.5 h-3.5 ml-auto text-text-muted flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>

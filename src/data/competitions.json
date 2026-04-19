@@ -1,10 +1,55 @@
 [
   {
+    "city": "Barcelona",
+    "country": "Spain",
+    "date": "2026-05-02",
+    "venue": "Fira de Barcelona",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "sold_out",
+    "region": "Europe"
+  },
+  {
+    "city": "Copenhagen",
+    "country": "Denmark",
+    "date": "2026-05-09",
+    "venue": "Royal Arena",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "sold_out",
+    "region": "Europe"
+  },
+  {
+    "city": "Vienna",
+    "country": "Austria",
+    "date": "2026-05-16",
+    "venue": "Messe Wien",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "open",
+    "region": "Europe"
+  },
+  {
+    "city": "Toronto",
+    "country": "Canada",
+    "date": "2026-05-23",
+    "venue": "Enercare Centre",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "open",
+    "region": "North America"
+  },
+  {
+    "city": "Zurich",
+    "country": "Switzerland",
+    "date": "2026-05-30",
+    "venue": "Hallenstadion",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "open",
+    "region": "Europe"
+  },
+  {
     "city": "Hamburg",
     "country": "Germany",
     "date": "2026-06-14",
     "venue": "Hamburg Messe",
-    "registrationUrl": "https://hyrox.com/event/hamburg/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -13,8 +58,8 @@
     "country": "UK",
     "date": "2026-06-28",
     "venue": "ExCeL London",
-    "registrationUrl": "https://hyrox.com/event/london/",
-    "status": "open",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "sold_out",
     "region": "Europe"
   },
   {
@@ -22,7 +67,7 @@
     "country": "USA",
     "date": "2026-07-12",
     "venue": "Javits Center",
-    "registrationUrl": "https://hyrox.com/event/new-york/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "North America"
   },
@@ -31,7 +76,7 @@
     "country": "Sweden",
     "date": "2026-07-19",
     "venue": "Stockholmsmässan",
-    "registrationUrl": "https://hyrox.com/event/stockholm/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -40,7 +85,7 @@
     "country": "France",
     "date": "2026-08-02",
     "venue": "Paris Expo Porte de Versailles",
-    "registrationUrl": "https://hyrox.com/event/paris/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -49,7 +94,7 @@
     "country": "USA",
     "date": "2026-08-16",
     "venue": "McCormick Place",
-    "registrationUrl": "https://hyrox.com/event/chicago/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "North America"
   },
@@ -58,7 +103,7 @@
     "country": "Germany",
     "date": "2026-09-06",
     "venue": "Messe Berlin",
-    "registrationUrl": "https://hyrox.com/event/berlin/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -67,7 +112,7 @@
     "country": "Netherlands",
     "date": "2026-09-20",
     "venue": "RAI Amsterdam",
-    "registrationUrl": "https://hyrox.com/event/amsterdam/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -76,7 +121,7 @@
     "country": "Australia",
     "date": "2026-09-27",
     "venue": "ICC Sydney",
-    "registrationUrl": "https://hyrox.com/event/sydney/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Asia Pacific"
   },
@@ -85,7 +130,7 @@
     "country": "USA",
     "date": "2026-10-10",
     "venue": "Kay Bailey Hutchison Convention Center",
-    "registrationUrl": "https://hyrox.com/event/dallas/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "North America"
   },
@@ -94,7 +139,7 @@
     "country": "UK",
     "date": "2026-10-24",
     "venue": "Manchester Central",
-    "registrationUrl": "https://hyrox.com/event/manchester/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -103,7 +148,7 @@
     "country": "Sweden",
     "date": "2026-11-07",
     "venue": "Svenska Mässan",
-    "registrationUrl": "https://hyrox.com/event/gothenburg/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "open",
     "region": "Europe"
   },
@@ -112,8 +157,8 @@
     "country": "UAE",
     "date": "2026-11-14",
     "venue": "Dubai World Trade Centre",
-    "registrationUrl": "https://hyrox.com/event/dubai/",
-    "status": "open",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "coming_soon",
     "region": "Middle East"
   },
   {
@@ -121,8 +166,8 @@
     "country": "Italy",
     "date": "2026-11-21",
     "venue": "Fiera Milano",
-    "registrationUrl": "https://hyrox.com/event/milan/",
-    "status": "open",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "coming_soon",
     "region": "Europe"
   },
   {
@@ -130,8 +175,8 @@
     "country": "USA",
     "date": "2026-12-05",
     "venue": "Los Angeles Convention Center",
-    "registrationUrl": "https://hyrox.com/event/los-angeles/",
-    "status": "open",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "coming_soon",
     "region": "North America"
   },
   {
@@ -139,8 +184,8 @@
     "country": "Spain",
     "date": "2026-12-12",
     "venue": "IFEMA Madrid",
-    "registrationUrl": "https://hyrox.com/event/madrid/",
-    "status": "open",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
+    "status": "coming_soon",
     "region": "Europe"
   },
   {
@@ -148,7 +193,7 @@
     "country": "Singapore",
     "date": "2027-01-17",
     "venue": "Singapore Expo",
-    "registrationUrl": "https://hyrox.com/event/singapore/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "coming_soon",
     "region": "Asia Pacific"
   },
@@ -157,7 +202,7 @@
     "country": "Germany",
     "date": "2027-01-31",
     "venue": "Messe München",
-    "registrationUrl": "https://hyrox.com/event/munich/",
+    "registrationUrl": "https://hyrox.com/find-your-race/",
     "status": "coming_soon",
     "region": "Europe"
   }

@@ -34,6 +34,7 @@ const illustration = illustrationMap[entry.id];
     { label: entry.data.title },
   ]}
   showIllustration={!!illustration}
+  crossSellContext="racing"
 >
   {illustration?.type === "station" && (
     <StationIcons slot="illustration" station={illustration.variant} size={240} />

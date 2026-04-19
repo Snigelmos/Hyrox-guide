@@ -59,53 +59,127 @@ const raceDayEssentials = supplementGuides
   description="The best supplements for Hyrox athletes — creatine, protein, energy gels, pre-workout, electrolytes, and recovery. Evidence-based recommendations with honest reviews."
 >
   <!-- Hero -->
-  <section
-    class="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/5 to-transparent"
-  >
-    <div class="container-main py-16 md:py-24">
+  <section class="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/5 to-transparent">
+    <div class="container-main py-16 md:py-20">
       <div class="max-w-3xl">
-        <span
-          class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full border border-accent/20 uppercase tracking-wider mb-6"
-        >
-          Tested by Athletes
-        </span>
         <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
-          The <span class="text-gradient-accent">Supplements</span> That Actually
-          Matter for Hyrox
+          Supplements for <span class="text-gradient-accent">Hyrox Athletes</span>
         </h1>
-        <p class="text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
-          Cut through the noise. These are the only supplements worth your money
-          — backed by research, tested by Hyrox athletes, and ranked by real
-          impact on race performance.
+        <p class="text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl mb-6">
+          Hyrox is a uniquely demanding event — 8 km of running plus 8 functional stations lasting 60–120 minutes. The right supplements are not optional extras; they are a measurable edge.
         </p>
         <div class="flex flex-wrap gap-3 mt-8">
-          <a
-            href="#featured"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors"
-          >
-            See Our Top Picks
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+          <a href="#why-supplements" class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors">
+            Why it matters
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
           </a>
-          <a
-            href="#categories"
-            class="inline-flex items-center gap-2 px-6 py-3 border border-border text-text font-bold rounded-xl hover:border-accent/40 hover:text-accent transition-colors"
-          >
-            Browse by Category
+          <a href="#featured" class="inline-flex items-center gap-2 px-6 py-3 border border-border text-text font-bold rounded-xl hover:border-accent/40 hover:text-accent transition-colors">
+            Top Picks
+          </a>
+          <a href="/supplements/protocol/" class="inline-flex items-center gap-2 px-6 py-3 border border-accent/20 text-accent font-bold rounded-xl hover:border-accent/40 hover:bg-accent/5 transition-colors">
+            Race Day Protocol →
           </a>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Why Supplements Matter (educational section) -->
+  <section id="why-supplements" class="container-main py-14">
+    <div class="max-w-3xl mb-10">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Why supplements actually matter for Hyrox</h2>
+      <p class="text-base text-text-muted leading-relaxed mb-4">
+        Most fitness events are either a cardio test or a strength test. Hyrox is both — simultaneously. You're running hard enough to deplete glycogen while also doing repeated high-effort strength movements that tear muscle fibres. Your body is under a unique combination of metabolic stress that normal training nutrition doesn't fully address.
+      </p>
+      <p class="text-base text-text-muted leading-relaxed">
+        The good news: the science on a small number of supplements is very clear. They work, they're safe, and they're cheap. You don't need a shelf full of products. You need four things done right.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[
+        {
+          icon:"💪",
+          name:"Creatine",
+          impact:"Station power",
+          evidence:"Grade A evidence",
+          why:"Increases phosphocreatine stores — the fuel for explosive, repeated efforts. Directly improves sled push, wall balls, burpees, and every other short-burst station. Effect: 5–15% more power output.",
+          href:"/supplements/creatine/",
+          accentClass:"border-sky-400/20 hover:border-sky-400/40",
+        },
+        {
+          icon:"🥤",
+          name:"Protein",
+          impact:"Recovery & muscle",
+          evidence:"Grade A evidence",
+          why:"Hyrox training is brutal on muscle tissue. Without enough protein (1.6–2.2 g/kg/day), you can't recover between sessions or adapt to training load. Recovery is where fitness is built.",
+          href:"/supplements/protein-powder/",
+          accentClass:"border-emerald-400/20 hover:border-emerald-400/40",
+        },
+        {
+          icon:"⚡",
+          name:"Energy Gels",
+          impact:"Mid-race fuel",
+          evidence:"Grade A evidence",
+          why:"At the 45–55 min mark your glycogen is running low. One gel = 25–30 g of fast carbs = enough fuel to sustain pace through the final four stations. Without it, you slow down or blow up.",
+          href:"/supplements/energy-gels/",
+          accentClass:"border-amber-400/20 hover:border-amber-400/40",
+        },
+        {
+          icon:"🔥",
+          name:"Caffeine",
+          impact:"Focus & endurance",
+          evidence:"Grade A evidence",
+          why:"200 mg of caffeine consistently delivers 2–4% improvement in endurance performance and reduces perceived effort. At race pace, that's 2–5 minutes. It's the most evidence-backed performance supplement that exists.",
+          href:"/supplements/pre-workout/",
+          accentClass:"border-red-400/20 hover:border-red-400/40",
+        },
+      ].map(({icon,name,impact,evidence,why,href,accentClass}) => (
+        <div class={`bg-bg-card border ${accentClass} rounded-2xl p-5 flex flex-col transition-all`}>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">{icon}</span>
+            <div>
+              <h3 class="font-bold text-text-heading text-sm">{name}</h3>
+              <span class="text-xs text-text-muted">{impact}</span>
+            </div>
+          </div>
+          <span class="inline-block self-start mb-3 px-2 py-0.5 text-xs font-bold rounded bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">{evidence}</span>
+          <p class="text-xs text-text-muted leading-relaxed flex-1">{why}</p>
+          <a href={href} class="mt-4 text-xs font-semibold text-accent hover:underline">Full guide →</a>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 p-5 bg-bg-card border border-border rounded-2xl flex items-start gap-4">
+      <span class="text-2xl flex-shrink-0">📋</span>
+      <div>
+        <h3 class="font-bold text-text-heading mb-1">Not sure when to take what?</h3>
+        <p class="text-sm text-text-muted">Our <a href="/supplements/protocol/" class="text-accent hover:underline">Race Day Protocol</a> gives you the exact timing — night before, race morning, during the race, and recovery window. One page, zero guesswork.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Race Day Protocol Banner -->
+  <section class="container-main pt-12 pb-0">
+    <a
+      href="/supplements/protocol/"
+      class="group relative flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-accent/5 border border-accent/20 rounded-2xl px-6 py-5 hover:bg-accent/10 hover:border-accent/40 transition-all overflow-hidden"
+    >
+      <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 text-2xl">🗓️</div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-accent">Race Day Protocol</span>
+        </div>
+        <h2 class="text-lg font-black text-text-heading group-hover:text-accent transition-colors">What to take and when — exact timing guide</h2>
+        <p class="text-sm text-text-muted mt-0.5">Night before, race morning, during the race, and recovery. A step-by-step protocol for every supplement.</p>
+      </div>
+      <div class="flex items-center gap-1 text-sm font-bold text-accent opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        View Protocol
+        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </a>
   </section>
 
   <!-- Featured Picks -->
@@ -218,7 +292,7 @@ const raceDayEssentials = supplementGuides
                       .replace(/\.$/, "")}
                   </span>
                 </div>
-                <span class="hidden sm:flex items-center gap-1 text-xs font-semibold text-accent opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <span class="hidden sm:flex items-center gap-1 text-xs font-semibold text-accent opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   View guide
                   <svg
                     class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform"

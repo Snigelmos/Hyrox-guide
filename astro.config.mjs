@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://hyroxguide.com",
   integrations: [react(), mdx(), sitemap()],
+  prefetch: true,
   vite: {
     plugins: [tailwindcss()],
   },
