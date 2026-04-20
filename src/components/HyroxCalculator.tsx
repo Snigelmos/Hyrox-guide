@@ -83,12 +83,17 @@ function calculate(
 
 export default function HyroxCalculator() {
   const [gender, setGender] = useState<Gender>("men");
-  const [fiveKmMin, setFiveKmMin] = useState(25);
-  const [fiveKmSec, setFiveKmSec] = useState(0);
-  const [benchKg, setBenchKg] = useState(80);
-  const [deadliftKg, setDeadliftKg] = useState(120);
+  const [fiveKmMin, setFiveKmMin] = useState("25");
+  const [fiveKmSec, setFiveKmSec] = useState("0");
+  const [benchKg, setBenchKg] = useState("80");
+  const [deadliftKg, setDeadliftKg] = useState("120");
 
-  const result = calculate(gender, fiveKmMin, fiveKmSec, benchKg, deadliftKg);
+  const parsedMin = Math.max(0, parseInt(fiveKmMin, 10) || 0);
+  const parsedSec = Math.max(0, Math.min(59, parseInt(fiveKmSec, 10) || 0));
+  const parsedBench = Math.max(1, parseInt(benchKg, 10) || 1);
+  const parsedDeadlift = Math.max(1, parseInt(deadliftKg, 10) || 1);
+
+  const result = calculate(gender, parsedMin, parsedSec, parsedBench, parsedDeadlift);
   const level = getLevel(result.total, gender);
 
   const s = {
@@ -133,7 +138,7 @@ export default function HyroxCalculator() {
                 <input
                   type="number" min={15} max={55}
                   value={fiveKmMin}
-                  onChange={e => setFiveKmMin(Number(e.target.value))}
+                  onChange={e => setFiveKmMin(e.target.value)}
                   className={s.input}
                 />
                 <span className="text-xs text-[#a1a1aa] mt-1 block">Minutes</span>
@@ -142,7 +147,7 @@ export default function HyroxCalculator() {
                 <input
                   type="number" min={0} max={59}
                   value={fiveKmSec}
-                  onChange={e => setFiveKmSec(Number(e.target.value))}
+                  onChange={e => setFiveKmSec(e.target.value)}
                   className={s.input}
                 />
                 <span className="text-xs text-[#a1a1aa] mt-1 block">Seconds</span>
@@ -159,7 +164,7 @@ export default function HyroxCalculator() {
             <input
               type="number" min={20} max={250}
               value={benchKg}
-              onChange={e => setBenchKg(Number(e.target.value))}
+              onChange={e => setBenchKg(e.target.value)}
               className={s.input}
             />
             <div className="flex justify-between text-xs text-[#52525b] mt-1">
@@ -178,7 +183,7 @@ export default function HyroxCalculator() {
             <input
               type="number" min={20} max={350}
               value={deadliftKg}
-              onChange={e => setDeadliftKg(Number(e.target.value))}
+              onChange={e => setDeadliftKg(e.target.value)}
               className={s.input}
             />
             <div className="flex justify-between text-xs text-[#52525b] mt-1">
@@ -241,25 +246,25 @@ export default function HyroxCalculator() {
           <div className="mt-5 p-4 bg-[#09090b] rounded-xl border border-[#27272a]">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">Key improvement areas</h4>
             <ul className="space-y-1.5 text-sm text-[#e4e4e7]">
-              {benchKg < 60 && (
+              {parsedBench < 60 && (
                 <li className="flex items-start gap-2">
                   <span className="text-[#f59e0b] flex-shrink-0">▶</span>
                   Improve upper body strength — bigger bench = faster SkiErg and carries
                 </li>
               )}
-              {deadliftKg < 80 && (
+              {parsedDeadlift < 80 && (
                 <li className="flex items-start gap-2">
                   <span className="text-[#f59e0b] flex-shrink-0">▶</span>
                   Build lower body strength — sled and lunge times will drop significantly
                 </li>
               )}
-              {fiveKmMin >= 28 && (
+              {parsedMin >= 28 && (
                 <li className="flex items-start gap-2">
                   <span className="text-[#f59e0b] flex-shrink-0">▶</span>
                   Improving your 5 km by 2 min saves ~4 min in race running splits
                 </li>
               )}
-              {benchKg >= 80 && deadliftKg >= 120 && fiveKmMin < 28 && (
+              {parsedBench >= 80 && parsedDeadlift >= 120 && parsedMin < 28 && (
                 <li className="flex items-start gap-2">
                   <span className="text-[#10b981] flex-shrink-0">▶</span>
                   Solid base — focus on race simulations and pacing strategy
