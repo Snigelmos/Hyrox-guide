@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AdSlot from "../../components/AdSlot.astro";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection("blog")).sort(
@@ -29,8 +28,6 @@ function formatDate(date: Date) {
         Training tips, race strategies, comparisons, and everything Hyrox.
       </p>
     </div>
-
-    <AdSlot id="blog-top" format="banner" />
 
     <div class="mt-12 max-w-3xl space-y-8">
       {posts.map((post, i) => (

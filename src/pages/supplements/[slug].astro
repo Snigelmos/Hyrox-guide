@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AdSlot from "../../components/AdSlot.astro";
 import GeoAffiliateButton from "../../components/GeoAffiliateButton";
 import { getCollection, render } from "astro:content";
 
@@ -213,8 +212,6 @@ const pageTitle = entry.data.title.includes("2026")
           })()
         }
 
-        <AdSlot id={`supplement-${entry.id}-mid`} format="in-article" />
-
         <div class="prose prose-lg max-w-none mt-10">
           <Content />
         </div>
@@ -260,8 +257,6 @@ const pageTitle = entry.data.title.includes("2026")
               }
             </ul>
           </div>
-
-          <AdSlot id="supplement-sidebar" format="sidebar" />
 
           <div class="bg-accent/5 border border-accent/10 rounded-2xl p-6">
             <h3 class="text-sm font-bold text-accent mb-2">Need training too?</h3>

@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
-import AdSlot from "../../components/AdSlot.astro";
 import { getCollection } from "astro:content";
 
 const gearGuides = (await getCollection("gear")).sort(
@@ -30,8 +29,6 @@ const icons: Record<string, string> = {
         accessories, and home gym setups.
       </p>
     </div>
-
-    <AdSlot id="gear-top" format="banner" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
       {gearGuides.map((guide, i) => (

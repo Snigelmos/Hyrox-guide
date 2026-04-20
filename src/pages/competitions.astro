@@ -1,50 +1,116 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CompetitionTable from "../components/CompetitionTable";
-import AdSlot from "../components/AdSlot.astro";
-import NewsletterForm from "../components/NewsletterForm.astro";
-import competitions from "../data/competitions.json";
+
+const regions = [
+  {
+    name: "Europe",
+    cities: [
+      "Amsterdam", "Barcelona", "Berlin", "Copenhagen", "Gothenburg",
+      "Hamburg", "London", "Madrid", "Manchester", "Milan",
+      "Munich", "Paris", "Stockholm", "Vienna", "Zurich",
+    ],
+  },
+  {
+    name: "North America",
+    cities: ["Chicago", "Dallas", "Los Angeles", "New York", "Toronto"],
+  },
+  {
+    name: "Asia Pacific",
+    cities: ["Singapore", "Sydney"],
+  },
+  {
+    name: "Middle East",
+    cities: ["Dubai"],
+  },
+];
 ---
 
 <BaseLayout
-  title="Upcoming Hyrox Competitions | Hyrox Guide"
-  description="Find upcoming Hyrox races worldwide. Filter by region, check registration status, and sign up for your next event."
+  title="Hyrox Competitions — Find Your Race | HyroxVault"
+  description="How to find upcoming Hyrox races worldwide. Links to the official Hyrox schedule plus a directory of major host cities."
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-12">
+    <div class="max-w-3xl mb-10">
       <h1 class="text-4xl md:text-6xl font-black mb-6">
-        <span class="text-gradient-accent">Upcoming Competitions</span>
+        <span class="text-gradient-accent">Find Your Race</span>
       </h1>
-      <p class="text-xl text-text-muted">
-        Find your next Hyrox race. Filter by region, check dates, and register before spots fill up.
+      <p class="text-xl text-text-muted leading-relaxed">
+        Hyrox runs in major cities around the world throughout the year. Dates,
+        venues, and registration status change constantly, so the only source
+        of truth is the official Hyrox schedule.
       </p>
     </div>
 
-    <AdSlot id="competitions-top" format="banner" />
+    {/* Official schedule CTA */}
+    <a
+      href="https://hyrox.com/find-your-race/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-accent/5 border border-accent/20 rounded-2xl px-6 py-5 hover:bg-accent/10 hover:border-accent/40 transition-all mb-16"
+    >
+      <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 text-2xl">🗓️</div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-accent">Official Schedule</span>
+        </div>
+        <h2 class="text-lg font-black text-text-heading group-hover:text-accent transition-colors">
+          Full Hyrox race calendar — every city, every date
+        </h2>
+        <p class="text-sm text-text-muted mt-0.5">
+          The authoritative schedule with live registration status, venues, and sign-up links.
+          Opens on hyrox.com.
+        </p>
+      </div>
+      <div class="flex items-center gap-1 text-sm font-bold text-accent opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        Visit hyrox.com
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </div>
+    </a>
 
-    <div class="mt-8">
-      <CompetitionTable competitions={competitions} client:visible />
+    {/* Host cities directory */}
+    <div class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
+        Major Hyrox host cities
+      </h2>
+      <p class="text-text-muted max-w-2xl">
+        A reference list of cities that have recently hosted or regularly host Hyrox events.
+        Click any city on the official schedule to see the exact date, venue, and registration
+        status for the upcoming race.
+      </p>
     </div>
 
-    <div class="mt-8 p-6 bg-bg-card border border-border rounded-2xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {regions.map((region) => (
+        <div class="bg-bg-card border border-border rounded-2xl p-6">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">
+            {region.name}
+          </h3>
+          <ul class="grid grid-cols-2 gap-x-4 gap-y-2">
+            {region.cities.map((city) => (
+              <li class="text-sm text-text flex items-center gap-2">
+                <span class="w-1 h-1 rounded-full bg-accent/40"></span>
+                {city}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-12 p-6 bg-bg-card border border-border rounded-2xl">
       <div class="flex items-start gap-3">
         <span class="text-2xl">💡</span>
         <div>
-          <h3 class="font-bold text-text-heading mb-1">Pro Tip</h3>
-          <p class="text-text-muted text-sm">
-            Hyrox events sell out fast, especially in popular cities like London, New York, and Hamburg.
-            Register as soon as your target event opens. You can usually transfer or sell your spot
-            if plans change.
+          <h3 class="font-bold text-text-heading mb-1">Pro tip</h3>
+          <p class="text-text-muted text-sm leading-relaxed">
+            Popular cities like London, Hamburg, New York, and Paris regularly sell out
+            months in advance. Once the official schedule lists your target race, register
+            as soon as possible — transfers and resales exist but are not guaranteed.
           </p>
         </div>
       </div>
-    </div>
-
-    <div class="mt-16">
-      <NewsletterForm
-        heading="Get Notified About New Races"
-        subtext="Be the first to know when registration opens for new Hyrox events. Weekly updates, no spam."
-      />
     </div>
   </section>
 </BaseLayout>

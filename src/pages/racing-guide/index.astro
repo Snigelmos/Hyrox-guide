@@ -2,7 +2,6 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import StationIcons from "../../components/icons/StationIcons.astro";
-import AdSlot from "../../components/AdSlot.astro";
 import { getCollection } from "astro:content";
 
 const guides = (await getCollection("racing-guide")).sort(
@@ -37,8 +36,6 @@ const guideIllustrations: Record<string, string> = {
         <strong class="text-text">New here?</strong> Start with "What is Hyrox?" and work your way through. Returning racer? Jump straight to the Race Day Guide or Station benchmarks.
       </p>
     </div>
-
-    <AdSlot id="racing-guide-top" format="banner" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
       {guides.map((guide, i) => {

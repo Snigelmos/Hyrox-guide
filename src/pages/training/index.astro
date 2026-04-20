@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
-import AdSlot from "../../components/AdSlot.astro";
 import TrainingIcons from "../../components/icons/TrainingIcons.astro";
 import { getCollection } from "astro:content";
 
@@ -103,8 +102,6 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
         );
       })}
     </div>
-
-    <AdSlot id="training-mid" format="banner" />
 
     <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-6">Specialized Guides</h2>
 

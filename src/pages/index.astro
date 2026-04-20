@@ -2,10 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import GeoAffiliateButton from "../components/GeoAffiliateButton";
-import NewsletterForm from "../components/NewsletterForm.astro";
-import AdSlot from "../components/AdSlot.astro";
-import TrainingIcons from "../components/icons/TrainingIcons.astro";
-import StationIcons from "../components/icons/StationIcons.astro";
 import { getCollection } from "astro:content";
 
 // Latest blog posts
@@ -149,8 +145,6 @@ const supplementStrip = [
     </div>
   </section>
 
-  <AdSlot id="home-top" format="banner" />
-
   <!-- BLOG — Latest Insights -->
   <section class="container-main pb-16 md:pb-20">
     <div class="flex items-center justify-between mb-8">
@@ -250,7 +244,4 @@ const supplementStrip = [
     </div>
   </section>
 
-  <div class="container-main pb-16">
-    <NewsletterForm />
-  </div>
 </BaseLayout>
