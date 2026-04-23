@@ -1,0 +1,135 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getAllPosts, formatDate, SERIES_META } from "../../../data/blog";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const seriesNames = new Set<string>();
+  for (const p of posts) {
+    if (p.data.series?.name) seriesNames.add(p.data.series.name);
+  }
+  return Array.from(seriesNames).map((series) => ({
+    params: { series },
+  }));
+}
+
+const { series } = Astro.params;
+const allPosts = await getAllPosts();
+const posts = allPosts
+  .filter((p) => p.data.series?.name === series)
+  .sort(
+    (a, b) =>
+      (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0)
+  );
+
+const meta = SERIES_META[series as string] ?? {
+  label: series,
+  description: "A Hyrox blog series.",
+};
+const totalPlanned = meta.totalPlanned ?? posts.length;
+const publishedCount = posts.length;
+const progressPercent = Math.min(
+  100,
+  Math.round((publishedCount / totalPlanned) * 100)
+);
+---
+
+<BaseLayout
+  title={`${meta.label} — Hyrox Blog Series`}
+  description={meta.description}
+  breadcrumbs={[
+    { name: "Blog", url: "/blog/" },
+    { name: meta.label },
+  ]}
+>
+  <section class="container-main py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li>
+          <a href="/" class="text-text-muted hover:text-accent no-underline">Home</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/blog/" class="text-text-muted hover:text-accent no-underline">Blog</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{meta.label}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="max-w-3xl mb-10">
+      <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full mb-4 border border-accent/20 uppercase tracking-wider">
+        Series
+      </span>
+      <h1 class="text-4xl md:text-5xl font-black mb-6">
+        <span class="text-gradient-accent">{meta.label}</span>
+      </h1>
+      <p class="text-lg text-text-muted leading-relaxed mb-6">
+        {meta.description}
+      </p>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-bold text-text-heading">
+            {publishedCount} of {totalPlanned} posts published
+          </span>
+          <span class="text-xs text-text-muted">{progressPercent}%</span>
+        </div>
+        <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+          <div
+            class="h-full bg-accent transition-all"
+            style={`width: ${progressPercent}%`}
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <ol class="max-w-3xl space-y-4">
+      {Array.from({ length: totalPlanned }).map((_, i) => {
+        const order = i + 1;
+        const post = posts.find((p) => p.data.series?.order === order);
+        if (post) {
+          return (
+            <li>
+              <a
+                href={`/blog/${post.id}/`}
+                class="group flex items-start gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <span class="flex-none w-10 h-10 rounded-full bg-accent/10 border border-accent/20 text-accent font-bold flex items-center justify-center text-sm">
+                  {order}
+                </span>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-lg font-bold text-text-heading group-hover:text-accent transition-colors leading-snug mb-2">
+                    {post.data.title}
+                  </h2>
+                  <p class="text-sm text-text-muted leading-relaxed mb-2 line-clamp-2">
+                    {post.data.description}
+                  </p>
+                  <span class="text-xs text-text-muted">
+                    Published {formatDate(post.data.pubDate)}
+                  </span>
+                </div>
+              </a>
+            </li>
+          );
+        }
+        return (
+          <li>
+            <div class="flex items-start gap-4 bg-bg-card/50 border border-dashed border-border rounded-xl p-5">
+              <span class="flex-none w-10 h-10 rounded-full bg-white/5 border border-border text-text-muted/60 font-bold flex items-center justify-center text-sm">
+                {order}
+              </span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-text-muted/70">
+                  Part {order} — Coming soon
+                </p>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  </section>
+</BaseLayout>

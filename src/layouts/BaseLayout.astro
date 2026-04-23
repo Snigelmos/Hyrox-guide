@@ -5,6 +5,12 @@ import JsonLd from "../components/JsonLd.astro";
 import Analytics from "@vercel/analytics/astro";
 import "../styles/global.css";
 
+interface HowToStep {
+  name: string;
+  text: string;
+  image?: string;
+}
+
 interface Props {
   title: string;
   description?: string;
@@ -16,6 +22,9 @@ interface Props {
   author?: string;
   breadcrumbs?: { name: string; url?: string }[];
   faqItems?: { question: string; answer: string }[];
+  howToSteps?: HowToStep[];
+  howToName?: string;
+  howToDescription?: string;
   noindex?: boolean;
 }
 
@@ -30,6 +39,9 @@ const {
   author,
   breadcrumbs,
   faqItems,
+  howToSteps,
+  howToName,
+  howToDescription,
   noindex = false,
 } = Astro.props;
 
@@ -59,9 +71,27 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-latin-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Hyrox Guide Blog"
+      href={new URL("/rss.xml", Astro.site)}
+    />
 
     <title>{title}</title>
     <JsonLd title={title} description={description} type={schemaType} datePublished={datePublished} dateModified={dateModified} author={author} />
@@ -94,6 +124,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
             "@type": "Answer",
             text: item.answer,
           },
+        })),
+      })} />
+    )}
+
+    {howToSteps && howToSteps.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: howToName ?? title,
+        description: howToDescription ?? description,
+        step: howToSteps.map((s, i) => ({
+          "@type": "HowToStep",
+          position: i + 1,
+          name: s.name,
+          text: s.text,
+          ...(s.image ? { image: new URL(s.image, Astro.site).toString() } : {}),
         })),
       })} />
     )}

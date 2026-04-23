@@ -2,6 +2,13 @@
 import BaseLayout from "./BaseLayout.astro";
 import ShareButtons from "../components/ShareButtons.astro";
 import GuideCrossSell from "../components/GuideCrossSell.astro";
+import { formatDate } from "../data/blog";
+
+interface HowToStep {
+  name: string;
+  text: string;
+  image?: string;
+}
 
 interface Props {
   title: string;
@@ -9,14 +16,41 @@ interface Props {
   breadcrumbs?: { label: string; href?: string }[];
   showIllustration?: boolean;
   crossSellContext?: "training" | "racing" | "general";
+  schemaType?: "WebSite" | "Article" | "FAQPage";
+  datePublished?: string;
+  dateModified?: string;
+  author?: string;
+  ogImage?: string;
+  faqItems?: { question: string; answer: string }[];
+  howToSteps?: HowToStep[];
+  howToName?: string;
+  showMeta?: boolean;
 }
 
-const { title, description, breadcrumbs = [], showIllustration = false, crossSellContext = "general" } = Astro.props;
+const {
+  title,
+  description,
+  breadcrumbs = [],
+  showIllustration = false,
+  crossSellContext = "general",
+  schemaType = "Article",
+  datePublished,
+  dateModified,
+  author,
+  ogImage,
+  faqItems,
+  howToSteps,
+  howToName,
+  showMeta = false,
+} = Astro.props;
 
 const schemaBreadcrumbs = breadcrumbs.map((crumb) => ({
   name: crumb.label,
   ...(crumb.href ? { url: crumb.href } : {}),
 }));
+
+const publishedDate = datePublished ? new Date(datePublished) : undefined;
+const modifiedDate = dateModified ? new Date(dateModified) : undefined;
 
 const sidebarLinks = [
   { href: "/racing-guide/", icon: "🏁", label: "Racing Guide" },
@@ -32,8 +66,16 @@ const sidebarLinks = [
   title={`${title} | Hyrox Guide`}
   description={description}
   ogType="article"
-  schemaType="Article"
+  schemaType={schemaType}
+  datePublished={datePublished}
+  dateModified={dateModified}
+  author={author}
+  ogImage={ogImage}
   breadcrumbs={schemaBreadcrumbs}
+  faqItems={faqItems}
+  howToSteps={howToSteps}
+  howToName={howToName ?? title}
+  howToDescription={description}
 >
   <div class="container-main py-10 md:py-16">
     {
@@ -116,6 +158,23 @@ const sidebarLinks = [
                 <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
                   {description}
                 </p>
+              )
+            }
+            {
+              showMeta && (publishedDate || modifiedDate || author) && (
+                <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-muted">
+                  {author && <span>By <span class="text-text-heading font-semibold">{author}</span></span>}
+                  {publishedDate && (
+                    <time datetime={publishedDate.toISOString()}>
+                      Published {formatDate(publishedDate)}
+                    </time>
+                  )}
+                  {modifiedDate && (
+                    <time datetime={modifiedDate.toISOString()} class="text-accent/80">
+                      Updated {formatDate(modifiedDate)}
+                    </time>
+                  )}
+                </div>
               )
             }
           </div>

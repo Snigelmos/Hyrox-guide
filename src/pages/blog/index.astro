@@ -1,59 +1,99 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import PostCard from "../../components/PostCard.astro";
+import {
+  getAllPosts,
+  getAllSeries,
+  BLOG_CATEGORIES,
+  BLOG_CATEGORY_META,
+  SERIES_META,
+} from "../../data/blog";
 
-const posts = (await getCollection("blog")).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-);
+const posts = await getAllPosts();
+const featuredPost = posts.find((p) => p.data.featured) ?? posts[0];
+const restPosts = posts.filter((p) => p.id !== featuredPost?.id);
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+const series = await getAllSeries();
+const activeSeries = series
+  .map((s) => ({ ...s, meta: SERIES_META[s.name] }))
+  .filter((s) => s.meta);
+
+const categoryCounts = BLOG_CATEGORIES.map((cat) => ({
+  slug: cat,
+  label: BLOG_CATEGORY_META[cat].label,
+  count: posts.filter((p) => p.data.category === cat).length,
+})).filter((c) => c.count > 0);
 ---
 
 <BaseLayout
   title="Hyrox Blog — Training Tips, Race Strategy & News"
-  description="Hyrox blog — race recaps, training tips, strategy guides, and the latest Hyrox news."
+  description="Hyrox blog — race recaps, training tips, strategy guides, station masterclasses, and the latest Hyrox news."
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-16">
+    <div class="max-w-3xl mb-12">
       <h1 class="text-4xl md:text-6xl font-black mb-6">
         <span class="text-gradient-accent">Blog</span>
       </h1>
       <p class="text-xl text-text-muted leading-relaxed">
-        Training tips, race strategies, comparisons, and everything Hyrox.
+        Training tips, race strategies, station guides, nutrition, and everything Hyrox.
       </p>
     </div>
 
-    <div class="mt-12 max-w-3xl space-y-8">
-      {posts.map((post, i) => (
-        <a
-          href={`/blog/${post.id}/`}
-          class="group block bg-bg-card border border-border rounded-2xl p-8 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300"
-        >
-          {i === 0 && (
-            <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full mb-4 border border-accent/20">
-              Latest
-            </span>
-          )}
-          <h2 class="text-2xl font-bold text-text-heading mb-3 group-hover:text-accent transition-colors leading-tight">
-            {post.data.title}
-          </h2>
-          <p class="text-text-muted leading-relaxed mb-4">{post.data.description}</p>
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="text-sm text-text-muted">{formatDate(post.data.pubDate)}</span>
-            {post.data.author && <span class="text-sm text-text-muted">· {post.data.author}</span>}
-            {post.data.tags?.map((tag) => (
-              <span class="px-2.5 py-0.5 bg-white/5 text-text-muted text-xs font-medium rounded-full">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </a>
+    {categoryCounts.length > 0 && (
+      <div class="mb-12">
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center px-4 py-2 bg-accent text-bg text-sm font-bold rounded-full">
+            All · {posts.length}
+          </span>
+          {categoryCounts.map((cat) => (
+            <a
+              href={`/blog/category/${cat.slug}/`}
+              class="inline-flex items-center px-4 py-2 bg-bg-card border border-border text-sm font-semibold text-text-muted rounded-full hover:border-accent/40 hover:text-accent transition-colors no-underline"
+            >
+              {cat.label} · {cat.count}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {activeSeries.length > 0 && (
+      <div class="mb-16">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">
+          Active Series
+        </h2>
+        <div class="grid gap-4 md:grid-cols-2">
+          {activeSeries.map((s) => (
+            <a
+              href={`/blog/series/${s.name}/`}
+              class="group block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="flex items-baseline justify-between gap-4 mb-2">
+                <h3 class="text-lg font-bold text-text-heading group-hover:text-accent transition-colors leading-snug">
+                  {s.meta!.label}
+                </h3>
+                <span class="text-xs font-bold text-accent whitespace-nowrap">
+                  {s.postCount}{s.meta!.totalPlanned ? ` / ${s.meta!.totalPlanned}` : ""} posts
+                </span>
+              </div>
+              <p class="text-sm text-text-muted leading-relaxed line-clamp-2">
+                {s.meta!.description}
+              </p>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {featuredPost && (
+      <div class="mb-10">
+        <PostCard post={featuredPost} variant="featured" />
+      </div>
+    )}
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {restPosts.map((post) => (
+        <PostCard post={post} variant="default" />
       ))}
     </div>
   </section>

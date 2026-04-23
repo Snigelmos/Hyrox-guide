@@ -1,25 +1,41 @@
 ---
 import GuideLayout from "../../layouts/GuideLayout.astro";
 import { getCollection, render } from "astro:content";
+import {
+  BLOG_CATEGORY_META,
+  SERIES_META,
+  formatDate,
+  slugifyTag,
+} from "../../data/blog";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry },
+    props: { entry, posts },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, posts } = Astro.props;
 const { Content } = await render(entry);
+const categoryMeta = BLOG_CATEGORY_META[entry.data.category];
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+const seriesName = entry.data.series?.name;
+const seriesPosts = seriesName
+  ? posts
+      .filter((p) => p.data.series?.name === seriesName)
+      .sort(
+        (a, b) => (a.data.series?.order ?? 0) - (b.data.series?.order ?? 0)
+      )
+  : [];
+const seriesMeta = seriesName ? SERIES_META[seriesName] : undefined;
+const currentOrder = entry.data.series?.order;
+const prevInSeries = currentOrder
+  ? seriesPosts.find((p) => p.data.series?.order === currentOrder - 1)
+  : undefined;
+const nextInSeries = currentOrder
+  ? seriesPosts.find((p) => p.data.series?.order === currentOrder + 1)
+  : undefined;
 ---
 
 <GuideLayout
@@ -33,18 +49,74 @@ function formatDate(date: Date) {
   datePublished={entry.data.pubDate.toISOString()}
   author={entry.data.author}
 >
-  <div class="flex flex-wrap items-center gap-4 text-sm text-text-muted mb-8 not-prose">
+  <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-6 not-prose">
+    <a
+      href={`/blog/category/${entry.data.category}/`}
+      class="px-2.5 py-0.5 bg-accent/10 text-accent font-semibold rounded-full border border-accent/20 hover:bg-accent/15 transition-colors no-underline"
+    >
+      {categoryMeta.label}
+    </a>
     <span>{formatDate(entry.data.pubDate)}</span>
     {entry.data.author && <span>by {entry.data.author}</span>}
-    {entry.data.tags && (
-      <div class="flex gap-2">
-        {entry.data.tags.map((tag) => (
-          <span class="px-2.5 py-0.5 bg-accent/10 text-accent text-xs font-medium rounded-full">
-            {tag}
-          </span>
-        ))}
-      </div>
-    )}
   </div>
+
+  {seriesName && seriesMeta && (
+    <a
+      href={`/blog/series/${seriesName}/`}
+      class="not-prose block bg-accent/5 border border-accent/20 rounded-xl p-4 mb-8 hover:bg-accent/10 hover:border-accent/30 transition-colors no-underline"
+    >
+      <div class="flex items-center gap-2 mb-1 text-xs font-bold uppercase tracking-wider text-accent">
+        <span>Series · Part {currentOrder} of {seriesMeta.totalPlanned ?? seriesPosts.length}</span>
+      </div>
+      <div class="text-sm font-semibold text-text-heading">
+        {seriesMeta.label}
+      </div>
+    </a>
+  )}
+
+  {entry.data.tags && entry.data.tags.length > 0 && (
+    <div class="flex flex-wrap gap-2 mb-8 not-prose">
+      {entry.data.tags.map((tag) => (
+        <a
+          href={`/blog/tag/${slugifyTag(tag)}/`}
+          class="px-2.5 py-0.5 bg-white/5 text-text-muted text-xs font-medium rounded-full hover:text-accent hover:bg-accent/10 transition-colors no-underline"
+        >
+          #{tag}
+        </a>
+      ))}
+    </div>
+  )}
+
   <Content />
+
+  {seriesName && (prevInSeries || nextInSeries) && (
+    <div class="not-prose mt-12 pt-8 border-t border-border grid gap-4 md:grid-cols-2">
+      {prevInSeries ? (
+        <a
+          href={`/blog/${prevInSeries.id}/`}
+          class="group block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            ← Previous in series · Part {prevInSeries.data.series?.order}
+          </div>
+          <div class="text-sm font-bold text-text-heading group-hover:text-accent transition-colors leading-snug">
+            {prevInSeries.data.title}
+          </div>
+        </a>
+      ) : <span />}
+      {nextInSeries ? (
+        <a
+          href={`/blog/${nextInSeries.id}/`}
+          class="group block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all md:text-right no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            Next in series · Part {nextInSeries.data.series?.order} →
+          </div>
+          <div class="text-sm font-bold text-text-heading group-hover:text-accent transition-colors leading-snug">
+            {nextInSeries.data.title}
+          </div>
+        </a>
+      ) : <span />}
+    </div>
+  )}
 </GuideLayout>

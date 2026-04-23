@@ -1,0 +1,83 @@
+---
+import type { BlogPost } from "../data/blog";
+import { BLOG_CATEGORY_META, formatDate, slugifyTag } from "../data/blog";
+
+interface Props {
+  post: BlogPost;
+  variant?: "default" | "featured" | "compact";
+}
+
+const { post, variant = "default" } = Astro.props;
+const categoryMeta = BLOG_CATEGORY_META[post.data.category];
+const href = `/blog/${post.id}/`;
+---
+
+{variant === "featured" ? (
+  <a
+    href={href}
+    class="group relative block bg-bg-card border border-border rounded-2xl p-8 md:p-10 hover:border-accent/40 hover:bg-bg-card-hover transition-all duration-300 overflow-hidden"
+  >
+    <span class="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full mb-4 border border-accent/20 uppercase tracking-wider">
+      Featured
+    </span>
+    <h2 class="text-3xl md:text-4xl font-black text-text-heading mb-4 group-hover:text-accent transition-colors leading-tight">
+      {post.data.title}
+    </h2>
+    <p class="text-lg text-text-muted leading-relaxed mb-6 max-w-2xl">
+      {post.data.description}
+    </p>
+    <div class="flex flex-wrap items-center gap-3 text-sm">
+      <span class="px-2.5 py-0.5 bg-accent/10 text-accent font-semibold rounded-full border border-accent/20">
+        {categoryMeta.label}
+      </span>
+      <span class="text-text-muted">{formatDate(post.data.pubDate)}</span>
+      {post.data.author && (
+        <span class="text-text-muted">· {post.data.author}</span>
+      )}
+    </div>
+  </a>
+) : variant === "compact" ? (
+  <a
+    href={href}
+    class="group block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300"
+  >
+    <div class="flex items-center gap-2 mb-2 text-xs">
+      <span class="text-accent font-semibold">{categoryMeta.label}</span>
+      <span class="text-text-muted/60">·</span>
+      <span class="text-text-muted">{formatDate(post.data.pubDate)}</span>
+    </div>
+    <h3 class="text-lg font-bold text-text-heading group-hover:text-accent transition-colors leading-snug">
+      {post.data.title}
+    </h3>
+  </a>
+) : (
+  <a
+    href={href}
+    class="group block bg-bg-card border border-border rounded-2xl p-7 hover:border-accent/30 hover:bg-bg-card-hover transition-all duration-300"
+  >
+    <div class="flex items-center gap-2 mb-3 text-xs">
+      <span class="px-2 py-0.5 bg-accent/10 text-accent font-semibold rounded-full border border-accent/20">
+        {categoryMeta.label}
+      </span>
+      {post.data.series && (
+        <span class="px-2 py-0.5 bg-white/5 text-text-muted font-medium rounded-full">
+          Part {post.data.series.order}
+        </span>
+      )}
+    </div>
+    <h2 class="text-xl font-bold text-text-heading mb-3 group-hover:text-accent transition-colors leading-snug">
+      {post.data.title}
+    </h2>
+    <p class="text-sm text-text-muted leading-relaxed mb-4 line-clamp-3">
+      {post.data.description}
+    </p>
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <span class="text-text-muted">{formatDate(post.data.pubDate)}</span>
+      {post.data.tags?.slice(0, 3).map((tag) => (
+        <span class="px-2 py-0.5 bg-white/5 text-text-muted font-medium rounded-full">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </a>
+)}
