@@ -1,0 +1,53 @@
+---
+import PostCard from "./PostCard.astro";
+import type { BlogPost } from "../data/blog";
+
+interface Props {
+  currentId: string;
+  allPosts: BlogPost[];
+  limit?: number;
+  heading?: string;
+}
+
+const { currentId, allPosts, limit = 3, heading = "Related articles" } = Astro.props;
+
+const current = allPosts.find((p) => p.id === currentId);
+if (!current) return null;
+
+const currentTags = new Set((current.data.tags ?? []).map((t) => t.toLowerCase()));
+const currentCategory = current.data.category;
+const currentSeries = current.data.series?.name;
+
+function score(post: BlogPost): number {
+  if (post.id === currentId) return -1;
+  let s = 0;
+  if (post.data.category === currentCategory) s += 5;
+  if (currentSeries && post.data.series?.name === currentSeries) s += 3;
+  for (const tag of post.data.tags ?? []) {
+    if (currentTags.has(tag.toLowerCase())) s += 2;
+  }
+  const ageDays =
+    (Date.now() - post.data.pubDate.getTime()) / (1000 * 60 * 60 * 24);
+  if (ageDays < 180) s += 1;
+  return s;
+}
+
+const related = allPosts
+  .filter((p) => p.id !== currentId)
+  .map((p) => ({ post: p, s: score(p) }))
+  .filter((x) => x.s > 0)
+  .sort((a, b) => b.s - a.s || b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime())
+  .slice(0, limit)
+  .map((x) => x.post);
+
+if (related.length === 0) return null;
+---
+
+<section class="not-prose mt-16 pt-10 border-t border-border">
+  <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
+    {heading}
+  </h2>
+  <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {related.map((post) => <PostCard post={post} variant="default" />)}
+  </div>
+</section>

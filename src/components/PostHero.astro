@@ -1,0 +1,52 @@
+---
+/**
+ * PostHero
+ * Renders a hero image for blog posts and guides.
+ *
+ * The blog schema stores `image` as a string path (e.g. "/images/foo.jpg" in
+ * /public, or a full URL). We render a native <img> with responsive hints
+ * optimised for LCP: `loading="eager"`, `fetchpriority="high"`, intrinsic
+ * width/height to prevent CLS, and `decoding="async"`.
+ *
+ * If you switch to colocated assets under `src/assets/` with `import`, prefer
+ * Astro's built-in `<Image />` from `astro:assets` directly at the call site,
+ * which gives AVIF/WebP pipeline automatically.
+ */
+interface Props {
+  src?: string;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  width = 1200,
+  height = 630,
+  priority = true,
+} = Astro.props;
+
+if (!src) return null;
+---
+
+<figure class="not-prose mb-10 overflow-hidden rounded-2xl border border-border bg-bg-card">
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding="async"
+    class="w-full h-auto object-cover aspect-[1200/630]"
+  />
+  {caption && (
+    <figcaption class="px-5 py-3 text-xs text-text-muted border-t border-border">
+      {caption}
+    </figcaption>
+  )}
+</figure>

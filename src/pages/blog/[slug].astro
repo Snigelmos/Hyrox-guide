@@ -1,10 +1,11 @@
 ---
 import GuideLayout from "../../layouts/GuideLayout.astro";
 import { getCollection, render } from "astro:content";
+import PostHero from "../../components/PostHero.astro";
+import RelatedPosts from "../../components/RelatedPosts.astro";
 import {
   BLOG_CATEGORY_META,
   SERIES_META,
-  formatDate,
   slugifyTag,
 } from "../../data/blog";
 
@@ -47,7 +48,13 @@ const nextInSeries = currentOrder
   ]}
   schemaType="Article"
   datePublished={entry.data.pubDate.toISOString()}
+  dateModified={entry.data.dateModified?.toISOString()}
   author={entry.data.author}
+  ogImage={entry.data.image}
+  faqItems={entry.data.faqs}
+  howToSteps={entry.data.howToSteps}
+  howToName={entry.data.howToName ?? entry.data.title}
+  showMeta={true}
 >
   <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-6 not-prose">
     <a
@@ -56,9 +63,11 @@ const nextInSeries = currentOrder
     >
       {categoryMeta.label}
     </a>
-    <span>{formatDate(entry.data.pubDate)}</span>
-    {entry.data.author && <span>by {entry.data.author}</span>}
   </div>
+
+  {entry.data.image && (
+    <PostHero src={entry.data.image} alt={entry.data.title} />
+  )}
 
   {seriesName && seriesMeta && (
     <a
@@ -119,4 +128,6 @@ const nextInSeries = currentOrder
       ) : <span />}
     </div>
   )}
+
+  <RelatedPosts currentId={entry.id} allPosts={posts} />
 </GuideLayout>

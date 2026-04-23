@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "indexnow": "node scripts/index-now.mjs",
+    "refresh-check": "node scripts/refresh-old-posts.mjs",
+    "new-post": "node scripts/new-post.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.0",
