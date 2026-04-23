@@ -9,9 +9,10 @@ export type BlogPost = CollectionEntry<"blog">;
 
 export async function getAllPosts(): Promise<BlogPost[]> {
   const posts = await getCollection("blog");
-  return posts.sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-  );
+  const now = new Date();
+  return posts
+    .filter((p) => p.data.pubDate <= now)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 }
 
 export async function getPostsByCategory(
