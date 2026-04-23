@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.hyroxvault.com"
+        }
+      ],
+      "destination": "https://hyroxvault.com/:path*",
+      "permanent": true
+    }
+  ]
+}

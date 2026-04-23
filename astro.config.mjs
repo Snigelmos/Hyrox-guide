@@ -9,7 +9,14 @@ export default defineConfig({
   site: "https://hyroxvault.com",
   output: "static",
   adapter: vercel(),
-  integrations: [react(), mdx(), sitemap()],
+  integrations: [
+    react(),
+    mdx(),
+    sitemap({
+      filter: (page) =>
+        !page.includes("/blog/tag/") && !page.includes("/blog/category/"),
+    }),
+  ],
   prefetch: true,
   vite: {
     plugins: [tailwindcss()],
