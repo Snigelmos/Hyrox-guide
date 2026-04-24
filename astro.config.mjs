@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import vercel from "@astrojs/vercel";
 
 export default defineConfig({
-  site: "https://hyroxvault.com",
+  site: "https://www.hyroxvault.com",
   output: "static",
   adapter: vercel(),
   integrations: [
