@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import {
   GYMS,
   AFFILIATION_LABELS,
@@ -91,10 +94,7 @@ export default function GymMap({
       if (!containerRef.current) return;
       const [{ default: L }] = await Promise.all([
         import("leaflet"),
-        import("leaflet/dist/leaflet.css"),
         import("leaflet.markercluster"),
-        import("leaflet.markercluster/dist/MarkerCluster.css"),
-        import("leaflet.markercluster/dist/MarkerCluster.Default.css"),
       ]);
 
       if (disposed || !containerRef.current) return;
