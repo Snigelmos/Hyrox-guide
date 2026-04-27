@@ -1,0 +1,275 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { TRAINING_PLANS, getPlan } from "../../data/training-plans";
+import { getSession } from "../../data/training-sessions";
+import { GOAL_TIME_CONFIGS } from "../../data/calculator-goals";
+import { WORKOUTS } from "../../data/workouts";
+
+export async function getStaticPaths() {
+  return TRAINING_PLANS.map((p) => ({
+    params: { slug: p.slug },
+    props: { slug: p.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const plan = getPlan(slug as string);
+if (!plan) {
+  throw new Error(`No plan found for slug: ${slug}`);
+}
+
+const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Resolve sessions for the schedule table.
+const resolvedWeeks = plan.weeks.map((week) => ({
+  ...week,
+  resolved: week.days.map((id) => getSession(id)),
+}));
+
+// Pull related entities.
+const relatedCalculatorGoal = plan.relatedCalculatorSlug
+  ? GOAL_TIME_CONFIGS.find((g) => g.slug === plan.relatedCalculatorSlug)
+  : undefined;
+
+const relatedWorkouts = plan.relatedWorkoutSlugs
+  .map((s) => WORKOUTS.find((w) => w.slug === s))
+  .filter((w): w is NonNullable<typeof w> => Boolean(w));
+
+const relatedPlans = (plan.relatedPlanSlugs ?? [])
+  .map((s) => TRAINING_PLANS.find((p) => p.slug === s))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+const breadcrumbs = [
+  { name: "Training plans", url: "/training-plans/" },
+  { name: plan.title },
+];
+
+const titleForHead = `${plan.metaTitle} | Hyrox Vault`;
+
+// JSON-LD: ExercisePlan-like description (Schema.org has no perfect type; we
+// use Article + ItemList + FAQPage).
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: plan.title,
+  description: plan.metaDescription,
+  itemListOrder: "Ascending",
+  numberOfItems: plan.weeks.length,
+  itemListElement: plan.weeks.map((wk, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: `Week ${wk.weekNumber} — ${wk.phase}: ${wk.focus}`,
+  })),
+};
+---
+
+<BaseLayout
+  title={titleForHead}
+  description={plan.metaDescription}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={plan.faqs}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(itemListSchema)} slot="head" />
+
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/training-plans/" class="text-text-muted hover:text-accent transition-colors no-underline">Training plans</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{plan.title}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="flex items-center flex-wrap gap-2 text-xs font-bold uppercase tracking-wider mb-3">
+        <span class="text-accent bg-accent/10 border border-accent/20 rounded-full px-3 py-1">{plan.durationWeeks} weeks</span>
+        <span class="text-text-muted bg-bg-card border border-border rounded-full px-3 py-1">{plan.sessionsPerWeek} sessions/week</span>
+        <span class="text-text-muted bg-bg-card border border-border rounded-full px-3 py-1 capitalize">{plan.difficulty}</span>
+        <span class="text-text-muted bg-bg-card border border-border rounded-full px-3 py-1">{plan.audienceLabel}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">{plan.title}</h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-3xl">{plan.goalSummary}</p>
+    </header>
+
+    <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Athlete profile</div>
+        <p class="text-sm text-text-heading leading-relaxed">{plan.athleteProfile}</p>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Prerequisites</div>
+        <ul class="text-sm text-text-heading leading-relaxed list-disc pl-5 space-y-1">
+          {plan.prerequisites.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="mb-10 prose md:prose-lg max-w-none">
+      <h2>Overview</h2>
+      <p>{plan.intro}</p>
+
+      <h2>Why this plan works</h2>
+      <p>{plan.whyItWorks}</p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Week-by-week schedule</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">
+        Each row is one week. Each column is one day, Monday → Sunday. Hover or tap any session to read the detail.
+      </p>
+
+      <div class="overflow-x-auto -mx-4 md:mx-0">
+        <table class="min-w-full text-xs md:text-sm border-separate border-spacing-0">
+          <thead>
+            <tr>
+              <th class="sticky left-0 bg-bg border border-border p-2 md:p-3 text-left font-bold text-text-heading">Week</th>
+              <th class="border border-border p-2 md:p-3 text-left font-bold text-text-heading">Phase</th>
+              {dayLabels.map((d) => (
+                <th class="border border-border p-2 md:p-3 text-left font-bold text-text-heading">{d}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {resolvedWeeks.map((week) => (
+              <tr>
+                <td class="sticky left-0 bg-bg border border-border p-2 md:p-3 font-bold text-accent">
+                  W{week.weekNumber}
+                </td>
+                <td class="border border-border p-2 md:p-3">
+                  <div class="font-bold text-text-heading whitespace-nowrap">{week.phase}</div>
+                  <div class="text-text-muted text-xs leading-snug mt-0.5 max-w-[180px]">{week.focus}</div>
+                </td>
+                {week.resolved.map((session) => (
+                  <td class="border border-border p-2 md:p-3 align-top">
+                    <details class="group">
+                      <summary class="cursor-pointer list-none font-medium text-text-heading text-xs md:text-sm whitespace-nowrap">
+                        {session.name}
+                      </summary>
+                      <div class="mt-2 text-xs text-text-muted leading-relaxed max-w-[260px]">
+                        <div class="font-bold text-accent uppercase tracking-wider text-[10px] mb-1">{session.duration}</div>
+                        <p>{session.shortDescription}</p>
+                      </div>
+                    </details>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {resolvedWeeks.some((w) => w.notes) && (
+        <div class="mt-6 bg-bg-card border border-border rounded-2xl p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Week notes</div>
+          <ul class="text-sm text-text-heading leading-relaxed list-disc pl-5 space-y-2">
+            {resolvedWeeks.filter((w) => w.notes).map((w) => (
+              <li><strong>Week {w.weekNumber} ({w.phase}):</strong> {w.notes}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+
+    <section class="mb-10 prose md:prose-lg max-w-none">
+      <h2>Weekly volume notes</h2>
+      <ul>
+        {plan.weeklyVolumeNotes.map((note) => <li>{note}</li>)}
+      </ul>
+
+      <h2>Common mistakes to avoid</h2>
+      <ul>
+        {plan.commonMistakes.map((m) => <li>{m}</li>)}
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Session library</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">
+        Every workout referenced in the schedule above. Click to expand for cues, target paces, and rest intervals.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {Array.from(new Set(plan.weeks.flatMap((wk) => wk.days))).map((id) => {
+          const session = getSession(id);
+          return (
+            <details class="bg-bg-card border border-border rounded-xl p-4">
+              <summary class="cursor-pointer flex items-center justify-between gap-3">
+                <span class="font-bold text-text-heading text-sm">{session.name}</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-accent whitespace-nowrap">{session.duration}</span>
+              </summary>
+              <p class="mt-3 text-sm text-text-muted leading-relaxed">{session.detail}</p>
+            </details>
+          );
+        })}
+      </div>
+    </section>
+
+    {relatedCalculatorGoal && (
+      <section class="mb-10 bg-bg-card border border-accent/30 rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Pace your goal</div>
+        <h2 class="text-xl font-black text-text-heading mb-2">Need exact splits to hit {relatedCalculatorGoal.goalShort}?</h2>
+        <p class="text-text-muted text-sm leading-relaxed mb-4">
+          The {relatedCalculatorGoal.goalShort} pace guide breaks down running pace, station times, and Roxzone budget for this exact target — match the schedule above to the splits.
+        </p>
+        <a href={`/calculator/${relatedCalculatorGoal.slug}/`} class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-hover transition-colors no-underline">
+          See {relatedCalculatorGoal.goalShort} splits →
+        </a>
+      </section>
+    )}
+
+    <section class="mb-10 prose md:prose-lg max-w-none">
+      <h2>Frequently asked questions</h2>
+      {plan.faqs.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+    </section>
+
+    {(relatedWorkouts.length > 0 || relatedPlans.length > 0) && (
+      <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {relatedWorkouts.length > 0 && (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Benchmark workouts in this plan</div>
+            <ul class="space-y-2 text-sm">
+              {relatedWorkouts.map((wo) => (
+                <li>
+                  <a href={`/workouts/${wo.slug}/`} class="text-text-heading hover:text-accent transition-colors font-bold">{wo.name}</a>
+                  <span class="text-text-muted"> — {wo.shortDescription}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {relatedPlans.length > 0 && (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Other plans you may consider</div>
+            <ul class="space-y-2 text-sm">
+              {relatedPlans.map((rp) => (
+                <li>
+                  <a href={`/training-plans/${rp.slug}/`} class="text-text-heading hover:text-accent transition-colors font-bold">{rp.title}</a>
+                  <span class="text-text-muted"> — {rp.audienceLabel}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    )}
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Track your progress with the calculator</h2>
+      <p>
+        As you complete each phase, run your improving 5K times and station benchmarks through the <a href="/calculator/">Hyrox time calculator</a> to see how each fitness gain translates to your projected race finish. The calculator's goal-time guides give you split-by-split targets for sub-60, sub-75, sub-90, and sub-100 finishes.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

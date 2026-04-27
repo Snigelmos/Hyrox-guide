@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { GLOSSARY_TERMS } from "../../data/glossary";
+
+const title = "Hyrox Glossary — Every Hyrox Term Explained";
+const description = "Hyrox glossary: definitions of roxzone, doubles handover, wave start, DNF, no-rep, Elite 15, and every other key Hyrox term you'll encounter.";
+const breadcrumbs = [{ name: "Glossary" }];
+
+const sortedTerms = [...GLOSSARY_TERMS].sort((a, b) => a.term.localeCompare(b.term));
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Glossary</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Glossary
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        Every key Hyrox term explained — race format, judging, divisions, gear, and qualifying.
+      </p>
+    </header>
+
+    <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {sortedTerms.map((t) => (
+        <a
+          href={`/glossary/${t.slug}/`}
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <h2 class="text-xl font-black text-text-heading mb-2">{t.term}</h2>
+          <p class="text-sm text-text-muted leading-relaxed">{t.shortDefinition}</p>
+        </a>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

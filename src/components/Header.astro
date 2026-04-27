@@ -1,15 +1,18 @@
 ---
-const navLinks = [
+const navLinks: { label: string; href: string; activePrefix?: string }[] = [
   { label: "Racing Guide", href: "/racing-guide/" },
   { label: "Training", href: "/training/" },
   { label: "Supplements", href: "/supplements/" },
   { label: "Gear", href: "/gear/" },
+  { label: "Gyms", href: "/gyms/map/", activePrefix: "/gyms/" },
   { label: "Calculator", href: "/calculator/" },
   { label: "Blog", href: "/blog/" },
   { label: "Competitions", href: "/competitions/" },
 ];
 
 const currentPath = Astro.url.pathname;
+const isActive = (link: { href: string; activePrefix?: string }) =>
+  currentPath.startsWith(link.activePrefix ?? link.href);
 ---
 
 <header
@@ -33,10 +36,10 @@ const currentPath = Astro.url.pathname;
           navLinks.map((link) => (
             <a
               href={link.href}
-              aria-current={currentPath.startsWith(link.href) ? "page" : undefined}
+              aria-current={isActive(link) ? "page" : undefined}
               class:list={[
                 "px-4 py-2 rounded-lg text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
-                currentPath.startsWith(link.href)
+                isActive(link)
                   ? "bg-accent/10 text-accent"
                   : "text-text-muted hover:text-text hover:bg-white/5",
               ]}
@@ -74,10 +77,10 @@ const currentPath = Astro.url.pathname;
           navLinks.map((link) => (
             <a
               href={link.href}
-              aria-current={currentPath.startsWith(link.href) ? "page" : undefined}
+              aria-current={isActive(link) ? "page" : undefined}
               class:list={[
                 "px-4 py-3 rounded-lg text-sm font-medium transition-all min-h-[44px] flex items-center focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
-                currentPath.startsWith(link.href)
+                isActive(link)
                   ? "bg-accent/10 text-accent"
                   : "text-text-muted hover:text-text hover:bg-white/5",
               ]}

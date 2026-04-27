@@ -1,0 +1,122 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { COMPARISONS } from "../../data/comparisons";
+
+export async function getStaticPaths() {
+  return COMPARISONS.map((c) => ({
+    params: { slug: c.slug },
+    props: { slug: c.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const comp = COMPARISONS.find((c) => c.slug === slug)!;
+
+const breadcrumbs = [
+  { name: "Compare", url: "/compare/" },
+  { name: `${comp.hyroxLabel} vs ${comp.otherLabel}` },
+];
+---
+
+<BaseLayout
+  title={`${comp.title} | Hyrox Guide`}
+  description={comp.metaDescription}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={comp.faqs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/compare/" class="text-text-muted hover:text-accent transition-colors no-underline">Compare</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{comp.hyroxLabel} vs {comp.otherLabel}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {comp.title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {comp.intro}
+      </p>
+    </header>
+
+    <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Bottom line</div>
+      <p class="text-lg text-text-heading font-semibold leading-relaxed">{comp.bottomLine}</p>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Side-by-side comparison</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>{comp.hyroxLabel}</th>
+            <th>{comp.otherLabel}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comp.rows.map((row) => (
+            <tr>
+              <th>{row.attribute}</th>
+              <td>{row.hyrox}</td>
+              <td>{row.other}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Who should pick {comp.hyroxLabel}</h2>
+      <ul>
+        {comp.bestFor.hyrox.map((b) => <li>{b}</li>)}
+      </ul>
+
+      <h2>Who should pick {comp.otherLabel}</h2>
+      <ul>
+        {comp.bestFor.other.map((b) => <li>{b}</li>)}
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      {comp.faqs.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      <h2>Related reading</h2>
+      <ul>
+        {comp.internalLinks.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+        <li><a href="/calculator/">Try the Hyrox time calculator</a></li>
+        <li><a href="/training/">Browse Hyrox training programs</a></li>
+      </ul>
+    </section>
+
+    <aside class="mt-16 pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">More comparisons</h2>
+      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
+        {COMPARISONS.filter((c) => c.slug !== comp.slug).map((c) => (
+          <a
+            href={`/compare/${c.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Compare</div>
+            <div class="text-sm text-text-heading font-bold">{c.hyroxLabel} vs {c.otherLabel}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

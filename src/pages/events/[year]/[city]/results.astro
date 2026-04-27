@@ -1,0 +1,247 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import {
+  EVENTS,
+  allEventPaths,
+  formatEventDate,
+  type HyroxEvent,
+} from "../../../../data/events";
+import { getResults } from "../../../../data/event-results";
+
+export async function getStaticPaths() {
+  return allEventPaths().map(({ year, slug }) => ({
+    params: { year: String(year), city: slug },
+    props: { year, slug },
+  }));
+}
+
+const { year, slug } = Astro.props;
+const event: HyroxEvent = EVENTS.find((e) => e.year === year && e.slug === slug)!;
+const results = getResults(year, slug);
+
+const eventDate = new Date(event.endDate ?? event.startDate);
+const today = new Date();
+const isPast = today > eventDate;
+const isPending = isPast && !results;
+const isUpcoming = !isPast && !results;
+
+const title = results
+  ? `Hyrox ${event.city} ${year} Results — Podium, Splits, and Recap`
+  : isUpcoming
+    ? `Hyrox ${event.city} ${year} Results — Coming ${formatEventDate(event.endDate ?? event.startDate)}`
+    : `Hyrox ${event.city} ${year} Results — Recap Pending`;
+
+const description = results
+  ? `Hyrox ${event.city} ${year} full results recap: podium finishers across all divisions, finish-time distribution, and key takeaways from the ${results.totalAthletes ?? "thousands of"} athletes who raced.`
+  : isUpcoming
+    ? `Live results for Hyrox ${event.city} ${year} will be posted here within 48 hours of the final wave on ${formatEventDate(event.endDate ?? event.startDate)}. Bookmark this page.`
+    : `Hyrox ${event.city} ${year} race recap is being compiled. Check back shortly.`;
+
+const breadcrumbs = [
+  { name: "Events", url: "/events/" },
+  { name: String(year), url: `/events/${year}/` },
+  { name: event.city, url: `/events/${year}/${event.slug}/` },
+  { name: "Results" },
+];
+
+const faqItems = [
+  {
+    question: `Where can I find Hyrox ${event.city} ${year} results?`,
+    answer: results
+      ? `Full Hyrox ${event.city} ${year} results are published on this page including podium times for every division. The official Hyrox leaderboard at hyrox.com/results carries the complete rankings.`
+      : `Official Hyrox ${event.city} ${year} results will appear on hyrox.com/results within 24-48 hours of the final wave. Our recap (with finish-time histogram and podium breakdown) goes live on this page typically the Monday after race weekend.`,
+  },
+  {
+    question: `Who won Hyrox ${event.city} ${year}?`,
+    answer: results && results.divisions[0]?.podium?.[0]
+      ? `The Pro Men winner was ${results.divisions[0].podium[0].athlete} in ${results.divisions[0].podium[0].time}. Full division-by-division podium below.`
+      : `Winner not yet confirmed. Race is ${isPast ? "complete — recap pending" : `scheduled for ${formatEventDate(event.startDate, event.endDate)}`}.`,
+  },
+  {
+    question: `How many athletes raced at Hyrox ${event.city} ${year}?`,
+    answer: results?.totalAthletes
+      ? `${results.totalAthletes.toLocaleString()} athletes raced across all divisions at Hyrox ${event.city} ${year}.`
+      : `Athlete count will be confirmed in the post-race recap. Major Hyrox stops typically host between 5,000 and 50,000 athletes across the race weekend.`,
+  },
+  {
+    question: `What's a good Hyrox ${event.city} time?`,
+    answer: `Hyrox times are globally standardised — a "good" time at ${event.city} matches a "good" time anywhere else. See our full breakdown by division and age group in the time benchmarks section.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+  noindex={isUpcoming && !results}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/events/" class="text-text-muted hover:text-accent transition-colors no-underline">Events</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href={`/events/${year}/`} class="text-text-muted hover:text-accent transition-colors no-underline">{year}</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href={`/events/${year}/${event.slug}/`} class="text-text-muted hover:text-accent transition-colors no-underline">{event.city}</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Results</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox {event.city} {year} Results
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+      </p>
+      {!results && (
+        <div class="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
+          {isPast ? (
+            <>
+              Recap is being compiled from the official Hyrox leaderboard. Check back shortly — full podium and finish-time histogram will land here within 48 hours of the final wave.
+            </>
+          ) : (
+            <>
+              Race day is <strong>{formatEventDate(event.startDate, event.endDate)}</strong>. Official results land on <a href="https://hyrox.com/results/" rel="noopener noreferrer" class="text-accent underline">hyrox.com/results</a> within 24 hours of the final wave; our full recap (podium, splits, takeaways) goes live on this page the Monday after.
+            </>
+          )}
+        </div>
+      )}
+    </header>
+
+    {results && (
+      <section class="prose md:prose-lg max-w-none">
+        <p>
+          <strong>Hyrox {event.city} {year}</strong> wrapped up on {formatEventDate(event.endDate ?? event.startDate)} after {results.totalAthletes ? `${results.totalAthletes.toLocaleString()} athletes` : "thousands of athletes"} raced through the standard 8 km of running and 8 functional stations. Below is the full podium across every division, plus the finish-time distribution.
+        </p>
+
+        {results.notableStories && results.notableStories.length > 0 && (
+          <>
+            <h2>Headlines from race weekend</h2>
+            <ul>
+              {results.notableStories.map((story) => <li>{story}</li>)}
+            </ul>
+          </>
+        )}
+
+        <h2>Podium results by division</h2>
+        {results.divisions.map((d) => (
+          <>
+            <h3>{d.division}</h3>
+            {d.podium && d.podium.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Athlete</th>
+                    <th>Country</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.podium.map((p) => (
+                    <tr>
+                      <td>{p.rank}</td>
+                      <td>{p.athlete}</td>
+                      <td>{p.country ?? "—"}</td>
+                      <td>{p.time}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>Podium not yet published for this division.</p>
+            )}
+            <p class="text-sm text-text-muted">
+              {d.athleteCount && <>Athletes: {d.athleteCount.toLocaleString()}. </>}
+              {d.medianTime && <>Median finish: {d.medianTime}. </>}
+              {d.fastestTime && <>Fastest: {d.fastestTime}.</>}
+            </p>
+          </>
+        ))}
+
+        {results.histogram && results.histogram.length > 0 && (
+          <>
+            <h2>Finish-time distribution</h2>
+            <p>
+              Across the Open division, here's how the field broke down by finish-time band. Use this to benchmark where your time would have placed.
+            </p>
+            <div class="not-prose my-8 space-y-2">
+              {(() => {
+                const max = Math.max(...results.histogram!.map((b) => b.count));
+                return results.histogram!.map((b) => (
+                  <div class="flex items-center gap-3">
+                    <div class="w-24 text-sm font-mono text-text-muted shrink-0">{b.bucket}</div>
+                    <div class="flex-1 bg-bg-card border border-border rounded h-7 relative overflow-hidden">
+                      <div
+                        class="absolute inset-y-0 left-0 bg-accent/30 border-r border-accent/50"
+                        style={`width: ${(b.count / max) * 100}%`}
+                      />
+                      <div class="absolute inset-0 flex items-center justify-end pr-2 text-xs font-bold text-text-heading">
+                        {b.count.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </>
+        )}
+
+        {results.takeaways && results.takeaways.length > 0 && (
+          <>
+            <h2>Key takeaways for next year</h2>
+            <ul>
+              {results.takeaways.map((t) => <li>{t}</li>)}
+            </ul>
+          </>
+        )}
+
+        <h2>Want to race here next year?</h2>
+        <ul>
+          <li>Read our <a href={`/events/${year + 1}/${event.slug}/`}>Hyrox {event.city} {year + 1} preview</a> (when available).</li>
+          <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a target based on this year's median finish.</li>
+          <li>Browse <a href="/training/">training programs</a> matched to your goal.</li>
+        </ul>
+      </section>
+    )}
+
+    {!results && isPast && (
+      <section class="prose md:prose-lg max-w-none">
+        <h2>While we compile the official recap</h2>
+        <ul>
+          <li>Check the live <a href="https://hyrox.com/results/" rel="noopener noreferrer">official Hyrox leaderboard</a> for individual results.</li>
+          <li>Browse our <a href="/times/">global Hyrox time benchmarks</a> to see how your finish stacks up.</li>
+          <li>Read our <a href="/blog/best-hyrox-pacing-strategy/">pacing strategy</a> guide if you've spotted weak points.</li>
+        </ul>
+      </section>
+    )}
+
+    {!results && !isPast && (
+      <section class="prose md:prose-lg max-w-none">
+        <h2>Until race weekend</h2>
+        <ul>
+          <li>Read the full <a href={`/events/${year}/${event.slug}/`}>Hyrox {event.city} {year} preview</a> with venue and registration details.</li>
+          <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a goal time before race day.</li>
+          <li>Pick a <a href="/training/">training program</a> that fits the time remaining.</li>
+          <li>Lock in your <a href="/blog/hyrox-race-week-protocol/">race-week protocol</a> seven days out.</li>
+        </ul>
+      </section>
+    )}
+  </div>
+</BaseLayout>

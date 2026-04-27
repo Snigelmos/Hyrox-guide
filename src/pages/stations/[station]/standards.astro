@@ -1,0 +1,145 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { STATIONS } from "../../../data/stations";
+
+export async function getStaticPaths() {
+  return STATIONS.map((station) => ({
+    params: { station: station.slug },
+    props: { stationSlug: station.slug },
+  }));
+}
+
+const { stationSlug } = Astro.props;
+const station = STATIONS.find((s) => s.slug === stationSlug)!;
+
+const title = `Hyrox ${station.name} Standards, Weights, and Technique`;
+const description = `Official Hyrox ${station.name} station: weights by division, common no-reps, and a proven technique breakdown. ${station.distance ?? station.reps ?? ""}`.trim();
+
+const breadcrumbs = [
+  { name: "Stations", url: "/stations/" },
+  { name: station.name },
+];
+
+const faqItems = [
+  {
+    question: `What is the weight for Hyrox ${station.name}?`,
+    answer: station.standards
+      .map((s) => `${s.division}: ${s.spec}`)
+      .join(". ") + ".",
+  },
+  {
+    question: `What are common no-reps on ${station.name}?`,
+    answer: station.commonNoReps.map((x) => `${x}.`).join(" "),
+  },
+  {
+    question: `How do I train for ${station.name}?`,
+    answer: `Practice ${station.name.toLowerCase()} weekly with race weight and race distance under fatigue. Plug it into circuit workouts so pacing feels familiar on race day.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Guide`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+  howToName={`How to do the Hyrox ${station.name}`}
+  howToDescription={station.overviewText}
+  howToSteps={station.howToSteps}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/stations/" class="text-text-muted hover:text-accent transition-colors no-underline">Stations</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{station.name}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-sm font-bold uppercase tracking-wider text-accent mb-3">
+        Station {station.position} of 8
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {station.name} — Standards & Technique
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {station.overviewText}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Hyrox {station.name} weights by division</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Division</th>
+            <th>Specification</th>
+          </tr>
+        </thead>
+        <tbody>
+          {station.standards.map((std) => (
+            <tr>
+              <th>{std.division}</th>
+              <td>{std.spec}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Common no-reps on {station.name}</h2>
+      <ul>
+        {station.commonNoReps.map((n) => <li>{n}</li>)}
+      </ul>
+
+      <h2>How to execute {station.name}</h2>
+      <ol>
+        {station.howToSteps.map((s) => (
+          <li>
+            <strong>{s.name}.</strong> {s.text}
+          </li>
+        ))}
+      </ol>
+
+      {station.techniquePostHref && (
+        <>
+          <h2>Full technique breakdown</h2>
+          <p>
+            Read the <a href={station.techniquePostHref}>full {station.name.toLowerCase()} technique guide</a> for drills, common mistakes, and a training block to improve at this station.
+          </p>
+        </>
+      )}
+
+      <h2>Pacing targets by division</h2>
+      <p>
+        Looking for the time you should hit on {station.name}? Browse <a href="/times/">pacing targets by division and age group</a> or try the <a href="/calculator/">Hyrox time calculator</a>.
+      </p>
+    </section>
+
+    <aside class="mt-16 pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">Other Hyrox stations</h2>
+      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4 not-prose">
+        {STATIONS.filter((s) => s.slug !== station.slug).map((s) => (
+          <a
+            href={`/stations/${s.slug}/standards/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+              Station {s.position}
+            </div>
+            <div class="text-sm text-text-heading font-bold">{s.name}</div>
+            <div class="text-xs text-text-muted mt-1">{s.distance ?? s.reps}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

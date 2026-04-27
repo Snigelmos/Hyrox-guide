@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  CATEGORIES,
+  AGE_GROUPS,
+  computeExpectedFinish,
+  formatHMS,
+} from "../../../data/hyrox-times";
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((cat) => ({
+    params: { category: cat.slug },
+    props: { category: cat.slug },
+  }));
+}
+
+const { category } = Astro.props;
+const cat = CATEGORIES.find((c) => c.id === category)!;
+
+const title = `${cat.label} Hyrox Finish Times by Age Group`;
+const description = `Expected Hyrox finish times for ${cat.label} across every age group, with splits and pacing targets. ${cat.description}`;
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Guide`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={[
+    { name: "Race Times", url: "/times/" },
+    { name: cat.label },
+  ]}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/times/" class="text-text-muted hover:text-accent transition-colors no-underline">Times</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{cat.label}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {cat.description}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <p>
+        Pick your age group below for per-station splits, pacing plan, and training recommendations.
+      </p>
+    </section>
+
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mt-10">
+      {AGE_GROUPS.map((age) => {
+        const finish = computeExpectedFinish(cat.id, age.id);
+        return (
+          <a
+            href={`/times/${cat.slug}/${age.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Age {age.label}</div>
+            <div class="text-2xl font-black text-text-heading">{formatHMS(finish.totalSeconds)}</div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>

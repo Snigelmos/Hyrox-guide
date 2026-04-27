@@ -1,0 +1,349 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { QUALIFIER_PAGES, PRO_QUALIFYING_TIMES_2026 } from "../../data/qualifiers";
+
+export async function getStaticPaths() {
+  return QUALIFIER_PAGES.map((p) => ({
+    params: { slug: p.slug },
+    props: { slug: p.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const page = QUALIFIER_PAGES.find((p) => p.slug === slug)!;
+
+const breadcrumbs = [
+  { name: "Qualifiers", url: "/qualifiers/" },
+  { name: page.title },
+];
+
+// FAQ + page-specific content keyed by slug.
+const pageContent: Record<string, {
+  intro: string;
+  body: string;
+  faqs: { question: string; answer: string }[];
+}> = {
+  "pro-qualifying-times": {
+    intro: "Pro qualifying times are the published thresholds you need to hit at an Open Singles race to upgrade into the Pro division. Times are set per age group and reviewed each season.",
+    body: "below",
+    faqs: [
+      {
+        question: "What is the Hyrox Pro qualifying time for men in 2026?",
+        answer: "For Open Men 25-34, the Pro qualifying time is 1:03:00. Times step up by age group: 1:05:00 for 35-39, 1:08:00 for 40-44, 1:11:00 for 45-49, and so on. Hit any of these in an Open Singles race to qualify.",
+      },
+      {
+        question: "What is the Hyrox Pro qualifying time for women?",
+        answer: "For Open Women 25-34, the Pro qualifying time is 1:16:00. The full table starts at 1:18:00 for 16-24 and 35-39, and rises to 1:38:00 for 60+.",
+      },
+      {
+        question: "Do qualifying times change each year?",
+        answer: "Yes — Hyrox reviews qualifying times annually. They've trended slightly faster over recent seasons as the sport's overall standard rises. Always check the latest hyrox.com athlete handbook before targeting a time.",
+      },
+      {
+        question: "Does my qualifying time roll over to the next season?",
+        answer: "Pro qualification is generally valid for the season in which you achieved it plus the following season. After that, you'd need to re-qualify if your division-specific eligibility expires.",
+      },
+    ],
+  },
+  "world-championship": {
+    intro: "The 2026 Hyrox World Championships take place 18-21 June 2026 at Strawberry Arena in Stockholm. There are three paths to qualify, depending on your division and ability level.",
+    body: "below",
+    faqs: [
+      {
+        question: "When and where is the Hyrox World Championship 2026?",
+        answer: "The 2026 Hyrox World Championship is 18-21 June 2026 at Strawberry Arena in Stockholm, Sweden. The event hosts singles, doubles, age-group, adaptive, and Elite 15 finals.",
+      },
+      {
+        question: "Who qualifies for the Hyrox World Championship?",
+        answer: "Three paths: (1) age-group winners at regional Open events, (2) athletes who hit Pro qualifying times in their age group, and (3) the Elite 15 — the top 15 Pro athletes per division across season ranking points.",
+      },
+      {
+        question: "How many spots are available at the World Championship?",
+        answer: "The exact field size varies by year but typically includes roughly 1,500-2,500 athletes across all divisions. Open age-group winners and Pro qualifiers comprise the bulk, with Elite 15 being a smaller, more competitive top tier.",
+      },
+      {
+        question: "Do I need to register separately for the World Championship?",
+        answer: "Yes. Once you qualify, you'll receive an invitation from Hyrox with a registration link. You confirm and pay the entry fee separately. Spots are not automatic — you must claim them within the registration window.",
+      },
+    ],
+  },
+  "season-ranking-points": {
+    intro: "Hyrox season ranking points are awarded for finish placement at every event during the season, with Major events offering the highest point totals. The points board determines Elite 15 qualification and certain age-group rankings.",
+    body: "below",
+    faqs: [
+      {
+        question: "How do Hyrox season ranking points work?",
+        answer: "You earn points for your placement in each event you race. Points scale with finish position (1st earns more than 5th, etc.) and event tier — Majors offer roughly 1.5-2× the points of a standard event. Your top 4-5 results count toward your seasonal total.",
+      },
+      {
+        question: "Which Hyrox events are Majors for points purposes?",
+        answer: "The 2025-26 Major events include the EMEA Regional Championships (London), APAC Regional Championships (Brisbane), Americas Regional Championships, and Warsaw. Majors carry the highest point multipliers and are typically the deciding races for Elite 15 qualifying.",
+      },
+      {
+        question: "How do I check my Hyrox season ranking points?",
+        answer: "Hyrox publishes an updated season ranking board on hyrox.com after each event. Search for your name or filter by division and age group. Points update typically within 1-2 weeks of an event.",
+      },
+      {
+        question: "Can I qualify for the Elite 15 from points alone?",
+        answer: "Yes. The top 15 athletes per Pro division on the season ranking points board qualify for the Elite 15 finals at the World Championship. You don't need a Major win — consistent high placements across multiple events can get you in.",
+      },
+    ],
+  },
+  "elite-15": {
+    intro: "The Elite 15 is the top tier of Hyrox Pro racing. The 15 fastest Pro athletes per division across the season-ranking points board earn invitations to the Elite 15 finals at the World Championship.",
+    body: "below",
+    faqs: [
+      {
+        question: "What is the Hyrox Elite 15?",
+        answer: "Elite 15 is the championship division of Hyrox Pro racing. The 15 fastest Pro athletes per division (Pro Men, Pro Women, Pro Doubles Men, Pro Doubles Women) earn Elite 15 finals spots at the World Championships, racing in a head-to-head finals format.",
+      },
+      {
+        question: "How do you qualify for Elite 15?",
+        answer: "Top 15 in season ranking points within your Pro division. Points come from finish placement at all events you race, with Major events (Regional Championships) carrying the highest point multipliers. Your top results across the season count.",
+      },
+      {
+        question: "Who are typical Elite 15 athletes?",
+        answer: "Elite 15 typically includes professional or semi-professional athletes — full-time Hyrox racers, ex-professional cross-fit athletes, and elite endurance athletes who race the Pro division globally. Times are typically sub-55 (Pro Men) or sub-65 (Pro Women).",
+      },
+      {
+        question: "Do Elite 15 athletes get prize money?",
+        answer: "Yes. Hyrox awards prize money for Elite 15 finals placements, with the top finishers earning the largest payouts. Specific amounts vary by season — check hyrox.com for the current prize structure.",
+      },
+    ],
+  },
+  "age-group-world-championship": {
+    intro: "Age-group World Championship qualifying is the most accessible path: win your age group at a regional Open Singles event and you earn a World Championship invitation. Here's how it works in practice.",
+    body: "below",
+    faqs: [
+      {
+        question: "How do I qualify for the Hyrox World Championship age-group division?",
+        answer: "Win your age group at any regional Hyrox Open Singles event during the season. The Open Singles age-group podium (typically 1st place per age group) earns a World Championship invitation. Some events extend invitations to top 3 or top 5 — check the event-specific qualifying rules.",
+      },
+      {
+        question: "What times typically win Hyrox age groups?",
+        answer: "Open Men age-group winners typically run sub-65 in the 25-34 brackets, sub-70 in 35-44, sub-75 in 45-54, and sub-85 in 55+. Open Women winners run sub-72, sub-78, sub-83, and sub-90 respectively. These are rough thresholds — competitive races can require faster times.",
+      },
+      {
+        question: "Can I qualify in any city or only majors?",
+        answer: "Most regional Open events offer World Championship qualifying for the age-group winner. Majors offer additional qualifying spots and Elite 15 ranking points. Check the event-specific athlete brief for confirmation.",
+      },
+      {
+        question: "What if I don't win my age group but place in the top 5?",
+        answer: "Some events extend qualifying to the top 3 or top 5 in each age group. Many don't. Always check the specific event's qualifying rules in the athlete handbook before assuming a top-5 placement gets you a World Championship invitation.",
+      },
+    ],
+  },
+};
+
+const content = pageContent[slug];
+---
+
+<BaseLayout
+  title={`${page.metaTitle} | Hyrox Vault`}
+  description={page.description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={content.faqs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/qualifiers/" class="text-text-muted hover:text-accent transition-colors no-underline">Qualifiers</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{page.title}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {page.title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {page.description}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <p>{content.intro}</p>
+
+      {slug === "pro-qualifying-times" && (
+        <>
+          <h2>Hyrox 2026 Pro qualifying times by age group</h2>
+          <p>
+            Hit any of these times in an Open Singles race to upgrade to Pro for your next race. Times are listed for the 2025-26 season and reviewed annually.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Age group</th>
+                <th>Men</th>
+                <th>Women</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRO_QUALIFYING_TIMES_2026.map((q) => (
+                <tr>
+                  <td><strong>{q.ageGroup}</strong></td>
+                  <td>{q.menTime}</td>
+                  <td>{q.womenTime}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h2>What the Pro qualifying time tells you about your fitness</h2>
+          <p>
+            Hitting the Pro qualifying time means you can sustain race-pace running for 8 km plus stations under load — roughly the top 5-15% of Open finishers in your age group. Use the <a href="/calculator/">Hyrox time calculator</a> to plan splits that match your target.
+          </p>
+          <h2>How to plan your qualifying race</h2>
+          <ul>
+            <li>Pick a regional Open event with strong field depth (Berlin, London, Hamburg are competitive — your time stands up).</li>
+            <li>Build a 12-week prep specifically targeting the threshold time, not just "fastest possible."</li>
+            <li>Use a Hyrox simulator 4 weeks out to confirm pacing.</li>
+            <li>If you miss by 1-3 minutes on race day, qualify at your next event — don't burn a full season chasing one race.</li>
+          </ul>
+        </>
+      )}
+
+      {slug === "world-championship" && (
+        <>
+          <h2>Three paths to the 2026 Hyrox World Championship</h2>
+          <h3>Path 1: Age-group qualifying (Open Singles)</h3>
+          <p>
+            Win your age group at a regional Open Singles event. The age-group podium earns World Championship invitations. Most events invite the 1st place finisher per age group; some events extend to the top 3 or top 5.
+          </p>
+          <h3>Path 2: Pro qualifying time</h3>
+          <p>
+            Hit the published Pro qualifying time for your age group at any Open event. Once qualified, you race the Pro division for the season. Top placements in Pro at season events earn World Championship spots.
+          </p>
+          <h3>Path 3: Elite 15</h3>
+          <p>
+            The top 15 athletes per Pro division across the season-ranking points board qualify for the Elite 15 finals. This is the most competitive path — typically requires sub-55 (Pro Men) or sub-65 (Pro Women) times consistently.
+          </p>
+          <h2>About the 2026 Hyrox World Championship</h2>
+          <ul>
+            <li><strong>Dates:</strong> 18-21 June 2026</li>
+            <li><strong>Venue:</strong> Strawberry Arena, Stockholm, Sweden</li>
+            <li><strong>Title sponsor:</strong> Puma</li>
+            <li><strong>Divisions:</strong> Singles (Open + Pro), Doubles, Age-group, Elite 15, Adaptive</li>
+            <li><strong>Field size:</strong> approximately 1,500-2,500 athletes across all divisions</li>
+          </ul>
+          <h2>What happens after you qualify</h2>
+          <ul>
+            <li>You receive an invitation email from Hyrox within 2-4 weeks of your qualifying race.</li>
+            <li>Confirm and pay your World Championship entry within the registration window (typically 4-6 weeks).</li>
+            <li>Book travel — Stockholm hotels near the arena book up months in advance.</li>
+            <li>Plan a final 6-8 week prep block targeting peak race fitness for June.</li>
+          </ul>
+        </>
+      )}
+
+      {slug === "season-ranking-points" && (
+        <>
+          <h2>How Hyrox season ranking points work</h2>
+          <p>
+            Each event you race awards points based on your finish placement and the event's tier. A standard regional event awards a base point allocation; Major events award roughly 1.5-2× the points of a standard event. Your top 4-5 results across the season count toward your seasonal total.
+          </p>
+          <h2>Major events for the 2025-26 season</h2>
+          <ul>
+            <li>EMEA Regional Championships (London, March 2026)</li>
+            <li>APAC Regional Championships (Brisbane, April 2026)</li>
+            <li>Americas Regional Championships</li>
+            <li>HYROX Warsaw (April 2026 — final Major)</li>
+          </ul>
+          <h2>How to maximise your season ranking points</h2>
+          <ul>
+            <li>Race at least 4-5 events in your division to fill all scoring slots.</li>
+            <li>Prioritise Major events — the points multiplier is significant.</li>
+            <li>Race in cities with strong field depth — placing top 10 in Berlin counts heavier than placing top 10 at a smaller event in some seasons.</li>
+            <li>Track your standing on the official hyrox.com season ranking board after each race.</li>
+          </ul>
+        </>
+      )}
+
+      {slug === "elite-15" && (
+        <>
+          <h2>What Elite 15 is</h2>
+          <p>
+            Elite 15 is the championship-division finals at the Hyrox World Championship. The top 15 athletes per Pro division (Pro Men, Pro Women, Pro Doubles Men, Pro Doubles Women) qualify based on season-ranking points and race head-to-head at the World Championship.
+          </p>
+          <h2>How Elite 15 qualifying works</h2>
+          <ul>
+            <li>You must already be in the Pro division.</li>
+            <li>You earn season-ranking points at every Pro event you race.</li>
+            <li>Major events award the highest point totals.</li>
+            <li>The top 15 per division on the points board at season's end earn Elite 15 finals spots.</li>
+          </ul>
+          <h2>Typical Elite 15 finish times</h2>
+          <ul>
+            <li><strong>Pro Men:</strong> typically sub-55:00, with podium in the 53-54 range.</li>
+            <li><strong>Pro Women:</strong> typically sub-65:00, with podium in the 62-64 range.</li>
+            <li><strong>Pro Doubles Men:</strong> typically sub-50:00.</li>
+            <li><strong>Pro Doubles Women:</strong> typically sub-60:00.</li>
+          </ul>
+        </>
+      )}
+
+      {slug === "age-group-world-championship" && (
+        <>
+          <h2>How to win your age group at a regional Hyrox event</h2>
+          <p>
+            Age-group qualifying is the most accessible World Championship path. Win the Open Singles podium for your age group at any regional event and you earn a World Championship invitation. The hard part is winning — competitive age groups (especially 25-34 and 35-44) often require sub-65 (men) or sub-72 (women) times.
+          </p>
+          <h2>What times win age groups (regional events)</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Age group</th>
+                <th>Men (typical winning time)</th>
+                <th>Women (typical winning time)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>16-24</td><td>~1:05:00</td><td>~1:18:00</td></tr>
+              <tr><td>25-29</td><td>~1:00:00</td><td>~1:12:00</td></tr>
+              <tr><td>30-34</td><td>~1:00:00</td><td>~1:12:00</td></tr>
+              <tr><td>35-39</td><td>~1:02:00</td><td>~1:15:00</td></tr>
+              <tr><td>40-44</td><td>~1:05:00</td><td>~1:18:00</td></tr>
+              <tr><td>45-49</td><td>~1:08:00</td><td>~1:22:00</td></tr>
+              <tr><td>50-54</td><td>~1:12:00</td><td>~1:27:00</td></tr>
+              <tr><td>55-59</td><td>~1:15:00</td><td>~1:32:00</td></tr>
+              <tr><td>60+</td><td>~1:20:00</td><td>~1:38:00</td></tr>
+            </tbody>
+          </table>
+          <p class="text-sm text-text-muted">
+            These are typical winning times at strong-field regional events. Smaller events can be won in slower times; Major events typically require faster.
+          </p>
+          <h2>Strategy for age-group qualifying</h2>
+          <ul>
+            <li>Pick a regional event with field depth — winning a smaller event is easier but the competitive prep value is lower.</li>
+            <li>Browse <a href="/times/">our time benchmarks by age group</a> to set a realistic target.</li>
+            <li>Use the <a href="/calculator/">Hyrox time calculator</a> to plan splits.</li>
+            <li>Build a 12-week prep block targeting peak fitness for race day.</li>
+          </ul>
+        </>
+      )}
+
+      <h2>Related qualifying guides</h2>
+      <ul>
+        {QUALIFIER_PAGES.filter((p) => p.slug !== slug).map((p) => (
+          <li><a href={`/qualifiers/${p.slug}/`}>{p.title}</a></li>
+        ))}
+      </ul>
+
+      <h2>FAQ</h2>
+      {content.faqs.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

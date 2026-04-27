@@ -1,11 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HyroxCalculator from "../components/HyroxCalculator";
+import { GOAL_TIME_CONFIGS } from "../data/calculator-goals";
+
+const menGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men");
+const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
 ---
 
 <BaseLayout
-  title="Hyrox Time Calculator — Predict Your Finish Time (2026)"
-  description="Free Hyrox finish time calculator. Enter your 5K pace, bench press, and deadlift — get a full race split breakdown in seconds. Used by thousands of Hyrox athletes."
+  title="Hyrox Race Time Predictor — Predict Your Finish Time (2026)"
+  description="Free Hyrox race time predictor. Enter your 5K pace, bench press, and deadlift — get a predicted finish time with full station splits for Open or Pro division."
 >
   <section class="container-main py-12">
 
@@ -18,10 +22,10 @@ import HyroxCalculator from "../components/HyroxCalculator";
         </ol>
       </nav>
       <h1 class="text-3xl md:text-5xl font-black">
-        <span class="text-gradient-accent">Race Time Calculator</span>
+        <span class="text-gradient-accent">Race Time Predictor</span>
       </h1>
       <p class="text-base text-text-muted mt-2 max-w-xl">
-        Enter your 5 km time, max bench press, and max deadlift — get your predicted Hyrox finish time with a full station breakdown.
+        Enter your 5 km time, max bench press, and max deadlift — get a predicted Hyrox finish time with full station splits for Open or Pro division.
       </p>
     </div>
 
@@ -61,6 +65,41 @@ import HyroxCalculator from "../components/HyroxCalculator";
             <p class="text-text-muted text-xs">Get faster with structured plans</p>
           </div>
         </a>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mt-16 pt-10 border-t border-border">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Goal-time split guides</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">
+        Pick a target finish time and get a pre-built split breakdown — running pace required, station-by-station targets, and the training plan that builds the fitness.
+      </p>
+      <div class="mb-8">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Open Men</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {menGoals.map((g) => (
+            <a
+              href={`/calculator/${g.slug}/`}
+              class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-all no-underline"
+            >
+              <div class="text-lg font-black text-text-heading">{g.goalShort}</div>
+              <div class="text-xs text-text-muted">{g.goalLabel}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Open Women</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {womenGoals.map((g) => (
+            <a
+              href={`/calculator/${g.slug}/`}
+              class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-all no-underline"
+            >
+              <div class="text-lg font-black text-text-heading">{g.goalShort}</div>
+              <div class="text-xs text-text-muted">{g.goalLabel}</div>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
 

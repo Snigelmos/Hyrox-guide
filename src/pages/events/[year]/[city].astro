@@ -1,0 +1,230 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  EVENTS,
+  allEventPaths,
+  formatEventDate,
+  type HyroxEvent,
+} from "../../../data/events";
+
+export async function getStaticPaths() {
+  return allEventPaths().map(({ year, slug }) => ({
+    params: { year: String(year), city: slug },
+    props: { year, slug },
+  }));
+}
+
+const { year, slug } = Astro.props;
+const event: HyroxEvent = EVENTS.find((e) => e.year === year && e.slug === slug)!;
+
+const sponsorPrefix = event.sponsor ? `${event.sponsor} ` : "";
+const title = `Hyrox ${event.city} ${year} — ${formatEventDate(event.startDate, event.endDate)}`;
+const description = event.confirmed
+  ? `${sponsorPrefix}Hyrox ${event.city} ${year} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
+  : `Hyrox ${event.city} ${year} expected ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Indicative date pending official confirmation. Get prep guidance and pacing strategy.`;
+
+const breadcrumbs = [
+  { name: "Events", url: "/events/" },
+  { name: String(year), url: `/events/${year}/` },
+  { name: event.city },
+];
+
+const startIso = event.startDate;
+const endIso = event.endDate ?? event.startDate;
+const validUntilIso = endIso;
+
+const eventSchema = {
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  name: `${sponsorPrefix}Hyrox ${event.city} ${year}`,
+  description,
+  startDate: startIso,
+  endDate: endIso,
+  eventStatus: event.confirmed
+    ? "https://schema.org/EventScheduled"
+    : "https://schema.org/EventPostponed",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  sport: "Hyrox",
+  location: {
+    "@type": "Place",
+    name: event.venue,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: event.city,
+      addressCountry: event.countryCode,
+    },
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "Hyrox",
+    url: "https://hyrox.com/",
+  },
+  ...(event.officialUrl ? { url: event.officialUrl } : {}),
+  ...(event.sponsor
+    ? {
+        sponsor: {
+          "@type": "Organization",
+          name: event.sponsor,
+        },
+      }
+    : {}),
+  offers: {
+    "@type": "Offer",
+    url: event.registrationUrl ?? event.officialUrl,
+    priceCurrency: "EUR",
+    price: "139",
+    availability: "https://schema.org/LimitedAvailability",
+    validFrom: "2025-09-01",
+    validThrough: validUntilIso,
+  },
+};
+
+const faqItems = [
+  {
+    question: `When is Hyrox ${event.city} ${year}?`,
+    answer: event.confirmed
+      ? `Hyrox ${event.city} ${year} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}.`
+      : `Hyrox ${event.city} ${year} is expected around ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}, based on previous seasons. Always verify dates on the official Hyrox schedule before booking travel.`,
+  },
+  {
+    question: `Where is the Hyrox ${event.city} ${year} venue?`,
+    answer: `The event is held at ${event.venue} in ${event.city}, ${event.country}. Public transport is almost always the fastest option — parking around major expo centres sells out race weekend.`,
+  },
+  {
+    question: `How do I register for Hyrox ${event.city} ${year}?`,
+    answer: `Registration opens on the official Hyrox website (link below). Most major Hyrox stops sell out 4-8 weeks before race day. Early-bird pricing typically saves €20-30 vs late entry.`,
+  },
+  {
+    question: `What divisions does Hyrox ${event.city} offer?`,
+    answer: `Standard divisions are: ${(event.divisions ?? ["Open", "Pro", "Doubles", "Doubles Mixed", "Relay"]).join(", ")}. All divisions race the same 8 functional stations and 8 km of running, with weights varying by division.`,
+  },
+  {
+    question: `How early should I arrive for Hyrox ${event.city}?`,
+    answer:
+      "Arrive at the venue 90 minutes before your start wave. This gives you time to check in, warm up, and drop your bag. Waves run every 10 minutes across the full event day, so missing your slot means losing your entry.",
+  },
+  {
+    question: `How do I train for Hyrox ${event.city}?`,
+    answer:
+      "Follow an 8–12 week structured plan that covers running, sled work, and high-rep wall balls. Most first-timers underestimate how much running matters — 8 km of running under fatigue is the single biggest time variable.",
+  },
+];
+
+const otherEventsInYear = EVENTS.filter(
+  (e) => e.year === year && e.slug !== event.slug
+).slice(0, 9);
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/events/" class="text-text-muted hover:text-accent transition-colors no-underline">Events</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href={`/events/${year}/`} class="text-text-muted hover:text-accent transition-colors no-underline">{year}</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{event.city}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox {event.city} {year}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {formatEventDate(event.startDate, event.endDate)} · {event.venue}, {event.city}
+      </p>
+      {event.confirmed ? (
+        <div class="mt-6 inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          Confirmed on official 2026 calendar
+        </div>
+      ) : (
+        <div class="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
+          Dates are indicative and based on previous seasons. Always confirm on the <a href={event.officialUrl} rel="noopener noreferrer" class="text-accent underline">official Hyrox schedule</a> before booking travel.
+        </div>
+      )}
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <p>
+        <strong>{sponsorPrefix}Hyrox {event.city} {year}</strong> runs <strong>{formatEventDate(event.startDate, event.endDate)}</strong> at {event.venue}. {event.populationDescriptor ?? `It's the ${event.country} round of the global Hyrox series — 8 km of running paired with 8 functional stations, identical to every other Hyrox in the world.`}
+      </p>
+
+      <h2>Hyrox {event.city} {year} key details</h2>
+      <table>
+        <tbody>
+          <tr><th>Date</th><td>{formatEventDate(event.startDate, event.endDate)}</td></tr>
+          <tr><th>Venue</th><td>{event.venue}</td></tr>
+          <tr><th>Location</th><td>{event.city}, {event.country}</td></tr>
+          {event.sponsor && (<tr><th>Title sponsor</th><td>{event.sponsor}</td></tr>)}
+          <tr><th>Divisions</th><td>{(event.divisions ?? ["Open", "Pro", "Doubles", "Doubles Mixed", "Relay"]).join(", ")}</td></tr>
+          <tr><th>Race format</th><td>8 × 1 km running + 8 functional stations</td></tr>
+          <tr><th>Official site</th><td><a href={event.officialUrl} rel="noopener noreferrer">Hyrox {event.city} registration</a></td></tr>
+        </tbody>
+      </table>
+
+      <h2>How to register for Hyrox {event.city} {year}</h2>
+      <p>
+        Registration is on the <a href={event.officialUrl} rel="noopener noreferrer">official Hyrox site</a>. Larger stops like Berlin, London, and New York sell out 4–8 weeks before race day. Early-bird pricing typically saves €20–€30 vs late entry. Doubles and Relay slots usually sell out before Singles.
+      </p>
+
+      <h2>How to prepare for Hyrox {event.city}</h2>
+      <p>
+        Depending on your current fitness, plan 8–16 weeks of specific preparation. The biggest contributors to finish time are:
+      </p>
+      <ul>
+        <li>Your <a href="/training/running/">running base and intervals</a> — running is 50% of race time.</li>
+        <li>Station-specific strength, especially <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a>.</li>
+        <li>Grip endurance for <a href="/racing-guide/stations/">farmers carry</a>, sled pull, and wall balls.</li>
+        <li>A dialled <a href="/supplements/protocol/">race-day fuelling protocol</a>.</li>
+      </ul>
+      <p>
+        If this is your first Hyrox, read our <a href="/blog/first-hyrox-race-guide/">first Hyrox race guide</a> and the <a href="/blog/hyrox-race-week-protocol/">race-week taper protocol</a>.
+      </p>
+
+      <h2>Predicted finish time at Hyrox {event.city}</h2>
+      <p>
+        Use the <a href="/calculator/">Hyrox time calculator</a> or browse our <a href="/times/">time standards by division and age group</a> to set a realistic target before you line up. Hyrox times are globally comparable — your {event.city} time will line up directly against athletes who race in Berlin, London, or New York.
+      </p>
+
+      <h2>After the race</h2>
+      <p>
+        Race results are typically posted on hyrox.com within 24–48 hours of the final wave. We publish a full <a href={`/events/${year}/${event.slug}/results/`}>Hyrox {event.city} {year} results recap</a> the Monday after the event with finish-time histograms, podiums, and key takeaways for next year.
+      </p>
+    </section>
+
+    <aside class="mt-16 pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">Other Hyrox races in {year}</h2>
+      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
+        {otherEventsInYear.map((e) => (
+          <a
+            href={`/events/${e.year}/${e.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{e.country}</div>
+            <div class="text-sm text-text-heading font-bold">{e.city}</div>
+            <div class="text-xs text-text-muted mt-1">{formatEventDate(e.startDate, e.endDate)}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(eventSchema)} slot="head" />
+</BaseLayout>

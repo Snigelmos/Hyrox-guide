@@ -1,0 +1,219 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import GymMap from "../../../components/GymMap.tsx";
+import {
+  GYMS,
+  getGymBySlug,
+  getNearbyGyms,
+  AFFILIATION_LABELS,
+  OFFERING_LABELS,
+  hasIndexablePage,
+} from "../../../data/gym-finder";
+import { EVENTS } from "../../../data/events";
+
+export async function getStaticPaths() {
+  return GYMS.map((g) => ({
+    params: { slug: g.slug },
+    props: { slug: g.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const gym = getGymBySlug(slug)!;
+const indexable = hasIndexablePage(gym);
+const nearby = getNearbyGyms(slug, 25, 4);
+
+const upcomingEvent = EVENTS.find(
+  (e) => e.slug === gym.citySlug && e.year >= 2026,
+) ?? EVENTS.filter(
+  (e) => e.countryCode === gym.countryCode && e.year >= 2026,
+).sort((a, b) => a.startDate.localeCompare(b.startDate))[0];
+
+const title = `${gym.name} — Hyrox Gym in ${gym.city}, ${gym.country}`;
+const metaTitle = `${gym.name} (${gym.city}) — Hyrox Training`;
+const description = gym.description
+  ? `${gym.name} in ${gym.city}, ${gym.country}. ${gym.description.slice(0, 140)}…`
+  : `${gym.name} — a Hyrox-affiliated training partner in ${gym.city}, ${gym.country}. Address, map, classes and links.`;
+
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: gym.country, url: `/gyms/country/${gym.countrySlug}/` },
+  { name: gym.city, url: `/gyms/${gym.citySlug}/` },
+  { name: gym.name },
+];
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": new URL(`/gyms/g/${gym.slug}/`, Astro.site).toString(),
+  name: gym.name,
+  description: gym.description ?? `Hyrox-affiliated training partner in ${gym.city}, ${gym.country}.`,
+  url: gym.website ?? new URL(`/gyms/g/${gym.slug}/`, Astro.site).toString(),
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: gym.address,
+    addressLocality: gym.city,
+    addressCountry: gym.countryCode,
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: gym.lat,
+    longitude: gym.lng,
+  },
+  ...(gym.website ? { sameAs: [gym.website, ...(gym.hyroxOfficialUrl ? [gym.hyroxOfficialUrl] : [])] } : {}),
+};
+
+const directionsGoogle = `https://www.google.com/maps/dir/?api=1&destination=${gym.lat},${gym.lng}&destination_place_id=${encodeURIComponent(gym.name)}`;
+const directionsApple = `http://maps.apple.com/?daddr=${gym.lat},${gym.lng}&q=${encodeURIComponent(gym.name)}`;
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  noindex={!indexable}
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(localBusinessJsonLd)} />
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href={`/gyms/${gym.citySlug}/`} class="text-text-muted hover:text-accent transition-colors no-underline">{gym.city}</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{gym.name}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+        {AFFILIATION_LABELS[gym.affiliationType]}{gym.neighbourhood ? ` · ${gym.neighbourhood}` : ""} · {gym.city}, {gym.country}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {gym.name}
+      </h1>
+      <p class="mt-4 text-base md:text-lg text-text-muted leading-relaxed max-w-3xl">
+        {gym.address}
+      </p>
+      <div class="mt-5 flex flex-wrap gap-3">
+        {gym.website && (
+          <a href={gym.website} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
+            Visit website &rarr;
+          </a>
+        )}
+        <a href={directionsGoogle} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
+          Google Maps directions
+        </a>
+        <a href={directionsApple} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
+          Apple Maps directions
+        </a>
+        {gym.hyroxOfficialUrl && (
+          <a href={gym.hyroxOfficialUrl} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text-muted hover:text-text hover:border-border-hover font-bold text-sm no-underline">
+            Hyrox.com listing
+          </a>
+        )}
+      </div>
+    </header>
+
+    <section class="mb-10">
+      <GymMap client:only="react" mode="single" singleSlug={gym.slug} height="380px" />
+    </section>
+
+    {gym.description && (
+      <section class="mb-10 prose md:prose-lg max-w-none">
+        <h2>About {gym.name}</h2>
+        <p>{gym.description}</p>
+      </section>
+    )}
+
+    <section class="mb-10 grid gap-4 md:grid-cols-2">
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Affiliation</div>
+        <div class="text-base font-black text-text-heading mb-1">{AFFILIATION_LABELS[gym.affiliationType]}</div>
+        <p class="text-sm text-text-muted">
+          Last verified {gym.verifiedAt}. Hyrox affiliations change — verify directly with the gym before visiting.
+        </p>
+      </div>
+      {gym.offerings && gym.offerings.length > 0 && (
+        <div class="bg-bg-card border border-border rounded-2xl p-6">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">What they offer</div>
+          <ul class="space-y-1.5">
+            {gym.offerings.map((o) => (
+              <li class="text-sm text-text flex items-start gap-2">
+                <span class="text-accent">•</span>
+                <span>{OFFERING_LABELS[o]}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+
+    {upcomingEvent && (
+      <section class="mb-10 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Nearest Hyrox event</div>
+        <h2 class="text-xl font-black text-text-heading mb-1">Hyrox {upcomingEvent.city} {upcomingEvent.year}</h2>
+        <p class="text-sm text-text-muted mb-3">{upcomingEvent.venue} · {upcomingEvent.startDate}</p>
+        <a href={`/events/${upcomingEvent.year}/${upcomingEvent.slug}/`} class="text-accent underline text-sm font-bold">
+          See full event details &rarr;
+        </a>
+      </section>
+    )}
+
+    {nearby.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
+          Nearby Hyrox gyms
+        </h2>
+        <div class="grid gap-4 md:grid-cols-2">
+          {nearby.map((g) => (
+            <a
+              href={`/gyms/g/${g.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                {g.city}{g.neighbourhood ? ` · ${g.neighbourhood}` : ""}
+              </div>
+              <div class="text-base font-black text-text-heading mb-1 leading-tight">{g.name}</div>
+              <div class="text-xs text-text-muted">{AFFILIATION_LABELS[g.affiliationType]}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Hyrox training in {gym.city}</h2>
+      <p>
+        {gym.name} is one of {GYMS.filter((g) => g.citySlug === gym.citySlug).length} mapped Hyrox-affiliated gyms in {gym.city}. See the
+        <a href={`/gyms/${gym.citySlug}/`}> full {gym.city} directory</a>
+        for all listed training partners, or open the
+        <a href="/gyms/map/"> interactive Hyrox Gym Finder map</a>
+        to explore other locations.
+      </p>
+
+      <h2>Verify before visiting</h2>
+      <p>
+        Hyrox affiliations and individual gym programming change. Always confirm classes, drop-in pricing, and equipment availability directly with {gym.name} before planning a session. Cross-check on the
+        <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer"> official Hyrox training clubs directory</a> if you need an officially-listed club.
+      </p>
+    </section>
+
+    {!indexable && (
+      <section class="mt-10 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5 text-sm text-text-muted">
+        This page is currently not indexed by search engines because it lacks a verified description or website link. We're growing the directory — if you have details for this gym,
+        <a href="/gyms/submit/" class="text-accent underline ml-1">submit them here</a>.
+      </section>
+    )}
+  </div>
+</BaseLayout>

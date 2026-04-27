@@ -1,0 +1,112 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { GLOSSARY_TERMS } from "../../data/glossary";
+
+export async function getStaticPaths() {
+  return GLOSSARY_TERMS.map((t) => ({
+    params: { slug: t.slug },
+    props: { slug: t.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const term = GLOSSARY_TERMS.find((t) => t.slug === slug)!;
+
+const relatedTerms = term.related
+  .map((s) => GLOSSARY_TERMS.find((t) => t.slug === s))
+  .filter((t): t is NonNullable<typeof t> => Boolean(t));
+
+const breadcrumbs = [
+  { name: "Glossary", url: "/glossary/" },
+  { name: term.term },
+];
+
+const title = `${term.term} — Hyrox Term Explained`;
+const description = `${term.shortDefinition}`;
+
+const definedTermSchema = {
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  name: term.term,
+  description: term.shortDefinition,
+  inDefinedTermSet: {
+    "@type": "DefinedTermSet",
+    name: "Hyrox Glossary",
+    url: "https://hyroxvault.com/glossary/",
+  },
+};
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={term.faqs}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(definedTermSchema)} slot="head" />
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/glossary/" class="text-text-muted hover:text-accent transition-colors no-underline">Glossary</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{term.term}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Hyrox term</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {term.term}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {term.shortDefinition}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>What {term.term} means in Hyrox</h2>
+      <p>{term.longDefinition}</p>
+
+      <h2>Context and use</h2>
+      <p>{term.context}</p>
+
+      {term.examples && term.examples.length > 0 && (
+        <>
+          <h2>Examples</h2>
+          <ul>
+            {term.examples.map((e) => <li>{e}</li>)}
+          </ul>
+        </>
+      )}
+
+      <h2>Frequently asked questions</h2>
+      {term.faqs.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      {relatedTerms.length > 0 && (
+        <>
+          <h2>Related Hyrox terms</h2>
+          <ul>
+            {relatedTerms.map((r) => (
+              <li>
+                <a href={`/glossary/${r.slug}/`}><strong>{r.term}</strong></a> — {r.shortDefinition}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  </div>
+</BaseLayout>

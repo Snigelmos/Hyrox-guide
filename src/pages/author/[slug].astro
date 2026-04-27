@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { AUTHORS } from "../../data/authors";
+import { getAllPosts } from "../../data/blog";
+import PostCard from "../../components/PostCard.astro";
+
+export async function getStaticPaths() {
+  return AUTHORS.map((author) => ({
+    params: { slug: author.slug },
+    props: { author },
+  }));
+}
+
+const { author } = Astro.props;
+
+const allPosts = await getAllPosts();
+const authorPosts = allPosts.filter(
+  (p) => (p.data.author ?? "").toLowerCase() === author.name.toLowerCase()
+);
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: author.name,
+  url: new URL(`/author/${author.slug}/`, Astro.site).toString(),
+  jobTitle: author.jobTitle,
+  worksFor: {
+    "@type": "Organization",
+    name: "HyroxVault",
+    url: Astro.site?.toString(),
+  },
+  description: author.bio,
+  ...(author.sameAs && author.sameAs.length > 0 ? { sameAs: author.sameAs } : {}),
+  knowsAbout: author.topics,
+};
+---
+
+<BaseLayout
+  title={`${author.name} | Hyrox Guide`}
+  description={author.bio}
+  breadcrumbs={[
+    { name: "Author", url: "/author/" },
+    { name: author.name },
+  ]}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/author/" class="text-text-muted hover:text-accent transition-colors no-underline">Author</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{author.name}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+        Author
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {author.name}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {author.bio}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Credentials</h2>
+      <ul>
+        {author.credentials.map((c) => <li>{c}</li>)}
+      </ul>
+
+      <h2>Topics covered</h2>
+      <ul>
+        {author.topics.map((t) => <li>{t}</li>)}
+      </ul>
+
+      <h2>Editorial approach</h2>
+      <p>
+        Every article is written by or reviewed by someone who has raced Hyrox, not by a generalist content writer. Weights, splits, and pacing targets are based on published race data and hands-on training — never invented. Read the <a href="/about/">full editorial policy and affiliate disclosure</a> for details.
+      </p>
+    </section>
+
+    {authorPosts.length > 0 && (
+      <section class="mt-16 pt-10 border-t border-border">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
+          Articles by {author.name}
+        </h2>
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {authorPosts.map((post) => <PostCard post={post} variant="default" />)}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} slot="head" />
+</BaseLayout>

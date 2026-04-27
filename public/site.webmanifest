@@ -1,0 +1,30 @@
+{
+  "name": "Hyrox Vault",
+  "short_name": "HyroxVault",
+  "description": "Your complete guide to Hyrox — race breakdowns, training programs, gear reviews, and upcoming competitions.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

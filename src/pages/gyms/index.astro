@@ -1,0 +1,212 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CITY_GYMS } from "../../data/gyms";
+import { GYMS, listCountries } from "../../data/gym-finder";
+
+const title = "Hyrox Affiliated Gyms by City — Find a Hyrox Training Club Near You";
+const description = "Curated directory of Hyrox-affiliated gyms and training clubs by city. Interactive map, country and city pages, plus full gym detail pages for the most established Hyrox training partners worldwide.";
+const breadcrumbs = [{ name: "Gyms" }];
+
+const totalMappedGyms = GYMS.length;
+const totalCountries = listCountries().length;
+
+const byRegion = {
+  EU: CITY_GYMS.filter((c) => c.region === "EU"),
+  NA: CITY_GYMS.filter((c) => c.region === "NA"),
+  APAC: CITY_GYMS.filter((c) => c.region === "APAC"),
+  ME: CITY_GYMS.filter((c) => c.region === "ME"),
+};
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Gyms</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Affiliated Gyms
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        A curated directory of Hyrox training clubs, partner chains, and notable boxes that run Hyrox-specific programming. Use the interactive map to find a gym near you, or browse by country and city.
+      </p>
+    </header>
+
+    <section class="mb-12">
+      <a
+        href="/gyms/map/"
+        class="block group relative overflow-hidden rounded-2xl border border-border bg-bg-card hover:border-accent/40 transition-all no-underline"
+      >
+        <div class="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-accent/5 opacity-60"></div>
+        <div class="relative grid md:grid-cols-[1.4fr_1fr] gap-6 p-6 md:p-8 items-center">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Headline feature</div>
+            <h2 class="text-2xl md:text-4xl font-black text-text-heading leading-tight mb-3">
+              Hyrox Gym Finder Map
+            </h2>
+            <p class="text-text-muted text-base md:text-lg leading-relaxed mb-4">
+              {totalMappedGyms} hand-verified Hyrox-affiliated gyms across {totalCountries} countries. Filter by country, affiliation type, or search by name.
+            </p>
+            <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-bg font-bold text-sm group-hover:gap-3 transition-all">
+              Open the map &rarr;
+            </span>
+          </div>
+          <div class="aspect-[4/3] rounded-xl bg-bg overflow-hidden flex items-center justify-center border border-border relative">
+            <svg viewBox="0 0 400 300" class="w-full h-full" aria-hidden="true">
+              <rect width="400" height="300" fill="#0c1a25" />
+              <g fill="none" stroke="#1e3a5f" stroke-width="0.5" opacity="0.6">
+                <path d="M0 60 Q 100 50 200 60 T 400 60" />
+                <path d="M0 120 Q 100 110 200 120 T 400 120" />
+                <path d="M0 180 Q 100 170 200 180 T 400 180" />
+                <path d="M0 240 Q 100 230 200 240 T 400 240" />
+                <path d="M80 0 V 300" />
+                <path d="M160 0 V 300" />
+                <path d="M240 0 V 300" />
+                <path d="M320 0 V 300" />
+              </g>
+              <g fill="#38bdf8" opacity="0.9">
+                <circle cx="180" cy="100" r="5" />
+                <circle cx="190" cy="105" r="5" />
+                <circle cx="200" cy="110" r="6" />
+                <circle cx="170" cy="115" r="5" />
+                <circle cx="105" cy="135" r="5" />
+                <circle cx="115" cy="115" r="5" />
+                <circle cx="280" cy="170" r="5" />
+                <circle cx="335" cy="195" r="5" />
+                <circle cx="240" cy="125" r="5" />
+                <circle cx="220" cy="140" r="5" />
+                <circle cx="60" cy="180" r="5" />
+                <circle cx="160" cy="180" r="5" />
+              </g>
+              <g fill="#38bdf8" opacity="0.4">
+                <circle cx="180" cy="100" r="12" />
+                <circle cx="200" cy="110" r="14" />
+                <circle cx="105" cy="135" r="10" />
+                <circle cx="280" cy="170" r="10" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <section class="mb-12 grid md:grid-cols-2 gap-4">
+      <a
+        href="/gyms/country/"
+        class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Browse by country</div>
+        <h3 class="text-xl font-black text-text-heading mb-1">All countries</h3>
+        <p class="text-sm text-text-muted">{totalCountries} countries with mapped Hyrox-affiliated gyms.</p>
+      </a>
+      <a
+        href="/gyms/submit/"
+        class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Help us grow</div>
+        <h3 class="text-xl font-black text-text-heading mb-1">Submit a gym</h3>
+        <p class="text-sm text-text-muted">Know a Hyrox-equipped venue we should add? Send us the details.</p>
+      </a>
+    </section>
+
+    <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+      <p class="text-text-muted">
+        This directory is curated and reviewed quarterly. Hyrox affiliations and individual gym programming change — always verify on the <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer" class="text-accent underline">official Hyrox training clubs directory</a> before planning a visit.
+      </p>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-black text-text-heading mb-6">Europe</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {byRegion.EU.map((c) => (
+          <a
+            href={`/gyms/${c.citySlug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.country}</div>
+            <h3 class="text-xl font-black text-text-heading mb-1">{c.city}</h3>
+            <p class="text-sm text-text-muted">{c.gyms.length} listed training partners</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-black text-text-heading mb-6">North America</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {byRegion.NA.map((c) => (
+          <a
+            href={`/gyms/${c.citySlug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.country}</div>
+            <h3 class="text-xl font-black text-text-heading mb-1">{c.city}</h3>
+            <p class="text-sm text-text-muted">{c.gyms.length} listed training partners</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-black text-text-heading mb-6">Asia-Pacific</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {byRegion.APAC.map((c) => (
+          <a
+            href={`/gyms/${c.citySlug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.country}</div>
+            <h3 class="text-xl font-black text-text-heading mb-1">{c.city}</h3>
+            <p class="text-sm text-text-muted">{c.gyms.length} listed training partners</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-black text-text-heading mb-6">Middle East</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {byRegion.ME.map((c) => (
+          <a
+            href={`/gyms/${c.citySlug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.country}</div>
+            <h3 class="text-xl font-black text-text-heading mb-1">{c.city}</h3>
+            <p class="text-sm text-text-muted">{c.gyms.length} listed training partners</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>What is a Hyrox training club?</h2>
+      <p>
+        Hyrox training clubs are accredited gyms that have official affiliation with Hyrox. They typically have the equipment for Hyrox stations (sled, ski erg, rower, sandbags, wall ball targets) and run Hyrox-branded classes or simulations. Affiliated clubs receive access to the Hyrox Performance Hub for daily programming and class tutorials.
+      </p>
+      <p>
+        Beyond official affiliated clubs, many CrossFit boxes, F45 studios, and boutique fitness studios run Hyrox-specific prep classes — particularly in the weeks leading up to major Hyrox events.
+      </p>
+      <h2>How to find a Hyrox gym near you</h2>
+      <ol>
+        <li>Open the <a href="/gyms/map/">interactive Hyrox Gym Finder map</a> and filter by country or search by neighbourhood.</li>
+        <li>Check the <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer">official Hyrox training clubs directory</a>.</li>
+        <li>Search local CrossFit affiliates — many run weekly Hyrox sim sessions.</li>
+        <li>Ask in your local Hyrox Facebook group or Strava club.</li>
+      </ol>
+    </section>
+  </div>
+</BaseLayout>

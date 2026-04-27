@@ -1,0 +1,153 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import GymMap from "../../components/GymMap.tsx";
+import { GYMS, listCountries, AFFILIATION_LABELS } from "../../data/gym-finder";
+
+const title = "Hyrox Gym Finder — Interactive Map of Hyrox-Affiliated Gyms Worldwide";
+const description = `Find Hyrox-affiliated training clubs and gyms near you on an interactive world map. ${GYMS.length} curated venues across ${listCountries().length} countries — filter by country, affiliation type, or search by name.`;
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: "Finder Map" },
+];
+
+const countries = listCountries();
+const totalGyms = GYMS.length;
+
+const faqItems = [
+  {
+    question: "How do I find a Hyrox gym near me?",
+    answer: `Use the interactive map above to browse ${totalGyms} hand-verified Hyrox-affiliated gyms across ${countries.length} countries. Filter by country, affiliation type, or search by gym name and neighbourhood. Each pin links through to the gym's website and a detail page with full address, classes offered, and directions.`,
+  },
+  {
+    question: "Are these gyms officially affiliated with Hyrox?",
+    answer: "We list a mix of official Hyrox training clubs (listed on hyrox.com), chain partners with branded Hyrox programming, CrossFit boxes that run Hyrox prep blocks, and boutique studios with full station equipment. Hyrox affiliations change — always verify on the official Hyrox training clubs directory before planning a visit.",
+  },
+  {
+    question: "Can I submit a gym to add to the map?",
+    answer: "Yes — head to the Submit a Gym page and send us the name, address and website. We add gyms with a verifiable Hyrox programming offering and a public web presence.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="website"
+  schemaType="WebSite"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-8 md:py-12">
+    <nav class="mb-6 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Finder Map</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 pb-6 border-b border-border">
+      <h1 class="text-3xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Gym Finder
+      </h1>
+      <p class="mt-3 text-base md:text-lg text-text-muted leading-relaxed max-w-3xl">
+        Interactive map of {totalGyms} hand-verified Hyrox-affiliated gyms across {countries.length} countries. Filter by country, affiliation type, or search by name to find a Hyrox training club near you.
+      </p>
+    </header>
+
+    <section class="mb-10">
+      <GymMap client:only="react" mode="full" />
+    </section>
+
+    <section class="mb-10">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading">
+          All gyms by country
+        </h2>
+        <a href="/gyms/submit/" class="text-sm text-accent font-bold underline">
+          Submit a gym &rarr;
+        </a>
+      </div>
+      <p class="text-sm text-text-muted mb-6">
+        Below is the full indexable list. Each gym links through to its detail page with map, address, and directions.
+      </p>
+      <div class="space-y-8">
+        {countries.map((c) => (
+          <div>
+            <h3 class="text-xl font-black text-text-heading mb-3 flex items-center gap-3">
+              <a href={`/gyms/country/${c.countrySlug}/`} class="hover:text-accent transition-colors no-underline">
+                {c.country}
+              </a>
+              <span class="text-xs font-normal text-text-muted">
+                {c.gyms.length} {c.gyms.length === 1 ? "gym" : "gyms"} · {c.cities.length} {c.cities.length === 1 ? "city" : "cities"}
+              </span>
+            </h3>
+            <ul class="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+              {c.gyms.map((g) => (
+                <li>
+                  <a
+                    href={`/gyms/g/${g.slug}/`}
+                    class="block p-4 rounded-xl border border-border bg-bg-card hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+                  >
+                    <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                      {g.city}{g.neighbourhood ? ` · ${g.neighbourhood}` : ""}
+                    </div>
+                    <div class="text-base font-black text-text-heading mb-1 leading-tight">
+                      {g.name}
+                    </div>
+                    <div class="text-xs text-text-muted">
+                      {AFFILIATION_LABELS[g.affiliationType]}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+      <h2 class="text-xl font-black text-text-heading mb-2">Always verify before visiting</h2>
+      <p class="text-text-muted leading-relaxed">
+        This list is curated and reviewed quarterly, but Hyrox affiliations and individual gym programming change frequently. Always cross-check on the
+        <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer" class="text-accent underline ml-1">official Hyrox training clubs directory</a>
+        and contact the gym directly before planning a session or trip.
+      </p>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>How to use the Hyrox Gym Finder</h2>
+      <ol>
+        <li><strong>Open the filters:</strong> use the country dropdown, affiliation-type filter, or free-text search at the top of the map.</li>
+        <li><strong>Click any pin</strong> to see the gym name, neighbourhood, address, a link to its website, and a "Details" link to the full gym page.</li>
+        <li><strong>Share filtered views:</strong> the URL updates as you filter, so you can copy and paste a filtered map (e.g. "Hyrox gyms in Germany") into a message or article.</li>
+      </ol>
+
+      <h2>What counts as a "Hyrox gym"?</h2>
+      <p>
+        Pins on this map fall into four categories:
+      </p>
+      <ul>
+        <li><strong>Official training clubs</strong> — listed on hyrox.com/affiliated-training-clubs/, with full station equipment and access to the Hyrox Performance Hub for class programming.</li>
+        <li><strong>Chain partners</strong> — large gym chains (The Gym Group, Fitness First, John Reed, SATS, Equinox, Pure Fitness, F45) that run branded Hyrox class formats at select locations.</li>
+        <li><strong>CrossFit boxes</strong> — independent affiliates running dedicated Hyrox prep blocks, simulation sessions, and open-gym access ahead of major race weekends.</li>
+        <li><strong>Boutique studios</strong> — premium fitness clubs (BLOK, 1Rebel, Klay, Episod, Anatomy) with Hyrox-equipped floors and class formats.</li>
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      {faqItems.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CATEGORIES, AGE_GROUPS, computeExpectedFinish, formatHMS } from "../../data/hyrox-times";
+
+const title = "Hyrox Finish Times by Category and Age Group";
+const description = "Expected Hyrox finish times for every division (Open, Pro, Doubles) and age group. Compare your predicted time with median finishers and plan your splits.";
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Guide`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={[{ name: "Race Times" }]}
+>
+  <div class="container-main py-10 md:py-16">
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {description}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-12">
+      <p>
+        Hyrox finish times vary enormously based on division and age group. Use this page as an index — click any cell to see per-station splits, pacing strategy, and training recommendations for that specific group. Need a personalised prediction? Try the <a href="/calculator/">Hyrox time calculator</a>.
+      </p>
+    </section>
+
+    {CATEGORIES.map((cat) => (
+      <section class="mb-12">
+        <h2 class="text-2xl font-black text-text-heading mb-4">{cat.label}</h2>
+        <p class="text-text-muted mb-4">{cat.description}</p>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {AGE_GROUPS.map((age) => {
+            const finish = computeExpectedFinish(cat.id, age.id);
+            return (
+              <a
+                href={`/times/${cat.slug}/${age.slug}/`}
+                class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Age {age.label}</div>
+                <div class="text-2xl font-black text-text-heading">{formatHMS(finish.totalSeconds)}</div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

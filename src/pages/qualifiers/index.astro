@@ -1,0 +1,122 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { QUALIFIER_PAGES, PRO_QUALIFYING_TIMES_2026 } from "../../data/qualifiers";
+
+const title = "Hyrox Qualifying Guide 2026 — Pro Times, World Championship, Elite 15";
+const description = "Complete reference for the 2026 Hyrox qualifying system: Pro qualifying times by age group, World Championship qualifying paths, season ranking points, and Elite 15.";
+const breadcrumbs = [{ name: "Qualifiers" }];
+
+const faqItems = [
+  {
+    question: "How do you qualify for the Hyrox World Championship?",
+    answer: "There are three main paths: (1) win your age group at a regional Open Singles event, (2) finish in the top 15 of season-ranking points in the Pro division (Elite 15), or (3) finish at the Pro qualifying time threshold for your age group at a regional Open event.",
+  },
+  {
+    question: "What's the Hyrox Pro qualifying time for 2026?",
+    answer: "Pro qualifying times for 2026 range from 1:03:00 (Open Men 25-34) to 1:38:00 (Women 60+). Times are set per age group and refresh each season — the 2026 thresholds are listed below in the qualifying times table.",
+  },
+  {
+    question: "How does Elite 15 qualifying work?",
+    answer: "Elite 15 is the top tier of Hyrox Pro racing. The top 15 athletes per division across the season-ranking points board qualify for the Elite 15 finals at the World Championships. Major events award the highest points.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Qualifiers</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Qualifying Guide 2026
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        Pro qualifying times, World Championship paths, season ranking points, and Elite 15 — everything you need to plan your competitive Hyrox season.
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-12">
+      <p>
+        The Hyrox qualifying system is genuinely confusing. There are three different paths to the World Championships, qualifying times that change by age group, season-long ranking points, and a separate Elite 15 system for Pro athletes.
+      </p>
+      <p>
+        This hub clarifies all of it. Start with whichever guide matches your goal — qualify for Worlds, hit the Pro time, win your age group, or chase Elite 15.
+      </p>
+
+      <h2>Quick reference: 2026 Pro qualifying times</h2>
+      <p>
+        Hit these times in an Open Singles race to qualify for the Pro division.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Age group</th>
+            <th>Men</th>
+            <th>Women</th>
+          </tr>
+        </thead>
+        <tbody>
+          {PRO_QUALIFYING_TIMES_2026.map((q) => (
+            <tr>
+              <td><strong>{q.ageGroup}</strong></td>
+              <td>{q.menTime}</td>
+              <td>{q.womenTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="text-sm text-text-muted">
+        Source: hyrox.com 2025-26 athlete handbook. Times are reviewed annually — confirm current thresholds before targeting one for your race.
+      </p>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-3xl font-black text-text-heading mb-6">All qualifying guides</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {QUALIFIER_PAGES.map((p) => (
+          <a
+            href={`/qualifiers/${p.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <h3 class="text-xl font-black text-text-heading mb-2">{p.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{p.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>The three paths to the Hyrox World Championship</h2>
+      <ol>
+        <li>
+          <strong>Win your age group</strong> at a regional Open Singles event. Open division podium gets you a World Championship invitation. The fastest path for most amateur athletes.
+        </li>
+        <li>
+          <strong>Hit the Pro qualifying time</strong> at a regional Open event. Once qualified, you race the Pro division and chase Elite 15 ranking points.
+        </li>
+        <li>
+          <strong>Top 15 in season ranking points</strong> (Elite 15). The top tier of Pro racing — the 15 fastest Pro athletes per division per season earn World Championship Elite 15 finals spots.
+        </li>
+      </ol>
+
+      <p>
+        Need help picking your path? See <a href="/qualifiers/world-championship/">how to qualify for the 2026 Hyrox World Championships</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

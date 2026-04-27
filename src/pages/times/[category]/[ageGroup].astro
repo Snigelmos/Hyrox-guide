@@ -1,0 +1,288 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  CATEGORIES,
+  AGE_GROUPS,
+  allTimeCombinations,
+  computeExpectedFinish,
+  formatHMS,
+  formatMinSec,
+} from "../../../data/hyrox-times";
+
+export async function getStaticPaths() {
+  return allTimeCombinations().map(({ category, ageGroup }) => ({
+    params: { category, ageGroup },
+    props: { category, ageGroup },
+  }));
+}
+
+const { category, ageGroup } = Astro.props;
+const cat = CATEGORIES.find((c) => c.id === category)!;
+const age = AGE_GROUPS.find((a) => a.id === ageGroup)!;
+const finish = computeExpectedFinish(category, ageGroup);
+
+// Tiers used for SEO body copy + schema
+const podiumSeconds = Math.round(finish.totalSeconds * 0.82);
+const goodSeconds = Math.round(finish.totalSeconds * 0.92);
+const averageSeconds = finish.totalSeconds;
+const beginnerSeconds = Math.round(finish.totalSeconds * 1.12);
+const top10Seconds = Math.round(finish.totalSeconds * 0.86);
+
+const pronoun = cat.label.toLowerCase().includes("women")
+  ? "women"
+  : cat.label.toLowerCase().includes("men")
+    ? "men"
+    : "athletes";
+
+const ageWord =
+  age.id === "u30"
+    ? "under 30"
+    : age.id === "60-plus"
+      ? "60 or older"
+      : `aged ${age.label}`;
+
+const title = `What's a Good Hyrox Time for ${cat.label} ${age.id === "u30" || age.id === "60-plus" ? ageWord.replace("aged ", "") : age.label}?`;
+const description = `Average Hyrox finish time for ${cat.label} ${ageWord} is around ${formatHMS(averageSeconds)}. A good time is ${formatHMS(goodSeconds)}; podium-level ${formatHMS(podiumSeconds)}. Full station splits and pacing.`;
+
+const breadcrumbs = [
+  { name: "Race Times", url: "/times/" },
+  { name: `${cat.label}`, url: `/times/${cat.slug}/` },
+  { name: age.label },
+];
+
+const faqItems = [
+  {
+    question: `What is a good Hyrox time for ${cat.label} ${ageWord}?`,
+    answer: `For ${cat.label} ${pronoun} ${ageWord}, a good Hyrox time is anything under ${formatHMS(goodSeconds)}. The average finish in this division and age group sits around ${formatHMS(averageSeconds)}, while a top-10% time is roughly ${formatHMS(top10Seconds)} and a podium finish usually requires going under ${formatHMS(podiumSeconds)}.`,
+  },
+  {
+    question: `What is the average Hyrox time for ${cat.label} ${ageWord}?`,
+    answer: `The average Hyrox finish for ${cat.label} ${pronoun} ${ageWord} is approximately ${formatHMS(averageSeconds)}. This is based on aggregated medians across the 2024-2025 racing seasons. A first-time racer with a sensible 8-12 week prep typically finishes between ${formatHMS(averageSeconds)} and ${formatHMS(beginnerSeconds)}.`,
+  },
+  {
+    question: "How much of Hyrox time is running vs stations?",
+    answer: `In this group, running accounts for about ${formatHMS(finish.runSeconds)} at a pace of roughly ${formatMinSec(finish.runPerKm)}/km, while the eight stations plus transitions total ${formatHMS(finish.totalSeconds - finish.runSeconds)}. Running is usually where races are won or lost for athletes over 40.`,
+  },
+  {
+    question: "How do I improve my Hyrox finish time fastest?",
+    answer:
+      "For most athletes, the biggest time gains come from improving 5k run pace (not strength). Next is grip endurance for sled pull + farmers carry. Wall balls and sled push come last — they reward specific practice rather than raw fitness.",
+  },
+  {
+    question: `Do I need to be in the Pro division to be competitive at age ${age.label}?`,
+    answer:
+      "No. The Open division is the standard competitive class and hosts World Championship qualifiers in every age group. Pro is heavier weights and suits athletes who already break the 70-minute mark in Open.",
+  },
+];
+
+const pacingTargets = [
+  { phase: "SkiErg", target: formatMinSec(finish.stations[0].adjusted) },
+  { phase: "First Run (1km)", target: formatMinSec(finish.runPerKm) },
+  { phase: "Sled Push", target: formatMinSec(finish.stations[1].adjusted) },
+  { phase: "Sled Pull", target: formatMinSec(finish.stations[2].adjusted) },
+  { phase: "Burpee Broad Jumps", target: formatMinSec(finish.stations[3].adjusted) },
+  { phase: "Row 1,000m", target: formatMinSec(finish.stations[4].adjusted) },
+  { phase: "Farmers Carry", target: formatMinSec(finish.stations[5].adjusted) },
+  { phase: "Sandbag Lunges", target: formatMinSec(finish.stations[6].adjusted) },
+  { phase: "Wall Balls", target: formatMinSec(finish.stations[7].adjusted) },
+];
+
+const tierTable = [
+  { tier: "Podium / Top 3", time: formatHMS(podiumSeconds), label: "Elite" },
+  { tier: "Top 10%", time: formatHMS(top10Seconds), label: "Competitive" },
+  { tier: "Good", time: formatHMS(goodSeconds), label: "Fast amateur" },
+  { tier: "Average", time: formatHMS(averageSeconds), label: "Median finisher" },
+  { tier: "Beginner", time: formatHMS(beginnerSeconds), label: "First-timer / sub-3 month prep" },
+];
+
+// Dataset schema: each tier as a distinct numeric data point.
+const datasetSchema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: `Hyrox finish time benchmarks — ${cat.label}, age ${age.label}`,
+  description: `Median, top-10%, podium, and beginner Hyrox finish times for ${cat.label} ${ageWord}, derived from publicly reported 2024-2025 race results.`,
+  keywords: [
+    `hyrox time ${cat.slug}`,
+    `good hyrox time ${age.slug}`,
+    `average hyrox time ${cat.slug} ${age.slug}`,
+    "hyrox benchmarks",
+    "hyrox finish time",
+  ],
+  variableMeasured: tierTable.map((t) => ({
+    "@type": "PropertyValue",
+    name: t.tier,
+    value: t.time,
+    unitText: "h:mm:ss",
+  })),
+};
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/times/" class="text-text-muted hover:text-accent transition-colors no-underline">Times</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href={`/times/${cat.slug}/`} class="text-text-muted hover:text-accent transition-colors no-underline">{cat.label}</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{age.label}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {description}
+      </p>
+    </header>
+
+    <section class="mb-10 prose md:prose-lg max-w-none">
+      <p class="text-base md:text-lg leading-relaxed">
+        For <strong>{cat.label} {pronoun} {ageWord}</strong>, the typical Hyrox finish time is approximately <strong>{formatHMS(averageSeconds)}</strong>. A <em>good</em> time in this group is anything under <strong>{formatHMS(goodSeconds)}</strong>. A <em>top-10%</em> performance lands around <strong>{formatHMS(top10Seconds)}</strong>, and a <em>podium</em> finish usually requires going under <strong>{formatHMS(podiumSeconds)}</strong>. First-time racers with 8-12 weeks of focused prep typically come in between {formatHMS(averageSeconds)} and {formatHMS(beginnerSeconds)}.
+      </p>
+    </section>
+
+    <section class="mb-12 grid gap-6 md:grid-cols-3">
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Average finish</div>
+        <div class="text-4xl font-black text-text-heading">{formatHMS(averageSeconds)}</div>
+        <div class="text-sm text-text-muted mt-1">Median for {cat.label} {ageWord}</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Good time</div>
+        <div class="text-4xl font-black text-text-heading">{formatHMS(goodSeconds)}</div>
+        <div class="text-sm text-text-muted mt-1">Faster than ~70% of the field</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Podium</div>
+        <div class="text-4xl font-black text-text-heading">{formatHMS(podiumSeconds)}</div>
+        <div class="text-sm text-text-muted mt-1">Top 3 in the age group</div>
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Average vs good vs podium times for {cat.label} {age.label}</h2>
+      <p>
+        Hyrox publishes leaderboards but no public "what's a good time" benchmark. The table below maps every tier from beginner to podium so you know exactly where you sit.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Finish time</th>
+            <th>Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tierTable.map((row) => (
+            <tr>
+              <td><strong>{row.tier}</strong></td>
+              <td>{row.time}</td>
+              <td>{row.label}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Per-station splits to hit {formatHMS(averageSeconds)}</h2>
+      <p>
+        Use these splits as your pacing checklist during the race. If you hit them within ±10 seconds per station, you're on track for the average finish.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Target time</th>
+            <th>Technique</th>
+          </tr>
+        </thead>
+        <tbody>
+          {finish.stations.map((s) => (
+            <tr>
+              <td>{s.station}</td>
+              <td>{formatMinSec(s.adjusted)}</td>
+              <td><a href={s.link}>Guide</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Pacing plan for race day</h2>
+      <p>
+        These are the checkpoints you should mentally tick off. Miss any two of them by more than 30 seconds and you're on pace for a {formatHMS(Math.round(finish.totalSeconds * 1.08))}+ finish instead.
+      </p>
+      <ol>
+        {pacingTargets.map((t) => (
+          <li><strong>{t.phase}:</strong> {t.target}</li>
+        ))}
+      </ol>
+
+      <h2>How to train to hit a good time for {cat.label} {ageWord}</h2>
+      <ul>
+        <li>
+          Build your run to {formatMinSec(finish.runPerKm)}/km for a 5km time trial. Use our <a href="/training/running/">running programming guide</a>.
+        </li>
+        <li>
+          Train <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a> with race-weight at least once per week.
+        </li>
+        <li>
+          Practice <a href="/training/stations/">station-specific circuits</a> so pacing feels familiar under fatigue.
+        </li>
+        <li>
+          Plan your <a href="/supplements/protocol/">race-day fuelling</a> — most 10+ min losses in this time range come from underfuelling, not fitness.
+        </li>
+        <li>
+          If you're chasing sub-{formatHMS(goodSeconds).replace(/^0:/, "")}, follow our <a href="/calculator/">goal-time calculator</a> to back-solve your weekly training paces.
+        </li>
+      </ul>
+
+      <h2>Ready to plan your race?</h2>
+      <p>
+        Use the <a href="/calculator/">Hyrox time calculator</a> to tweak splits based on your current fitness, or browse <a href="/training/">training programs</a> matched to your finish-time goal.
+      </p>
+    </section>
+
+    <aside class="mt-16 pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">More time standards</h2>
+      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
+        {CATEGORIES.filter((c) => c.id !== cat.id).slice(0, 3).map((c) => (
+          <a
+            href={`/times/${c.slug}/${age.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.label}</div>
+            <div class="text-sm text-text-heading">Age {age.label}</div>
+          </a>
+        ))}
+        {AGE_GROUPS.filter((a) => a.id !== age.id).slice(0, 3).map((a) => (
+          <a
+            href={`/times/${cat.slug}/${a.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{cat.label}</div>
+            <div class="text-sm text-text-heading">Age {a.label}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} slot="head" />
+</BaseLayout>

@@ -1,0 +1,181 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { GOAL_TIME_CONFIGS } from "../../data/calculator-goals";
+import { TRAINING_PLANS } from "../../data/training-plans";
+
+export async function getStaticPaths() {
+  return GOAL_TIME_CONFIGS.map((g) => ({
+    params: { slug: g.slug },
+    props: { slug: g.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const goal = GOAL_TIME_CONFIGS.find((g) => g.slug === slug)!;
+const matchingPlan = TRAINING_PLANS.find((p) => p.relatedCalculatorSlug === goal.slug);
+
+const formatHM = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.round((seconds % 3600) / 60);
+  return `${h}:${m.toString().padStart(2, "0")}:00`;
+};
+
+const totalRunMinutes = Math.floor(goal.totalRunSeconds / 60);
+const totalStationMinutes = Math.floor(goal.totalStationSeconds / 60);
+
+const title = `How to Hit ${goal.goalShort} Hyrox (${goal.audienceLabel}) — Splits, Pace, and Training Plan`;
+const metaTitle = `${goal.goalShort} Hyrox Splits & Training Plan — ${goal.audienceLabel} Guide`;
+const description = `Detailed split breakdown for ${goal.goalShort} Hyrox (${goal.audienceLabel}) — ${goal.runningPace} running pace, station-by-station targets, and the training plan to build it.`;
+
+const breadcrumbs = [
+  { name: "Calculator", url: "/calculator/" },
+  { name: `${goal.goalShort} Hyrox` },
+];
+
+const faqItems = [
+  {
+    question: `Is ${goal.goalShort} Hyrox a good time for ${goal.audienceLabel}?`,
+    answer: goal.realismCheck,
+  },
+  {
+    question: `What running pace do I need for ${goal.goalShort} Hyrox?`,
+    answer: `You need to hold approximately ${goal.runningPace} for the 8 km of running across all 8 runs. Total running time at this pace is roughly ${totalRunMinutes} minutes — this is the largest single time component of the race.`,
+  },
+  {
+    question: `How long does it take to train for ${goal.goalShort} Hyrox?`,
+    answer: `Most ${goal.audienceLabel} need ${goal.goalSeconds < 4500 ? "9-12 months of structured training" : goal.goalSeconds < 5400 ? "6-9 months" : "8-16 weeks"} to hit ${goal.goalShort}, depending on starting fitness. The biggest variables are running base and sled push capacity.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors no-underline">Calculator</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{goal.goalShort} Hyrox</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{goal.audienceLabel} · Goal time</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        How to Hit {goal.goalShort} Hyrox ({goal.audienceLabel})
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {goal.description}
+      </p>
+    </header>
+
+    <section class="mb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Goal time</div>
+        <div class="text-2xl md:text-3xl font-black text-text-heading">{goal.goalLabel}</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Run pace required</div>
+        <div class="text-2xl md:text-3xl font-black text-text-heading">{goal.runningPace}</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Total run time</div>
+        <div class="text-2xl md:text-3xl font-black text-text-heading">{Math.floor(goal.totalRunSeconds / 60)}:{(goal.totalRunSeconds % 60).toString().padStart(2, "0")}</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Total station time</div>
+        <div class="text-2xl md:text-3xl font-black text-text-heading">{Math.floor(goal.totalStationSeconds / 60)}:{(goal.totalStationSeconds % 60).toString().padStart(2, "0")}</div>
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Athlete profile to hit {goal.goalShort}</h2>
+      <p>{goal.athleteProfile}</p>
+
+      <h2>Recommended station splits for {goal.goalShort}</h2>
+      <p>
+        These are the per-station target times you need to average to hit {goal.goalLabel}. Slow on one? Make it up on running or another station. Faster on one? Bank time for fatigue later.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Target time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {goal.splits.map((s) => (
+            <tr>
+              <td><strong>{s.name}</strong></td>
+              <td>{s.time}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Running splits</h2>
+      <p>
+        Hold {goal.runningPace} for each of the 8 × 1 km runs. That's {Math.round(goal.totalRunSeconds / 8 / 60 * 100) / 100} minutes per run on average. Don't surge in run 1 — bank patience instead.
+      </p>
+
+      <h2>Roxzone budget</h2>
+      <p>
+        Allow approximately {Math.floor(goal.totalRoxzoneSeconds / 60)}:{(goal.totalRoxzoneSeconds % 60).toString().padStart(2, "0")} cumulative across the 16 transitions (run-to-station and station-to-run). This is one of the biggest hidden time costs — practice efficient transitions.
+      </p>
+
+      <h2>Training focus to build {goal.goalShort} fitness</h2>
+      <ul>
+        {goal.trainingFocus.map((f) => <li>{f}</li>)}
+      </ul>
+
+      {matchingPlan && (
+        <div class="not-prose my-8 bg-bg-card border border-accent/30 rounded-2xl p-6">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Ready-to-follow training plan</div>
+          <h3 class="text-xl font-black text-text-heading mb-2">
+            <a href={`/training-plans/${matchingPlan.slug}/`} class="hover:text-accent transition-colors no-underline">
+              {matchingPlan.title} →
+            </a>
+          </h3>
+          <p class="text-text-muted text-sm leading-relaxed">
+            {matchingPlan.durationWeeks} weeks, {matchingPlan.sessionsPerWeek} sessions/week, week-by-week schedule pre-calibrated to {goal.goalShort} pace and station targets.
+          </p>
+        </div>
+      )}
+
+      <h2>Use the live calculator to validate</h2>
+      <p>
+        These splits are average-athlete projections. Your real splits will skew based on your strengths — fast runners can give back time on stations; strong lifters can give back time on running. <a href="/calculator/">Run your specific 5K time, bench, and deadlift through our calculator</a> to see your projected finish and where to focus.
+      </p>
+
+      <h2>Realism check</h2>
+      <p>{goal.realismCheck}</p>
+
+      <h2>Frequently asked questions</h2>
+      {faqItems.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      <h2>Other goal-time guides</h2>
+      <ul>
+        {GOAL_TIME_CONFIGS.filter((g) => g.slug !== goal.slug && g.audience === goal.audience).slice(0, 5).map((g) => (
+          <li><a href={`/calculator/${g.slug}/`}>{g.goalShort} Hyrox ({g.audienceLabel}) splits and training plan</a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

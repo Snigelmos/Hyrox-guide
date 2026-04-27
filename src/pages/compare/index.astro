@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { COMPARISONS } from "../../data/comparisons";
+
+const title = "Hyrox Comparisons — vs Marathon, Spartan, DEKA, CrossFit";
+const description = "Hyrox compared side-by-side with every major fitness event: marathon, Spartan Race, DEKA, CrossFit, and singles vs doubles. Pick the right race for your goals.";
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Guide`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={[{ name: "Compare" }]}
+>
+  <div class="container-main py-10 md:py-16">
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {description}
+      </p>
+    </header>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {COMPARISONS.map((c) => (
+        <a
+          href={`/compare/${c.slug}/`}
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            Comparison
+          </div>
+          <div class="text-xl font-bold text-text-heading mb-2">
+            {c.hyroxLabel} vs {c.otherLabel}
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">{c.metaDescription}</p>
+        </a>
+      ))}
+      <a
+        href="/blog/hyrox-vs-crossfit/"
+        class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+          Comparison (blog)
+        </div>
+        <div class="text-xl font-bold text-text-heading mb-2">
+          Hyrox vs CrossFit
+        </div>
+        <p class="text-sm text-text-muted leading-relaxed">
+          The detailed breakdown of how Hyrox differs from CrossFit in training, competition, and community.
+        </p>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

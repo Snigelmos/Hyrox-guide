@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { listCountries } from "../../../data/gym-finder";
+
+const countries = listCountries();
+const totalGyms = countries.reduce((s, c) => s + c.gyms.length, 0);
+
+const title = `Hyrox Gyms by Country — Browse ${countries.length} Countries`;
+const description = `Browse Hyrox-affiliated gyms by country. ${totalGyms} curated venues across ${countries.length} countries — find a Hyrox training club in your country before planning a race or training trip.`;
+
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: "By Country" },
+];
+
+const byRegion: Record<string, typeof countries> = {
+  EU: countries.filter((c) => c.region === "EU"),
+  NA: countries.filter((c) => c.region === "NA"),
+  APAC: countries.filter((c) => c.region === "APAC"),
+  ME: countries.filter((c) => c.region === "ME"),
+  SA: countries.filter((c) => c.region === "SA"),
+};
+
+const regionLabels: Record<string, string> = {
+  EU: "Europe",
+  NA: "North America",
+  APAC: "Asia-Pacific",
+  ME: "Middle East",
+  SA: "South America",
+};
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">By Country</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Gyms by Country
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        Browse {totalGyms} curated Hyrox-affiliated gyms across {countries.length} countries. Pick a country to see all listed training partners, mapped venues, and the cities they're in.
+      </p>
+    </header>
+
+    {(["EU", "NA", "APAC", "ME", "SA"] as const).map((region) => {
+      const list = byRegion[region];
+      if (!list || list.length === 0) return null;
+      return (
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">{regionLabels[region]}</h2>
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {list.map((c) => (
+              <a
+                href={`/gyms/country/${c.countrySlug}/`}
+                class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.countryCode}</div>
+                <h3 class="text-xl font-black text-text-heading mb-1">{c.country}</h3>
+                <p class="text-sm text-text-muted">
+                  {c.gyms.length} {c.gyms.length === 1 ? "gym" : "gyms"} · {c.cities.length} {c.cities.length === 1 ? "city" : "cities"}
+                </p>
+              </a>
+            ))}
+          </div>
+        </section>
+      );
+    })}
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Looking for a specific city?</h2>
+      <p>
+        See the <a href="/gyms/">full city directory</a> or jump straight to the <a href="/gyms/map/">interactive Hyrox Gym Finder map</a> to filter by country and zoom in on a specific neighbourhood.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,132 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const title = "Submit a Hyrox Gym — Help Grow the Hyrox Vault Gym Finder";
+const description = "Know a Hyrox-affiliated gym we should add to the map? Send us the name, address, website and a short description and we'll verify and add it.";
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: "Submit a Gym" },
+];
+
+const submitEmail = "submissions@hyroxvault.com";
+const subject = "Hyrox Gym submission";
+const bodyTemplate = `Gym name:
+
+Address (street, postcode, city, country):
+
+Website:
+
+Hyrox affiliation type (official training club / chain partner / CrossFit box / boutique studio):
+
+What Hyrox programming do they offer? (classes / prep block / sim events / open gym):
+
+Anything else we should know:
+
+Your name (optional, so we can credit the submission):
+
+Your relationship to the gym (member / staff / owner / visitor):
+`;
+const mailtoHref = `mailto:${submitEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyTemplate)}`;
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Submit a Gym</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Submit a Hyrox Gym
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        Know a Hyrox-affiliated gym we should add to the map? Send us the basics and we'll verify and publish.
+      </p>
+    </header>
+
+    <section class="mb-10 grid md:grid-cols-2 gap-6">
+      <div class="bg-bg-card border border-border rounded-2xl p-6 md:p-8">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Option A · Quickest</div>
+        <h2 class="text-xl md:text-2xl font-black text-text-heading mb-3">Email us the details</h2>
+        <p class="text-text-muted leading-relaxed mb-5">
+          One click to open a pre-filled email with the fields we need. Your mail client will fill in the boilerplate; just complete the gaps.
+        </p>
+        <a
+          href={mailtoHref}
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-bg font-bold text-sm no-underline"
+        >
+          Open pre-filled email &rarr;
+        </a>
+        <p class="mt-4 text-xs text-text-muted">
+          Or email us directly at <a href={`mailto:${submitEmail}`} class="text-accent underline">{submitEmail}</a>
+        </p>
+      </div>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-6 md:p-8">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Option B · Most accurate</div>
+        <h2 class="text-xl md:text-2xl font-black text-text-heading mb-3">Open a GitHub issue</h2>
+        <p class="text-text-muted leading-relaxed mb-5">
+          Hyrox Vault is built in the open. If you have a GitHub account you can file an issue against the dataset and we'll review it directly there.
+        </p>
+        <a
+          href="https://github.com/hyroxvault/hyroxvault/issues/new?labels=gym-submission&title=New+gym%3A+&body=%23+New+Hyrox+gym+submission%0A%0A**Name**%3A%0A**Address**%3A%0A**Website**%3A%0A**Affiliation+type**%3A+official+training+club+%2F+chain+partner+%2F+CrossFit+box+%2F+boutique%0A**Offerings**%3A+Hyrox+classes+%2F+prep+block+%2F+sim+events+%2F+open+gym%0A**Short+description+%2860%E2%80%93150+words%29**%3A%0A**Your+relationship+to+the+gym**%3A%0A"
+          rel="noopener noreferrer"
+          target="_blank"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline"
+        >
+          Open a GitHub issue &rarr;
+        </a>
+      </div>
+    </section>
+
+    <section class="mb-10 prose md:prose-lg max-w-none">
+      <h2>What we'll add</h2>
+      <p>
+        We list gyms that meet at least two of the following:
+      </p>
+      <ul>
+        <li>Officially listed on <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer">hyrox.com/affiliated-training-clubs/</a></li>
+        <li>Branded Hyrox class formats on the public schedule</li>
+        <li>Full Hyrox station equipment (sled / ski erg / rower / sandbags / wall-ball targets)</li>
+        <li>Hosted Hyrox simulation events or prep blocks in the last 12 months</li>
+      </ul>
+
+      <h2>What we need</h2>
+      <ul>
+        <li><strong>Name</strong> — exactly as the gym uses it publicly.</li>
+        <li><strong>Full street address</strong> with postcode and city — we use this to derive the map coordinates.</li>
+        <li><strong>Public website URL</strong> — required for the gym to ship as an indexable detail page.</li>
+        <li><strong>Affiliation type</strong> — official training club, chain partner, CrossFit box, or boutique studio.</li>
+        <li><strong>Short description</strong> — 60–150 words on what makes them a Hyrox-friendly venue (equipment, classes, community, race-prep blocks, hosted events).</li>
+      </ul>
+
+      <h2>Editorial guarantees</h2>
+      <p>
+        Hyrox Vault doesn't take payment from gyms for inclusion or placement. We publish what we can verify and we reject submissions that look like SEO spam or non-Hyrox crossfit boxes with no demonstrable Hyrox programming. Every record on the site has a <code>verifiedAt</code> month visible on its detail page so visitors can see how fresh the listing is.
+      </p>
+    </section>
+
+    <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+      <h2 class="text-lg font-black text-text-heading mb-2">Spotted bad data?</h2>
+      <p class="text-text-muted leading-relaxed">
+        If something is out of date, the address has changed, or a gym has dropped its Hyrox programming — same channels: <a href={`mailto:${submitEmail}?subject=${encodeURIComponent("Correction: ")}`} class="text-accent underline">email us</a> or open an issue. We aim to push corrections within a week.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

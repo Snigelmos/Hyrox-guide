@@ -1,0 +1,61 @@
+---
+/**
+ * Breadcrumbs
+ *
+ * Visible breadcrumb trail. Use alongside the `breadcrumbs` prop on
+ * BaseLayout / GuideLayout so both the visible UI and BreadcrumbList JSON-LD
+ * stay consistent.
+ *
+ * Pass either `label` + optional `href` items (GuideLayout-style) or
+ * `name` + optional `url` items (BaseLayout-style) — both are accepted.
+ */
+
+interface Crumb {
+  label?: string;
+  href?: string;
+  name?: string;
+  url?: string;
+}
+
+interface Props {
+  items: Crumb[];
+  showHome?: boolean;
+}
+
+const { items, showHome = true } = Astro.props;
+
+const normalised = items.map((c) => ({
+  label: c.label ?? c.name ?? "",
+  href: c.href ?? c.url,
+}));
+---
+
+<nav class="mb-8 text-sm" aria-label="Breadcrumb">
+  <ol class="flex items-center gap-2 flex-wrap">
+    {showHome && (
+      <li>
+        <a
+          href="/"
+          class="text-text-muted hover:text-accent transition-colors no-underline"
+        >
+          Home
+        </a>
+      </li>
+    )}
+    {normalised.map((crumb, i) => (
+      <li class="flex items-center gap-2">
+        <span class="text-text-muted/40">/</span>
+        {crumb.href && i < normalised.length - 1 ? (
+          <a
+            href={crumb.href}
+            class="text-text-muted hover:text-accent transition-colors no-underline"
+          >
+            {crumb.label}
+          </a>
+        ) : (
+          <span class="text-text">{crumb.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

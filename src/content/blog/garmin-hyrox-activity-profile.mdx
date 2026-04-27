@@ -1,0 +1,136 @@
+---
+title: "Garmin Hyrox Activity Profile Setup — Race-Day Configuration"
+description: "Step-by-step Garmin Connect IQ setup for Hyrox: custom activity profile, data fields, auto-laps for stations, and the official Hyrox app on Forerunner / Fenix / Epix."
+pubDate: 2026-04-26
+author: "HyroxVault Editorial Team"
+category: "training"
+tags: ["garmin", "wearables", "setup", "race-day", "data fields"]
+faqs:
+  - question: "Does Garmin have a Hyrox activity profile?"
+    answer: "Yes — Garmin and Hyrox launched an official Hyrox activity profile in 2024 for Forerunner 255+, Fenix 7+, Epix Pro, and Forerunner 965/955. It auto-detects stations and provides per-segment splits. You can also build your own custom profile if your watch isn't on the supported list."
+  - question: "What Garmin watches support Hyrox tracking?"
+    answer: "The official Hyrox profile is supported on: Forerunner 255, 265, 955, 965, Fenix 7, 7 Pro, 8, Epix Pro, Tactix, and the Enduro 3. Older watches (Forerunner 245, Fenix 5/6) can use a custom activity profile but won't auto-detect stations."
+  - question: "How do I set up auto-lap for Hyrox stations?"
+    answer: "On Garmin watches without the official Hyrox profile, set auto-lap to Off and use manual laps (long-press the lap button at each station entry/exit). Or set distance auto-lap to 1 km — this captures every run segment automatically."
+  - question: "What data fields should I show during a Hyrox race?"
+    answer: "The most useful 4-field setup is: lap time (top), heart rate (middle-left), pace (middle-right), and distance or station number (bottom). Avoid showing too much — race-day cognitive load is already high."
+---
+
+## Short answer
+
+Garmin has an **official Hyrox activity profile** (jointly developed with Hyrox HQ) available on Connect IQ for all major modern Forerunner, Fenix, and Epix models. It auto-detects stations, captures per-segment splits, and uploads a complete race breakdown to Garmin Connect.
+
+If your watch supports it, install it. If not, this guide covers the manual configuration that gets you 90% of the same data.
+
+## Watches that support the official Hyrox profile
+
+| Model | Supported? |
+|-------|------------|
+| **Forerunner 165 / 255 / 265 / 955 / 965** | ✅ |
+| **Fenix 7 / 7 Pro / 8 / Tactix** | ✅ |
+| **Epix Pro / Enduro 3** | ✅ |
+| **Vivoactive 5** | ✅ |
+| **Forerunner 245 / 645 / 245 Music** | ❌ (custom profile only) |
+| **Fenix 5 / 6 / 6 Pro** | ❌ (custom profile only) |
+
+## Installing the official Hyrox profile
+
+1. **Open Connect IQ Store** (in the Garmin Connect app on your phone)
+2. **Search "Hyrox"**
+3. **Install the official Hyrox app** (developer: Garmin / Hyrox)
+4. **Sync your watch** (next time you connect)
+5. **On the watch:** Activities & Apps → Add → Hyrox
+
+The profile will appear in your activity menu alongside Run, Bike, etc.
+
+## What the official profile tracks
+
+Once active, the profile auto-detects:
+
+- **Run laps** (1 km each)
+- **Station segments** (SkiErg, sled push, sled pull, etc.)
+- **Transitions**
+- **Total race time**
+
+Your post-race Garmin Connect upload shows a station-by-station breakdown comparable to the official Hyrox results.
+
+## Manual setup for older watches
+
+If your Garmin doesn't support the official profile, build a custom activity instead:
+
+### Step 1: Create a "Hyrox" activity profile
+
+- On the watch: Settings → Activities & Apps → Add New → Other → Rename to "Hyrox"
+- Or in Garmin Connect: Devices → Activities & Apps → Edit → Add Custom Activity
+
+### Step 2: Configure data screens
+
+Set up a 4-field primary screen:
+
+| Field | Position |
+|-------|----------|
+| **Lap Time** | Top |
+| **Heart Rate** | Middle-left |
+| **Pace** | Middle-right |
+| **Total Time** | Bottom |
+
+Add a secondary screen with **distance**, **average HR**, and **kcal**.
+
+### Step 3: Set auto-lap
+
+Best option: **Auto-Lap by Distance, every 1 km.** This gives you a clean run lap every km plus a station lap when you finish station work and start running again.
+
+Alternative: **Manual Lap.** Press the lap button at each station entry and exit. More accurate but easy to forget mid-race.
+
+### Step 4: Disable auto-pause
+
+Auto-pause messes up Hyrox tracking — it will pause every time you stop briefly at a station. **Turn auto-pause off** in the activity settings.
+
+### Step 5: Set HR alert (optional)
+
+Set a high-HR alert at 95% of HRmax. If your watch buzzes, slow down — you're in the zone where most race blow-ups start.
+
+## Connecting a chest strap (recommended)
+
+Wrist HR is **less accurate** during heavy gripping work (sled pull, farmers carry, wall balls). A chest strap (HRM-Pro Plus or HRM-Dual) gives clean data through the entire race.
+
+To pair:
+
+1. Wet the strap electrodes
+2. Wear it tight, just below the chest
+3. On the watch: Sensors → Add Sensor → HRM
+4. Confirm the watch pairs (usually instant)
+
+## Race-day Garmin checklist
+
+The night before:
+
+- ✅ Charge to 100%
+- ✅ Sync to phone (latest software)
+- ✅ Confirm Hyrox profile is at the top of your activity list
+- ✅ Set wrist HR or chest strap as primary
+
+Race morning:
+
+- ✅ Strap on chest HRM after breakfast
+- ✅ Watch paired and showing HR before you enter the corral
+- ✅ Start activity in the corral (paused) — hit start when the announcer calls "GO"
+- ✅ Don't look at the watch for the first 2 km — just run
+
+## After the race
+
+- **Upload to Garmin Connect** within 60 seconds (auto via Bluetooth)
+- **View activity** for station-by-station splits
+- **Export to Strava** to share publicly (toggle in Garmin Connect settings)
+
+## Cross-references
+
+- [Apple Watch Hyrox workout](/blog/apple-watch-hyrox-workout/)
+- [Polar Hyrox setup](/blog/polar-hyrox-setup/)
+- [Coros Hyrox setup](/blog/coros-hyrox-setup/)
+- [Hyrox heart rate zones](/blog/hyrox-heart-rate-zones/)
+- [Hyrox time calculator](/calculator/)
+
+---
+
+*Last reviewed: April 2026 by HyroxVault Editorial Team.*

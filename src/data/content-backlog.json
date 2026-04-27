@@ -1,0 +1,133 @@
+{
+  "$schema": "./content-backlog.schema.json",
+  "updated": "2026-04-23",
+  "description": "Long-tail Hyrox keyword backlog, clustered by search intent. Each item is a target keyword + the blog category it should file under + notes for the writer/AI prompt.",
+  "clusters": [
+    {
+      "id": "time-predictions",
+      "intent": "informational",
+      "pillar_page": "/times/",
+      "notes": "Pair every post with a CTA to /calculator.",
+      "keywords": [
+        { "query": "how long does hyrox take", "slug": "how-long-does-hyrox-take", "category": "race-strategy", "priority": 1 },
+        { "query": "hyrox finish time by 5k time", "slug": "hyrox-finish-time-by-5k-time", "category": "race-strategy", "priority": 1 },
+        { "query": "average hyrox time for beginners", "slug": "average-hyrox-time-for-beginners", "category": "beginner", "priority": 1 },
+        { "query": "hyrox time for women", "slug": "hyrox-time-for-women", "category": "race-strategy", "priority": 2 },
+        { "query": "hyrox pro division time standards", "slug": "hyrox-pro-time-standards", "category": "race-strategy", "priority": 2 },
+        { "query": "hyrox doubles average time", "slug": "hyrox-doubles-average-time", "category": "race-strategy", "priority": 2 },
+        { "query": "hyrox age group times", "slug": "hyrox-age-group-times", "category": "race-strategy", "priority": 2 },
+        { "query": "what is a good hyrox time", "slug": "what-is-a-good-hyrox-time", "category": "race-strategy", "priority": 1 },
+        { "query": "sub 60 minute hyrox", "slug": "sub-60-minute-hyrox-guide", "category": "race-strategy", "priority": 2 },
+        { "query": "sub 75 minute hyrox", "slug": "sub-75-minute-hyrox-guide", "category": "race-strategy", "priority": 2 }
+      ]
+    },
+    {
+      "id": "station-technique",
+      "intent": "informational",
+      "pillar_page": "/stations/",
+      "notes": "These deserve howToSteps frontmatter.",
+      "keywords": [
+        { "query": "hyrox wall ball technique", "slug": "hyrox-wall-balls-technique", "category": "station-guides", "priority": 1 },
+        { "query": "hyrox farmers carry grip tips", "slug": "hyrox-farmers-carry-sandbag-lunges", "category": "station-guides", "priority": 1 },
+        { "query": "hyrox sandbag lunge form", "slug": "hyrox-sandbag-lunges-form", "category": "station-guides", "priority": 2 },
+        { "query": "hyrox wall ball breathing", "slug": "hyrox-wall-ball-breathing-pattern", "category": "station-guides", "priority": 2 },
+        { "query": "hyrox sled push weight by division", "slug": "hyrox-sled-push-weight-by-division", "category": "station-guides", "priority": 1 },
+        { "query": "hyrox sled pull grip tape legal", "slug": "hyrox-sled-pull-grip-tape-rules", "category": "station-guides", "priority": 3 },
+        { "query": "hyrox row vs real rowing", "slug": "hyrox-row-vs-real-rowing", "category": "station-guides", "priority": 3 },
+        { "query": "hyrox burpee broad jump distance", "slug": "hyrox-burpee-broad-jump-distance", "category": "station-guides", "priority": 2 },
+        { "query": "hyrox skierg damper setting", "slug": "hyrox-skierg-damper-setting", "category": "station-guides", "priority": 2 }
+      ]
+    },
+    {
+      "id": "comparisons",
+      "intent": "commercial",
+      "pillar_page": "/compare/",
+      "notes": "Build dedicated /compare/[a]-vs-[b] pages, link blog posts back into them.",
+      "keywords": [
+        { "query": "hyrox vs crossfit", "slug": "hyrox-vs-crossfit", "category": "news", "priority": 1, "existing": true },
+        { "query": "hyrox vs marathon", "slug": "hyrox-vs-marathon", "category": "news", "priority": 1 },
+        { "query": "hyrox vs spartan race", "slug": "hyrox-vs-spartan-race", "category": "news", "priority": 2 },
+        { "query": "hyrox vs triathlon", "slug": "hyrox-vs-triathlon", "category": "news", "priority": 3 },
+        { "query": "hyrox vs deka", "slug": "hyrox-vs-deka", "category": "news", "priority": 2 },
+        { "query": "hyrox singles vs doubles", "slug": "hyrox-singles-vs-doubles", "category": "race-strategy", "priority": 2 },
+        { "query": "hyrox pro vs open which division", "slug": "hyrox-pro-vs-open-division", "category": "race-strategy", "priority": 1 }
+      ]
+    },
+    {
+      "id": "first-timers",
+      "intent": "informational",
+      "pillar_page": "/racing-guide/",
+      "keywords": [
+        { "query": "first hyrox race checklist", "slug": "first-hyrox-race-guide", "category": "beginner", "priority": 1, "existing": true },
+        { "query": "what to wear to hyrox", "slug": "what-to-wear-to-hyrox", "category": "gear", "priority": 1 },
+        { "query": "hyrox race day timeline", "slug": "hyrox-race-day-timeline", "category": "race-strategy", "priority": 1 },
+        { "query": "hyrox warm up routine", "slug": "hyrox-warm-up-routine", "category": "beginner", "priority": 1 },
+        { "query": "what to bring to hyrox", "slug": "what-to-bring-to-hyrox-packing-list", "category": "beginner", "priority": 2 },
+        { "query": "hyrox doubles strategy for first timers", "slug": "first-hyrox-doubles-strategy", "category": "beginner", "priority": 2 },
+        { "query": "hyrox women's first race", "slug": "first-hyrox-womens-guide", "category": "beginner", "priority": 2 },
+        { "query": "hyrox over 40 first race", "slug": "first-hyrox-over-40", "category": "beginner", "priority": 2 },
+        { "query": "hyrox simulator workout at gym", "slug": "hyrox-simulator-workout-at-gym", "category": "training", "priority": 2 }
+      ]
+    },
+    {
+      "id": "training-plans",
+      "intent": "transactional",
+      "pillar_page": "/training/",
+      "notes": "High affiliate potential (shoes, grip, supplements). Always cross-link to /calculator.",
+      "keywords": [
+        { "query": "8 week hyrox training plan", "slug": "8-week-hyrox-training-plan", "category": "training", "priority": 1 },
+        { "query": "12 week hyrox training plan", "slug": "12-week-hyrox-training-plan", "category": "training", "priority": 1 },
+        { "query": "hyrox training plan at home", "slug": "hyrox-training-plan-at-home", "category": "training", "priority": 2 },
+        { "query": "hyrox training plan no gym", "slug": "hyrox-training-plan-no-gym-minimal-equipment", "category": "training", "priority": 2 },
+        { "query": "hyrox training plan 3 days a week", "slug": "hyrox-training-plan-3-days-per-week", "category": "training", "priority": 2 },
+        { "query": "how many days a week to train for hyrox", "slug": "how-many-days-per-week-hyrox-training", "category": "training", "priority": 1 },
+        { "query": "hyrox strength workouts", "slug": "hyrox-strength-workouts-programming", "category": "training", "priority": 2 },
+        { "query": "hyrox running workouts", "slug": "hyrox-running-workouts", "category": "training", "priority": 1 },
+        { "query": "hyrox taper week", "slug": "hyrox-taper-week-protocol", "category": "race-strategy", "priority": 2 }
+      ]
+    },
+    {
+      "id": "nutrition",
+      "intent": "informational",
+      "pillar_page": "/supplements/",
+      "notes": "Strong affiliate CTA candidates — link GeoAffiliateButton with energy-gels / creatine / protein-powder.",
+      "keywords": [
+        { "query": "what to eat before hyrox", "slug": "what-to-eat-before-hyrox", "category": "nutrition", "priority": 1 },
+        { "query": "hyrox race day breakfast", "slug": "hyrox-race-day-breakfast", "category": "nutrition", "priority": 1 },
+        { "query": "gels for hyrox how many", "slug": "how-many-gels-for-hyrox", "category": "nutrition", "priority": 1, "existing": true },
+        { "query": "hyrox caffeine strategy", "slug": "hyrox-caffeine-strategy", "category": "nutrition", "priority": 2 },
+        { "query": "hyrox hydration plan", "slug": "hyrox-hydration-plan-electrolytes", "category": "nutrition", "priority": 1 },
+        { "query": "post race recovery meal hyrox", "slug": "hyrox-post-race-recovery-meal", "category": "nutrition", "priority": 2 },
+        { "query": "creatine for hyrox", "slug": "creatine-for-hyrox-dosing", "category": "nutrition", "priority": 2 },
+        { "query": "best protein powder for hyrox", "slug": "best-protein-powder-for-hyrox-athletes", "category": "nutrition", "priority": 2 }
+      ]
+    },
+    {
+      "id": "gear",
+      "intent": "commercial",
+      "pillar_page": "/gear/",
+      "notes": "Highest affiliate revenue. Always include GeoAffiliateButton.",
+      "keywords": [
+        { "query": "best shoes for hyrox", "slug": "best-shoes-for-hyrox-2026", "category": "gear", "priority": 1 },
+        { "query": "hyrox shoes vs running shoes", "slug": "hyrox-shoes-vs-running-shoes", "category": "gear", "priority": 1 },
+        { "query": "nike metcon vs nobull for hyrox", "slug": "nike-metcon-vs-nobull-for-hyrox", "category": "gear", "priority": 2 },
+        { "query": "hyrox compression shorts", "slug": "best-hyrox-compression-shorts", "category": "gear", "priority": 3 },
+        { "query": "grip aids allowed in hyrox", "slug": "grip-aids-allowed-in-hyrox-rules", "category": "gear", "priority": 2 },
+        { "query": "best gloves for hyrox", "slug": "best-gloves-for-hyrox-grip", "category": "gear", "priority": 2 },
+        { "query": "hyrox home gym setup", "slug": "hyrox-home-gym-setup-essentials", "category": "gear", "priority": 2 }
+      ]
+    },
+    {
+      "id": "mistakes-faqs",
+      "intent": "informational",
+      "notes": "Perfect for FAQ frontmatter + FAQPage schema.",
+      "keywords": [
+        { "query": "common hyrox mistakes beginners", "slug": "common-hyrox-mistakes-beginners-make", "category": "beginner", "priority": 1 },
+        { "query": "hyrox mistakes sled", "slug": "hyrox-sled-mistakes-that-cost-time", "category": "station-guides", "priority": 2 },
+        { "query": "hyrox rules explained", "slug": "hyrox-rules-explained-judging", "category": "race-strategy", "priority": 1 },
+        { "query": "no rep standards hyrox", "slug": "hyrox-no-rep-standards-by-station", "category": "race-strategy", "priority": 2 },
+        { "query": "how to qualify for hyrox world championship", "slug": "how-to-qualify-hyrox-world-championship", "category": "race-strategy", "priority": 2 }
+      ]
+    }
+  ]
+}

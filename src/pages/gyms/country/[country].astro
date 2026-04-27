@@ -1,0 +1,194 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import {
+  listCountries,
+  getGymsByCountry,
+  AFFILIATION_LABELS,
+  type Gym,
+} from "../../../data/gym-finder";
+import { EVENTS } from "../../../data/events";
+
+export async function getStaticPaths() {
+  return listCountries().map((c) => ({
+    params: { country: c.countrySlug },
+    props: { countrySlug: c.countrySlug },
+  }));
+}
+
+const { countrySlug } = Astro.props;
+const country = listCountries().find((c) => c.countrySlug === countrySlug)!;
+const gyms = getGymsByCountry(countrySlug);
+
+const cityGroups = gyms.reduce<Record<string, Gym[]>>((acc, g) => {
+  (acc[g.citySlug] ??= []).push(g);
+  return acc;
+}, {});
+
+const cityList = Object.entries(cityGroups)
+  .map(([citySlug, list]) => ({
+    citySlug,
+    city: list[0].city,
+    gyms: list,
+  }))
+  .sort((a, b) => a.city.localeCompare(b.city));
+
+const upcomingCountryEvents = EVENTS.filter(
+  (e) => e.countryCode === country.countryCode && e.year >= 2026,
+).sort((a, b) => a.startDate.localeCompare(b.startDate));
+
+const title = `Hyrox Gyms in ${country.country} — ${gyms.length} Affiliated Training Clubs`;
+const description = `Find Hyrox-affiliated gyms and training clubs in ${country.country}. ${gyms.length} curated venues across ${cityList.length} ${cityList.length === 1 ? "city" : "cities"} — view on a map or browse by city.`;
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: "By Country", url: "/gyms/country/" },
+  { name: country.country },
+];
+
+const itemListJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListOrder: "https://schema.org/ItemListOrderAscending",
+  numberOfItems: gyms.length,
+  itemListElement: gyms.map((g, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    url: new URL(`/gyms/g/${g.slug}/`, Astro.site).toString(),
+    name: g.name,
+  })),
+};
+
+const faqItems = [
+  {
+    question: `How many Hyrox gyms are there in ${country.country}?`,
+    answer: `We list ${gyms.length} curated Hyrox-affiliated gyms across ${cityList.length} ${cityList.length === 1 ? "city" : "cities"} in ${country.country}: ${cityList.map((c) => c.city).join(", ")}. Hyrox affiliations change — always verify on hyrox.com/affiliated-training-clubs/ before planning a session.`,
+  },
+  {
+    question: `Where is the next Hyrox event in ${country.country}?`,
+    answer: upcomingCountryEvents.length > 0
+      ? `The next confirmed Hyrox events in ${country.country} are: ${upcomingCountryEvents.slice(0, 3).map((e) => `${e.city} ${e.year} (${e.startDate}, ${e.venue})`).join("; ")}.`
+      : `Check the Hyrox event calendar for the latest schedule in ${country.country}.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/country/" class="text-text-muted hover:text-accent transition-colors no-underline">By Country</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{country.country}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{country.region} · {country.countryCode}</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Gyms in {country.country}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {gyms.length} curated Hyrox-affiliated training partners across {cityList.length} {cityList.length === 1 ? "city" : "cities"}. Filter by city, view on the map, or jump to a gym detail page below.
+      </p>
+      <div class="mt-5 flex flex-wrap gap-3">
+        <a href={`/gyms/map/?country=${country.countryCode}`} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
+          Open on map &rarr;
+        </a>
+        <a href="/gyms/submit/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text-muted hover:text-text hover:border-border-hover font-bold text-sm no-underline">
+          Submit a gym
+        </a>
+      </div>
+    </header>
+
+    {upcomingCountryEvents.length > 0 && (
+      <section class="mb-10 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">Upcoming events in {country.country}</div>
+        <ul class="space-y-2">
+          {upcomingCountryEvents.slice(0, 4).map((e) => (
+            <li class="text-sm">
+              <a href={`/events/${e.year}/${e.slug}/`} class="text-text font-bold hover:text-accent transition-colors no-underline">
+                Hyrox {e.city} {e.year}
+              </a>
+              <span class="text-text-muted"> — {e.venue} · {e.startDate}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {cityList.map((c) => (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+          <a href={`/gyms/${c.citySlug}/`} class="hover:text-accent transition-colors no-underline">
+            {c.city}
+          </a>
+        </h2>
+        <p class="text-sm text-text-muted mb-5">
+          {c.gyms.length} {c.gyms.length === 1 ? "gym" : "gyms"} listed in {c.city}
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          {c.gyms.map((g) => (
+            <a
+              href={`/gyms/g/${g.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+                {AFFILIATION_LABELS[g.affiliationType]}{g.neighbourhood ? ` · ${g.neighbourhood}` : ""}
+              </div>
+              <h3 class="text-lg font-black text-text-heading mb-2 leading-tight">{g.name}</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3">{g.address}</p>
+              <div class="text-sm text-accent font-bold">View details &rarr;</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>About Hyrox training in {country.country}</h2>
+      <p>
+        {country.country}'s Hyrox community spans
+        {cityList.length === 1 ? ` ${cityList[0].city}` : ` ${cityList.length} cities — ${cityList.map((c) => c.city).join(", ")}`}
+        — with a mix of official training clubs, chain partners, CrossFit boxes, and boutique studios.
+        {upcomingCountryEvents.length > 0
+          ? ` The country hosts ${upcomingCountryEvents.length} upcoming Hyrox event${upcomingCountryEvents.length === 1 ? "" : "s"} on the 2026 calendar.`
+          : " Check the Hyrox calendar for the closest race weekend."}
+      </p>
+      <p>
+        Below the gym listings above, each detail page includes a mapped pin, full address, neighbourhood, classes offered, and links to the gym's website and the official Hyrox training clubs directory entry where available.
+      </p>
+
+      <h2>Frequently asked questions</h2>
+      {faqItems.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      <h2>Other countries</h2>
+      <ul>
+        {listCountries().filter((c) => c.countrySlug !== countrySlug).slice(0, 8).map((c) => (
+          <li><a href={`/gyms/country/${c.countrySlug}/`}>Hyrox gyms in {c.country}</a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

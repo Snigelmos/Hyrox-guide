@@ -1,0 +1,131 @@
+---
+title: "Apple Watch Hyrox Workout — Setup, Auto-Detection, and the Best Apps"
+description: "How to track a Hyrox on Apple Watch: native Workout app, third-party Hyrox apps, optimal data fields, and what auto-detection misses (so you can fix it)."
+pubDate: 2026-04-26
+author: "HyroxVault Editorial Team"
+category: "training"
+tags: ["apple watch", "wearables", "setup", "race-day", "ios"]
+faqs:
+  - question: "Does Apple Watch have a Hyrox workout type?"
+    answer: "Apple Watch does not have a native 'Hyrox' workout, but the 'Functional Strength Training' or 'Multisport' workout types track HR, calories, and time accurately. Several third-party apps (HyroxTrack, FitMix, etc.) provide station-by-station segmentation."
+  - question: "What's the best workout type for Hyrox on Apple Watch?"
+    answer: "Use 'Multisport' on Series 7+ to capture run + functional strength segments separately. On older watches, 'Other' or 'Functional Strength Training' captures HR and calories accurately but doesn't separate run and station time."
+  - question: "Can Apple Watch detect Hyrox stations automatically?"
+    answer: "Apple Watch's native auto-detection cannot identify Hyrox stations. Some third-party apps (e.g. HyroxTrack on the App Store) use accelerometer patterns to estimate station starts, but accuracy is mixed. Manual segment marking (double-tap) is more reliable."
+  - question: "Does Apple Watch GPS work indoors at Hyrox?"
+    answer: "GPS doesn't work indoors but Apple Watch's accelerometer-based pace estimation (calibrated by your previous outdoor runs) is reasonably accurate for indoor 1 km splits — typically within 5-10% of true pace."
+---
+
+## Short answer
+
+Apple Watch tracks Hyrox well even without a dedicated workout type. Use **Multisport (Series 7+)** or **Functional Strength Training (older models)**, pair a chest strap for accurate HR, and either use a third-party Hyrox app or just mark segments manually.
+
+This guide covers the setup, the third-party apps worth using, and what to do mid-race.
+
+## Workout type by Apple Watch model
+
+| Watch | Best workout type |
+|-------|-------------------|
+| **Series 9, 10, Ultra 2, Ultra 3** | Multisport (custom Hyrox profile) or HIIT |
+| **Series 7, 8** | Multisport or Functional Strength Training |
+| **Series 6, SE** | Functional Strength Training |
+| **Series 4, 5** | Other |
+
+## Option 1: Native Multisport workout (Series 7+)
+
+The cleanest native option. Multisport lets you:
+
+- Add multiple workout types in sequence
+- Switch between them during the race
+- See each segment's stats in the Workout app and Health app
+
+### Setup
+
+1. Open Workout app on the watch
+2. Tap "Add Workout"
+3. Select **Multisport**
+4. Tap the three-dot menu → **Add Sport**
+5. Add **Outdoor Run** + **Functional Strength Training** as alternating segments
+
+In practice, athletes either keep this simple (single segment, just track total time) or pre-build the 16-segment alternating sequence (overkill).
+
+## Option 2: Third-party Hyrox apps
+
+Several App Store apps offer Hyrox-specific tracking:
+
+- **HyroxTrack** — paid (£3.99). Auto-segments stations using accelerometer. Most popular.
+- **FitMix Hyrox** — free + IAP. Manual segment marking with auto-resume.
+- **Workouts++** — free. General multisport tracker, manual segments work well.
+
+The official Hyrox app (which exists on Garmin) is **not yet available** on Apple Watch as of early 2026.
+
+## Option 3: Just use Functional Strength Training
+
+The simplest, most reliable approach for any Apple Watch:
+
+1. Workout app → Functional Strength Training
+2. Tap start, race
+3. Tap stop at the finish line
+
+You'll get total time, average HR, peak HR, and calories. No station splits, but the headline numbers are accurate.
+
+## Optimising data fields
+
+The Workout app shows one of three default views; customise via Watch app on iPhone → Workout → Workout View.
+
+For Hyrox, the most useful fields are:
+
+| Slot | Field |
+|------|-------|
+| Top | Heart rate |
+| Mid | Time elapsed |
+| Bottom | Lap time (if using laps) |
+
+Avoid putting pace on display — for Hyrox, pace is uninformative because the race alternates running and stations.
+
+## Pairing a chest strap
+
+Apple Watch's wrist HR is decent but **drops accuracy by 10-20% during gripping work**. A chest strap fixes this.
+
+Compatible options:
+
+- **Polar H10** (the gold standard, BLE)
+- **Wahoo Tickr X**
+- **Apple Watch Bluetooth HR sensors** (any standard BLE HR strap)
+
+Pair via the iPhone's Watch app → My Watch → Bluetooth → Add Device. Once paired, the strap auto-connects when you start a workout.
+
+## Race-day Apple Watch checklist
+
+Night before:
+
+- ✅ Charge to 100%
+- ✅ Set Do Not Disturb (so notifications don't break your focus)
+- ✅ Update to latest watchOS
+- ✅ Tighten the band — looser = worse HR
+
+Race morning:
+
+- ✅ Pair chest strap before warm-up
+- ✅ Start the workout in the corral, paused if possible
+- ✅ Press the side button + crown together at "GO" to start
+- ✅ Don't check the watch for the first 2 km
+
+## Reviewing your race after
+
+- Open Fitness app on iPhone
+- Find the workout
+- View HR graph and segments
+
+The HR graph alone is worth more than any other data — it shows you exactly where you were Z3 vs Z5, which informs your next training block.
+
+## Cross-references
+
+- [Garmin Hyrox activity profile setup](/blog/garmin-hyrox-activity-profile/)
+- [Polar Hyrox setup](/blog/polar-hyrox-setup/)
+- [Coros Hyrox setup](/blog/coros-hyrox-setup/)
+- [Hyrox heart rate zones](/blog/hyrox-heart-rate-zones/)
+
+---
+
+*Last reviewed: April 2026 by HyroxVault Editorial Team.*

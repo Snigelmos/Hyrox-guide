@@ -1,0 +1,223 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import GymMap from "../../components/GymMap.tsx";
+import { CITY_GYMS } from "../../data/gyms";
+import { getGymsByCity, AFFILIATION_LABELS } from "../../data/gym-finder";
+import { EVENTS } from "../../data/events";
+
+export async function getStaticPaths() {
+  return CITY_GYMS.map((c) => ({
+    params: { city: c.citySlug },
+    props: { citySlug: c.citySlug },
+  }));
+}
+
+const { citySlug } = Astro.props;
+const cityData = CITY_GYMS.find((c) => c.citySlug === citySlug)!;
+const structuredGyms = getGymsByCity(citySlug);
+const hasStructured = structuredGyms.length > 0;
+
+const upcomingEvent = cityData.nearestEventCitySlug
+  ? EVENTS.find((e) => e.slug === cityData.nearestEventCitySlug && e.year >= 2026)
+  : undefined;
+
+const totalGyms = structuredGyms.length + cityData.gyms.length;
+const title = `Hyrox Gyms in ${cityData.city} — Affiliated Training Clubs Directory`;
+const metaTitle = `Hyrox Gyms ${cityData.city} — ${totalGyms} Affiliated Training Clubs`;
+const description = `Find Hyrox-affiliated gyms and training clubs in ${cityData.city}, ${cityData.country}. Curated map and directory of training partners running Hyrox-specific programming.`;
+
+const breadcrumbs = [
+  { name: "Gyms", url: "/gyms/" },
+  { name: cityData.city },
+];
+
+const faqItems = [
+  {
+    question: `Where can I train Hyrox in ${cityData.city}?`,
+    answer: `${cityData.city} has ${totalGyms} listed Hyrox training partners and boxes running Hyrox-specific classes. ${cityData.description}`,
+  },
+  {
+    question: `Are there official Hyrox-affiliated gyms in ${cityData.city}?`,
+    answer: `Yes — Hyrox maintains an official directory of affiliated training clubs at hyrox.com. The list above includes both officially affiliated clubs and notable independent boxes that run Hyrox prep programming.`,
+  },
+  {
+    question: `Does ${cityData.city} host a Hyrox event?`,
+    answer: upcomingEvent
+      ? `Yes — Hyrox ${cityData.city} ${upcomingEvent.year} is scheduled at ${upcomingEvent.venue}${upcomingEvent.startDate ? ` on ${upcomingEvent.startDate}` : ""}. See our event guide for full details.`
+      : `${cityData.city} is part of the active Hyrox training community. Check the Hyrox event calendar for the nearest race.`,
+  },
+];
+
+const itemListJsonLd = hasStructured
+  ? {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      itemListOrder: "https://schema.org/ItemListOrderAscending",
+      numberOfItems: structuredGyms.length,
+      itemListElement: structuredGyms.map((g, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: new URL(`/gyms/g/${g.slug}/`, Astro.site).toString(),
+        name: g.name,
+      })),
+    }
+  : null;
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  {itemListJsonLd && (
+    <script slot="head" type="application/ld+json" set:html={JSON.stringify(itemListJsonLd)} />
+  )}
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/gyms/" class="text-text-muted hover:text-accent transition-colors no-underline">Gyms</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{cityData.city}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{cityData.country}</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Gyms in {cityData.city}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {cityData.description}
+      </p>
+    </header>
+
+    {upcomingEvent && (
+      <section class="mb-10 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Upcoming event</div>
+        <h2 class="text-xl font-black text-text-heading mb-1">Hyrox {cityData.city} {upcomingEvent.year}</h2>
+        <p class="text-sm text-text-muted mb-3">{upcomingEvent.venue} · {upcomingEvent.startDate}</p>
+        <a href={`/events/${upcomingEvent.year}/${upcomingEvent.slug}/`} class="text-accent underline text-sm font-bold">
+          See full event details &rarr;
+        </a>
+      </section>
+    )}
+
+    {hasStructured && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">
+          Map of Hyrox gyms in {cityData.city}
+        </h2>
+        <p class="text-sm text-text-muted mb-6">
+          {structuredGyms.length} mapped venues. Click any pin for details and links.
+        </p>
+        <GymMap client:only="react" mode="city" citySlug={citySlug} />
+      </section>
+    )}
+
+    {hasStructured && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
+          Featured Hyrox gyms in {cityData.city}
+        </h2>
+        <div class="grid gap-4 md:grid-cols-2">
+          {structuredGyms.map((g) => (
+            <a
+              href={`/gyms/g/${g.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+                {AFFILIATION_LABELS[g.affiliationType]}{g.neighbourhood ? ` · ${g.neighbourhood}` : ""}
+              </div>
+              <h3 class="text-lg font-black text-text-heading mb-2 leading-tight">{g.name}</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3">{g.address}</p>
+              {g.description && (
+                <p class="text-sm text-text-muted leading-relaxed line-clamp-3">{g.description.slice(0, 160)}…</p>
+              )}
+              <div class="mt-4 text-sm text-accent font-bold">
+                View details &rarr;
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {cityData.gyms.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+          Other listed training partners in {cityData.city}
+        </h2>
+        <p class="text-sm text-text-muted mb-6">
+          Chains and venues we know offer Hyrox programming but haven't yet mapped to specific branches.
+        </p>
+        <div class="grid gap-4">
+          {cityData.gyms.map((g) => (
+            <article class="bg-bg-card border border-border rounded-2xl p-6">
+              <h3 class="text-xl font-black text-text-heading mb-1">{g.name}</h3>
+              {g.neighbourhood && (
+                <p class="text-sm text-accent font-bold mb-2">{g.neighbourhood}</p>
+              )}
+              {g.notes && (
+                <p class="text-text-muted leading-relaxed">{g.notes}</p>
+              )}
+              {g.url && (
+                <a href={g.url} rel="noopener noreferrer" class="text-accent underline text-sm font-bold mt-3 inline-block">
+                  Visit website &rarr;
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-10 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+      <h2 class="text-lg font-black text-text-heading mb-2">Know a {cityData.city} gym we should add?</h2>
+      <p class="text-text-muted mb-3">
+        We're growing this map gym-by-gym. If you train at a Hyrox-equipped venue here, send us the details.
+      </p>
+      <a href="/gyms/submit/" class="text-accent underline text-sm font-bold">
+        Submit a gym &rarr;
+      </a>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>What to look for in a Hyrox gym in {cityData.city}</h2>
+      <ul>
+        <li><strong>Hyrox station equipment:</strong> sled (or sled track), ski erg, rower, sandbags, wall-ball targets at 9 ft (women) or 10 ft (men).</li>
+        <li><strong>Open floor space:</strong> needed for sandbag lunges (100m walking) and burpee broad jumps (80m).</li>
+        <li><strong>Branded Hyrox programming:</strong> official affiliated clubs run Hyrox-specific class formats with daily workouts from the Hyrox Performance Hub.</li>
+        <li><strong>Race-prep blocks:</strong> many gyms run 6-12 week Hyrox prep blocks ahead of major regional events.</li>
+      </ul>
+
+      <h2>How to verify a Hyrox training club</h2>
+      <p>
+        Visit <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer">hyrox.com/affiliated-training-clubs/</a> to find the official directory. Affiliated clubs display the Hyrox Training Club logo and have access to official programming materials.
+      </p>
+
+      <h2>Frequently asked questions</h2>
+      {faqItems.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      <h2>Other Hyrox cities</h2>
+      <ul>
+        {CITY_GYMS.filter((c) => c.citySlug !== cityData.citySlug).slice(0, 8).map((c) => (
+          <li><a href={`/gyms/${c.citySlug}/`}>Hyrox gyms in {c.city}</a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,168 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { TRAINING_PLANS, getPlansByCategory } from "../../data/training-plans";
+
+const goalTimePlans = getPlansByCategory("goal-time");
+const durationPlans = getPlansByCategory("duration");
+const constraintPlans = getPlansByCategory("constraint");
+
+const title = "Hyrox Training Plans — Free Programs for Every Goal and Schedule";
+const description =
+  "Free Hyrox training plans for every level and goal: sub-60, sub-75, sub-90, sub-100, women's plans, 4-week, 8-week, 12-week, 3-day-a-week, and Doubles. Week-by-week schedules.";
+
+const breadcrumbs = [{ name: "Training plans" }];
+
+const faqItems = [
+  {
+    question: "What is the best Hyrox training plan?",
+    answer:
+      "The best plan is the one matched to your current fitness, goal time, and weekly availability. Most amateur athletes do well with the 12-week plan; goal-driven athletes should pick the goal-time plan that matches their target finish; busy athletes can race well on the 3-day-a-week plan.",
+  },
+  {
+    question: "How long should I train for Hyrox?",
+    answer:
+      "Twelve weeks is the canonical answer — long enough to build a real aerobic base and full station capacity, short enough to maintain motivation. Athletes with a strong base can race well on 8 weeks; complete beginners benefit from 16+ weeks.",
+  },
+  {
+    question: "Are these training plans free?",
+    answer:
+      "Yes — every plan on this page is free. Each includes a complete week-by-week schedule, day-by-day workouts, and links to the relevant calculator and benchmark workouts.",
+  },
+  {
+    question: "How many days a week should I train for Hyrox?",
+    answer:
+      "Most athletes train 4-6 days a week. Sub-100 and 4-week last-minute plans use 4 days; 12-week and goal-time plans use 5 days; sub-75 and elite plans use 6-7 days. The 3-day plan exists for athletes whose schedule won't allow more.",
+  },
+  {
+    question: "Can I follow a Hyrox training plan from home?",
+    answer:
+      "Partially. Running, strength, and most conditioning work can be done at home. Sled push and pull, ski erg, and rowing are gym-only — you'll need access to a Hyrox-equipped facility for at least one session per week to do this properly.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Training plans</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-12 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Free Hyrox programs</div>
+      <h1 class="text-4xl md:text-6xl font-black leading-tight text-gradient-accent">
+        Hyrox Training Plans
+      </h1>
+      <p class="mt-5 text-lg text-text-muted leading-relaxed max-w-3xl">
+        {description}
+      </p>
+      <p class="mt-3 text-base text-text-muted leading-relaxed max-w-3xl">
+        Pick the plan that matches your goal time, your race date, or your weekly availability — every plan includes a complete week-by-week schedule with daily workouts, race-pace targets, and a built-in taper.
+      </p>
+    </header>
+
+    <section class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-black mb-2">Plans by goal time</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">Pick the time you want to break and follow the plan engineered for it.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {goalTimePlans.map((p) => (
+          <a
+            href={`/training-plans/${p.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+              {p.durationWeeks} weeks · {p.sessionsPerWeek} sessions/week · {p.audienceLabel}
+            </div>
+            <h3 class="text-xl font-black text-text-heading mb-2">{p.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{p.goalSummary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-black mb-2">Plans by duration</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">Pick the plan length that fits how far out your race is.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {durationPlans.map((p) => (
+          <a
+            href={`/training-plans/${p.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+              {p.durationWeeks} weeks · {p.sessionsPerWeek} sessions/week
+            </div>
+            <h3 class="text-xl font-black text-text-heading mb-2">{p.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{p.goalSummary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-black mb-2">Plans by schedule or format</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">Plans built around real-life constraints — limited training days or doubles partner racing.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {constraintPlans.map((p) => (
+          <a
+            href={`/training-plans/${p.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+              {p.durationWeeks} weeks · {p.sessionsPerWeek} sessions/week · {p.audienceLabel}
+            </div>
+            <h3 class="text-xl font-black text-text-heading mb-2">{p.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{p.goalSummary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-16 prose md:prose-lg max-w-none">
+      <h2>How to pick the right Hyrox training plan</h2>
+      <p>
+        There are three honest questions to answer before you pick a plan.
+      </p>
+      <h3>1. How far out is your race?</h3>
+      <p>
+        If your race is in 4 weeks, the <a href="/training-plans/4-week-hyrox-training-plan/">4-week plan</a> is your only realistic option — anything longer is fantasy. If your race is 6-9 weeks out, follow the <a href="/training-plans/8-week-hyrox-training-plan/">8-week plan</a>. If you have 10+ weeks, follow a <a href="/training-plans/12-week-hyrox-training-plan/">12-week plan</a> or a goal-time plan calibrated to your target finish.
+      </p>
+      <h3>2. What's your goal time?</h3>
+      <p>
+        If you have a specific finish-time goal — sub-100, sub-90, sub-75, sub-60 — pick the goal-time plan rather than the generic duration plan. The goal-time plans calibrate exact running paces, sled volumes, and simulation efforts to the target time. Use the <a href="/calculator/">Hyrox time calculator</a> to verify your splits add up.
+      </p>
+      <h3>3. How many days a week can you actually train?</h3>
+      <p>
+        Be honest. Most athletes can sustain 4-5 sessions per week with full-time work. If 3 is the most you can manage consistently, follow the <a href="/training-plans/3-day-hyrox-training-plan/">3-day plan</a> rather than skipping sessions on a 5-day plan. Three quality sessions beat five rushed ones every time.
+      </p>
+
+      <h2>What every Hyrox training plan should include</h2>
+      <p>
+        A genuine Hyrox training plan has four ingredients. If a plan is missing any of these, it's a generic gym programme rebadged.
+      </p>
+      <ul>
+        <li><strong>Race-specific running</strong> — at least one session per week of running at your goal Hyrox pace, ideally on a treadmill, with stations layered in.</li>
+        <li><strong>Sled volume at race weight</strong> — push and pull at race weight (152 kg / 102 kg push, 103 kg / 78 kg pull), at least every other week.</li>
+        <li><strong>A simulation in the peak phase</strong> — at minimum a mini-Hyrox or three-quarter Hyrox 3-4 weeks before race day. A full simulation 4-6 weeks out is ideal.</li>
+        <li><strong>A real taper</strong> — the final week drops volume by 50-60% with one short tempo and one race-pace activation. Race-day fitness is what you've already built; the taper just lets you express it.</li>
+      </ul>
+
+      <h2>Free Hyrox training plan PDF</h2>
+      <p>
+        Every plan on this page is free and on the web — no email gate, no download. We deliberately don't offer a PDF because plans drift; the version you bookmark today is the version we'll be improving over the next 12 months. Bookmark the URL of the plan you choose and come back to it weekly.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

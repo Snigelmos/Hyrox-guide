@@ -1,0 +1,143 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { WORKOUTS } from "../../data/workouts";
+
+export async function getStaticPaths() {
+  return WORKOUTS.map((w) => ({
+    params: { slug: w.slug },
+    props: { slug: w.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const workout = WORKOUTS.find((w) => w.slug === slug)!;
+
+const relatedWorkouts = workout.related
+  .map((s) => WORKOUTS.find((w) => w.slug === s))
+  .filter((w): w is NonNullable<typeof w> => Boolean(w));
+
+const breadcrumbs = [
+  { name: "Workouts", url: "/workouts/" },
+  { name: workout.name },
+];
+
+const title = `${workout.name} — How to Do It and What's a Good Time`;
+const description = workout.shortDescription;
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "ExerciseAction",
+  name: workout.name,
+  description: workout.shortDescription,
+  exerciseType: "Hyrox training",
+};
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={workout.faqs}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} slot="head" />
+
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/workouts/" class="text-text-muted hover:text-accent transition-colors no-underline">Workouts</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{workout.name}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{workout.durationLabel}</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {workout.name}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        {workout.shortDescription}
+      </p>
+    </header>
+
+    <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">What it tests</div>
+        <p class="text-sm text-text-heading leading-relaxed">{workout.whatItTests}</p>
+      </div>
+      <div class="bg-bg-card border border-border rounded-2xl p-5">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Who it's for</div>
+        <p class="text-sm text-text-heading leading-relaxed">{workout.whoItIsFor}</p>
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>The workout</h2>
+      <ol>
+        {workout.blocks.map((b) => (
+          <li><strong>{b.label}:</strong> {b.detail}</li>
+        ))}
+      </ol>
+
+      <h2>Scoring</h2>
+      <p>{workout.scoring}</p>
+
+      <h2>Benchmark times</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Men</th>
+            <th>Women</th>
+          </tr>
+        </thead>
+        <tbody>
+          {workout.benchmarkResults.map((b) => (
+            <tr>
+              <td><strong>{b.tier}</strong></td>
+              <td>{b.menTime}</td>
+              <td>{b.womenTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2>Program notes</h2>
+      <ul>
+        {workout.programNotes.map((n) => <li>{n}</li>)}
+      </ul>
+
+      <h2>Frequently asked questions</h2>
+      {workout.faqs.map((f) => (
+        <>
+          <h3>{f.question}</h3>
+          <p>{f.answer}</p>
+        </>
+      ))}
+
+      {relatedWorkouts.length > 0 && (
+        <>
+          <h2>Related Hyrox workouts</h2>
+          <ul>
+            {relatedWorkouts.map((r) => (
+              <li><a href={`/workouts/${r.slug}/`}><strong>{r.name}</strong></a> — {r.shortDescription}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      <h2>Use the calculator to track progress</h2>
+      <p>
+        Run your improving 5K times and station benchmarks through our <a href="/calculator/">Hyrox time calculator</a> to see how each fitness gain translates to your projected race finish.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
