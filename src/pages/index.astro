@@ -2,90 +2,24 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import GeoAffiliateButton from "../components/GeoAffiliateButton";
+import ModuleIcons from "../components/icons/ModuleIcons.astro";
+import { primaryNav, type NavIcon } from "../config/nav";
 import { getCollection } from "astro:content";
 
-// Latest blog posts
 const allPosts = (await getCollection("blog")).sort(
   (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
 const latestPosts = allPosts.slice(0, 3);
 
-const modules = [
-  {
-    href: "/racing-guide/what-is-hyrox/",
-    icon: "🏁",
-    badge: "Start Here",
-    badgeColor: "text-accent bg-accent/10 border-accent/20",
-    title: "What is Hyrox?",
-    description: "New to Hyrox? Learn the race format, the 8 stations, categories, and what makes it the fastest-growing fitness race in the world.",
-    cta: "Read the Intro",
-    hoverBorder: "hover:border-accent/30",
-    svgBg: null,
-  },
-  {
-    href: "/training/",
-    icon: "💪",
-    badge: "Get Race-Ready",
-    badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-    title: "Training Plans",
-    description: "Beginner to advanced programs with week-by-week sessions, station drills, and race simulations. Pick your level.",
-    cta: "Start Training",
-    hoverBorder: "hover:border-accent/30",
-    svgBg: null,
-  },
-  {
-    href: "/training/workouts/",
-    icon: "🏋️",
-    badge: "13 Workouts",
-    badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
-    title: "Workout Library",
-    description: "Full simulations, running sessions, station-specific work, and strength days. Drop any session into your training week.",
-    cta: "Browse Workouts",
-    hoverBorder: "hover:border-accent/30",
-    svgBg: null,
-  },
-  {
-    href: "/supplements/",
-    icon: "⚡",
-    badge: "Fuel Your Race",
-    badgeColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-    title: "Supplements",
-    description: "What actually moves the needle — creatine, protein, energy gels, pre-workout. Evidence-based picks, honest reviews.",
-    cta: "See Our Picks",
-    hoverBorder: "hover:border-amber-400/30",
-    svgBg: null,
-  },
-  {
-    href: "/calculator/",
-    icon: "⏱️",
-    badge: "Free Tool",
-    badgeColor: "text-accent bg-accent/10 border-accent/20",
-    title: "Race Calculator",
-    description: "Enter your 5K pace and strength numbers. Get a full race split breakdown — instantly. Know your target time before race day.",
-    cta: "Calculate My Time",
-    hoverBorder: "hover:border-accent/30",
-    svgBg: null,
-  },
-  {
-    href: "/racing-guide/",
-    icon: "📋",
-    badge: "Race Day",
-    badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
-    title: "Racing Guide",
-    description: "Pacing strategy, station tips, transitions, and what to do the week before. Everything you need to race well.",
-    cta: "Prepare to Race",
-    hoverBorder: "hover:border-accent/30",
-    svgBg: null,
-  },
-];
+type SupplementIcon = NavIcon | "spark" | "stopwatch" | "flag";
 
-const supplementStrip = [
-  { icon: "💪", name: "Creatine", productKey: "creatine-monohydrate", href: "/supplements/creatine/" },
-  { icon: "🥤", name: "Protein", productKey: "protein-powder", href: "/supplements/protein-powder/" },
-  { icon: "⚡", name: "Energy Gels", productKey: "energy-gels", href: "/supplements/energy-gels/" },
-  { icon: "🔥", name: "Pre-Workout", productKey: "pre-workout", href: "/supplements/pre-workout/" },
-  { icon: "💧", name: "Electrolytes", productKey: "electrolytes", href: "/supplements/electrolytes/" },
-  { icon: "🔄", name: "Recovery", productKey: "recovery", href: "/supplements/recovery/" },
+const supplementStrip: { icon: SupplementIcon; name: string; productKey: string; href: string }[] = [
+  { icon: "dumbbell", name: "Creatine", productKey: "creatine-monohydrate", href: "/supplements/creatine/" },
+  { icon: "spark", name: "Protein", productKey: "protein-powder", href: "/supplements/protein-powder/" },
+  { icon: "pill", name: "Energy Gels", productKey: "energy-gels", href: "/supplements/energy-gels/" },
+  { icon: "flag", name: "Pre-Workout", productKey: "pre-workout", href: "/supplements/pre-workout/" },
+  { icon: "gauge", name: "Electrolytes", productKey: "electrolytes", href: "/supplements/electrolytes/" },
+  { icon: "stopwatch", name: "Recovery", productKey: "recovery", href: "/supplements/recovery/" },
 ];
 ---
 
@@ -93,7 +27,7 @@ const supplementStrip = [
   title="Hyrox Vault — Race Guide, Training Plans, Calculator & Supplements (2026)"
   description="The complete Hyrox resource: race format guide, training programs, finish time calculator, supplement picks, and workout library. All evidence-based, all in one vault."
 >
-  <!-- HERO — Vault branding, 6 module quick-links, stats -->
+  <!-- HERO — Vault branding, primary nav quick-links, stats -->
   <Hero />
 
   <!-- WHAT IS HYROX — brief explainer -->
@@ -110,26 +44,28 @@ const supplementStrip = [
     </div>
   </section>
 
-  <!-- THE VAULT — 6 module cards -->
+  <!-- THE VAULT — module cards (canonical primary nav) -->
   <section class="container-main py-16 md:py-20">
     <div class="text-center mb-10">
       <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Inside the Vault</h2>
-      <p class="text-text-muted">Six modules. Everything you need to race your best Hyrox.</p>
+      <p class="text-text-muted">Everything you need to race your best Hyrox.</p>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-      {modules.map((mod) => (
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      {primaryNav.map((mod) => (
         <a
           href={mod.href}
-          class={`group relative flex flex-col bg-bg-card border border-border ${mod.hoverBorder} rounded-2xl p-7 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-0.5`}
+          class="group relative flex flex-col bg-bg-card border border-border hover:border-accent/30 rounded-2xl p-7 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-0.5"
         >
           <div class="flex items-start justify-between mb-4">
-            <span class="text-3xl">{mod.icon}</span>
+            <span class={mod.iconColor}>
+              <ModuleIcons name={mod.icon} size={48} />
+            </span>
             <span class={`text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${mod.badgeColor}`}>
               {mod.badge}
             </span>
           </div>
           <h2 class="text-xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
-            {mod.title}
+            {mod.label}
           </h2>
           <p class="text-text-muted text-sm leading-relaxed mb-5 flex-1">
             {mod.description}
@@ -203,8 +139,8 @@ const supplementStrip = [
       <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
         {supplementStrip.map((s) => (
           <div class="bg-bg-card border border-border rounded-xl p-3 flex flex-col items-center text-center hover:border-accent/30 transition-all">
-            <a href={s.href} class="flex flex-col items-center mb-2.5">
-              <span class="text-xl mb-1">{s.icon}</span>
+            <a href={s.href} class="flex flex-col items-center mb-2.5 text-accent/80 hover:text-accent transition-colors">
+              <ModuleIcons name={s.icon} size={32} class="mb-1" />
               <span class="text-xs font-bold text-text-heading leading-tight">{s.name}</span>
             </a>
             <GeoAffiliateButton productKey={s.productKey} variant="card" client:visible />
@@ -214,33 +150,6 @@ const supplementStrip = [
       <p class="text-xs text-text-muted/50 mt-3 text-center">
         Affiliate links — we may earn a commission at no extra cost to you.
       </p>
-    </div>
-  </section>
-
-  <!-- SECONDARY NAV -->
-  <section class="container-main py-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <a href="/competitions/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
-        <span class="text-2xl">📅</span>
-        <div>
-          <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Upcoming Competitions</h3>
-          <p class="text-text-muted text-xs">Find your next race & sign up</p>
-        </div>
-      </a>
-      <a href="/supplements/protocol/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
-        <span class="text-2xl">🗓️</span>
-        <div>
-          <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Race Day Protocol</h3>
-          <p class="text-text-muted text-xs">Exact supplement timing guide</p>
-        </div>
-      </a>
-      <a href="/faq/" class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all">
-        <span class="text-2xl">❓</span>
-        <div>
-          <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">FAQ</h3>
-          <p class="text-text-muted text-xs">Common questions answered</p>
-        </div>
-      </a>
     </div>
   </section>
 
