@@ -768,6 +768,8 @@ export interface CountryGroup {
   cities: string[];
 }
 
+const MIN_PUBLIC_COUNTRY_GYMS = 2;
+
 export function getGymBySlug(slug: string): Gym | undefined {
   return GYMS.find((g) => g.slug === slug);
 }
@@ -798,9 +800,9 @@ export function listCountries(): CountryGroup[] {
       });
     }
   }
-  return Array.from(map.values()).sort((a, b) =>
-    a.country.localeCompare(b.country),
-  );
+  return Array.from(map.values())
+    .filter((c) => c.gyms.length >= MIN_PUBLIC_COUNTRY_GYMS)
+    .sort((a, b) => a.country.localeCompare(b.country));
 }
 
 export function listCities(): { citySlug: string; city: string; country: string; count: number }[] {
