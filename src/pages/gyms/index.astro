@@ -8,13 +8,16 @@ const description = "Curated directory of Hyrox-affiliated gyms and training clu
 const breadcrumbs = [{ name: "Gyms" }];
 
 const totalMappedGyms = GYMS.length;
-const totalCountries = listCountries().length;
+const publicCountries = listCountries();
+const publicCountryCodes = new Set(publicCountries.map((c) => c.countryCode));
+const visibleCityGyms = CITY_GYMS.filter((c) => publicCountryCodes.has(c.countryCode));
+const totalCountries = publicCountries.length;
 
 const byRegion = {
-  EU: CITY_GYMS.filter((c) => c.region === "EU"),
-  NA: CITY_GYMS.filter((c) => c.region === "NA"),
-  APAC: CITY_GYMS.filter((c) => c.region === "APAC"),
-  ME: CITY_GYMS.filter((c) => c.region === "ME"),
+  EU: visibleCityGyms.filter((c) => c.region === "EU"),
+  NA: visibleCityGyms.filter((c) => c.region === "NA"),
+  APAC: visibleCityGyms.filter((c) => c.region === "APAC"),
+  ME: visibleCityGyms.filter((c) => c.region === "ME"),
 };
 ---
 

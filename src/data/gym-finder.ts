@@ -746,13 +746,25 @@ function dedupeBySlug(...lists: Gym[][]): Gym[] {
   }
   return out;
 }
-export const GYMS: Gym[] = dedupeBySlug(
+
+const MIN_PUBLIC_COUNTRY_GYMS = 2;
+
+const ALL_GYMS: Gym[] = dedupeBySlug(
   HAND_CURATED_GYMS,
   NORDIC_GYMS,
   UK_GYMS,
   DE_GYMS,
   FR_GYMS,
   US_GYMS,
+);
+
+const countryGymCounts = ALL_GYMS.reduce<Map<string, number>>((acc, gym) => {
+  acc.set(gym.countrySlug, (acc.get(gym.countrySlug) ?? 0) + 1);
+  return acc;
+}, new Map());
+
+export const GYMS: Gym[] = ALL_GYMS.filter(
+  (gym) => (countryGymCounts.get(gym.countrySlug) ?? 0) >= MIN_PUBLIC_COUNTRY_GYMS,
 );
 
 // ----------------------------------------------------------------
@@ -767,8 +779,6 @@ export interface CountryGroup {
   gyms: Gym[];
   cities: string[];
 }
-
-const MIN_PUBLIC_COUNTRY_GYMS = 2;
 
 export function getGymBySlug(slug: string): Gym | undefined {
   return GYMS.find((g) => g.slug === slug);
@@ -805,8 +815,22 @@ export function listCountries(): CountryGroup[] {
     .sort((a, b) => a.country.localeCompare(b.country));
 }
 
-export function listCities(): { citySlug: string; city: string; country: string; count: number }[] {
-  const map = new Map<string, { citySlug: string; city: string; country: string; count: number }>();
+export function listCities(): {
+  citySlug: string;
+  city: string;
+  country: string;
+  countryCode: string;
+  countrySlug: string;
+  count: number;
+}[] {
+  const map = new Map<string, {
+    citySlug: string;
+    city: string;
+    country: string;
+    countryCode: string;
+    countrySlug: string;
+    count: number;
+  }>();
   for (const g of GYMS) {
     const existing = map.get(g.citySlug);
     if (existing) {
@@ -816,6 +840,8 @@ export function listCities(): { citySlug: string; city: string; country: string;
         citySlug: g.citySlug,
         city: g.city,
         country: g.country,
+        countryCode: g.countryCode,
+        countrySlug: g.countrySlug,
         count: 1,
       });
     }

@@ -2,15 +2,18 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GymMap from "../../components/GymMap.tsx";
 import { CITY_GYMS, type CityGymGroup, type AffiliatedGym } from "../../data/gyms";
-import { getGymsByCity, listCities, AFFILIATION_LABELS } from "../../data/gym-finder";
+import { getGymsByCity, listCities, listCountries, AFFILIATION_LABELS } from "../../data/gym-finder";
 import { EVENTS } from "../../data/events";
 
 export async function getStaticPaths() {
   // Union of curated city slugs and every city slug present in the
   // structured gym-finder dataset. Avoids 404s when a gym detail page
   // links to /gyms/[citySlug]/ for a city we never hand-curated.
+  const publicCountryCodes = new Set(listCountries().map((c) => c.countryCode));
   const slugs = new Set<string>();
-  for (const c of CITY_GYMS) slugs.add(c.citySlug);
+  for (const c of CITY_GYMS) {
+    if (publicCountryCodes.has(c.countryCode)) slugs.add(c.citySlug);
+  }
   for (const c of listCities()) slugs.add(c.citySlug);
   return Array.from(slugs).map((citySlug) => ({
     params: { city: citySlug },
@@ -32,7 +35,9 @@ interface CityView {
 const { citySlug } = Astro.props;
 const structuredGyms = getGymsByCity(citySlug);
 const hasStructured = structuredGyms.length > 0;
-const curated = CITY_GYMS.find((c) => c.citySlug === citySlug);
+const publicCountryCodes = new Set(listCountries().map((c) => c.countryCode));
+const visibleCityGyms = CITY_GYMS.filter((c) => publicCountryCodes.has(c.countryCode));
+const curated = visibleCityGyms.find((c) => c.citySlug === citySlug);
 
 let cityData: CityView;
 if (curated) {
@@ -261,7 +266,7 @@ const itemListJsonLd = hasStructured
 
       <h2>Other Hyrox cities</h2>
       <ul>
-        {CITY_GYMS.filter((c) => c.citySlug !== cityData.citySlug).slice(0, 8).map((c) => (
+        {visibleCityGyms.filter((c) => c.citySlug !== cityData.citySlug).slice(0, 8).map((c) => (
           <li><a href={`/gyms/${c.citySlug}/`}>Hyrox gyms in {c.city}</a></li>
         ))}
       </ul>
