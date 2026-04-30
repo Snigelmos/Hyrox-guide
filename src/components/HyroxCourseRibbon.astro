@@ -140,7 +140,7 @@ const labelY = baselineY + (compact ? 32 : 40);
       <circle cx={startOffsetRun / 2} cy={baselineY} r="4" fill="rgb(56,189,248)" />
       <text
         x={startOffsetRun / 2}
-        y={baselineY - 14}
+        y={labelY}
         text-anchor="middle"
         class="fill-accent"
         font-size={compact ? 10 : 11}
@@ -161,7 +161,7 @@ const labelY = baselineY + (compact ? 32 : 40);
       />
       <text
         x={totalWidth - endRun / 2}
-        y={baselineY - 14}
+        y={labelY}
         text-anchor="middle"
         class="fill-text-heading"
         font-size={compact ? 10 : 11}
