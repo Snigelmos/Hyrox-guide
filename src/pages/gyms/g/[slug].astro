@@ -65,6 +65,7 @@ const localBusinessJsonLd = {
 
 const directionsGoogle = `https://www.google.com/maps/dir/?api=1&destination=${gym.lat},${gym.lng}&destination_place_id=${encodeURIComponent(gym.name)}`;
 const directionsApple = `http://maps.apple.com/?daddr=${gym.lat},${gym.lng}&q=${encodeURIComponent(gym.name)}`;
+const googleSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${gym.name} ${gym.city} ${gym.country}`)}`;
 ---
 
 <BaseLayout
@@ -106,9 +107,13 @@ const directionsApple = `http://maps.apple.com/?daddr=${gym.lat},${gym.lng}&q=${
         {gym.address}
       </p>
       <div class="mt-5 flex flex-wrap gap-3">
-        {gym.website && (
+        {gym.website ? (
           <a href={gym.website} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
             Visit website &rarr;
+          </a>
+        ) : (
+          <a href={googleSearchUrl} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
+            Find on Google &rarr;
           </a>
         )}
         <a href={directionsGoogle} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
@@ -117,11 +122,6 @@ const directionsApple = `http://maps.apple.com/?daddr=${gym.lat},${gym.lng}&q=${
         <a href={directionsApple} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
           Apple Maps directions
         </a>
-        {gym.hyroxOfficialUrl && (
-          <a href={gym.hyroxOfficialUrl} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text-muted hover:text-text hover:border-border-hover font-bold text-sm no-underline">
-            Hyrox.com listing
-          </a>
-        )}
       </div>
     </header>
 
@@ -209,11 +209,5 @@ const directionsApple = `http://maps.apple.com/?daddr=${gym.lat},${gym.lng}&q=${
       </p>
     </section>
 
-    {!indexable && (
-      <section class="mt-10 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5 text-sm text-text-muted">
-        This page is currently not indexed by search engines because it lacks a verified description or website link. We're growing the directory — if you have details for this gym,
-        <a href="/gyms/submit/" class="text-accent underline ml-1">submit them here</a>.
-      </section>
-    )}
   </div>
 </BaseLayout>

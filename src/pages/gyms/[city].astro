@@ -1,27 +1,74 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GymMap from "../../components/GymMap.tsx";
-import { CITY_GYMS } from "../../data/gyms";
-import { getGymsByCity, AFFILIATION_LABELS } from "../../data/gym-finder";
+import { CITY_GYMS, type CityGymGroup, type AffiliatedGym } from "../../data/gyms";
+import { getGymsByCity, listCities, AFFILIATION_LABELS } from "../../data/gym-finder";
 import { EVENTS } from "../../data/events";
 
 export async function getStaticPaths() {
-  return CITY_GYMS.map((c) => ({
-    params: { city: c.citySlug },
-    props: { citySlug: c.citySlug },
+  // Union of curated city slugs and every city slug present in the
+  // structured gym-finder dataset. Avoids 404s when a gym detail page
+  // links to /gyms/[citySlug]/ for a city we never hand-curated.
+  const slugs = new Set<string>();
+  for (const c of CITY_GYMS) slugs.add(c.citySlug);
+  for (const c of listCities()) slugs.add(c.citySlug);
+  return Array.from(slugs).map((citySlug) => ({
+    params: { city: citySlug },
+    props: { citySlug },
   }));
 }
 
+interface CityView {
+  citySlug: string;
+  city: string;
+  country: string;
+  countryCode: string;
+  region: CityGymGroup["region"];
+  description: string;
+  nearestEventCitySlug?: string;
+  legacyGyms: AffiliatedGym[];
+}
+
 const { citySlug } = Astro.props;
-const cityData = CITY_GYMS.find((c) => c.citySlug === citySlug)!;
 const structuredGyms = getGymsByCity(citySlug);
 const hasStructured = structuredGyms.length > 0;
+const curated = CITY_GYMS.find((c) => c.citySlug === citySlug);
+
+let cityData: CityView;
+if (curated) {
+  cityData = {
+    citySlug: curated.citySlug,
+    city: curated.city,
+    country: curated.country,
+    countryCode: curated.countryCode,
+    region: curated.region,
+    description: curated.description,
+    nearestEventCitySlug: curated.nearestEventCitySlug,
+    legacyGyms: curated.gyms,
+  };
+} else {
+  // Build a synthetic city view from the structured gyms so /gyms/[city]/
+  // always renders with at least the map and gym cards.
+  const first = structuredGyms[0];
+  if (!first) {
+    throw new Error(`No data available for city slug "${citySlug}"`);
+  }
+  cityData = {
+    citySlug,
+    city: first.city,
+    country: first.country,
+    countryCode: first.countryCode,
+    region: first.region,
+    description: `Hyrox-affiliated gyms and training clubs in ${first.city}, ${first.country}. Each location runs branded Hyrox programming or hosts Hyrox-specific prep blocks.`,
+    legacyGyms: [],
+  };
+}
 
 const upcomingEvent = cityData.nearestEventCitySlug
   ? EVENTS.find((e) => e.slug === cityData.nearestEventCitySlug && e.year >= 2026)
-  : undefined;
+  : EVENTS.find((e) => e.countryCode === cityData.countryCode && e.year >= 2026);
 
-const totalGyms = structuredGyms.length + cityData.gyms.length;
+const totalGyms = structuredGyms.length + cityData.legacyGyms.length;
 const title = `Hyrox Gyms in ${cityData.city} — Affiliated Training Clubs Directory`;
 const metaTitle = `Hyrox Gyms ${cityData.city} — ${totalGyms} Affiliated Training Clubs`;
 const description = `Find Hyrox-affiliated gyms and training clubs in ${cityData.city}, ${cityData.country}. Curated map and directory of training partners running Hyrox-specific programming.`;
@@ -41,9 +88,9 @@ const faqItems = [
     answer: `Yes — Hyrox maintains an official directory of affiliated training clubs at hyrox.com. The list above includes both officially affiliated clubs and notable independent boxes that run Hyrox prep programming.`,
   },
   {
-    question: `Does ${cityData.city} host a Hyrox event?`,
+    question: `Does ${cityData.city} or ${cityData.country} host a Hyrox event?`,
     answer: upcomingEvent
-      ? `Yes — Hyrox ${cityData.city} ${upcomingEvent.year} is scheduled at ${upcomingEvent.venue}${upcomingEvent.startDate ? ` on ${upcomingEvent.startDate}` : ""}. See our event guide for full details.`
+      ? `Hyrox ${upcomingEvent.city} ${upcomingEvent.year} is scheduled at ${upcomingEvent.venue}${upcomingEvent.startDate ? ` on ${upcomingEvent.startDate}` : ""}. See our event guide for full details.`
       : `${cityData.city} is part of the active Hyrox training community. Check the Hyrox event calendar for the nearest race.`,
   },
 ];
@@ -151,7 +198,7 @@ const itemListJsonLd = hasStructured
       </section>
     )}
 
-    {cityData.gyms.length > 0 && (
+    {cityData.legacyGyms.length > 0 && (
       <section class="mb-12">
         <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
           Other listed training partners in {cityData.city}
@@ -160,7 +207,7 @@ const itemListJsonLd = hasStructured
           Chains and venues we know offer Hyrox programming but haven't yet mapped to specific branches.
         </p>
         <div class="grid gap-4">
-          {cityData.gyms.map((g) => (
+          {cityData.legacyGyms.map((g) => (
             <article class="bg-bg-card border border-border rounded-2xl p-6">
               <h3 class="text-xl font-black text-text-heading mb-1">{g.name}</h3>
               {g.neighbourhood && (

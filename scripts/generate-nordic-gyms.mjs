@@ -114,12 +114,66 @@ const records = resolved
     return a.name.localeCompare(b.name);
   });
 
-// Deduplicate by slug.
-const seen = new Set();
-const deduped = records.filter((r) => {
-  if (seen.has(r.slug)) return false;
-  seen.add(r.slug);
+// Deduplicate.
+//
+// Step 1: drop exact slug collisions.
+// Step 2: drop records that share a coordinate (rounded to 4 decimals,
+//         ≈10m) AND city with another record. The Hyrox WPSL data
+//         contains a long tail of duplicates that share a venue under
+//         different chain abbreviations (e.g. "NW Göteborg Valhalla"
+//         vs "Nordic Wellness Göteborg Valhalla") or that have a
+//         legacy "-2" slug suffix from re-imports.
+//
+// When two records collide we keep the canonical one based on:
+//   - shorter slug (no "-N" suffix)
+//   - longer (non-abbreviated) title
+//   - alphabetical slug as a tiebreaker
+function canonicalScore(r) {
+  // Lower = better (will be picked).
+  let score = 0;
+  if (/-\d+$/.test(r.slug)) score += 10;        // penalise "-2" suffix
+  if (/^nw-/.test(r.slug)) score += 5;          // penalise "NW" abbreviation
+  if (r.name.length < 12) score += 2;           // very short / abbreviated names
+  score += r.slug.length * 0.01;                // light tiebreaker
+  return score;
+}
+
+const slugSeen = new Set();
+const deslugged = records.filter((r) => {
+  if (slugSeen.has(r.slug)) return false;
+  slugSeen.add(r.slug);
   return true;
+});
+
+const venueKey = (r) =>
+  `${r.citySlug}|${r.lat.toFixed(4)}|${r.lng.toFixed(4)}`;
+
+const venueGroups = new Map();
+for (const r of deslugged) {
+  const key = venueKey(r);
+  const arr = venueGroups.get(key) ?? [];
+  arr.push(r);
+  venueGroups.set(key, arr);
+}
+
+const deduped = [];
+for (const [, group] of venueGroups) {
+  if (group.length === 1) {
+    deduped.push(group[0]);
+  } else {
+    group.sort((a, b) => canonicalScore(a) - canonicalScore(b));
+    const droppedSlugs = group.slice(1).map((g) => g.slug);
+    console.log(
+      `Deduped ${group[0].name} @ ${group[0].city}: kept "${group[0].slug}", dropped ${droppedSlugs.join(", ")}`,
+    );
+    deduped.push(group[0]);
+  }
+}
+
+deduped.sort((a, b) => {
+  if (a.country !== b.country) return a.country.localeCompare(b.country);
+  if (a.city !== b.city) return a.city.localeCompare(b.city);
+  return a.name.localeCompare(b.name);
 });
 
 const literal = (v) =>

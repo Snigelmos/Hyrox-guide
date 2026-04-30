@@ -302,6 +302,10 @@ function buildPinIcon(): L.Icon {
 
 function buildPopup(g: Gym): string {
   const subtitle = g.neighbourhood ? `${g.neighbourhood}, ${g.city}` : g.city;
+  const externalUrl =
+    g.website ??
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${g.name} ${g.city} ${g.country}`)}`;
+  const externalLabel = g.website ? "Website &rarr;" : "Find on Google &rarr;";
   return `
     <div style="font-family: Inter, system-ui, sans-serif; min-width: 220px;">
       <div style="font-weight: 800; color: #fafafa; font-size: 14px; line-height: 1.3; margin-bottom: 4px;">${escapeHtml(g.name)}</div>
@@ -309,7 +313,7 @@ function buildPopup(g: Gym): string {
       <div style="color: #a1a1aa; font-size: 12px; line-height: 1.5; margin-bottom: 8px;">${escapeHtml(g.address)}</div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <a href="/gyms/g/${g.slug}/" style="display: inline-block; padding: 6px 10px; background: #38bdf8; color: #09090b; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Details</a>
-        ${g.website ? `<a href="${g.website}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 6px 10px; background: transparent; color: #38bdf8; border: 1px solid #38bdf8; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Website &rarr;</a>` : ""}
+        <a href="${externalUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 6px 10px; background: transparent; color: #38bdf8; border: 1px solid #38bdf8; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">${externalLabel}</a>
       </div>
     </div>
   `;
