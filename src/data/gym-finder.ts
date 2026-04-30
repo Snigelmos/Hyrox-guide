@@ -4,17 +4,25 @@
  * Powers the interactive map at /gyms/map/, the country directory at
  * /gyms/country/[country]/, and per-gym detail pages at /gyms/g/[slug]/.
  *
- * Each record is a real, well-known venue with a verifiable public web
- * presence. Coordinates are neighbourhood-accurate (within ~150m) and
- * suitable for a map overview, but exact entrances and addresses should
- * be re-checked before visiting.
+ * The dataset combines two sources:
+ *  - HAND_CURATED_GYMS: a hand-verified seed of marquee venues (UK, US,
+ *    DE, ES, AU, etc.) with detailed descriptions for SEO landing pages.
+ *  - NORDIC_GYMS: every official Hyrox affiliated training club in
+ *    Sweden, Norway, Denmark, Finland and Iceland (auto-generated from
+ *    the Hyrox partner directory at gyms.elbnetz.cloud, geocoded via
+ *    OpenStreetMap Nominatim).
  *
- * Hyrox affiliations change. The list below is a hand-curated seed —
- * always verify on hyrox.com/affiliated-training-clubs/ before planning
- * a session or trip.
+ * Coordinates are venue- or neighbourhood-accurate (within ~150 m) and
+ * suitable for a map overview. Exact entrances and addresses should be
+ * re-checked before visiting.
+ *
+ * Hyrox affiliations change. Always verify on hyrox.com/find-a-hyrox-partner-gym/
+ * before planning a session or trip.
  *
  * Last reviewed: 2026-04
  */
+
+import { NORDIC_GYMS } from "./nordic-gyms.generated";
 
 export type Region = "EU" | "NA" | "APAC" | "ME" | "SA";
 
@@ -52,7 +60,11 @@ export interface Gym {
   verifiedAt: string;
 }
 
-export const GYMS: Gym[] = [
+/**
+ * Hand-curated, hand-described gym records. Indexable detail pages are
+ * generated only for entries with a real description (see hasIndexablePage).
+ */
+const HAND_CURATED_GYMS: Gym[] = [
   // ============================================================
   // UNITED KINGDOM
   // ============================================================
@@ -701,6 +713,18 @@ export const GYMS: Gym[] = [
     description: "F45 Dubai Marina runs HIIT class formats that align closely with the Hyrox station list. Marina-side location, popular with expat athletes preparing for the regional Hyrox calendar.",
     verifiedAt: "2026-04",
   },
+];
+
+/**
+ * Full gym dataset — hand-curated marquee venues plus the auto-generated
+ * Nordic affiliated training clubs. Hand-curated records take precedence
+ * if a slug collision ever occurs (the Nordic list is filtered against
+ * existing slugs at module-load time).
+ */
+const handSlugs = new Set(HAND_CURATED_GYMS.map((g) => g.slug));
+export const GYMS: Gym[] = [
+  ...HAND_CURATED_GYMS,
+  ...NORDIC_GYMS.filter((g) => !handSlugs.has(g.slug)),
 ];
 
 // ----------------------------------------------------------------
