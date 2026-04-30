@@ -34,7 +34,7 @@ const meta = BLOG_CATEGORY_META[category];
 <BaseLayout
   title={`${meta.label} — Hyrox Blog`}
   description={meta.description}
-  noindex={true}
+  noindex={page.currentPage > 1}
   breadcrumbs={[
     { name: "Blog", url: "/blog/" },
     { name: meta.label },
