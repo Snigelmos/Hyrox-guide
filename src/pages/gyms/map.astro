@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GymMap from "../../components/GymMap.tsx";
-import { GYMS, listCountries, AFFILIATION_LABELS } from "../../data/gym-finder";
+import { GYMS, listCountries, AFFILIATION_LABELS, type Region } from "../../data/gym-finder";
 
 const title = "Hyrox Gym Finder — Interactive Map of Hyrox-Affiliated Gyms Worldwide";
 const description = `Find Hyrox-affiliated training clubs and gyms near you on an interactive world map. ${GYMS.length} curated venues across ${listCountries().length} countries — filter by country, affiliation type, or search by name.`;
@@ -12,6 +12,26 @@ const breadcrumbs = [
 
 const countries = listCountries();
 const totalGyms = GYMS.length;
+
+const REGION_LABELS: Record<Region, string> = {
+  EU: "Europe",
+  NA: "North America",
+  APAC: "Asia-Pacific",
+  ME: "Middle East",
+  SA: "South America",
+};
+
+// Group countries by region, then sort regions by total gym count desc.
+const regionGroups = (Object.keys(REGION_LABELS) as Region[])
+  .map((region) => {
+    const regionCountries = countries
+      .filter((c) => c.region === region)
+      .sort((a, b) => b.gyms.length - a.gyms.length);
+    const totalGymsInRegion = regionCountries.reduce((sum, c) => sum + c.gyms.length, 0);
+    return { region, label: REGION_LABELS[region], countries: regionCountries, totalGymsInRegion };
+  })
+  .filter((g) => g.countries.length > 0)
+  .sort((a, b) => b.totalGymsInRegion - a.totalGymsInRegion);
 
 const faqItems = [
   {
@@ -75,43 +95,116 @@ const faqItems = [
         </a>
       </div>
       <p class="text-sm text-text-muted mb-6">
-        Below is the full indexable list. Each gym links through to its detail page with map, address, and directions.
+        Browse the full indexable directory by region. Click any country to expand its gym list — each gym links through to its detail page with map, address, and directions.
       </p>
-      <div class="space-y-8">
-        {countries.map((c) => (
+
+      <div class="flex flex-wrap gap-2 mb-6 text-xs font-bold">
+        <button
+          type="button"
+          data-toggle-all="open"
+          class="px-3 py-1.5 rounded-md border border-border bg-bg-card hover:bg-bg-card-hover hover:border-accent/40 transition-colors text-text-muted hover:text-text"
+        >
+          Expand all
+        </button>
+        <button
+          type="button"
+          data-toggle-all="close"
+          class="px-3 py-1.5 rounded-md border border-border bg-bg-card hover:bg-bg-card-hover hover:border-accent/40 transition-colors text-text-muted hover:text-text"
+        >
+          Collapse all
+        </button>
+      </div>
+
+      <div class="space-y-10">
+        {regionGroups.map((g) => (
           <div>
-            <h3 class="text-xl font-black text-text-heading mb-3 flex items-center gap-3">
-              <a href={`/gyms/country/${c.countrySlug}/`} class="hover:text-accent transition-colors no-underline">
-                {c.country}
-              </a>
-              <span class="text-xs font-normal text-text-muted">
-                {c.gyms.length} {c.gyms.length === 1 ? "gym" : "gyms"} · {c.cities.length} {c.cities.length === 1 ? "city" : "cities"}
+            <div class="flex items-baseline gap-3 mb-4 pb-2 border-b border-border">
+              <h3 class="text-2xl font-black text-text-heading">
+                {g.label}
+              </h3>
+              <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+                {g.countries.length} {g.countries.length === 1 ? "country" : "countries"} · {g.totalGymsInRegion} {g.totalGymsInRegion === 1 ? "gym" : "gyms"}
               </span>
-            </h3>
-            <ul class="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-              {c.gyms.map((g) => (
-                <li>
-                  <a
-                    href={`/gyms/g/${g.slug}/`}
-                    class="block p-4 rounded-xl border border-border bg-bg-card hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-                  >
-                    <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
-                      {g.city}{g.neighbourhood ? ` · ${g.neighbourhood}` : ""}
+            </div>
+            <div class="space-y-2">
+              {g.countries.map((c) => (
+                <details class="gym-country group rounded-xl border border-border bg-bg-card overflow-hidden">
+                  <summary class="flex items-center gap-3 p-4 cursor-pointer hover:bg-bg-card-hover list-none">
+                    <span
+                      class="flex-shrink-0 w-5 h-5 inline-flex items-center justify-center text-text-muted group-open:rotate-90 transition-transform"
+                      aria-hidden="true"
+                    >
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 1.5L6.5 5L3 8.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    <span class="flex-1 text-base md:text-lg font-black text-text-heading">
+                      {c.country}
+                    </span>
+                    <span class="flex-shrink-0 text-xs font-bold uppercase tracking-wider text-text-muted">
+                      {c.gyms.length} {c.gyms.length === 1 ? "gym" : "gyms"} · {c.cities.length} {c.cities.length === 1 ? "city" : "cities"}
+                    </span>
+                  </summary>
+                  <div class="px-4 pb-4 pt-1 border-t border-border">
+                    <div class="mt-3 mb-4">
+                      <a
+                        href={`/gyms/country/${c.countrySlug}/`}
+                        class="text-xs font-bold text-accent underline"
+                      >
+                        View {c.country} country page &rarr;
+                      </a>
                     </div>
-                    <div class="text-base font-black text-text-heading mb-1 leading-tight">
-                      {g.name}
-                    </div>
-                    <div class="text-xs text-text-muted">
-                      {AFFILIATION_LABELS[g.affiliationType]}
-                    </div>
-                  </a>
-                </li>
+                    <ul class="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+                      {c.gyms.map((gym) => (
+                        <li>
+                          <a
+                            href={`/gyms/g/${gym.slug}/`}
+                            class="block p-4 rounded-xl border border-border bg-bg hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+                          >
+                            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                              {gym.city}{gym.neighbourhood ? ` · ${gym.neighbourhood}` : ""}
+                            </div>
+                            <div class="text-base font-black text-text-heading mb-1 leading-tight">
+                              {gym.name}
+                            </div>
+                            <div class="text-xs text-text-muted">
+                              {AFFILIATION_LABELS[gym.affiliationType]}
+                            </div>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
               ))}
-            </ul>
+            </div>
           </div>
         ))}
       </div>
     </section>
+
+    <script is:inline>
+      // Expand-all / Collapse-all controls.
+      document.querySelectorAll("[data-toggle-all]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const action = btn.getAttribute("data-toggle-all");
+          document.querySelectorAll("details.gym-country").forEach((d) => {
+            if (action === "open") d.setAttribute("open", "");
+            else d.removeAttribute("open");
+          });
+        });
+      });
+    </script>
+
+    <style>
+      /* Hide native disclosure triangle (Webkit + Firefox). */
+      details.gym-country > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.gym-country > summary {
+        list-style: none;
+      }
+    </style>
 
     <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
       <h2 class="text-xl font-black text-text-heading mb-2">Always verify before visiting</h2>
