@@ -1,0 +1,175 @@
+---
+/**
+ * Horizontal Hyrox course flow visual.
+ *
+ * Shows the full race format at a glance: 8 running km, each followed by
+ * one workout station. Used in the hero, on pillar pages, and inside
+ * cornerstone blog posts.
+ *
+ * Reads at any width. Pass `compact` to use a denser layout suited to
+ * narrow embeds (sidebars, mobile heroes).
+ */
+
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+
+const { compact = false, class: className = "" } = Astro.props;
+
+const stations = [
+  { abbr: "Ski", name: "SkiErg" },
+  { abbr: "Push", name: "Sled Push" },
+  { abbr: "Pull", name: "Sled Pull" },
+  { abbr: "BBJ", name: "Burpees" },
+  { abbr: "Row", name: "Rowing" },
+  { abbr: "Carry", name: "Farmers" },
+  { abbr: "Lunge", name: "Sandbag" },
+  { abbr: "WB", name: "Wall Balls" },
+];
+
+const stepCount = stations.length;
+const stepWidth = 90;
+const startOffsetRun = 36;
+const endRun = 36;
+const totalWidth = startOffsetRun + stepCount * stepWidth + endRun;
+const baselineY = compact ? 78 : 92;
+const stationRadius = compact ? 18 : 22;
+const labelY = baselineY + (compact ? 32 : 40);
+---
+
+<div class:list={["w-full", className]} role="img" aria-label="Hyrox course: 1 km run plus one station, repeated 8 times.">
+  <svg
+    viewBox={`0 0 ${totalWidth} ${compact ? 130 : 160}`}
+    preserveAspectRatio="xMidYMid meet"
+    class="w-full h-auto"
+    fill="none"
+  >
+    <defs>
+      <linearGradient id="runTrack" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(56,189,248,0.0)" />
+        <stop offset="20%" stop-color="rgba(56,189,248,0.45)" />
+        <stop offset="80%" stop-color="rgba(129,140,248,0.45)" />
+        <stop offset="100%" stop-color="rgba(129,140,248,0.0)" />
+      </linearGradient>
+      <linearGradient id="stationFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(56,189,248,0.18)" />
+        <stop offset="100%" stop-color="rgba(56,189,248,0.04)" />
+      </linearGradient>
+    </defs>
+
+    <line
+      x1={startOffsetRun / 2}
+      y1={baselineY}
+      x2={totalWidth - endRun / 2}
+      y2={baselineY}
+      stroke="url(#runTrack)"
+      stroke-width={compact ? 2 : 3}
+      stroke-linecap="round"
+    />
+
+    <g stroke="rgba(161,161,170,0.35)" stroke-width="1" stroke-dasharray="3 4">
+      {Array.from({ length: stepCount + 1 }).map((_, i) => {
+        const x = startOffsetRun + i * stepWidth;
+        return (
+          <line x1={x - stepWidth + 6} y1={baselineY} x2={x - 6} y2={baselineY} />
+        );
+      })}
+    </g>
+
+    {stations.map((station, i) => {
+      const cx = startOffsetRun + i * stepWidth + stepWidth / 2;
+      return (
+        <g>
+          <text
+            x={cx - stepWidth / 2}
+            y={baselineY - 14}
+            text-anchor="middle"
+            class="fill-text-muted"
+            font-size={compact ? 10 : 11}
+            font-family="Inter, sans-serif"
+            font-weight="600"
+            opacity="0.7"
+          >
+            1 km
+          </text>
+
+          <circle
+            cx={cx}
+            cy={baselineY}
+            r={stationRadius + 4}
+            fill="rgba(9,9,11,1)"
+          />
+          <circle
+            cx={cx}
+            cy={baselineY}
+            r={stationRadius}
+            fill="url(#stationFill)"
+            stroke="rgba(56,189,248,0.55)"
+            stroke-width="1.5"
+          />
+          <text
+            x={cx}
+            y={baselineY + 1}
+            text-anchor="middle"
+            dominant-baseline="middle"
+            class="fill-accent"
+            font-size={compact ? 10 : 11}
+            font-family="Inter, sans-serif"
+            font-weight="800"
+          >
+            {i + 1}
+          </text>
+
+          <text
+            x={cx}
+            y={labelY}
+            text-anchor="middle"
+            class="fill-text-heading"
+            font-size={compact ? 10 : 12}
+            font-family="Inter, sans-serif"
+            font-weight="700"
+          >
+            {station.abbr}
+          </text>
+        </g>
+      );
+    })}
+
+    <g>
+      <circle cx={startOffsetRun / 2} cy={baselineY} r="4" fill="rgb(56,189,248)" />
+      <text
+        x={startOffsetRun / 2}
+        y={baselineY - 14}
+        text-anchor="middle"
+        class="fill-accent"
+        font-size={compact ? 10 : 11}
+        font-family="Inter, sans-serif"
+        font-weight="800"
+      >
+        START
+      </text>
+    </g>
+    <g>
+      <rect
+        x={totalWidth - endRun / 2 - 5}
+        y={baselineY - 5}
+        width="10"
+        height="10"
+        rx="1"
+        fill="rgb(129,140,248)"
+      />
+      <text
+        x={totalWidth - endRun / 2}
+        y={baselineY - 14}
+        text-anchor="middle"
+        class="fill-text-heading"
+        font-size={compact ? 10 : 11}
+        font-family="Inter, sans-serif"
+        font-weight="800"
+      >
+        FINISH
+      </text>
+    </g>
+  </svg>
+</div>
