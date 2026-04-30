@@ -45,6 +45,53 @@ const COUNTRY_TO_NAME = {
   "USA": "United States",
 };
 
+// Canonical city aliases. Maps WPSL local-language / abbreviated /
+// state-suffixed city values to a single canonical English form so we
+// don't split the same physical city across multiple records.
+const CITY_ALIASES = {
+  // Germany
+  "München": "Munich",
+  "munchen": "Munich",
+  // France: all-caps comes through as itself; we lower-case + title-case
+  // generically below.
+  // US: strip ", ST" suffix and expand common abbreviations
+  "N Bellmore": "North Bellmore",
+  "N. Bellmore": "North Bellmore",
+  "Br2 9be": "London",
+};
+
+function titleCaseCity(c) {
+  if (!c) return c;
+  // Strip trailing ", NY" / ", CA" etc. (US data pattern)
+  c = c.replace(/,\s*[A-Z]{2}\s*$/, "");
+  // If the value is all-uppercase or all-lowercase, title-case it.
+  // Preserves mixed-case values that were already cased correctly.
+  if (c === c.toUpperCase() || c === c.toLowerCase()) {
+    c = c
+      .toLowerCase()
+      .split(/(\s+|-)/)
+      .map((part) => {
+        if (part.length === 0 || /^\s+$/.test(part) || part === "-") return part;
+        // Lowercase short connectives unless first word
+        if (["of", "the", "and", "in", "on", "at", "for", "to", "de", "du", "la", "le", "les", "des", "von", "van", "der", "auf"].includes(part))
+          return part;
+        return part[0].toUpperCase() + part.slice(1);
+      })
+      .join("");
+    // Always uppercase the very first letter.
+    c = c.charAt(0).toUpperCase() + c.slice(1);
+  }
+  return c;
+}
+
+export function normalizeCity(c) {
+  if (!c) return c;
+  let v = c.trim();
+  v = titleCaseCity(v);
+  if (CITY_ALIASES[v]) return CITY_ALIASES[v];
+  return v;
+}
+
 export function slugify(s) {
   if (!s) return "";
   return String(s)
@@ -129,7 +176,7 @@ export function toGym(rec, options = {}) {
   const country = COUNTRY_TO_NAME[rec.country] ?? rec.country;
   const countryCode = COUNTRY_TO_CODE[rec.country] ?? options.fallbackCountryCode ?? "??";
   const countrySlug = COUNTRY_TO_SLUG[rec.country] ?? slugify(country);
-  const city = rec.city || country;
+  const city = normalizeCity(rec.city || country);
   const citySlug = slugify(city);
   const region = regionFromCountry(country);
   const aff = classifyAffiliation(rec.slug, rec.name);
@@ -209,11 +256,56 @@ export function emitModule({ exportName, regionLabel, gyms, sourceFile }) {
   return banner;
 }
 
+function normalizedNameKey(name) {
+  return String(name ?? "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+// Pull out a postal-code-shaped token from an address string. Best-effort
+// extraction across UK / US / Continental Europe formats.
+function extractZip(address) {
+  if (!address) return "";
+  const s = String(address);
+  // UK postcode like SW1A 1AA, KT15 2SD, BR2 9BE
+  const uk = s.match(/\b([A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})\b/i);
+  if (uk) return uk[1].toUpperCase().replace(/\s+/g, "");
+  // 5-digit (US, DE, FR, ES) or 4-digit (NO, DK, AT)
+  const num = s.match(/\b(\d{4,5})\b/);
+  if (num) return num[1];
+  return "";
+}
+
+function haversineMeters(a, b) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
 /**
- * Venue dedupe: when two records share city + rounded coords (~10m),
- * keep the one with the lowest canonicalScore.
+ * Venue dedupe runs in two passes:
+ *  1. Strict: same citySlug + lat/lng rounded to 4 decimals (~10m).
+ *  2. Fuzzy: any two records with the same normalized name within 500m
+ *     of each other, regardless of how their city field is written.
+ *     This catches duplicates where one record uses the postcode as its
+ *     city ("KT15 2SD") and another uses the actual city name
+ *     ("Addlestone").
+ *
+ * Within each group the record with the lowest canonicalScore wins.
  */
 export function venueDedupe(gyms) {
+  const dropped = [];
+
+  // Pass 1: rounded-coord groups.
   const groups = new Map();
   for (const g of gyms) {
     const key = `${g.citySlug}|${g.lat.toFixed(4)}|${g.lng.toFixed(4)}`;
@@ -221,8 +313,7 @@ export function venueDedupe(gyms) {
     arr.push(g);
     groups.set(key, arr);
   }
-  const dropped = [];
-  const kept = [];
+  let kept = [];
   for (const [, group] of groups) {
     if (group.length === 1) {
       kept.push(group[0]);
@@ -236,9 +327,60 @@ export function venueDedupe(gyms) {
         keptSlug: group[0].slug,
         name: d.name,
         city: d.city,
+        reason: "same-coords",
       });
     }
   }
+
+  // Pass 2: fuzzy name + (proximity OR same postcode).
+  // Same-name records are clustered together when EITHER they're within
+  // 500m of each other (good geocoding) OR they share the same postcode
+  // (catches dupes where one record has badly geocoded coords > 500m off
+  // but the address text is otherwise identical, e.g. WPSL listings that
+  // include a venue annotation in the street field).
+  const byName = new Map();
+  for (const g of kept) {
+    const k = normalizedNameKey(g.name);
+    if (!k) continue;
+    const arr = byName.get(k) ?? [];
+    arr.push(g);
+    byName.set(k, arr);
+  }
+  const survivors = new Set(kept);
+  for (const [, group] of byName) {
+    if (group.length === 1) continue;
+    const zipCache = group.map((g) => extractZip(g.address));
+    const used = new Set();
+    for (let i = 0; i < group.length; i++) {
+      if (used.has(i)) continue;
+      const cluster = [group[i]];
+      used.add(i);
+      for (let j = i + 1; j < group.length; j++) {
+        if (used.has(j)) continue;
+        const sameZip = zipCache[i] && zipCache[i] === zipCache[j];
+        const closeBy = haversineMeters(group[i], group[j]) <= 500;
+        if (sameZip || closeBy) {
+          cluster.push(group[j]);
+          used.add(j);
+        }
+      }
+      if (cluster.length === 1) continue;
+      cluster.sort((a, b) => canonicalScore(a) - canonicalScore(b));
+      const winner = cluster[0];
+      for (const d of cluster.slice(1)) {
+        survivors.delete(d);
+        dropped.push({
+          slug: d.slug,
+          keptSlug: winner.slug,
+          name: d.name,
+          city: d.city,
+          reason: "same-name-near",
+        });
+      }
+    }
+  }
+  kept = kept.filter((g) => survivors.has(g));
+
   return { kept, dropped };
 }
 

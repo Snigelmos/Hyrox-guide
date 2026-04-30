@@ -1228,7 +1228,7 @@ export const NORDIC_GYMS: Gym[] = [
     slug: "friskissvettis-i-hoeganaes",
     name: "Friskis&Svettis i Höganäs",
     address: "Litteraturvägen 8, 263 35 HÖGANÄS, Sweden",
-    city: "HÖGANÄS",
+    city: "Höganäs",
     citySlug: "hoganas",
     country: "Sweden",
     countryCode: "SE",
