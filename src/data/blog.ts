@@ -108,6 +108,12 @@ export const SERIES_META: Record<
       "The 'why' behind the training — concurrent programming, Zone 2, peaking, VO2max intervals, and deload weeks. Five parts for athletes who want to train smarter.",
     totalPlanned: 5,
   },
+  "no-gym-athlete": {
+    label: "The No-Gym Hyrox Athlete",
+    description:
+      "Six parts on training for Hyrox without a gym — realistic expectations, a 12-week bodyweight plan, the £50 equipment upgrade, park training, hotel room sessions, and the no-gym race-week taper.",
+    totalPlanned: 6,
+  },
 };
 
 export { BLOG_CATEGORIES, BLOG_CATEGORY_META };
