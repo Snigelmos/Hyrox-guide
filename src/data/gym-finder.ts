@@ -4,13 +4,22 @@
  * Powers the interactive map at /gyms/map/, the country directory at
  * /gyms/country/[country]/, and per-gym detail pages at /gyms/g/[slug]/.
  *
- * The dataset combines two sources:
- *  - HAND_CURATED_GYMS: a hand-verified seed of marquee venues (UK, US,
- *    DE, ES, AU, etc.) with detailed descriptions for SEO landing pages.
- *  - NORDIC_GYMS: every official Hyrox affiliated training club in
- *    Sweden, Norway, Denmark, Finland and Iceland (auto-generated from
- *    the Hyrox partner directory at gyms.elbnetz.cloud, geocoded via
- *    OpenStreetMap Nominatim).
+ * The dataset combines six sources:
+ *  - HAND_CURATED_GYMS: a hand-verified seed of marquee venues with
+ *    detailed descriptions for SEO landing pages.
+ *  - NORDIC_GYMS: official Hyrox affiliated training clubs in Sweden,
+ *    Norway, Denmark, Finland and Iceland.
+ *  - UK_GYMS: London + Manchester race-city catchment.
+ *  - DE_GYMS: Berlin + Hamburg + Munich race-city catchment.
+ *  - FR_GYMS: Paris race-city catchment.
+ *  - US_GYMS: NYC + Miami + Dallas + LA + Chicago race-city catchment.
+ *
+ * Auto-generated regional modules are produced by:
+ *   scripts/discover-region.mjs  (city-anchor radius queries against the
+ *                                 official WPSL store_search endpoint)
+ *   scripts/qa-region.mjs        (strict QA: country whitelist, bbox,
+ *                                 viable-contact rule, URL HEAD validation,
+ *                                 venue dedupe)
  *
  * Coordinates are venue- or neighbourhood-accurate (within ~150 m) and
  * suitable for a map overview. Exact entrances and addresses should be
@@ -23,6 +32,10 @@
  */
 
 import { NORDIC_GYMS } from "./nordic-gyms.generated";
+import { UK_GYMS } from "./uk-gyms.generated";
+import { DE_GYMS } from "./de-gyms.generated";
+import { FR_GYMS } from "./fr-gyms.generated";
+import { US_GYMS } from "./us-gyms.generated";
 
 export type Region = "EU" | "NA" | "APAC" | "ME" | "SA";
 
@@ -717,16 +730,30 @@ const HAND_CURATED_GYMS: Gym[] = [
 ];
 
 /**
- * Full gym dataset — hand-curated marquee venues plus the auto-generated
- * Nordic affiliated training clubs. Hand-curated records take precedence
- * if a slug collision ever occurs (the Nordic list is filtered against
- * existing slugs at module-load time).
+ * Full gym dataset — hand-curated marquee venues plus all auto-generated
+ * regional modules. Earlier sources win on slug collisions: hand-curated
+ * always wins, then Nordic, UK, DE, FR, US in that order.
  */
-const handSlugs = new Set(HAND_CURATED_GYMS.map((g) => g.slug));
-export const GYMS: Gym[] = [
-  ...HAND_CURATED_GYMS,
-  ...NORDIC_GYMS.filter((g) => !handSlugs.has(g.slug)),
-];
+function dedupeBySlug(...lists: Gym[][]): Gym[] {
+  const seen = new Set<string>();
+  const out: Gym[] = [];
+  for (const list of lists) {
+    for (const g of list) {
+      if (seen.has(g.slug)) continue;
+      seen.add(g.slug);
+      out.push(g);
+    }
+  }
+  return out;
+}
+export const GYMS: Gym[] = dedupeBySlug(
+  HAND_CURATED_GYMS,
+  NORDIC_GYMS,
+  UK_GYMS,
+  DE_GYMS,
+  FR_GYMS,
+  US_GYMS,
+);
 
 // ----------------------------------------------------------------
 // Derived helpers
