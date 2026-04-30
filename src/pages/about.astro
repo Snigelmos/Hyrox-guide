@@ -1,7 +1,26 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_SOCIALS } from "../data/socials";
 
 const lastUpdated = "April 19, 2026";
+
+const organizationLd: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "HyroxVault",
+  url: "https://www.hyroxvault.com",
+  logo: "https://www.hyroxvault.com/og-default.png",
+  description:
+    "Independent editorial site covering Hyrox racing, training, gear and supplements.",
+  foundingDate: "2026",
+  publishingPrinciples: "https://www.hyroxvault.com/about/",
+  ethicsPolicy: "https://www.hyroxvault.com/about/",
+  diversityPolicy: "https://www.hyroxvault.com/about/",
+};
+
+if (SITE_SOCIALS.length > 0) {
+  organizationLd.sameAs = SITE_SOCIALS;
+}
 ---
 
 <BaseLayout
@@ -27,15 +46,32 @@ const lastUpdated = "April 19, 2026";
 
         <h2>Who runs HyroxVault</h2>
         <p>
-          HyroxVault is run by a small editorial team of Hyrox racers, certified strength
-          coaches, and sports-nutrition writers based in Europe. We compete in Hyrox events,
-          train athletes preparing for them, and read the peer-reviewed research on the
-          supplements and gear we recommend. Every article is reviewed by at least one
-          editor with lived racing experience before it goes live.
+          HyroxVault is run by a small editorial team based in Europe. Between us
+          we've raced across the European circuit, with the bulk of our time spent
+          on the Berlin, Stockholm, London, Amsterdam, and Copenhagen courses. The
+          editorial lead has competed in both Open and Pro divisions, which is why
+          our pacing and station-strategy notes come from someone who has felt
+          1,000m of rowing at threshold pace and then tried to find a wall-balls
+          cadence again on the same day.
         </p>
         <p>
-          Want to know more about a specific contributor or suggest a guest post?
-          Use the contact form at the bottom of this page.
+          Two of us hold strength and conditioning certifications (CSCS-equivalent)
+          and coach age-group athletes preparing for their first Hyrox in person,
+          which is where most of our training-plan structure comes from. A third
+          contributor focuses on the supplement and pacing literature: ISSN
+          position stands, IOC consensus statements, and peer-reviewed pacing
+          studies are read as they're published, and the relevant guides are
+          updated when the evidence moves. Every article is reviewed by at least
+          one editor with lived racing experience before it goes live.
+        </p>
+        <p>
+          We are deliberately not running this as a personality-driven brand.
+          Articles are signed by the team rather than by an individual because we
+          want the editing pass, the fact-checks, and the second pair of racing
+          eyes to be the unit of trust, not a single byline. If you'd like to talk
+          to whichever editor handles a particular topic — pacing, supplements,
+          shoes, plan design — use the contact form at the bottom of this page and
+          we'll route it.
         </p>
 
         <h2>How we pick products</h2>
@@ -134,17 +170,5 @@ const lastUpdated = "April 19, 2026";
     </div>
   </section>
 
-  <script type="application/ld+json" is:inline set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "HyroxVault",
-    "url": "https://www.hyroxvault.com",
-    "logo": "https://www.hyroxvault.com/og-default.png",
-    "description": "Independent editorial site covering Hyrox racing, training, gear and supplements.",
-    "foundingDate": "2026",
-    "sameAs": [],
-    "publishingPrinciples": "https://www.hyroxvault.com/about/",
-    "ethicsPolicy": "https://www.hyroxvault.com/about/",
-    "diversityPolicy": "https://www.hyroxvault.com/about/"
-  })} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(organizationLd)} />
 </BaseLayout>

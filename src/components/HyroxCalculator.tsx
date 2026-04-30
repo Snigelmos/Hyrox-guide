@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  getBenchmarkValue,
+  LEVEL_LABELS,
+  type DivisionGender,
+  type Level,
+} from "../data/station-benchmarks";
+import { getPlaybook } from "../data/station-playbooks";
 
 type Gender = "men" | "women";
 type Division = "open" | "pro";
 
 interface StationResult {
+  slug: string;
   name: string;
   time: number;
 }
@@ -22,42 +30,69 @@ function formatTimeHM(totalSeconds: number): string {
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
+function formatGap(seconds: number): string {
+  const sign = seconds >= 0 ? "+" : "−";
+  const abs = Math.abs(seconds);
+  if (abs < 60) return `${sign}${Math.round(abs)}s`;
+  const m = Math.floor(abs / 60);
+  const s = Math.round(abs % 60);
+  return `${sign}${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/** Parse "5:30" / "5:30.5" / "330" (raw seconds) → seconds, or null. */
+function parseTimeInput(input: string): number | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  if (trimmed.includes(":")) {
+    const parts = trimmed.split(":");
+    if (parts.length !== 2) return null;
+    const m = parseInt(parts[0], 10);
+    const s = parseFloat(parts[1]);
+    if (isNaN(m) || isNaN(s) || m < 0 || s < 0 || s >= 60) return null;
+    return m * 60 + s;
+  }
+  const n = parseFloat(trimmed);
+  if (isNaN(n) || n < 0) return null;
+  return n;
+}
+
 // Thresholds derived from 2026 aggregated race data.
-// Open: median finish ~1:31 men, ~1:42 women.
-// Pro: median finish ~1:18 men, ~1:27 women.
 function getLevel(
   totalSeconds: number,
   gender: Gender,
   division: Division,
-): { label: string; color: string } {
+): { token: Level; label: string; color: string } {
   const mins = totalSeconds / 60;
+  const make = (token: Level, color: string) => ({
+    token,
+    label: LEVEL_LABELS[token],
+    color,
+  });
   if (division === "pro") {
     if (gender === "men") {
-      if (mins < 65) return { label: "Elite", color: "#10b981" };
-      if (mins < 80) return { label: "Competitive", color: "#38bdf8" };
-      if (mins < 100) return { label: "Average", color: "#f59e0b" };
-      return { label: "Beginner", color: "#f87171" };
+      if (mins < 65) return make("elite", "#10b981");
+      if (mins < 80) return make("competitive", "#38bdf8");
+      if (mins < 100) return make("average", "#f59e0b");
+      return make("beginner", "#f87171");
     }
-    if (mins < 75) return { label: "Elite", color: "#10b981" };
-    if (mins < 90) return { label: "Competitive", color: "#38bdf8" };
-    if (mins < 110) return { label: "Average", color: "#f59e0b" };
-    return { label: "Beginner", color: "#f87171" };
+    if (mins < 75) return make("elite", "#10b981");
+    if (mins < 90) return make("competitive", "#38bdf8");
+    if (mins < 110) return make("average", "#f59e0b");
+    return make("beginner", "#f87171");
   }
-  // Open
   if (gender === "men") {
-    if (mins < 70) return { label: "Elite", color: "#10b981" };
-    if (mins < 90) return { label: "Competitive", color: "#38bdf8" };
-    if (mins < 110) return { label: "Average", color: "#f59e0b" };
-    return { label: "Beginner", color: "#f87171" };
+    if (mins < 70) return make("elite", "#10b981");
+    if (mins < 90) return make("competitive", "#38bdf8");
+    if (mins < 110) return make("average", "#f59e0b");
+    return make("beginner", "#f87171");
   }
-  if (mins < 80) return { label: "Elite", color: "#10b981" };
-  if (mins < 100) return { label: "Competitive", color: "#38bdf8" };
-  if (mins < 120) return { label: "Average", color: "#f59e0b" };
-  return { label: "Beginner", color: "#f87171" };
+  if (mins < 80) return make("elite", "#10b981");
+  if (mins < 100) return make("competitive", "#38bdf8");
+  if (mins < 120) return make("average", "#f59e0b");
+  return make("beginner", "#f87171");
 }
 
-// Base station times in seconds, derived from 2026 aggregated race averages
-// (hyroxinsider.com / hyroxy.com), Open division.
+// Base station times in seconds, derived from 2026 aggregated race averages.
 const BASE_OPEN: Record<Gender, number[]> = {
   men:   [260, 160, 170, 300, 285, 140, 270, 360],
   women: [305, 155, 170, 330, 305, 145, 300, 420],
@@ -74,19 +109,49 @@ const STATION_NAMES = [
   "Wall Balls",
 ];
 
-// Per-station multipliers when switching to Pro division.
-// Reflects heavier loads (Sled Push +50 kg, Sled Pull +50/25 kg,
-// Carry +8 kg, Lunges +10 kg, Wall Balls +3/2 kg) offset by fitter athlete.
-const PRO_MULTIPLIERS: number[] = [
-  0.92, // SkiErg  — same equipment, better athlete
-  1.28, // Sled Push — large load increase dominates
-  1.20, // Sled Pull — significant load increase
-  0.85, // Burpees — bodyweight, fitter athlete wins
-  0.92, // Row — same equipment, better athlete
-  1.05, // Farmers Carry — heavier kettlebells
-  1.08, // Sandbag Lunges — heavier bag
-  1.05, // Wall Balls — heavier ball
+const STATION_SLUGS = [
+  "skierg",
+  "sled-push",
+  "sled-pull",
+  "burpee-broad-jumps",
+  "rowing",
+  "farmers-carry",
+  "sandbag-lunges",
+  "wall-balls",
 ];
+
+// Per-station multipliers for Pro division.
+const PRO_MULTIPLIERS: number[] = [0.92, 1.28, 1.20, 0.85, 0.92, 1.05, 1.08, 1.05];
+
+// Target lift-to-bodyweight ratios for the "average" athlete in each division.
+function getStrengthRatios(gender: Gender, division: Division) {
+  if (gender === "men") {
+    return division === "pro"
+      ? { benchPerBw: 1.25, deadliftPerBw: 1.85 }
+      : { benchPerBw: 1.0, deadliftPerBw: 1.5 };
+  }
+  return division === "pro"
+    ? { benchPerBw: 1.0, deadliftPerBw: 1.4 }
+    : { benchPerBw: 0.75, deadliftPerBw: 1.1 };
+}
+
+function divisionGenderToken(gender: Gender, division: Division): DivisionGender {
+  if (division === "pro") return gender === "men" ? "proMen" : "proWomen";
+  return gender === "men" ? "openMen" : "openWomen";
+}
+
+// Neutral bodyweight per division/gender — engine produces today's prediction
+// when the athlete is at this weight. Deltas in either direction shift station
+// times: heavier athletes pay on running and bodyweight stations, but get a
+// real advantage on the sleds (mass = leverage/grip).
+function getReferenceBodyweight(gender: Gender, division: Division): number {
+  if (gender === "men") return division === "pro" ? 82 : 80;
+  return division === "pro" ? 67 : 65;
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v));
+}
 
 function calculate(
   gender: Gender,
@@ -95,26 +160,20 @@ function calculate(
   fiveKmSeconds: number,
   benchKg: number,
   deadliftKg: number,
+  bodyweightKg: number,
 ) {
   const fiveKmTotal = fiveKmMinutes * 60 + fiveKmSeconds;
   const pacePerKm = fiveKmTotal / 5;
 
-  // Normalise strength against division-appropriate averages.
-  // Pro athletes are self-selected stronger, so we shift the benchmark up.
-  const benchAvg  = gender === "men" ? (division === "pro" ? 100 : 80)  : (division === "pro" ? 65 : 50);
-  const dlAvg     = gender === "men" ? (division === "pro" ? 150 : 120) : (division === "pro" ? 90 : 70);
+  // Lift / bodyweight ratios, normalised against division-specific targets.
+  const targets = getStrengthRatios(gender, division);
+  const benchNorm    = (benchKg / bodyweightKg) / targets.benchPerBw;
+  const deadliftNorm = (deadliftKg / bodyweightKg) / targets.deadliftPerBw;
 
-  const benchNorm    = benchKg / benchAvg;
-  const deadliftNorm = deadliftKg / dlAvg;
-
-  // Strength factor: 0.75 (very strong) → 1.30 (weak relative to division)
   const upperFactor    = Math.max(0.75, Math.min(1.30, 1.5 - benchNorm * 0.5));
   const lowerFactor    = Math.max(0.75, Math.min(1.30, 1.5 - deadliftNorm * 0.5));
   const combinedFactor = (upperFactor + lowerFactor) / 2;
 
-  // Running fatigue: strong athletes hold pace better under station fatigue.
-  // Real data shows race pace ≈ 10–22% slower than fresh 5 K pace.
-  // Pro athletes get a slight advantage (better compromised running).
   const proRunBonus = division === "pro" ? 0.03 : 0;
   const fatigueFactor =
     combinedFactor < 0.90
@@ -123,31 +182,48 @@ function calculate(
       ? 1.13 - proRunBonus
       : 1.22 - proRunBonus;
 
-  const runTimePerKm = pacePerKm * fatigueFactor;
+  // Bodyweight as an independent factor on top of strength ratios.
+  // bwDelta is signed: positive = heavier than reference, negative = lighter.
+  // At the reference weight all factors collapse to 1.0 (regression-safe).
+  const refBw   = getReferenceBodyweight(gender, division);
+  const bwDelta = (bodyweightKg - refBw) / refBw;
+
+  const runWeightFactor = clamp(1 + bwDelta * 0.18, 0.95, 1.10);
+
+  // Station order: SkiErg, Sled Push, Sled Pull, Burpees, Row, FC, Lunges, WB
+  const weightFactors = [
+    1.0,
+    clamp(1 - bwDelta * 0.30, 0.85, 1.15),
+    clamp(1 - bwDelta * 0.30, 0.85, 1.15),
+    clamp(1 + bwDelta * 0.35, 0.90, 1.20),
+    1.0,
+    1.0,
+    clamp(1 + bwDelta * 0.15, 0.95, 1.10),
+    clamp(1 + bwDelta * 0.18, 0.95, 1.10),
+  ];
+
+  const runTimePerKm = pacePerKm * fatigueFactor * runWeightFactor;
   const totalRunning = runTimePerKm * 8;
 
-  // Which upper/lower factor drives each station
   const stationFactors = [
-    upperFactor,    // SkiErg
-    lowerFactor,    // Sled Push
-    upperFactor,    // Sled Pull
-    lowerFactor,    // Burpees
-    combinedFactor, // Row
-    upperFactor,    // Farmers Carry
-    lowerFactor,    // Sandbag Lunges
-    upperFactor,    // Wall Balls
+    upperFactor,
+    lowerFactor,
+    upperFactor,
+    lowerFactor,
+    combinedFactor,
+    upperFactor,
+    lowerFactor,
+    upperFactor,
   ];
 
   const bases = BASE_OPEN[gender];
   const stations: StationResult[] = STATION_NAMES.map((name, i) => {
     const base = bases[i] * (division === "pro" ? PRO_MULTIPLIERS[i] : 1.0);
-    return { name, time: base * stationFactors[i] };
+    return { slug: STATION_SLUGS[i], name, time: base * stationFactors[i] * weightFactors[i] };
   });
 
-  const totalStations = stations.reduce((sum, s) => sum + s.time, 0);
+  const totalStations = stations.reduce((sum, st) => sum + st.time, 0);
 
-  // RoxZone transitions: real data shows 5–12 min total for Open (strong–developing).
-  // Pro athletes are more efficient.
   const roxBase = division === "pro" ? 300 : 420;
   const transitions = combinedFactor < 0.90 ? roxBase * 0.75 : combinedFactor < 1.05 ? roxBase : roxBase * 1.35;
   const total = totalRunning + totalStations + transitions;
@@ -155,32 +231,111 @@ function calculate(
   return { totalRunning, totalStations, transitions, total, stations, runTimePerKm };
 }
 
+interface DiagnosisGap {
+  slug: string;
+  name: string;
+  actualSec: number;
+  benchmarkSec: number;
+  gapSec: number;
+  unitLabel: string;
+}
+
 export default function HyroxCalculator() {
-  const [gender, setGender]     = useState<Gender>("men");
-  const [division, setDivision] = useState<Division>("open");
+  const [gender, setGender]         = useState<Gender>("men");
+  const [division, setDivision]     = useState<Division>("open");
   const [fiveKmMin, setFiveKmMin]   = useState("25");
   const [fiveKmSec, setFiveKmSec]   = useState("0");
   const [benchKg, setBenchKg]       = useState("80");
   const [deadliftKg, setDeadliftKg] = useState("120");
+  const [bodyweightKg, setBodyweightKg] = useState("80");
+
+  const [trainerOpen, setTrainerOpen] = useState(false);
+  const [stationInputs, setStationInputs] = useState<Record<string, string>>(
+    Object.fromEntries(STATION_SLUGS.map((sl) => [sl, ""])),
+  );
 
   const parsedMin      = Math.max(0, parseInt(fiveKmMin, 10) || 0);
   const parsedSec      = Math.max(0, Math.min(59, parseInt(fiveKmSec, 10) || 0));
   const parsedBench    = Math.max(1, parseInt(benchKg, 10) || 1);
   const parsedDeadlift = Math.max(1, parseInt(deadliftKg, 10) || 1);
+  const parsedBw       = Math.max(35, parseInt(bodyweightKg, 10) || 80);
 
-  const result = calculate(gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift);
-  const level  = getLevel(result.total, gender, division);
-
+  const result = useMemo(
+    () => calculate(gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift, parsedBw),
+    [gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift, parsedBw],
+  );
+  const level         = getLevel(result.total, gender, division);
   const divisionLabel = `${division === "pro" ? "Pro" : "Open"} ${gender === "men" ? "Men" : "Women"}`;
+  const divGen        = divisionGenderToken(gender, division);
+
+  const parsedStationTimes = useMemo(() => {
+    const out: Record<string, number | null> = {};
+    for (const slug of STATION_SLUGS) {
+      out[slug] = parseTimeInput(stationInputs[slug] ?? "");
+    }
+    return out;
+  }, [stationInputs]);
+
+  const filledStationCount = STATION_SLUGS.filter((sl) => parsedStationTimes[sl] != null).length;
+
+  const diagnosis = useMemo<DiagnosisGap[]>(() => {
+    if (filledStationCount === 0) return [];
+    const gaps: DiagnosisGap[] = [];
+
+    STATION_SLUGS.forEach((slug, i) => {
+      const actual = parsedStationTimes[slug];
+      if (actual == null) return;
+      const bench = getBenchmarkValue(slug, divGen, level.token);
+      if (bench == null) return;
+      gaps.push({
+        slug,
+        name: STATION_NAMES[i],
+        actualSec: actual,
+        benchmarkSec: bench,
+        gapSec: actual - bench,
+        unitLabel: "",
+      });
+    });
+
+    const runBench = getBenchmarkValue("running", divGen, level.token);
+    if (runBench != null) {
+      gaps.push({
+        slug: "running",
+        name: "Running",
+        actualSec: result.runTimePerKm,
+        benchmarkSec: runBench,
+        gapSec: result.runTimePerKm - runBench,
+        unitLabel: "/km",
+      });
+    }
+    return gaps;
+  }, [parsedStationTimes, divGen, level.token, result.runTimePerKm, filledStationCount]);
+
+  const weakest = useMemo(
+    () => diagnosis.filter((g) => g.gapSec > 0).sort((a, b) => b.gapSec - a.gapSec).slice(0, 3),
+    [diagnosis],
+  );
+
+  const strongest = useMemo(
+    () => diagnosis.filter((g) => g.gapSec <= 0).sort((a, b) => a.gapSec - b.gapSec).slice(0, 2),
+    [diagnosis],
+  );
 
   const s = {
-    card:       "bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6",
-    label:      "block text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2",
-    input:      "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-sm text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]",
-    btnActive:  "bg-[#38bdf8] text-[#09090b] font-bold",
-    btnInactive:"bg-[#131316] border border-[#27272a] text-[#a1a1aa] hover:border-[#38bdf8]/40 hover:text-[#e4e4e7]",
-    btn:        "px-4 py-2.5 rounded-lg text-sm transition-all min-h-[44px] cursor-pointer w-full",
+    card:        "bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6",
+    label:       "block text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2",
+    input:       "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-sm text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]",
+    btnActive:   "bg-[#38bdf8] text-[#09090b] font-bold",
+    btnInactive: "bg-[#131316] border border-[#27272a] text-[#a1a1aa] hover:border-[#38bdf8]/40 hover:text-[#e4e4e7]",
+    btn:         "px-4 py-2.5 rounded-lg text-sm transition-all min-h-[44px] cursor-pointer w-full",
   };
+
+  function setStationInput(slug: string, val: string) {
+    setStationInputs((prev) => ({ ...prev, [slug]: val }));
+  }
+  function clearStationInputs() {
+    setStationInputs(Object.fromEntries(STATION_SLUGS.map((sl) => [sl, ""])));
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -254,6 +409,25 @@ export default function HyroxCalculator() {
             </div>
           </div>
 
+          {/* Bodyweight */}
+          <div>
+            <label className={s.label}>
+              Bodyweight (kg)
+              <span className="ml-2 normal-case font-normal text-[#52525b]">— scales strength, running cost & sled advantage</span>
+            </label>
+            <input
+              type="number" min={35} max={180}
+              value={bodyweightKg}
+              onChange={e => setBodyweightKg(e.target.value)}
+              className={s.input}
+            />
+            <div className="flex justify-between text-xs text-[#52525b] mt-1">
+              <span>{gender === "men" ? "Light ~70 kg" : "Light ~55 kg"}</span>
+              <span>{gender === "men" ? "Average ~80 kg" : "Average ~65 kg"}</span>
+              <span>{gender === "men" ? "Heavy ~95 kg+" : "Heavy ~75 kg+"}</span>
+            </div>
+          </div>
+
           {/* Bench press */}
           <div>
             <label className={s.label}>
@@ -266,11 +440,6 @@ export default function HyroxCalculator() {
               onChange={e => setBenchKg(e.target.value)}
               className={s.input}
             />
-            <div className="flex justify-between text-xs text-[#52525b] mt-1">
-              <span>Beginner ~40 kg</span>
-              <span>Average ~80 kg</span>
-              <span>Strong ~120 kg+</span>
-            </div>
           </div>
 
           {/* Deadlift */}
@@ -285,11 +454,58 @@ export default function HyroxCalculator() {
               onChange={e => setDeadliftKg(e.target.value)}
               className={s.input}
             />
-            <div className="flex justify-between text-xs text-[#52525b] mt-1">
-              <span>Beginner ~60 kg</span>
-              <span>Average ~120 kg</span>
-              <span>Strong ~180 kg+</span>
-            </div>
+          </div>
+
+          {/* ── Trainer panel — optional station times ── */}
+          <div className="border-t border-[#27272a] pt-5">
+            <button
+              type="button"
+              onClick={() => setTrainerOpen(o => !o)}
+              className="w-full flex items-center justify-between gap-3 text-left"
+            >
+              <div>
+                <div className="text-sm font-bold text-[#f4f4f5]">Got actual station times?</div>
+                <div className="text-xs text-[#a1a1aa] mt-0.5">
+                  Optional — diagnose your weakest stations against peer benchmarks.
+                </div>
+              </div>
+              <span
+                className={`text-[#38bdf8] text-xl transition-transform ${trainerOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              >▾</span>
+            </button>
+
+            {trainerOpen && (
+              <div className="mt-4 space-y-3">
+                <p className="text-xs text-[#a1a1aa] leading-relaxed">
+                  Enter mm:ss for any stations you have real times for. The more you fill, the more confident the diagnosis. Leave blank to skip.
+                </p>
+                {STATION_SLUGS.map((slug, i) => (
+                  <div key={slug} className="grid grid-cols-[1fr_120px] gap-3 items-center">
+                    <label className="text-sm text-[#e4e4e7]" htmlFor={`station-${slug}`}>
+                      {STATION_NAMES[i]}
+                    </label>
+                    <input
+                      id={`station-${slug}`}
+                      type="text"
+                      placeholder="mm:ss"
+                      inputMode="numeric"
+                      value={stationInputs[slug]}
+                      onChange={e => setStationInput(slug, e.target.value)}
+                      className={s.input}
+                      style={{ padding: "8px 12px", minHeight: "40px" }}
+                    />
+                  </div>
+                ))}
+                {filledStationCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearStationInputs}
+                    className="text-xs text-[#a1a1aa] hover:text-[#38bdf8] transition-colors mt-2"
+                  >Clear all</button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -342,48 +558,131 @@ export default function HyroxCalculator() {
             ))}
           </div>
 
-          {/* Improvement tips */}
-          <div className="mt-5 p-4 bg-[#09090b] rounded-xl border border-[#27272a]">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">Key improvement areas</h4>
-            <ul className="space-y-1.5 text-sm text-[#e4e4e7]">
-              {parsedBench < 60 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
-                  Improve upper body strength — bigger bench = faster SkiErg and carries
-                </li>
+          {/* ── Diagnosis: shown only when ≥1 station time entered ── */}
+          {filledStationCount > 0 && (
+            <div className="mt-6 border-t border-[#27272a] pt-6">
+              <div className="flex items-baseline justify-between mb-1">
+                <h4 className="text-base font-black text-[#f4f4f5]">Trainer diagnosis</h4>
+                <span className="text-xs text-[#52525b]">vs {level.label} {divisionLabel}</span>
+              </div>
+              <p className="text-xs text-[#a1a1aa] leading-relaxed mb-4">
+                Compared to peer benchmarks for athletes finishing at your level, here's where the biggest time savings are.
+              </p>
+
+              {weakest.length === 0 ? (
+                <div className="bg-[#09090b] border border-[#10b981]/30 rounded-xl p-4">
+                  <div className="text-sm text-[#10b981] font-bold mb-1">No weak stations found.</div>
+                  <div className="text-xs text-[#a1a1aa]">
+                    Every station you entered is at or ahead of your peer benchmark. Focus on race simulations and pacing.
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {weakest.map((g, idx) => {
+                    const playbook = getPlaybook(g.slug);
+                    const recommendedPlanSlug = playbook?.recommendedPlanSlugs[0];
+                    return (
+                      <div key={g.slug} className="bg-[#09090b] border border-[#27272a] rounded-xl p-4">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="min-w-0">
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-[#f87171] mb-0.5">
+                              {idx === 0 ? "Biggest leak" : `Weak link #${idx + 1}`}
+                            </div>
+                            <div className="text-sm font-black text-[#f4f4f5]">{g.name}</div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-sm font-mono font-bold text-[#f87171]">
+                              {formatGap(g.gapSec)}{g.unitLabel}
+                            </div>
+                            <div className="text-[10px] text-[#52525b]">
+                              you {formatTime(g.actualSec)}{g.unitLabel} · target {formatTime(g.benchmarkSec)}{g.unitLabel}
+                            </div>
+                          </div>
+                        </div>
+                        {playbook && (
+                          <div className="text-xs text-[#a1a1aa] leading-relaxed mb-3">
+                            <span className="text-[#38bdf8] font-bold">Top fix: </span>{playbook.topFixHint}
+                          </div>
+                        )}
+                        <div className="flex flex-wrap gap-2">
+                          <a
+                            href={`/training/stations/${g.slug}/`}
+                            className="inline-flex items-center gap-1 text-xs font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors no-underline bg-[#38bdf8]/10 border border-[#38bdf8]/30 px-3 py-1.5 rounded-lg"
+                          >Open playbook →</a>
+                          {recommendedPlanSlug && (
+                            <a
+                              href={`/training-plans/${recommendedPlanSlug}/`}
+                              className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+                            >Get the plan</a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
-              {parsedDeadlift < 80 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
-                  Build lower body strength — sled and lunge times will drop significantly
-                </li>
+
+              {strongest.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-[#27272a]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#10b981] mb-2">Strengths to protect</div>
+                  <div className="text-xs text-[#a1a1aa] leading-relaxed">
+                    You're ahead of peers on{" "}
+                    {strongest.map((str, i) => (
+                      <span key={str.slug}>
+                        <span className="text-[#10b981] font-bold">{str.name}</span>
+                        {i < strongest.length - 1 ? " and " : ""}
+                      </span>
+                    ))}. Don't neglect these — maintenance volume is enough.
+                  </div>
+                </div>
               )}
-              {parsedMin >= 28 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
-                  Improving your 5 km by 2 min saves ~4 min across the 8 running laps
-                </li>
-              )}
-              {division === "pro" && parsedBench < 100 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
-                  Pro carries & wall balls demand strong upper body — target 100 kg+ bench
-                </li>
-              )}
-              {division === "pro" && parsedDeadlift < 150 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#f59e0b] flex-shrink-0">▶</span>
-                  Pro sled (202 kg) punishes weak legs — build toward a 150 kg+ deadlift
-                </li>
-              )}
-              {parsedBench >= 80 && parsedDeadlift >= 120 && parsedMin < 28 && (
-                <li className="flex items-start gap-2">
-                  <span className="text-[#10b981] flex-shrink-0">▶</span>
-                  Solid base — focus on race simulations and pacing strategy
-                </li>
-              )}
-            </ul>
-          </div>
+            </div>
+          )}
+
+          {/* Generic improvement tips (only when no diagnosis yet) */}
+          {filledStationCount === 0 && (
+            <div className="mt-5 p-4 bg-[#09090b] rounded-xl border border-[#27272a]">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2">Key improvement areas</h4>
+              <ul className="space-y-1.5 text-sm text-[#e4e4e7]">
+                {parsedBench / parsedBw < 0.6 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                    Improve upper body strength — bigger bench-to-bodyweight ratio = faster SkiErg and carries
+                  </li>
+                )}
+                {parsedDeadlift / parsedBw < 1.0 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                    Build lower body strength — sled and lunge times will drop significantly
+                  </li>
+                )}
+                {parsedMin >= 28 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                    Improving your 5 km by 2 min saves ~4 min across the 8 running laps
+                  </li>
+                )}
+                {division === "pro" && parsedBench / parsedBw < 1.0 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                    Pro carries & wall balls demand strong upper body — target a 1.0×bw bench
+                  </li>
+                )}
+                {division === "pro" && parsedDeadlift / parsedBw < 1.5 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] flex-shrink-0">▶</span>
+                    Pro sled punishes weak legs — build toward a 1.75×bw deadlift
+                  </li>
+                )}
+                {parsedBench / parsedBw >= 1.0 && parsedDeadlift / parsedBw >= 1.5 && parsedMin < 26 && (
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#10b981] flex-shrink-0">▶</span>
+                    Solid base — open the trainer panel above and enter station times to find your weak link
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>

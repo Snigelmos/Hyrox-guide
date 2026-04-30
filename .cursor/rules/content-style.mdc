@@ -1,0 +1,84 @@
+---
+description: De-LLM editorial style for HyroxVault MDX content
+globs: src/content/**/*.mdx
+alwaysApply: false
+---
+
+# HyroxVault content style
+
+Goal: write content that reads like it came from a small editorial team that
+actually races, not from a templated AI pass. Google penalises the latter.
+
+## Em-dash budget
+
+- Maximum 2 em-dashes (`—`) per post. Aim for 0-1.
+- Never use `**Term** — definition`. Use `**Term:** definition` instead.
+- Replace mid-sentence em-dashes with commas, periods, or colons.
+
+```markdown
+<!-- BAD -->
+The sled is heavy — heavier than most people expect — and pacing matters.
+
+<!-- GOOD -->
+The sled is heavy. Heavier than most people expect, and pacing matters.
+```
+
+## Openers
+
+Do **not** start every post with `## Short answer`. Rotate across:
+
+1. **Direct lead paragraph** — no H2, just the answer in 1-2 sentences.
+2. **Problem framing** — open by naming the specific situation the reader is in.
+3. **Question lead** — `## Will this work for me?` or similar, then answer.
+4. **Scenario / story lead** — open with a concrete moment from training or a race.
+
+## Closers
+
+About half of posts should **omit** any explicit `## Related guides` /
+`## Cross-references` block. Use inline contextual links inside paragraphs
+instead. When you do include a closer, vary the heading: `## Keep reading`,
+`## More for runners`, `## What to read next`, etc.
+
+Do **not** end every post with `*Last reviewed: <month> <year> by HyroxVault
+Editorial Team.*`. That boilerplate is gone, do not reintroduce it.
+
+## Cited numbers
+
+Any precise number (heart rate, percentage, wattage, lap split, dosage) needs
+either:
+
+1. an outbound citation to a real authoritative source (Concept2, ISSN, ACSM,
+   IOC, peer-reviewed paper, official Hyrox rules PDF, results.hyrox.com), or
+2. hedging language (`typically`, `roughly`, `for many athletes around`).
+
+Soft target: 1 outbound authoritative citation per 800 words in cornerstone
+posts. Use `rel="external"` on genuine references (no nofollow).
+
+## Voice
+
+- Use first-person plural (`we`, `our`, `us`) when speaking from editorial-team
+  experience. Avoid first-person singular: there is no single byline.
+- Cite specifics: which race, which surface, which monitor reading. Vague is a
+  tell.
+
+## Frontmatter discipline
+
+- **Cornerstone posts** (see plan): no `faqs:` array. Use a prose
+  `## Common questions` section instead.
+- **Non-cornerstone posts**: `faqs:` is allowed but keep answers varied; don't
+  use the same opener phrase across questions.
+- Stagger `pubDate` as posts ship. Do not batch-publish on the same day or
+  within 24h of an existing post.
+- Author stays `HyroxVault Editorial Team` until the team identity strategy
+  changes. Do not invent named authors.
+
+## Lists vs prose
+
+If a section has 3 or more consecutive bulleted lists with the same
+`**Term:** explanation` pattern, convert one of them to prose paragraphs.
+Parallel-list density is one of the strongest LLM tells.
+
+## Rhetorical flourishes
+
+Cut sentences like `treat this station as a gift the course is giving you`.
+Replace with concrete advice: what to do, what speed, what cadence, what HR.

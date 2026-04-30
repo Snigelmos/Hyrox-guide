@@ -84,6 +84,30 @@ export const SERIES_META: Record<
       "A beginner's guide to the 8km run and 8 Hyrox stations, one at a time. New part every other day — technique, pacing, common mistakes, drills, and a race-day rep scheme.",
     totalPlanned: 8,
   },
+  "race-day-masterclass": {
+    label: "The Hyrox Race Day Masterclass",
+    description:
+      "Everything that happens on race day — from breakfast to the finish line. Six parts covering morning routine, transitions, warm-up, hitting the wall, race-day kit, and doubles strategy.",
+    totalPlanned: 6,
+  },
+  "second-race-blueprint": {
+    label: "The Second-Race Blueprint",
+    description:
+      "Already raced once? This four-part series maps the fastest path to a big PR — from fixing first-race mistakes to a full sub-60 training block.",
+    totalPlanned: 4,
+  },
+  "nutrition-hybrid-athlete": {
+    label: "Nutrition for Hyrox Athletes",
+    description:
+      "Five-part nutrition series covering race-day breakfast, carb loading, hydration, post-race recovery, and daily fuelling for hybrid athletes in training.",
+    totalPlanned: 5,
+  },
+  "training-science": {
+    label: "The Hyrox Training Science Series",
+    description:
+      "The 'why' behind the training — concurrent programming, Zone 2, peaking, VO2max intervals, and deload weeks. Five parts for athletes who want to train smarter.",
+    totalPlanned: 5,
+  },
 };
 
 export { BLOG_CATEGORIES, BLOG_CATEGORY_META };

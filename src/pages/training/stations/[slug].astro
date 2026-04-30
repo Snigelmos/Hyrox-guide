@@ -1,0 +1,307 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { STATION_PLAYBOOKS, getPlaybook } from "../../../data/station-playbooks";
+import { getBenchmark, LEVEL_LABELS, DIVISION_LABELS, type Level, type DivisionGender } from "../../../data/station-benchmarks";
+import { getSession } from "../../../data/training-sessions";
+import { getPlan } from "../../../data/training-plans";
+import { STATIONS } from "../../../data/stations";
+
+export async function getStaticPaths() {
+  return STATION_PLAYBOOKS.map((p) => ({
+    params: { slug: p.slug },
+    props: { slug: p.slug },
+  }));
+}
+
+const { slug } = Astro.props;
+const playbook = getPlaybook(slug as string);
+if (!playbook) {
+  throw new Error(`No playbook for slug: ${slug}`);
+}
+
+// Optional station definition — present for the 8 race stations, undefined for "running".
+const station = STATIONS.find((s) => s.slug === playbook.slug);
+
+const benchmark = getBenchmark(playbook.slug);
+
+const sessions = playbook.keySessionIds.map((id) => getSession(id));
+
+const recommendedPlans = playbook.recommendedPlanSlugs
+  .map((s) => getPlan(s))
+  .filter((p): p is NonNullable<ReturnType<typeof getPlan>> => Boolean(p));
+
+const otherPlaybooks = STATION_PLAYBOOKS.filter((p) => p.slug !== playbook.slug);
+
+const isRunning = playbook.slug === "running";
+
+// Format helpers — pace-per-km is shown as m:ss/km, time stations as m:ss.
+function formatTime(totalSeconds: number): string {
+  const m = Math.floor(totalSeconds / 60);
+  const s = Math.round(totalSeconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+const benchmarkUnitLabel = benchmark?.unit === "pace-per-km" ? "/km" : "";
+
+const levels: Level[] = ["elite", "competitive", "average", "beginner"];
+const divisions: DivisionGender[] = ["openMen", "openWomen", "proMen", "proWomen"];
+
+const breadcrumbs = [
+  { name: "Training", url: "/training/" },
+  { name: "Station playbooks", url: "/training/stations/" },
+  { name: playbook.name },
+];
+
+const faqItems = [
+  {
+    question: `How do I get faster at Hyrox ${playbook.name.toLowerCase()}?`,
+    answer:
+      `${playbook.topLimiters.map((l) => l.title).join(". ")}. Combine the key sessions in this playbook (${sessions.map((s) => s.name).join(", ")}) at least once a week and re-test your time monthly.`,
+  },
+  ...(station
+    ? [
+        {
+          question: `What's the Hyrox ${playbook.name} weight?`,
+          answer:
+            station.standards.map((s) => `${s.division}: ${s.spec}`).join(". ") + ".",
+        },
+      ]
+    : []),
+  ...(benchmark
+    ? [
+        {
+          question: `What is a good Hyrox ${playbook.name.toLowerCase()} time?`,
+          answer:
+            `Open Men average is ${formatTime(benchmark.byDivision.openMen.average)}${benchmarkUnitLabel}; Open Women average is ${formatTime(benchmark.byDivision.openWomen.average)}${benchmarkUnitLabel}. Competitive and elite times are 8% and 22% faster respectively.`,
+        },
+      ]
+    : []),
+];
+---
+
+<BaseLayout
+  title={`${playbook.metaTitle} | Hyrox Vault`}
+  description={playbook.metaDescription}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/training/" class="text-text-muted hover:text-accent transition-colors no-underline">Training</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/training/stations/" class="text-text-muted hover:text-accent transition-colors no-underline">Station playbooks</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{playbook.name}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+        {station ? `Station ${station.position} of 8` : "Running — 8 km of the race"}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {playbook.name} Training Playbook
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-3xl">
+        {playbook.tagline}
+      </p>
+      <div class="mt-6 inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider text-text-muted">
+        <span class="text-accent">Top fix:</span>
+        <span class="text-text-heading normal-case font-medium tracking-normal">{playbook.topFixHint}</span>
+      </div>
+    </header>
+
+    {station && station.standards.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-4">Race standards</h2>
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="min-w-full text-sm border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Division</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Specification</th>
+              </tr>
+            </thead>
+            <tbody>
+              {station.standards.map((std) => (
+                <tr>
+                  <th class="border border-border p-3 text-left font-bold text-text-heading">{std.division}</th>
+                  <td class="border border-border p-3 text-text-muted">{std.spec}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {station.distance && (
+          <p class="text-sm text-text-muted mt-3">Distance: <span class="text-text-heading font-bold">{station.distance}</span></p>
+        )}
+        {station.reps && (
+          <p class="text-sm text-text-muted mt-3">Reps: <span class="text-text-heading font-bold">{station.reps}</span></p>
+        )}
+      </section>
+    )}
+
+    {benchmark && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-2">What good looks like</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">
+          Peer benchmark times by performance level and division. {benchmark.unit === "pace-per-km" ? "Shown as per-1km race-day pace (includes compromised-running fatigue)." : "Shown as total time at the station."}
+        </p>
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="min-w-full text-sm border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Division</th>
+                {levels.map((lvl) => (
+                  <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">{LEVEL_LABELS[lvl]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {divisions.map((div) => (
+                <tr>
+                  <th class="border border-border p-3 text-left font-bold text-text-heading">{DIVISION_LABELS[div]}</th>
+                  {levels.map((lvl) => (
+                    <td class="border border-border p-3 font-mono text-accent">
+                      {formatTime(benchmark.byDivision[div][lvl])}{benchmarkUnitLabel}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Top 3 limiters</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">The biggest reasons athletes are slow at this {isRunning ? "stage" : "station"}. Fix these in order.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {playbook.topLimiters.map((l, i) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Limiter {i + 1}</div>
+            <h3 class="text-base font-black text-text-heading mb-2">{l.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{l.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Key sessions</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">
+        The {sessions.length} sessions that build {playbook.name.toLowerCase()} fitness most efficiently. Layer these into the recommended training plan below — at minimum one per week.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {sessions.map((s) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <h3 class="text-base font-black text-text-heading">{s.name}</h3>
+              <span class="text-xs font-bold uppercase tracking-wider text-accent whitespace-nowrap">{s.duration}</span>
+            </div>
+            <p class="text-sm text-text-muted leading-relaxed">{s.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Drill tips</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {playbook.drillTips.map((d) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <h3 class="text-base font-black text-text-heading mb-2">{d.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{d.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {station && station.commonNoReps.length > 0 && (
+      <section class="mb-10 prose md:prose-lg max-w-none">
+        <h2>Common no-reps</h2>
+        <ul>
+          {station.commonNoReps.map((n) => <li>{n}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {recommendedPlans.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-4">Combine with these training plans</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">
+          The plans below already weave the key sessions into a balanced week-by-week build. Pick the one that matches your goal time or schedule.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {recommendedPlans.map((p) => (
+            <a
+              href={`/training-plans/${p.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+                {p.durationWeeks} weeks · {p.sessionsPerWeek} sessions/week · {p.audienceLabel}
+              </div>
+              <h3 class="text-lg font-black text-text-heading mb-2">{p.title}</h3>
+              <p class="text-sm text-text-muted leading-relaxed">{p.goalSummary}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {playbook.relatedBlogSlugs && playbook.relatedBlogSlugs.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-4">Read more</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {playbook.relatedBlogSlugs.map((bs) => (
+            <a
+              href={`/blog/${bs}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Article</div>
+              <h3 class="text-base font-black text-text-heading">{bs.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</h3>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-10 bg-bg-card border border-accent/30 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Diagnose your race</div>
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2">Wondering if {playbook.name.toLowerCase()} is your weak link?</h2>
+      <p class="text-text-muted text-sm leading-relaxed mb-4 max-w-2xl">
+        Drop your real station times into the calculator's trainer panel — it ranks your weakest stations against peer benchmarks and points you to the right playbook and plan.
+      </p>
+      <a href="/calculator/#trainer" class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline">
+        Open the trainer →
+      </a>
+    </section>
+
+    <aside class="pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">Other station playbooks</h2>
+      <div class="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {otherPlaybooks.map((p) => (
+          <a
+            href={`/training/stations/${p.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Playbook</div>
+            <div class="text-sm text-text-heading font-bold">{p.name}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

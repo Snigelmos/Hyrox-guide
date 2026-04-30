@@ -9,4 +9,5 @@ dist/
 .DS_Store
 Thumbs.db
 _bootstrap/
+_research/
 build-gym-finder.log

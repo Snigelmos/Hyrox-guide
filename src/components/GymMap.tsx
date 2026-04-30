@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import L from "leaflet";
+import "leaflet.markercluster";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
@@ -80,36 +82,19 @@ export default function GymMap({
         (g) =>
           g.name.toLowerCase().includes(q) ||
           g.city.toLowerCase().includes(q) ||
-          (g.neighbourhood ?? "").toLowerCase().includes(q),
+          (g.neighbourhood ?? "").toLowerCase().includes(q) ||
+          g.country.toLowerCase().includes(q) ||
+          g.countryCode.toLowerCase() === q,
       );
     }
     return list;
   }, [mode, citySlug, singleSlug, filters]);
 
   useEffect(() => {
-    let disposed = false;
+    if (!containerRef.current) return;
     let resizeObs: ResizeObserver | null = null;
 
-    async function init() {
-      if (!containerRef.current) return;
-      const [{ default: L }] = await Promise.all([
-        import("leaflet"),
-        import("leaflet.markercluster"),
-      ]);
-
-      if (disposed || !containerRef.current) return;
-
-      // Custom Hyrox-branded SVG pin (replaces Leaflet's default raster pins).
-      const pinSvg =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><defs><filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter></defs><path filter="url(#s)" d="M17 1c8.284 0 15 6.716 15 15 0 11-15 27-15 27S2 27 2 16C2 7.716 8.716 1 17 1z" fill="#38bdf8" stroke="#0c4a6e" stroke-width="1.5"/><circle cx="17" cy="16" r="6" fill="#09090b"/></svg>';
-      const pinUrl = `data:image/svg+xml;utf8,${encodeURIComponent(pinSvg)}`;
-      const icon = L.icon({
-        iconUrl: pinUrl,
-        iconSize: [34, 44],
-        iconAnchor: [17, 42],
-        popupAnchor: [0, -38],
-      });
-
+    try {
       // Initial view based on filtered gyms (or world view if empty).
       let center: [number, number] = [30, 10];
       let zoom = 2;
@@ -146,45 +131,36 @@ export default function GymMap({
       });
       clusterRef.current = cluster;
 
+      const icon = buildPinIcon();
       for (const g of filteredGyms) {
-        const popup = `
-          <div style="font-family: Inter, system-ui, sans-serif; min-width: 220px;">
-            <div style="font-weight: 800; color: #fafafa; font-size: 14px; line-height: 1.3; margin-bottom: 4px;">${escapeHtml(g.name)}</div>
-            ${g.neighbourhood ? `<div style="color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">${escapeHtml(g.neighbourhood)}, ${escapeHtml(g.city)}</div>` : `<div style="color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">${escapeHtml(g.city)}</div>`}
-            <div style="color: #a1a1aa; font-size: 12px; line-height: 1.5; margin-bottom: 8px;">${escapeHtml(g.address)}</div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <a href="/gyms/g/${g.slug}/" style="display: inline-block; padding: 6px 10px; background: #38bdf8; color: #09090b; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Details</a>
-              ${g.website ? `<a href="${g.website}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 6px 10px; background: transparent; color: #38bdf8; border: 1px solid #38bdf8; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Website &rarr;</a>` : ""}
-            </div>
-          </div>
-        `;
-        const marker = L.marker([g.lat, g.lng], { icon }).bindPopup(popup);
-        cluster.addLayer(marker);
+        cluster.addLayer(L.marker([g.lat, g.lng], { icon }).bindPopup(buildPopup(g)));
       }
       map.addLayer(cluster);
 
-      // Fit world view bounds when in full mode.
       if (mode === "full" && filteredGyms.length > 1) {
         const bounds = L.latLngBounds(filteredGyms.map((g) => [g.lat, g.lng] as [number, number]));
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
       }
 
-      // Ensure tiles render on async size changes (sidebar collapse, mobile rotate).
       resizeObs = new ResizeObserver(() => {
         map.invalidateSize();
       });
       resizeObs.observe(containerRef.current);
 
+      // Force a tile reflow once the browser has painted (fixes intermittent
+      // black-canvas issue when the container is mounted with delayed layout).
+      requestAnimationFrame(() => {
+        if (mapRef.current) (mapRef.current as L.Map).invalidateSize();
+      });
+
       setReady(true);
+    } catch (err) {
+      console.error("[GymMap] Failed to initialise Leaflet map:", err);
     }
 
-    init();
-
     return () => {
-      disposed = true;
       resizeObs?.disconnect();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const m = mapRef.current as any;
+      const m = mapRef.current as L.Map | null;
       if (m && typeof m.remove === "function") m.remove();
       mapRef.current = null;
       clusterRef.current = null;
