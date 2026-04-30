@@ -53,6 +53,7 @@ export interface Gym {
   lat: number;
   lng: number;
   website?: string;
+  phone?: string;
   hyroxOfficialUrl?: string;
   affiliationType: AffiliationType;
   offerings?: Offering[];
@@ -837,9 +838,12 @@ export const OFFERING_LABELS: Record<Offering, string> = {
 
 /**
  * Whether a gym record has enough data to merit an indexable detail page.
- * Pages without a website or description should ship noindex to avoid
- * thin-content penalties.
+ * Pages with either a real description (60+ chars) or a verified website
+ * URL are indexable. Bare-bones records (no website, no description) ship
+ * noindex to avoid thin-content penalties.
  */
 export function hasIndexablePage(g: Gym): boolean {
-  return Boolean(g.website && g.description && g.description.length >= 60);
+  if (g.description && g.description.length >= 60) return true;
+  if (g.website) return true;
+  return false;
 }

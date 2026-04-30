@@ -68,9 +68,38 @@ function buildName(title) {
 }
 
 function buildAddress(e) {
+  // Prefer the WPSL exact street address (street + zip + city + country).
+  if (e.exactAddress) return e.exactAddress;
   if (!e.resolvedAddress) return `${e.resolvedCity ?? e.cityHint ?? ""}, ${e.country}`.trim();
-  // Already a clean comma-separated Nominatim display name. Trim the country at end if duplicated.
   return e.resolvedAddress;
+}
+
+function normalizeWebsite(u) {
+  if (!u) return undefined;
+  let url = String(u).trim();
+  if (!url) return undefined;
+  // Some entries have lowercase capitalisation issues (http://Www.foo.com).
+  // Normalise the scheme and host casing without touching the path.
+  url = url.replace(/^http:\/\/[Ww]{3}\./, "http://www.");
+  url = url.replace(/^https:\/\/[Ww]{3}\./, "https://www.");
+  // Strip trailing whitespace and quotes.
+  url = url.replace(/^["'\s]+|["'\s]+$/g, "");
+  if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+  try {
+    const parsed = new URL(url);
+    // Drop placeholders.
+    if (/^(www\.)?(example|placeholder|test)\.com?$/i.test(parsed.host)) return undefined;
+    return parsed.toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function normalizePhone(p) {
+  if (!p) return undefined;
+  const s = String(p).trim();
+  if (!s || /#error|#n\/a/i.test(s)) return undefined;
+  return s;
 }
 
 const raw = JSON.parse(readFileSync(INPUT, "utf8"));
@@ -84,10 +113,13 @@ const records = resolved
       console.warn(`Skipping ${e.slug}: unknown country '${country}'`);
       return null;
     }
-    const city = e.resolvedCity || e.cityHint || country;
+    // WPSL canonical city beats Nominatim city when available.
+    const city = e.exactCity || e.resolvedCity || e.cityHint || country;
     const citySlug = slugify(city);
     const neighbourhood = e.resolvedSuburb || undefined;
     const aff = classifyAffiliation(e.slug, e.title);
+    const website = normalizeWebsite(e.website);
+    const phone = normalizePhone(e.phone);
     return {
       slug: e.slug,
       name: buildName(e.title),
@@ -101,7 +133,8 @@ const records = resolved
       region: "EU",
       lat: e.lat,
       lng: e.lng,
-      hyroxOfficialUrl: `https://hyrox.com/find-a-hyrox-partner-gym/?gym=${e.slug}`,
+      website,
+      phone,
       affiliationType: aff,
       offerings: ["hyrox-classes"],
       verifiedAt: "2026-04",
@@ -200,7 +233,10 @@ const formatRecord = (r) => {
     `    region: "EU",`,
     `    lat: ${r.lat},`,
     `    lng: ${r.lng},`,
-    `    hyroxOfficialUrl: ${literal(r.hyroxOfficialUrl)},`,
+  );
+  if (r.website) lines.push(`    website: ${literal(r.website)},`);
+  if (r.phone) lines.push(`    phone: ${literal(r.phone)},`);
+  lines.push(
     `    affiliationType: ${literal(r.affiliationType)},`,
     `    offerings: ${literal(r.offerings)},`,
     `    verifiedAt: ${literal(r.verifiedAt)},`,
