@@ -171,40 +171,16 @@ export default function GymMap({
   // Reactive marker rebuild when filters change (full mode only).
   useEffect(() => {
     if (mode !== "full" || !ready) return;
-    if (typeof window === "undefined") return;
-    let cancelled = false;
-    (async () => {
-      const { default: L } = await import("leaflet");
-      if (cancelled) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cluster = clusterRef.current as any;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const map = mapRef.current as any;
-      if (!cluster || !map) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cluster = clusterRef.current as any;
+    const map = mapRef.current as L.Map | null;
+    if (!cluster || !map) return;
 
-      const pinSvg =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><defs><filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter></defs><path filter="url(#s)" d="M17 1c8.284 0 15 6.716 15 15 0 11-15 27-15 27S2 27 2 16C2 7.716 8.716 1 17 1z" fill="#38bdf8" stroke="#0c4a6e" stroke-width="1.5"/><circle cx="17" cy="16" r="6" fill="#09090b"/></svg>';
-      const icon = L.icon({
-        iconUrl: `data:image/svg+xml;utf8,${encodeURIComponent(pinSvg)}`,
-        iconSize: [34, 44],
-        iconAnchor: [17, 42],
-        popupAnchor: [0, -38],
-      });
-
+    try {
+      const icon = buildPinIcon();
       cluster.clearLayers();
       for (const g of filteredGyms) {
-        const popup = `
-          <div style="font-family: Inter, system-ui, sans-serif; min-width: 220px;">
-            <div style="font-weight: 800; color: #fafafa; font-size: 14px; line-height: 1.3; margin-bottom: 4px;">${escapeHtml(g.name)}</div>
-            ${g.neighbourhood ? `<div style="color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">${escapeHtml(g.neighbourhood)}, ${escapeHtml(g.city)}</div>` : `<div style="color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">${escapeHtml(g.city)}</div>`}
-            <div style="color: #a1a1aa; font-size: 12px; line-height: 1.5; margin-bottom: 8px;">${escapeHtml(g.address)}</div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <a href="/gyms/g/${g.slug}/" style="display: inline-block; padding: 6px 10px; background: #38bdf8; color: #09090b; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Details</a>
-              ${g.website ? `<a href="${g.website}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 6px 10px; background: transparent; color: #38bdf8; border: 1px solid #38bdf8; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Website &rarr;</a>` : ""}
-            </div>
-          </div>
-        `;
-        cluster.addLayer(L.marker([g.lat, g.lng], { icon }).bindPopup(popup));
+        cluster.addLayer(L.marker([g.lat, g.lng], { icon }).bindPopup(buildPopup(g)));
       }
       if (filteredGyms.length > 1) {
         const bounds = L.latLngBounds(
@@ -214,10 +190,9 @@ export default function GymMap({
       } else if (filteredGyms.length === 1) {
         map.setView([filteredGyms[0].lat, filteredGyms[0].lng], 13);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    } catch (err) {
+      console.error("[GymMap] Failed to update markers:", err);
+    }
   }, [filteredGyms, mode, ready]);
 
   function updateFilter<K extends keyof UrlFilters>(key: K, value: UrlFilters[K]) {
@@ -248,7 +223,7 @@ export default function GymMap({
           <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
             <input
               type="search"
-              placeholder="Search by gym, city or neighbourhood"
+              placeholder="Search by gym, city, neighbourhood, or country"
               value={filters.q}
               onChange={(e) => updateFilter("q", e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg bg-bg border border-border text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm"
@@ -312,4 +287,30 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function buildPinIcon(): L.Icon {
+  const pinSvg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><defs><filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter></defs><path filter="url(#s)" d="M17 1c8.284 0 15 6.716 15 15 0 11-15 27-15 27S2 27 2 16C2 7.716 8.716 1 17 1z" fill="#38bdf8" stroke="#0c4a6e" stroke-width="1.5"/><circle cx="17" cy="16" r="6" fill="#09090b"/></svg>';
+  return L.icon({
+    iconUrl: `data:image/svg+xml;utf8,${encodeURIComponent(pinSvg)}`,
+    iconSize: [34, 44],
+    iconAnchor: [17, 42],
+    popupAnchor: [0, -38],
+  });
+}
+
+function buildPopup(g: Gym): string {
+  const subtitle = g.neighbourhood ? `${g.neighbourhood}, ${g.city}` : g.city;
+  return `
+    <div style="font-family: Inter, system-ui, sans-serif; min-width: 220px;">
+      <div style="font-weight: 800; color: #fafafa; font-size: 14px; line-height: 1.3; margin-bottom: 4px;">${escapeHtml(g.name)}</div>
+      <div style="color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">${escapeHtml(subtitle)}</div>
+      <div style="color: #a1a1aa; font-size: 12px; line-height: 1.5; margin-bottom: 8px;">${escapeHtml(g.address)}</div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="/gyms/g/${g.slug}/" style="display: inline-block; padding: 6px 10px; background: #38bdf8; color: #09090b; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Details</a>
+        ${g.website ? `<a href="${g.website}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 6px 10px; background: transparent; color: #38bdf8; border: 1px solid #38bdf8; font-weight: 700; font-size: 12px; border-radius: 6px; text-decoration: none;">Website &rarr;</a>` : ""}
+      </div>
+    </div>
+  `;
 }
