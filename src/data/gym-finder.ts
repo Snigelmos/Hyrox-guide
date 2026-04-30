@@ -343,29 +343,6 @@ const HAND_CURATED_GYMS: Gym[] = [
   },
 
   // ============================================================
-  // NETHERLANDS
-  // ============================================================
-  {
-    slug: "trainmore-rembrandtplein",
-    name: "TrainMore Rembrandtplein",
-    address: "Rembrandtplein 35, 1017 CT Amsterdam, Netherlands",
-    neighbourhood: "Centrum",
-    city: "Amsterdam",
-    citySlug: "amsterdam",
-    country: "Netherlands",
-    countryCode: "NL",
-    countrySlug: "netherlands",
-    region: "EU",
-    lat: 52.3661,
-    lng: 4.8956,
-    website: "https://trainmore.nl/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "open-gym"],
-    description: "TrainMore's Rembrandtplein club is one of Amsterdam's largest functional-fitness gyms, with sled lanes, ski ergs and Hyrox-format class blocks. Single-pass access to all TrainMore Amsterdam locations, popular with international athletes visiting the city.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
   // SWEDEN
   // ============================================================
   {
@@ -385,75 +362,6 @@ const HAND_CURATED_GYMS: Gym[] = [
     affiliationType: "chain-partner",
     offerings: ["hyrox-classes", "personal-training", "open-gym"],
     description: "SATS Sturegallerian is a flagship central Stockholm club with full Hyrox station equipment and a fast-growing Hyrox community ahead of the 2026 World Championship in Stockholm. Branded Hyrox class formats and dedicated PTs available.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
-  // AUSTRIA
-  // ============================================================
-  {
-    slug: "john-reed-vienna-mariahilfer",
-    name: "John Reed Vienna Mariahilfer Straße",
-    address: "Mariahilfer Straße 99, 1060 Wien, Austria",
-    neighbourhood: "Mariahilf",
-    city: "Vienna",
-    citySlug: "vienna",
-    country: "Austria",
-    countryCode: "AT",
-    countrySlug: "austria",
-    region: "EU",
-    lat: 48.1989,
-    lng: 16.3470,
-    website: "https://johnreed.fitness/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "open-gym"],
-    description: "John Reed's Mariahilfer Straße site is a centrally located Vienna club with Hyrox-style class formats and full station equipment. Popular with athletes preparing for the annual Hyrox Austria race.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
-  // SWITZERLAND
-  // ============================================================
-  {
-    slug: "migros-fitness-zurich-sihlcity",
-    name: "Migros Fitnesspark Sihlcity",
-    address: "Kalanderplatz 1, 8045 Zürich, Switzerland",
-    neighbourhood: "Wiedikon",
-    city: "Zurich",
-    citySlug: "zurich",
-    country: "Switzerland",
-    countryCode: "CH",
-    countrySlug: "switzerland",
-    region: "EU",
-    lat: 47.3608,
-    lng: 8.5251,
-    website: "https://www.fitnesspark.ch/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "personal-training", "open-gym"],
-    description: "Fitnesspark Sihlcity is one of Migros's flagship Zurich clubs, with a large functional-training floor, sled lanes and Hyrox-format class blocks. Popular with central-Zurich athletes building base fitness for European Hyrox events.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
-  // IRELAND
-  // ============================================================
-  {
-    slug: "the-gym-dublin-george-s-quay",
-    name: "The Gym George's Quay",
-    address: "George's Quay Plaza, Dublin 2, Ireland",
-    neighbourhood: "City Centre",
-    city: "Dublin",
-    citySlug: "dublin",
-    country: "Ireland",
-    countryCode: "IE",
-    countrySlug: "ireland",
-    region: "EU",
-    lat: 53.3472,
-    lng: -6.2517,
-    website: "https://www.thegymgroup.com/gym-classes/cardio-classes/hyrox/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "open-gym"],
-    description: "The Gym George's Quay is one of central Dublin's busiest Hyrox-equipped sites. Branded Hyrox classes run throughout the week, with 24/7 open-gym access. Riverside location, walkable from Trinity College and Connolly station.",
     verifiedAt: "2026-04",
   },
 
@@ -576,29 +484,6 @@ const HAND_CURATED_GYMS: Gym[] = [
   },
 
   // ============================================================
-  // CANADA
-  // ============================================================
-  {
-    slug: "f45-toronto-yonge",
-    name: "F45 Training Toronto Yonge",
-    address: "832 Yonge Street, Toronto, ON M4W 2H1, Canada",
-    neighbourhood: "Yorkville",
-    city: "Toronto",
-    citySlug: "toronto",
-    country: "Canada",
-    countryCode: "CA",
-    countrySlug: "canada",
-    region: "NA",
-    lat: 43.6724,
-    lng: -79.3877,
-    website: "https://f45training.com/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes"],
-    description: "F45 Toronto Yonge runs HIIT class formats that align with Hyrox station work and is one of central Toronto's busiest F45 sites. Walkable from Bloor-Yonge subway, popular with downtown professionals in race-prep blocks.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
   // AUSTRALIA
   // ============================================================
   {
@@ -659,74 +544,6 @@ const HAND_CURATED_GYMS: Gym[] = [
     verifiedAt: "2026-04",
   },
 
-  // ============================================================
-  // SINGAPORE
-  // ============================================================
-  {
-    slug: "pure-fitness-asia-square",
-    name: "Pure Fitness Asia Square",
-    address: "8 Marina View, Asia Square Tower 1, #04-04, Singapore 018960",
-    neighbourhood: "Marina Bay",
-    city: "Singapore",
-    citySlug: "singapore",
-    country: "Singapore",
-    countryCode: "SG",
-    countrySlug: "singapore",
-    region: "APAC",
-    lat: 1.2787,
-    lng: 103.8517,
-    website: "https://www.pure-fitness.com/sg/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "personal-training", "open-gym"],
-    description: "Pure Fitness Asia Square is a premium CBD club with full Hyrox station equipment and dedicated class programming. Marina Bay location, popular with Singapore's growing Hyrox age-group community.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
-  // HONG KONG
-  // ============================================================
-  {
-    slug: "pure-fitness-soho",
-    name: "Pure Fitness Soho",
-    address: "100 Hollywood Road, Central, Hong Kong",
-    neighbourhood: "Soho",
-    city: "Hong Kong",
-    citySlug: "hong-kong",
-    country: "Hong Kong",
-    countryCode: "HK",
-    countrySlug: "hong-kong",
-    region: "APAC",
-    lat: 22.2832,
-    lng: 114.1518,
-    website: "https://www.pure-fitness.com/hk/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes", "personal-training", "open-gym"],
-    description: "Pure Fitness Soho is one of Pure's flagship Hong Kong clubs, in the heart of Central. Hyrox-format class blocks and a dedicated functional-training floor with sled lanes, ski ergs and rowers.",
-    verifiedAt: "2026-04",
-  },
-
-  // ============================================================
-  // UNITED ARAB EMIRATES
-  // ============================================================
-  {
-    slug: "f45-dubai-marina",
-    name: "F45 Training Dubai Marina",
-    address: "Marina Plaza, Dubai Marina, Dubai, United Arab Emirates",
-    neighbourhood: "Dubai Marina",
-    city: "Dubai",
-    citySlug: "dubai",
-    country: "United Arab Emirates",
-    countryCode: "AE",
-    countrySlug: "united-arab-emirates",
-    region: "ME",
-    lat: 25.0794,
-    lng: 55.1432,
-    website: "https://f45training.com/",
-    affiliationType: "chain-partner",
-    offerings: ["hyrox-classes"],
-    description: "F45 Dubai Marina runs HIIT class formats that align closely with the Hyrox station list. Marina-side location, popular with expat athletes preparing for the regional Hyrox calendar.",
-    verifiedAt: "2026-04",
-  },
 ];
 
 /**
