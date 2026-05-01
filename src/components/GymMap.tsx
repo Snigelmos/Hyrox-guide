@@ -117,9 +117,9 @@ export default function GymMap({
       });
       mapRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         maxZoom: 19,
       }).addTo(map);
 
@@ -128,6 +128,8 @@ export default function GymMap({
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true,
         maxClusterRadius: 50,
+        iconCreateFunction: (markerCluster: { getChildCount: () => number }) =>
+          buildClusterIcon(markerCluster.getChildCount()),
       });
       clusterRef.current = cluster;
 
@@ -272,10 +274,64 @@ export default function GymMap({
       <div
         ref={containerRef}
         style={{ height: mapHeight, width: "100%" }}
-        className="bg-bg"
+        className="hyrox-map-canvas bg-bg"
         aria-label="Hyrox gym map"
         role="application"
       />
+      <style>{`
+        .hyrox-map-canvas .leaflet-container {
+          background: #06111a;
+          color: #d7eef6;
+        }
+        .hyrox-map-canvas .leaflet-tile-pane {
+          filter: saturate(0.88) contrast(1.04) brightness(0.92);
+        }
+        .hyrox-map-canvas .leaflet-control-zoom a {
+          background: #071824;
+          border-bottom-color: #17384a;
+          color: #d7eef6;
+        }
+        .hyrox-map-canvas .leaflet-control-zoom a:hover,
+        .hyrox-map-canvas .leaflet-control-zoom a:focus {
+          background: #0b2233;
+          color: #67e8f9;
+        }
+        .hyrox-map-canvas .leaflet-popup-content-wrapper,
+        .hyrox-map-canvas .leaflet-popup-tip {
+          background: #071824;
+          border: 1px solid #17384a;
+          box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+        }
+        .hyrox-map-canvas .leaflet-popup-content {
+          margin: 14px;
+        }
+        .hyrox-map-canvas .leaflet-popup-close-button {
+          color: #9cc9d8;
+        }
+        .hyrox-map-canvas .leaflet-popup-close-button:hover {
+          color: #67e8f9;
+        }
+        .hyrox-cluster {
+          background: rgba(8, 47, 73, 0.38);
+          border-radius: 999px;
+          border: 1px solid rgba(103, 232, 249, 0.38);
+          box-shadow: 0 0 0 5px rgba(14, 116, 144, 0.12), 0 10px 28px rgba(0, 0, 0, 0.45);
+        }
+        .hyrox-cluster__inner {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          background: radial-gradient(circle at 35% 30%, #155e75 0%, #0e7490 45%, #083344 100%);
+          color: #ecfeff;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: -0.02em;
+          border: 1px solid rgba(236, 254, 255, 0.18);
+        }
+      `}</style>
     </div>
   );
 }
@@ -291,12 +347,21 @@ function escapeHtml(s: string): string {
 
 function buildPinIcon(): L.Icon {
   const pinSvg =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><defs><filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.35"/></filter></defs><path filter="url(#s)" d="M17 1c8.284 0 15 6.716 15 15 0 11-15 27-15 27S2 27 2 16C2 7.716 8.716 1 17 1z" fill="#38bdf8" stroke="#0c4a6e" stroke-width="1.5"/><circle cx="17" cy="16" r="6" fill="#09090b"/></svg>';
+    '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><defs><linearGradient id="g" x1="8" y1="4" x2="27" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#155e75"/><stop offset="0.58" stop-color="#0e7490"/><stop offset="1" stop-color="#083344"/></linearGradient><filter id="s" x="-28%" y="-20%" width="156%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.45"/></filter></defs><path filter="url(#s)" d="M17 1c8.284 0 15 6.716 15 15 0 11-15 27-15 27S2 27 2 16C2 7.716 8.716 1 17 1z" fill="url(#g)" stroke="#67e8f9" stroke-opacity="0.72" stroke-width="1.4"/><circle cx="17" cy="16" r="6" fill="#06111a" stroke="#cffafe" stroke-opacity="0.55" stroke-width="1"/></svg>';
   return L.icon({
     iconUrl: `data:image/svg+xml;utf8,${encodeURIComponent(pinSvg)}`,
     iconSize: [34, 44],
     iconAnchor: [17, 42],
     popupAnchor: [0, -38],
+  });
+}
+
+function buildClusterIcon(count: number): L.DivIcon {
+  const size = count >= 100 ? 48 : count >= 10 ? 42 : 36;
+  return L.divIcon({
+    html: `<span class="hyrox-cluster__inner">${count}</span>`,
+    className: "hyrox-cluster",
+    iconSize: [size, size],
   });
 }
 
