@@ -3,6 +3,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import JsonLd from "../components/JsonLd.astro";
 import Analytics from "@vercel/analytics/astro";
+import { ogPathFor } from "../lib/og/path";
 import "../styles/global.css";
 
 interface HowToStep {
@@ -31,7 +32,7 @@ interface Props {
 const {
   title,
   description = "Your complete guide to Hyrox — race breakdowns, training programs, gear reviews, and upcoming competitions.",
-  ogImage = "/og-default.png",
+  ogImage,
   ogType = "website",
   schemaType,
   datePublished,
@@ -46,6 +47,9 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Per-page OG image: caller can override (e.g. blog post hero), otherwise we
+// resolve a build-generated card from /og/<path>.png. See src/lib/og/path.ts.
+const resolvedOgImage = ogImage ?? ogPathFor(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -73,14 +77,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
-    <meta property="og:site_name" content="Hyrox Guide" />
+    <meta property="og:image" content={new URL(resolvedOgImage, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="HyroxVault" />
     <meta property="og:locale" content="en_US" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:image" content={new URL(resolvedOgImage, Astro.site)} />
 
     <link
       rel="preload"
