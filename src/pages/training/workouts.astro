@@ -842,7 +842,7 @@ const totalWorkouts = typedWorkouts.length;
       </div>
 
       <!-- Sidebar -->
-      <aside class="hidden lg:block sticky top-8 space-y-4">
+      <aside class="hidden lg:block sticky top-24 space-y-4">
         {categoriesWithCounts.map((cat) => {
           const catWorkouts = typedWorkouts.filter(w => w.category === cat.id);
           return (

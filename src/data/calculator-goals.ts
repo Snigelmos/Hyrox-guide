@@ -21,8 +21,7 @@ export interface GoalTimeConfig {
   goalLabel: string; // "1:00:00"
   goalShort: string; // "Sub-60"
   audience: "open-men" | "pro-men" | "open-women" | "pro-women";
-  audienceLabel: string;
-  description: string;
+  audienceLabel: string;  description: string;
   athleteProfile: string;
   runningPace: string; // /km pace required
   totalRunSeconds: number;
@@ -71,7 +70,7 @@ export const GOAL_TIME_CONFIGS: GoalTimeConfig[] = [
     audienceLabel: "Open Men",
     description: "Sub-60 Hyrox is elite territory — typically the top 1-2% of Open Men. Hitting it requires sub-3:50/km running, 4-minute sled push, and 6-minute wall balls.",
     athleteProfile: "Trained athletes with sub-18 5K running, 1.5× bodyweight back squat, 100+ unbroken wall balls, and 12+ months of structured Hyrox training.",
-    runningPace: "3:45-3:50/km",
+    runningPace: "3:45\u20113:50/km",
     totalRunSeconds: 1850,
     totalStationSeconds: 1450,
     totalRoxzoneSeconds: 300,
@@ -292,6 +291,180 @@ export const GOAL_TIME_CONFIGS: GoalTimeConfig[] = [
     ],
     realismCheck: "Sub-100 is achievable for most active Open Women on a focused 12-week prep. The most common first-race goal.",
   },
+];
+
+export type AudienceKey = GoalTimeConfig["audience"];
+
+// Pro station helper — Pro loads differ per gender
+const stationsProMen = (
+  ski: string, sledPush: string, sledPull: string, burpee: string,
+  row: string, farmers: string, lunges: string, wallBalls: string
+): SplitTarget[] => [
+  { name: "Ski Erg (1,000 m)", time: ski },
+  { name: "Sled Push (4 × 12.5 m, 202 kg)", time: sledPush },
+  { name: "Sled Pull (4 × 12.5 m, 153 kg)", time: sledPull },
+  { name: "Burpee Broad Jumps (80 m)", time: burpee },
+  { name: "Rowing (1,000 m)", time: row },
+  { name: "Farmers Carry (200 m, 2 × 32 kg)", time: farmers },
+  { name: "Sandbag Lunges (100 m, 30 kg)", time: lunges },
+  { name: "Wall Balls (100 reps, 9 kg)", time: wallBalls },
+];
+
+const stationsProWomen = (
+  ski: string, sledPush: string, sledPull: string, burpee: string,
+  row: string, farmers: string, lunges: string, wallBalls: string
+): SplitTarget[] => [
+  { name: "Ski Erg (1,000 m)", time: ski },
+  { name: "Sled Push (4 × 12.5 m, 152 kg)", time: sledPush },
+  { name: "Sled Pull (4 × 12.5 m, 103 kg)", time: sledPull },
+  { name: "Burpee Broad Jumps (80 m)", time: burpee },
+  { name: "Rowing (1,000 m)", time: row },
+  { name: "Farmers Carry (200 m, 2 × 24 kg)", time: farmers },
+  { name: "Sandbag Lunges (100 m, 20 kg)", time: lunges },
+  { name: "Wall Balls (100 reps, 6 kg)", time: wallBalls },
+];
+
+export const PRO_GOAL_TIME_CONFIGS: GoalTimeConfig[] = [
+  // ── Pro Men ──────────────────────────────────────────────────────────────
+  {
+    slug: "sub-65-pro-men",
+    goalSeconds: 3900,
+    goalLabel: "1:05:00",
+    goalShort: "Sub-65",
+    audience: "pro-men",
+    audienceLabel: "Pro Men",
+    description: "Sub-65 Pro Men is elite — top 10-15% of the Pro Men field. Requires 4:00/km running and near-perfect station execution at Pro weights.",
+    athleteProfile: "Experienced Pro competitor with sub-18 5K, 2× bodyweight deadlift, 100+ unbroken wall balls at 9 kg, and 12+ months of Pro-specific training.",
+    runningPace: "4:00/km",
+    totalRunSeconds: 1980,
+    totalStationSeconds: 1620,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProMen("3:50", "5:30", "4:45", "5:30", "4:00", "2:55", "5:30", "7:10"),
+    trainingFocus: [
+      "Running: 55-70 km/week, 1 long Z2, 1 VO₂ session, 2 threshold",
+      "Heavy sled: 2 sessions per week at Pro weight (202 kg push)",
+      "Wall ball: 100 × 9 kg weekly unbroken target",
+      "Full Pro simulation 4-6 weeks before race",
+    ],
+    realismCheck: "Sub-65 Pro puts you in the top 10-15% of Pro Men globally. World Championship qualification typically requires sub-62 depending on region and season.",
+  },
+  {
+    slug: "sub-75-pro-men",
+    goalSeconds: 4500,
+    goalLabel: "1:15:00",
+    goalShort: "Sub-75",
+    audience: "pro-men",
+    audienceLabel: "Pro Men",
+    description: "Sub-75 Pro Men is a strong competitive Pro finish — top 35-40% of the Pro field. Achievable with 9-12 months of focused Pro training.",
+    athleteProfile: "Well-rounded athlete with sub-20 5K, 1.75× bodyweight deadlift, comfortable with Pro weights across all stations.",
+    runningPace: "4:30/km",
+    totalRunSeconds: 2270,
+    totalStationSeconds: 1930,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProMen("4:15", "6:30", "5:30", "6:30", "4:25", "3:25", "6:30", "8:30"),
+    trainingFocus: [
+      "Running: 40-55 km/week, threshold and long Z2",
+      "Pro sled volume: 1-2 sessions per week",
+      "Wall ball: 100 × 9 kg weekly broken sets",
+      "Compound strength: 2 sessions weekly",
+    ],
+    realismCheck: "Sub-75 Pro is mid-pack in the Pro Men field — a solid result that shows you belong in the division. Most athletes need 9-12 months in Pro to hit this consistently.",
+  },
+  {
+    slug: "sub-85-pro-men",
+    goalSeconds: 5100,
+    goalLabel: "1:25:00",
+    goalShort: "Sub-85",
+    audience: "pro-men",
+    audienceLabel: "Pro Men",
+    description: "Sub-85 Pro Men is a solid first Pro race finish — completing the course at Pro weights is an achievement in itself. Most athletes finishing their first Pro race land here.",
+    athleteProfile: "First or second Pro race. Strong Open background with sub-22 5K, comfortable with all Pro station weights, 4-6 months of Pro-specific prep.",
+    runningPace: "5:00/km",
+    totalRunSeconds: 2520,
+    totalStationSeconds: 2280,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProMen("4:45", "7:30", "6:15", "7:30", "5:00", "3:55", "7:30", "9:50"),
+    trainingFocus: [
+      "Running: 30-45 km/week",
+      "Pro sled familiarity: 1 session per week at Pro weights",
+      "Wall ball: build to 100 × 9 kg broken",
+      "Strength: 2 sessions weekly",
+    ],
+    realismCheck: "Sub-85 is a respectable first Pro result. The jump from Open to Pro is mainly felt on sled push (+50 kg), sandbag lunges (+10 kg), and wall balls (+3 kg) — plan for those specifically.",
+  },
+  // ── Pro Women ────────────────────────────────────────────────────────────
+  {
+    slug: "sub-75-pro-women",
+    goalSeconds: 4500,
+    goalLabel: "1:15:00",
+    goalShort: "Sub-75",
+    audience: "pro-women",
+    audienceLabel: "Pro Women",
+    description: "Sub-75 Pro Women is elite — top 10-15% of the Pro Women field. Requires 4:40/km running and strong execution at Pro station weights.",
+    athleteProfile: "Experienced Pro competitor with sub-21 5K, 1.4× bodyweight deadlift, 100+ wall balls at 6 kg unbroken, 12+ months Pro-specific training.",
+    runningPace: "4:40/km",
+    totalRunSeconds: 2340,
+    totalStationSeconds: 1860,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProWomen("4:20", "5:30", "4:30", "6:30", "4:35", "3:10", "6:00", "8:10"),
+    trainingFocus: [
+      "Running: 45-60 km/week, threshold and VO₂ work",
+      "Pro sled volume: 2 sessions per week",
+      "Wall ball: 100 × 6 kg unbroken target weekly",
+      "Full Pro simulation 4-6 weeks before race",
+    ],
+    realismCheck: "Sub-75 Pro Women puts you in the top 10-15% of the Pro field and within World Championship qualification range in most regions.",
+  },
+  {
+    slug: "sub-85-pro-women",
+    goalSeconds: 5100,
+    goalLabel: "1:25:00",
+    goalShort: "Sub-85",
+    audience: "pro-women",
+    audienceLabel: "Pro Women",
+    description: "Sub-85 Pro Women is mid-pack Pro — top 40% of the Pro Women field. A strong competitive result for athletes 9-12 months into Pro training.",
+    athleteProfile: "Established athlete with sub-23 5K, comfortable at Pro station weights, 6-9 months of Pro-specific prep.",
+    runningPace: "5:05/km",
+    totalRunSeconds: 2560,
+    totalStationSeconds: 2240,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProWomen("4:50", "6:30", "5:15", "7:30", "5:00", "3:40", "7:00", "9:15"),
+    trainingFocus: [
+      "Running: 35-50 km/week",
+      "Pro sled: 1-2 sessions per week",
+      "Wall ball: 100 × 6 kg weekly broken sets",
+      "Compound strength: 2 sessions weekly",
+    ],
+    realismCheck: "Sub-85 Pro Women is a solid competitive result. Mid-pack at regional events, age-group competitive in 35+ Pro brackets.",
+  },
+  {
+    slug: "sub-95-pro-women",
+    goalSeconds: 5700,
+    goalLabel: "1:35:00",
+    goalShort: "Sub-95",
+    audience: "pro-women",
+    audienceLabel: "Pro Women",
+    description: "Sub-95 Pro Women is a strong first Pro race finish. Completing a Pro race is a genuine athletic achievement — most first-timers in Pro land in the 1:35-1:45 range.",
+    athleteProfile: "First or second Pro race. Strong Open Women background with sub-25 5K, familiar with all Pro station weights.",
+    runningPace: "5:30/km",
+    totalRunSeconds: 2820,
+    totalStationSeconds: 2580,
+    totalRoxzoneSeconds: 300,
+    splits: stationsProWomen("5:15", "7:30", "6:00", "8:30", "5:30", "4:10", "8:00", "10:45"),
+    trainingFocus: [
+      "Running: 25-40 km/week",
+      "Pro sled familiarity: 1 session per week",
+      "Wall ball: build to 100 × 6 kg broken",
+      "Strength: 2 sessions weekly",
+    ],
+    realismCheck: "Sub-95 is a very good first Pro finish. The Pro jump hits hardest on sled push (152 kg vs 102 kg), lunges (20 vs 10 kg), and wall balls (6 vs 4 kg) — train those specifically.",
+  },
+];
+
+// Combined export used by the calculator page and goal-time guides.
+export const ALL_GOAL_TIME_CONFIGS: GoalTimeConfig[] = [
+  ...GOAL_TIME_CONFIGS,
+  ...PRO_GOAL_TIME_CONFIGS,
 ];
 
 export function getGoalConfig(slug: string): GoalTimeConfig | undefined {

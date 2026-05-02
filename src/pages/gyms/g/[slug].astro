@@ -100,26 +100,26 @@ const googleSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encod
       <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
         {AFFILIATION_LABELS[gym.affiliationType]}{gym.neighbourhood ? ` · ${gym.neighbourhood}` : ""} · {gym.city}, {gym.country}
       </div>
-      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-gradient-accent break-words">
         {gym.name}
       </h1>
       <p class="mt-4 text-base md:text-lg text-text-muted leading-relaxed max-w-3xl">
         {gym.address}
       </p>
-      <div class="mt-5 flex flex-wrap gap-3">
+      <div class="mt-5 flex flex-col sm:flex-row sm:flex-wrap gap-3">
         {gym.website ? (
-          <a href={gym.website} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
+          <a href={gym.website} rel="noopener noreferrer" target="_blank" class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] w-full sm:w-auto rounded-lg bg-accent text-bg font-bold text-sm no-underline">
             Visit website &rarr;
           </a>
         ) : (
-          <a href={googleSearchUrl} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-bg font-bold text-sm no-underline">
+          <a href={googleSearchUrl} rel="noopener noreferrer" target="_blank" class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] w-full sm:w-auto rounded-lg bg-accent text-bg font-bold text-sm no-underline">
             Find on Google &rarr;
           </a>
         )}
-        <a href={directionsGoogle} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
+        <a href={directionsGoogle} rel="noopener noreferrer" target="_blank" class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] w-full sm:w-auto rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
           Google Maps directions
         </a>
-        <a href={directionsApple} rel="noopener noreferrer" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
+        <a href={directionsApple} rel="noopener noreferrer" target="_blank" class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] w-full sm:w-auto rounded-lg border border-border text-text hover:border-border-hover font-bold text-sm no-underline">
           Apple Maps directions
         </a>
       </div>

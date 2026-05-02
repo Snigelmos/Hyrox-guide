@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HyroxCalculator from "../components/HyroxCalculator";
-import { GOAL_TIME_CONFIGS } from "../data/calculator-goals";
+import { GOAL_TIME_CONFIGS, PRO_GOAL_TIME_CONFIGS } from "../data/calculator-goals";
 
-const menGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men");
-const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
+const menGoals    = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men");
+const womenGoals  = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
+const proMenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-men");
+const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-women");
 ---
 
 <BaseLayout
@@ -18,7 +20,7 @@ const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
       <nav class="mb-4 text-sm" aria-label="Breadcrumb">
         <ol class="flex items-center gap-2 flex-wrap">
           <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
-          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Calculator</span></li>
+          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Time Calculator</span></li>
         </ol>
       </nav>
       <h1 class="text-3xl md:text-5xl font-black">
@@ -69,11 +71,44 @@ const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
     </div>
 
     <div class="max-w-4xl mt-16 pt-10 border-t border-border">
-      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Goal-time split guides</h2>
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Goal-time split guides</h2>
       <p class="text-text-muted mb-6 max-w-2xl">
         Pick a target finish time and get a pre-built split breakdown — running pace required, station-by-station targets, and the training plan that builds the fitness.
       </p>
-      <div class="mb-8">
+
+      {/* Find-your-guide input */}
+      <div class="mb-8 bg-bg-card border border-border rounded-2xl p-5">
+        <label class="block text-xs font-bold uppercase tracking-wider text-accent mb-2">
+          Jump to your goal time
+        </label>
+        <div class="flex gap-3 items-center flex-wrap">
+          <input
+            id="goal-time-input"
+            type="text"
+            placeholder="e.g. 1:28 or 88"
+            class="bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text focus:outline-none focus:border-accent min-h-[44px] w-40"
+          />
+          <select
+            id="goal-audience-input"
+            class="bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-text focus:outline-none focus:border-accent min-h-[44px]"
+          >
+            <option value="open-men">Open Men</option>
+            <option value="open-women">Open Women</option>
+            <option value="pro-men">Pro Men</option>
+            <option value="pro-women">Pro Women</option>
+          </select>
+          <button
+            id="goal-time-btn"
+            class="bg-accent text-bg font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-accent-hover transition-colors min-h-[44px]"
+          >
+            Find my guide
+          </button>
+        </div>
+        <p id="goal-time-error" class="text-xs text-red-400 mt-2 hidden">No matching guide found — try a time between 1:00 and 1:45.</p>
+      </div>
+
+      {/* Open Men */}
+      <div class="mb-6">
         <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Open Men</h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {menGoals.map((g) => (
@@ -87,7 +122,9 @@ const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
           ))}
         </div>
       </div>
-      <div>
+
+      {/* Open Women */}
+      <div class="mb-6">
         <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Open Women</h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {womenGoals.map((g) => (
@@ -101,7 +138,80 @@ const womenGoals = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
           ))}
         </div>
       </div>
+
+      {/* Pro Men */}
+      <div class="mb-6">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Pro Men</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {proMenGoals.map((g) => (
+            <a
+              href={`/calculator/${g.slug}/`}
+              class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-all no-underline"
+            >
+              <div class="text-lg font-black text-text-heading">{g.goalShort}</div>
+              <div class="text-xs text-text-muted">{g.goalLabel}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Pro Women */}
+      <div class="mb-6">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Pro Women</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {proWomenGoals.map((g) => (
+            <a
+              href={`/calculator/${g.slug}/`}
+              class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-all no-underline"
+            >
+              <div class="text-lg font-black text-text-heading">{g.goalShort}</div>
+              <div class="text-xs text-text-muted">{g.goalLabel}</div>
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
+
+    <script is:inline define:vars={{ goalConfigs: [...GOAL_TIME_CONFIGS, ...PRO_GOAL_TIME_CONFIGS].map(g => ({ slug: g.slug, audience: g.audience, goalSeconds: g.goalSeconds })) }}>
+      var btn   = document.getElementById("goal-time-btn");
+      var input = document.getElementById("goal-time-input");
+      var sel   = document.getElementById("goal-audience-input");
+      var err   = document.getElementById("goal-time-error");
+
+      function parseMinutes(raw) {
+        var s = raw.trim();
+        if (s.indexOf(":") !== -1) {
+          var parts = s.split(":");
+          var h = Number(parts[0]), m = Number(parts[1]);
+          if (isNaN(h) || isNaN(m)) return null;
+          return h * 60 + m;
+        }
+        var n = parseFloat(s);
+        return isNaN(n) ? null : n;
+      }
+
+      if (btn) btn.addEventListener("click", function() {
+        if (err) err.classList.add("hidden");
+        var mins = parseMinutes(input ? input.value : "");
+        if (mins === null) { if (err) err.classList.remove("hidden"); return; }
+        var audience = sel ? sel.value : "open-men";
+        var seconds  = mins * 60;
+        var pool = goalConfigs;
+        var above = pool.filter(function(c) { return c.audience === audience && c.goalSeconds >= seconds; })
+                        .sort(function(a, b) { return a.goalSeconds - b.goalSeconds; });
+        var match = above[0] || pool.filter(function(c) { return c.audience === audience; })
+                                    .sort(function(a, b) { return a.goalSeconds - b.goalSeconds; })[0];
+        if (match) {
+          window.location.href = "/calculator/" + match.slug + "/";
+        } else {
+          if (err) err.classList.remove("hidden");
+        }
+      });
+
+      if (input) input.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && btn) btn.click();
+      });
+    </script>
 
   </section>
 </BaseLayout>

@@ -6,6 +6,8 @@ import {
   type Level,
 } from "../data/station-benchmarks";
 import { getPlaybook } from "../data/station-playbooks";
+import { ALL_GOAL_TIME_CONFIGS, type GoalTimeConfig } from "../data/calculator-goals";
+import { TRAINING_PLANS } from "../data/training-plans";
 
 type Gender = "men" | "women";
 type Division = "open" | "pro";
@@ -240,6 +242,25 @@ interface DiagnosisGap {
   unitLabel: string;
 }
 
+/** Find the goal config closest to a predicted finish time for the given audience. */
+function findNearestGoalConfig(
+  totalSeconds: number,
+  gender: Gender,
+  division: Division,
+): GoalTimeConfig | undefined {
+  const audience = division === "pro"
+    ? (gender === "men" ? "pro-men" : "pro-women")
+    : (gender === "men" ? "open-men" : "open-women");
+  const candidates = ALL_GOAL_TIME_CONFIGS.filter((c) => c.audience === audience);
+  if (candidates.length === 0) return undefined;
+  // Return the config whose goalSeconds is the smallest step above the predicted time
+  // (i.e. the goal you're chasing). Fall back to the fastest if already under everything.
+  const above = candidates
+    .filter((c) => c.goalSeconds >= totalSeconds)
+    .sort((a, b) => a.goalSeconds - b.goalSeconds);
+  return above[0] ?? candidates.sort((a, b) => a.goalSeconds - b.goalSeconds)[0];
+}
+
 export default function HyroxCalculator() {
   const [gender, setGender]         = useState<Gender>("men");
   const [division, setDivision]     = useState<Division>("open");
@@ -319,6 +340,18 @@ export default function HyroxCalculator() {
   const strongest = useMemo(
     () => diagnosis.filter((g) => g.gapSec <= 0).sort((a, b) => a.gapSec - b.gapSec).slice(0, 2),
     [diagnosis],
+  );
+
+  const nearestGoal = useMemo(
+    () => findNearestGoalConfig(result.total, gender, division),
+    [result.total, gender, division],
+  );
+
+  const matchingPlan = useMemo(
+    () => nearestGoal
+      ? TRAINING_PLANS.find((p) => p.relatedCalculatorSlug === nearestGoal.slug)
+      : undefined,
+    [nearestGoal],
   );
 
   const s = {
@@ -541,9 +574,37 @@ export default function HyroxCalculator() {
             ))}
           </div>
 
+          {/* ── Matched goal guide ── */}
+          {nearestGoal && (
+            <div className="mb-6 bg-[#0c1a25] border border-[#38bdf8]/30 rounded-xl p-4">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#38bdf8] mb-1">Your next target</div>
+              <div className="text-sm font-black text-[#f4f4f5] mb-1">
+                {nearestGoal.goalShort} — {nearestGoal.goalLabel}
+              </div>
+              <p className="text-xs text-[#a1a1aa] leading-relaxed mb-3">
+                {nearestGoal.description}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={`/calculator/${nearestGoal.slug}/`}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors no-underline bg-[#38bdf8]/10 border border-[#38bdf8]/30 px-3 py-1.5 rounded-lg"
+                >
+                  See {nearestGoal.goalShort} splits →
+                </a>
+                {matchingPlan && (
+                  <a
+                    href={`/training-plans/${matchingPlan.slug}/`}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+                  >
+                    {matchingPlan.durationWeeks}-week training plan →
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Per-station breakdown */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#52525b] px-1 mb-1">
+          <div className="space-y-1.5">            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#52525b] px-1 mb-1">
               <span>Station</span><span>Est. Time</span>
             </div>
             <div className="flex items-center justify-between text-sm bg-[#09090b] rounded-lg px-4 py-2">
