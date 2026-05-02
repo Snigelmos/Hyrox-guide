@@ -3,7 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { WORKOUTS } from "../../data/workouts";
 
 const title = "Hyrox Benchmark Workouts — Named Tests, Simulations, and Bench Markers";
-const description = "Named Hyrox benchmark and simulation workouts: full Hyrox sim, mini Hyrox, 1k repeats, 100 wall ball test, 2k row + 50 wall balls, and more. With times, scoring, and how-to.";
+const description = "Named Hyrox benchmark and simulation workouts, plus a link to the 23-session training workout library with Hyrox-specific and general workouts.";
 const breadcrumbs = [{ name: "Workouts" }];
 ---
 
@@ -33,6 +33,31 @@ const breadcrumbs = [{ name: "Workouts" }];
         Named Hyrox simulation tests, benchmark workouts, and key training sessions — all with scoring, benchmarks, and how to use them in your prep.
       </p>
     </header>
+
+    <a
+      href="/training/workouts/"
+      class="group block mb-10 bg-bg-card border-2 border-accent/20 rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+    >
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            New workout library
+          </div>
+          <h2 class="text-2xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
+            23 Hyrox-Specific & General Training Sessions
+          </h2>
+          <p class="text-sm text-text-muted leading-relaxed max-w-2xl">
+            Browse full simulations, Norwegian 4×4 intervals, compromised running, station drills, and CrossFit-inspired conditioning workouts.
+          </p>
+        </div>
+        <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0">
+          Open Training Library
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+    </a>
 
     <section class="grid gap-4 md:grid-cols-2">
       {WORKOUTS.map((w) => (
