@@ -1,0 +1,30 @@
+---
+description: Delivery, deployment, and quality checks for all HyroxVault work
+alwaysApply: true
+---
+
+# Delivery And Quality Checks
+
+For this project, completed code/content changes should be treated as production-bound unless the user explicitly says not to deploy, push, or commit.
+
+## Default Delivery Flow
+
+- After making requested edits, run the most relevant available checks before finishing. Prefer `npm run build` / Astro build for site changes, plus diagnostics for edited files.
+- If checks pass and the user has not said otherwise, commit the relevant changes and push the branch so Vercel/GitHub can deploy them.
+- Keep commits focused. Do not mix unrelated dirty-tree work into the same commit.
+- If the working tree contains unrelated changes, identify them and leave them untouched unless the user asks to clean them up.
+
+## Final Quality Gate
+
+Before the final response, explicitly verify:
+
+- The implementation matches the user's latest request, not an older interpretation.
+- The changed page or feature is discoverable at the URL/path the user expects.
+- The branch is clean or any remaining uncommitted changes are explained.
+- The latest commit has been pushed, unless the user explicitly asked not to push.
+
+## If Something Cannot Be Verified
+
+- Say exactly what could not be checked and why.
+- Do not imply a deploy happened until the commit is pushed and the remote branch includes it.
+- If a command fails because tooling is unavailable, try the repo's known local Node path before giving up.
