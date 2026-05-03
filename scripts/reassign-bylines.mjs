@@ -1,14 +1,25 @@
 #!/usr/bin/env node
 /**
- * One-shot reassignment of blog post `author` frontmatter from the old
- * "HyroxVault Editorial Team" identity to one of John / Niklas / Jesper,
- * using the topic split documented in the act-on-chatgpt-review plan.
+ * Re-bucket every blog post `author` frontmatter to one of John, Niklas
+ * or Jesper based on the topic split documented in src/data/authors.ts.
  *
- * Run once:
+ * Run once after editing the BYLINE_MAP:
  *   node scripts/reassign-bylines.mjs
  *
- * Idempotent: re-running will leave already-correct values alone and
- * report a per-author count.
+ * Idempotent: re-running with the same map leaves files alone.
+ *
+ * Beat split:
+ *   John   — strength, station efficiency, gym-based programming.
+ *            CrossFit / F45 / rugby / powerlifter transitions.
+ *            Grip aids, weight belts, heavy-athlete shoes.
+ *   Niklas — running. Pacing, Zone 2, VO2max, heart-rate zones,
+ *            watches and HRMs. Marathon / triathlete / cyclist /
+ *            swimmer transitions. Carbon-plate shoes.
+ *   Jesper — all-rounder + nutrition + racing. Supplements, gels,
+ *            hydration, carb loading, recovery. Race format,
+ *            sub-X blueprints, race-week protocol, race-day bag,
+ *            population-specific guides, gear buying guides
+ *            (non-strength, non-running).
  */
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -18,114 +29,108 @@ import { dirname } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = join(__dirname, "..", "src", "content", "blog");
 
-/**
- * Map of post slug (filename without .mdx) → author first name.
- * Buckets follow plan: race-strategy/pacing/calculator → John,
- * training/strength/no-gym/population → Niklas,
- * supplements/nutrition/gear → Jesper.
- */
 const BYLINE_MAP = {
-  // --- John: race strategy, pacing, race day, calc, station strategy ---
-  "best-hyrox-pacing-strategy": "John",
-  "can-you-walk-during-hyrox": "John",
+  // --- John: strength, stations, CrossFit/gym DNA ---
+  "are-gloves-allowed-in-hyrox": "John",
+  "best-hyrox-shoes-for-heavy-athletes": "John",
+  "can-you-wear-a-weight-belt-in-hyrox": "John",
   "crossfitter-doing-first-hyrox": "John",
   "f45-to-hyrox-transition": "John",
-  "first-hyrox-race-guide": "John",
   "how-heavy-is-the-hyrox-sled": "John",
-  "how-long-does-a-hyrox-race-take": "John",
-  "how-much-does-hyrox-cost": "John",
+  "hyrox-12-week-no-equipment-training-plan": "John",
+  "hyrox-50-pound-equipment-upgrade": "John",
   "hyrox-burpee-broad-jumps-strategy": "John",
-  "hyrox-cut-off-time": "John",
-  "hyrox-doubles-strategy": "John",
+  "hyrox-concurrent-training": "John",
+  "hyrox-deload-weeks": "John",
   "hyrox-farmers-carry-sandbag-lunges": "John",
-  "hyrox-hitting-the-wall": "John",
-  "hyrox-pro-division-qualification": "John",
-  "hyrox-race-day-morning": "John",
-  "hyrox-race-logistics-guide": "John",
-  "hyrox-race-week-protocol": "John",
+  "hyrox-hotel-room-training": "John",
+  "hyrox-park-outdoor-training": "John",
   "hyrox-rowing-technique": "John",
-  "hyrox-running-strategy": "John",
-  "hyrox-second-race-pr-guide": "John",
-  "hyrox-simulation-workouts": "John",
   "hyrox-skierg-technique-pacing": "John",
   "hyrox-sled-pull-technique": "John",
   "hyrox-sled-push-technique": "John",
-  "hyrox-strategy-for-short-athletes": "John",
-  "hyrox-strategy-for-tall-athletes": "John",
-  "hyrox-sub-60-blueprint": "John",
-  "hyrox-sub-75-blueprint": "John",
-  "hyrox-sub-90-blueprint": "John",
-  "hyrox-transitions-guide": "John",
+  "hyrox-train-at-home": "John",
+  "hyrox-training-without-gym-realistic-expectations": "John",
   "hyrox-vs-crossfit": "John",
   "hyrox-wall-balls-technique": "John",
-  "hyrox-warmup-protocol": "John",
-  "is-sub-60-hyrox-good": "John",
-  "is-sub-70-hyrox-good": "John",
-  "is-sub-75-hyrox-good": "John",
-  "is-sub-80-hyrox-good": "John",
-  "is-sub-90-hyrox-good": "John",
-  "marathon-runner-doing-hyrox": "John",
-  "orangetheory-member-doing-hyrox": "John",
-  "what-is-the-hyrox-roxzone": "John",
+  "is-chalk-allowed-in-hyrox": "John",
+  "is-hand-taping-allowed-in-hyrox": "John",
+  "legal-grip-aids-in-hyrox": "John",
+  "powerlifter-hyrox-training": "John",
+  "rugby-player-hyrox-training": "John",
 
-  // --- Niklas: training plans, strength, no-gym, population, programming ---
-  "hyrox-12-week-no-equipment-training-plan": "Niklas",
-  "hyrox-50-pound-equipment-upgrade": "Niklas",
-  "hyrox-bad-knees-guide": "Niklas",
-  "hyrox-beginners-complete-guide-2026": "Niklas",
-  "hyrox-concurrent-training": "Niklas",
+  // --- Niklas: running, pacing, watches, run-sport transitions ---
+  "average-heart-rate-during-hyrox": "Niklas",
+  "best-heart-rate-monitor-for-hyrox": "Niklas",
+  "carbon-plate-shoes-for-hyrox": "Niklas",
+  "coros-hyrox-setup": "Niklas",
+  "garmin-hyrox-activity-profile": "Niklas",
   "hyrox-cyclist-transition": "Niklas",
-  "hyrox-deload-weeks": "Niklas",
-  "hyrox-for-heavy-athletes": "Niklas",
-  "hyrox-for-men-over-50": "Niklas",
-  "hyrox-for-small-framed-women": "Niklas",
-  "hyrox-for-women-over-40": "Niklas",
-  "hyrox-for-women-over-50": "Niklas",
   "hyrox-heart-rate-zones": "Niklas",
-  "hyrox-hotel-room-training": "Niklas",
-  "hyrox-injury-guide": "Niklas",
-  "hyrox-over-40-first-race": "Niklas",
-  "hyrox-park-outdoor-training": "Niklas",
-  "hyrox-peak-for-race": "Niklas",
-  "hyrox-race-week-no-gym-taper": "Niklas",
+  "hyrox-running-strategy": "Niklas",
   "hyrox-swimmer-transition": "Niklas",
-  "hyrox-train-at-home": "Niklas",
-  "hyrox-training-for-masters-athletes": "Niklas",
   "hyrox-training-heart-rate-zones": "Niklas",
-  "hyrox-training-without-gym-realistic-expectations": "Niklas",
   "hyrox-vo2max-training": "Niklas",
   "hyrox-zone-2-training": "Niklas",
-  "powerlifter-hyrox-training": "Niklas",
-  "rugby-player-hyrox-training": "Niklas",
+  "marathon-runner-doing-hyrox": "Niklas",
+  "orangetheory-member-doing-hyrox": "Niklas",
+  "polar-hyrox-setup": "Niklas",
   "triathlete-doing-hyrox": "Niklas",
 
-  // --- Jesper: supplements, nutrition, recovery, gear, watches, HRMs ---
+  // --- Jesper: nutrition, racing, all-rounder, buying guides ---
   "apple-watch-hyrox-workout": "Jesper",
-  "are-gloves-allowed-in-hyrox": "Jesper",
   "are-leggings-allowed-in-hyrox": "Jesper",
-  "average-heart-rate-during-hyrox": "Jesper",
   "best-compression-sleeves-for-hyrox": "Jesper",
-  "best-heart-rate-monitor-for-hyrox": "Jesper",
+  "best-hyrox-pacing-strategy": "Jesper",
   "best-hyrox-race-bag": "Jesper",
-  "best-hyrox-shoes-for-heavy-athletes": "Jesper",
   "best-hyrox-shoes-for-wide-feet": "Jesper",
   "can-you-change-shoes-during-hyrox": "Jesper",
-  "can-you-wear-a-weight-belt-in-hyrox": "Jesper",
-  "carbon-plate-shoes-for-hyrox": "Jesper",
-  "coros-hyrox-setup": "Jesper",
+  "can-you-walk-during-hyrox": "Jesper",
   "energy-gel-strategy-hyrox": "Jesper",
-  "garmin-hyrox-activity-profile": "Jesper",
+  "first-hyrox-race-guide": "Jesper",
+  "how-long-does-a-hyrox-race-take": "Jesper",
+  "how-much-does-hyrox-cost": "Jesper",
+  "hyrox-bad-knees-guide": "Jesper",
+  "hyrox-beginners-complete-guide-2026": "Jesper",
   "hyrox-carb-loading-guide": "Jesper",
+  "hyrox-cut-off-time": "Jesper",
   "hyrox-daily-nutrition-hybrid-athletes": "Jesper",
+  "hyrox-doubles-strategy": "Jesper",
+  "hyrox-for-heavy-athletes": "Jesper",
+  "hyrox-for-men-over-50": "Jesper",
+  "hyrox-for-small-framed-women": "Jesper",
+  "hyrox-for-women-over-40": "Jesper",
+  "hyrox-for-women-over-50": "Jesper",
+  "hyrox-hitting-the-wall": "Jesper",
   "hyrox-hydration-strategy": "Jesper",
+  "hyrox-injury-guide": "Jesper",
+  "hyrox-over-40-first-race": "Jesper",
+  "hyrox-peak-for-race": "Jesper",
   "hyrox-post-race-recovery-nutrition": "Jesper",
+  "hyrox-pro-division-qualification": "Jesper",
   "hyrox-race-day-bag": "Jesper",
   "hyrox-race-day-breakfast": "Jesper",
+  "hyrox-race-day-morning": "Jesper",
+  "hyrox-race-logistics-guide": "Jesper",
+  "hyrox-race-week-no-gym-taper": "Jesper",
+  "hyrox-race-week-protocol": "Jesper",
+  "hyrox-second-race-pr-guide": "Jesper",
   "hyrox-shoe-rules": "Jesper",
-  "is-chalk-allowed-in-hyrox": "Jesper",
-  "is-hand-taping-allowed-in-hyrox": "Jesper",
-  "legal-grip-aids-in-hyrox": "Jesper",
-  "polar-hyrox-setup": "Jesper",
+  "hyrox-simulation-workouts": "Jesper",
+  "hyrox-strategy-for-short-athletes": "Jesper",
+  "hyrox-strategy-for-tall-athletes": "Jesper",
+  "hyrox-sub-60-blueprint": "Jesper",
+  "hyrox-sub-75-blueprint": "Jesper",
+  "hyrox-sub-90-blueprint": "Jesper",
+  "hyrox-training-for-masters-athletes": "Jesper",
+  "hyrox-transitions-guide": "Jesper",
+  "hyrox-warmup-protocol": "Jesper",
+  "is-sub-60-hyrox-good": "Jesper",
+  "is-sub-70-hyrox-good": "Jesper",
+  "is-sub-75-hyrox-good": "Jesper",
+  "is-sub-80-hyrox-good": "Jesper",
+  "is-sub-90-hyrox-good": "Jesper",
+  "what-is-the-hyrox-roxzone": "Jesper",
 };
 
 const files = readdirSync(BLOG_DIR).filter((f) => f.endsWith(".mdx"));
