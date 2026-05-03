@@ -111,6 +111,15 @@ const resolvedOgImage = ogImage ?? ogPathFor(Astro.url.pathname);
     />
 
     <title>{title}</title>
+    <!-- Google tag (gtag.js) for Google Ads -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=AW-18137083494"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+
+      gtag("config", "AW-18137083494");
+    </script>
     <JsonLd title={title} description={description} type={schemaType} datePublished={datePublished} dateModified={dateModified} author={author} />
     <slot name="head" />
 
