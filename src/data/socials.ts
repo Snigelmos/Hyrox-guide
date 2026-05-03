@@ -16,7 +16,7 @@
  *  1. Instagram (@hyroxvault)
  *  2. X / Twitter (@hyroxvault)
  *  3. YouTube (Hyrox training and race-day content)
- *  4. Strava club ("HyroxVault Editorial Team" or similar)
+ *  4. Strava club ("HyroxVault" or similar)
  *  5. LinkedIn company page
  *  6. TikTok (if the audience supports it)
  */

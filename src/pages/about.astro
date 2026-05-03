@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE_SOCIALS } from "../data/socials";
+import { AUTHORS } from "../data/authors";
 
-const lastUpdated = "April 19, 2026";
+const lastUpdated = "May 3, 2026";
 
 const organizationLd: Record<string, unknown> = {
   "@context": "https://schema.org",
@@ -24,7 +25,7 @@ if (SITE_SOCIALS.length > 0) {
 ---
 
 <BaseLayout
-  title="About HyroxVault | Editorial Team, Review Process & Disclosure"
+  title="About HyroxVault | The Team, Review Process & Disclosure"
   description="Who writes HyroxVault, how we test products, our editorial and correction policies, and full affiliate disclosure."
   breadcrumbs={[{ name: "About", url: "/about/" }]}
 >
@@ -38,133 +39,172 @@ if (SITE_SOCIALS.length > 0) {
 
       <div class="prose prose-lg prose-invert max-w-none">
         <p class="text-xl text-text-muted leading-relaxed">
-          HyroxVault is an independent, editorially-driven resource for Hyrox athletes.
-          We publish race guides, training programs, gear reviews, and supplement
-          recommendations based on real training, testing, and competition data — not
-          press releases.
+          HyroxVault is an independent, editorially-driven resource for Hyrox
+          athletes. Three of us run it — John, Niklas, and Jesper. We race, we
+          coach, and we read the literature. Every guide is signed by one of us
+          by name, and built from real training, testing, and competition data,
+          not press releases.
         </p>
 
-        <h2>Who runs HyroxVault</h2>
+        <h2 id="team">The team</h2>
         <p>
-          HyroxVault is run by a small editorial team based in Europe. Between us
-          we've raced across the European circuit, with the bulk of our time spent
-          on the Berlin, Stockholm, London, Amsterdam, and Copenhagen courses. The
-          editorial lead has competed in both Open and Pro divisions, which is why
-          our pacing and station-strategy notes come from someone who has felt
-          1,000m of rowing at threshold pace and then tried to find a wall-balls
-          cadence again on the same day.
+          We are three people based in Europe, all racing Hyrox in the
+          European circuit, all writing under our first names. Surnames are
+          kept off the public site by choice — we want the work to be the
+          credibility signal, not personal branding. Each of us owns a beat:
         </p>
+
+        <div class="not-prose grid gap-4 md:grid-cols-3 my-8">
+          {AUTHORS.map((a) => (
+            <a
+              href={`/author/${a.slug}/`}
+              class="group flex flex-col bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <img
+                  src={a.image}
+                  alt=""
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  class="w-12 h-12 rounded-full object-cover bg-bg border border-border"
+                />
+                <div>
+                  <div class="text-base font-bold text-text-heading group-hover:text-accent transition-colors">
+                    {a.name}
+                  </div>
+                  <div class="text-xs text-text-muted">{a.jobTitle}</div>
+                </div>
+              </div>
+              <p class="text-xs text-text-muted leading-relaxed">{a.tagline}</p>
+            </a>
+          ))}
+        </div>
+
         <p>
-          Two of us hold strength and conditioning certifications (CSCS-equivalent)
-          and coach age-group athletes preparing for their first Hyrox in person,
-          which is where most of our training-plan structure comes from. A third
-          contributor focuses on the supplement and pacing literature: ISSN
-          position stands, IOC consensus statements, and peer-reviewed pacing
-          studies are read as they're published, and the relevant guides are
-          updated when the evidence moves. Every article is reviewed by at least
-          one editor with lived racing experience before it goes live.
+          Read the full bios on the <a href="/author/">team page</a>, or jump
+          to <a href="/author/john/">John</a>, <a href="/author/niklas/">Niklas</a>, or <a href="/author/jesper/">Jesper</a>.
         </p>
+
+        <h2>Independent, not affiliated with Hyrox GmbH</h2>
         <p>
-          We are deliberately not running this as a personality-driven brand.
-          Articles are signed by the team rather than by an individual because we
-          want the editing pass, the fact-checks, and the second pair of racing
-          eyes to be the unit of trust, not a single byline. If you'd like to talk
-          to whichever editor handles a particular topic — pacing, supplements,
-          shoes, plan design — use the contact form at the bottom of this page and
-          we'll route it.
+          HyroxVault is an independent publication. We are not owned by, paid
+          by, or officially connected to Hyrox GmbH or any of its partners.
+          "Hyrox" and related marks are trademarks of their respective owners
+          and are used here only to identify the sport and its events. We
+          cover the race because we race it, not because anyone is paying us
+          to.
         </p>
 
         <h2>How we pick products</h2>
         <p>
-          We cover four product categories: <strong>supplements, running shoes,
-          training gear, and race-day accessories</strong>. Our recommendations are
-          based on:
+          We cover four product categories: <strong>supplements, running
+          shoes, training gear, and race-day accessories</strong>. Jesper owns
+          this section. The evaluation criteria are:
         </p>
         <ul>
           <li>
-            <strong>Published research</strong> — for supplements, we rely on
-            meta-analyses and position statements from organisations such as the ISSN
-            and ACSM, not brand marketing.
+            <strong>Published research.</strong> For supplements we rely on
+            meta-analyses and position statements from the ISSN, ACSM, and
+            IOC, not brand marketing.
           </li>
           <li>
-            <strong>Third-party certifications</strong> — where relevant we highlight
-            products with NSF Certified for Sport or Informed Sport testing.
+            <strong>Third-party certification.</strong> Where it applies, we
+            highlight products with NSF Certified for Sport or Informed Sport
+            testing.
           </li>
           <li>
-            <strong>Community consensus</strong> — what experienced Hyrox age-group and
-            Pro division athletes are actually using and what is widely reviewed well.
+            <strong>Hands-on testing.</strong> Shoes, watches, HRMs, race bags
+            and similar gear go through a fixed evaluation checklist before
+            getting a recommendation.
           </li>
           <li>
-            <strong>Value</strong> — we highlight options that offer strong value for a
-            typical working athlete, not just the most expensive product.
+            <strong>Community consensus.</strong> What experienced age-group
+            and Pro athletes are actually using, and what is widely reviewed
+            well outside HyroxVault.
+          </li>
+          <li>
+            <strong>Value.</strong> We highlight options that work for a
+            normal working athlete, not just the most expensive product.
           </li>
         </ul>
         <p>
-          Where we call something an "Editor's Pick" or "Best Value", that reflects our
-          read of the available evidence and public reviews — not a certification, and
-          not a promise of outcome for any individual athlete.
+          Where we call something an "Editor's Pick" or "Best Value", that
+          reflects our read of the available evidence and public reviews — not
+          a certification, and not a promise of outcome for any individual
+          athlete.
+        </p>
+
+        <h2>How we use sources</h2>
+        <p>
+          Any precise number on the site — race split, station weight,
+          supplement dose, heart-rate zone — has to come from one of three
+          places: the official Hyrox rules and results data on
+          <a href="https://hyrox.com/rules/" rel="nofollow noopener" target="_blank">hyrox.com</a> and
+          <a href="https://results.hyrox.com/" rel="nofollow noopener" target="_blank">results.hyrox.com</a>,
+          a peer-reviewed paper or position stand from the ISSN, ACSM, or
+          IOC, or our own logged training and racing. If a number cannot be
+          tied to one of those, we either remove it or hedge the language.
+          John is the final editor on race-strategy claims; Niklas on
+          training; Jesper on supplements.
         </p>
 
         <h2>Editorial independence</h2>
         <p>
-          We do not accept paid placements, sponsored rankings, or "pay-to-play"
-          inclusion in our buying guides. Where a brand relationship exists it is
-          disclosed, and it does not determine which products we recommend.
+          We do not accept paid placements, sponsored rankings, or
+          "pay-to-play" inclusion in our buying guides. Where a brand
+          relationship exists it is disclosed, and it does not determine which
+          products we recommend.
         </p>
 
         <h2>Affiliate disclosure</h2>
         <p>
-          HyroxVault may earn commissions when readers buy through some of our outbound
-          links. Depending on your country, these links may point to retailers such as
-          Amazon, Gymgrossisten, Myprotein, iHerb, or direct brand stores. Commissions,
-          where they apply, are paid by the retailer at no extra cost to you and do not
-          influence which products are featured.
+          HyroxVault may earn commissions when readers buy through some of
+          our outbound links. Depending on your country, these links may
+          point to retailers such as Amazon, Gymgrossisten, Myprotein, iHerb,
+          or direct brand stores. Commissions are paid by the retailer at no
+          extra cost to you and do not influence which products are featured.
         </p>
         <p>
-          Affiliate links are marked with <code>rel="nofollow sponsored"</code> and,
-          where product cards appear, a small disclosure notice nearby.
+          Affiliate links are marked with <code>rel="nofollow sponsored"</code>
+          and, where product cards appear, a small disclosure notice nearby.
         </p>
 
         <h2>Corrections and fact-checking</h2>
         <p>
-          We check every factual claim — race distances, station standards, product
-          specs, commission rates, supplement dosages — against primary sources before
-          publishing. If you spot an error, let us know via the contact form at the bottom of this page
-          and we'll fix it within 48 hours. Material corrections are logged at the bottom
-          of the affected article with a date and a one-line description.
+          Every factual claim — race distances, station standards, product
+          specs, commission rates, supplement dosages — is checked against
+          primary sources before publishing. If you spot an error, let us
+          know via the contact form below and we will fix it within 48 hours.
+          Material corrections are logged at the bottom of the affected
+          article with a date and a one-line description.
         </p>
 
         <h2>Medical disclaimer</h2>
         <p>
-          Training and supplementation advice on HyroxVault is general information, not
-          personalised medical guidance. Hyrox is a demanding race. If you have an
-          underlying health condition, are pregnant, or are taking prescribed medication,
-          speak with a qualified healthcare professional before starting a new training
+          Training and supplementation advice on HyroxVault is general
+          information, not personalised medical guidance. Hyrox is a
+          demanding race. If you have an underlying health condition, are
+          pregnant, or are taking prescribed medication, speak with a
+          qualified healthcare professional before starting a new training
           programme or supplement protocol.
         </p>
 
         <h2>What we cover</h2>
         <ul>
-          <li><strong>Racing Guide</strong> — Hyrox format, the 8 stations, categories, pacing, race-week prep.</li>
-          <li><strong>Training Plans</strong> — beginner, intermediate, advanced, and doubles programmes with week-by-week structure.</li>
-          <li><strong>Gear Reviews</strong> — shoes, clothing, compression, belts, bags, and home-gym equipment.</li>
-          <li><strong>Supplements</strong> — creatine, protein, gels, pre-workout, electrolytes, recovery stacks.</li>
+          <li><strong>Racing Guide</strong> — Hyrox format, the 8 stations, categories, pacing, race-week prep. Owned by John.</li>
+          <li><strong>Training Plans</strong> — beginner, intermediate, advanced, and doubles programmes with week-by-week structure. Owned by Niklas.</li>
+          <li><strong>Gear Reviews</strong> — shoes, clothing, compression, belts, bags, and home-gym equipment. Owned by Jesper.</li>
+          <li><strong>Supplements</strong> — creatine, protein, gels, pre-workout, electrolytes, recovery stacks. Owned by Jesper.</li>
           <li><strong>Competitions</strong> — upcoming races, sign-up links, and city guides.</li>
           <li><strong>Blog</strong> — race recaps, training tips, deep-dives on technique and strategy.</li>
         </ul>
 
-        <h2>Relationship with Hyrox</h2>
-        <p>
-          HyroxVault is an independent publication and is not affiliated with, endorsed
-          by, or officially connected to Hyrox GmbH. "Hyrox" and related marks are
-          trademarks of their respective owners and are used here only to identify the
-          sport and its events.
-        </p>
-
         <h2>Contact</h2>
         <p>
-          For general enquiries, editorial pitches, or corrections, please use the contact
-          form on this page. We aim to respond within 48 hours.
+          For editorial pitches, corrections, or general enquiries, email
+          <a href="mailto:hello@hyroxvault.com">hello@hyroxvault.com</a>. We
+          aim to respond within 48 hours.
         </p>
       </div>
     </div>
