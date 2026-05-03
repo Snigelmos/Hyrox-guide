@@ -18,15 +18,15 @@ Drop a new file under the same filename. Specs we use:
 - Solid or softly-blurred background reads better than a busy scene at
   thumbnail size.
 
-## Re-cropping from a triptych source
+## Re-cropping from individual portrait sources
 
-If you have a horizontal triptych (left/middle/right portraits in one
-image) and want to regenerate all three portraits at once:
+If you have a portrait-orientation source per person and want the
+script to handle the square crop and resize:
 
-1. Save the triptych as `team-source.png` in the repo root.
-2. Run `node scripts/crop-team-portraits.mjs`.
+1. Save the sources in the repo root as `src-john.png`, `src-niklas.png`,
+   and `src-jesper.png`.
+2. Run `node scripts/crop-individual-portraits.mjs`.
 
-The script splits the source into thirds, takes a centred square out of
-each panel, biases the crop upward so the face lands roughly in the
-middle, and writes 512 × 512 JPGs back into this folder. Delete
-`team-source.png` after running.
+The script takes a centred square out of each image, biases the crop
+upward so the face lands roughly in the middle, and writes 512 × 512
+JPGs back into this folder. Delete the `src-*.png` files after running.
