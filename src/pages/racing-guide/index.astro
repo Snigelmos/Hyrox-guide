@@ -81,6 +81,34 @@ const guideIllustrations: Record<string, string> = {
       })}
     </div>
 
+    {/* First-race essentials — practical answers to the most common pre-race questions */}
+    <div class="mt-16">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-2">First race essentials</h2>
+      <p class="text-text-muted text-sm mb-6 max-w-2xl">
+        Practical answers to the questions every first-timer asks. Free printable checklist included.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {[
+          { href: "/race-day-checklist/", label: "Race-day checklist (printable)", blurb: "Bag, breakfast, warm-up, pacing, post-race." },
+          { href: "/blog/first-hyrox-race-guide/", label: "First Hyrox race guide", blurb: "What to expect from gun to finish." },
+          { href: "/blog/crossfitter-doing-first-hyrox/", label: "Mistakes first-timers make", blurb: "Where new athletes leak time on the course." },
+          { href: "/blog/are-leggings-allowed-in-hyrox/", label: "What to wear", blurb: "Leggings, shorts, gloves, belts, taping." },
+          { href: "/blog/hyrox-shoe-rules/", label: "Shoe rules", blurb: "What's legal, what's smart." },
+          { href: "/blog/hyrox-race-day-bag/", label: "Race-day bag", blurb: "What to bring, what to leave home." },
+        ].map((link) => (
+          <a
+            href={link.href}
+            class="group bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm leading-tight mb-1">
+              {link.label}
+            </div>
+            <p class="text-xs text-text-muted leading-relaxed">{link.blurb}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+
     {/* Official Resources */}
     <div class="mt-16 bg-bg-card border border-border rounded-2xl p-8">
       <h2 class="text-sm font-bold uppercase tracking-wider text-accent mb-1">Official Resources</h2>

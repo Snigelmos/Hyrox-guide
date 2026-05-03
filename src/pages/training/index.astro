@@ -145,5 +145,83 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
         />
       ))}
     </div>
+
+    {/* Topic guides — hub-and-spoke into the deep blog content */}
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-2">Train each station</h2>
+    <p class="text-text-muted text-sm mb-6 max-w-2xl">
+      Niklas's technique deep-dives. Each one covers the movement pattern, the common mistakes, and the drills we actually program for athletes.
+    </p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      {[
+        { href: "/blog/hyrox-skierg-technique-pacing/", label: "SkiErg technique & pacing" },
+        { href: "/blog/hyrox-sled-push-technique/", label: "Sled push technique" },
+        { href: "/blog/hyrox-sled-pull-technique/", label: "Sled pull technique" },
+        { href: "/blog/hyrox-burpee-broad-jumps-strategy/", label: "Burpee broad jump strategy" },
+        { href: "/blog/hyrox-rowing-technique/", label: "Rowing technique" },
+        { href: "/blog/hyrox-farmers-carry-sandbag-lunges/", label: "Farmers carry & lunges" },
+        { href: "/blog/hyrox-wall-balls-technique/", label: "Wall ball technique" },
+        { href: "/blog/hyrox-running-strategy/", label: "Running strategy" },
+      ].map((link) => (
+        <a
+          href={link.href}
+          class="group flex items-center justify-between gap-2 bg-bg-card border border-border rounded-xl px-4 py-3 hover:border-accent/30 hover:bg-bg-card-hover transition-all no-underline min-h-[44px]"
+        >
+          <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors leading-tight">
+            {link.label}
+          </span>
+          <span class="text-accent/60 text-sm flex-shrink-0">→</span>
+        </a>
+      ))}
+    </div>
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-2">Train without a gym</h2>
+    <p class="text-text-muted text-sm mb-6 max-w-2xl">
+      No rig, no problem. The no-gym track covers expectations, a 12-week bodyweight plan, hotel and park sessions, and a race-week taper that does not need equipment.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {[
+        { href: "/blog/hyrox-training-without-gym-realistic-expectations/", label: "Realistic no-gym expectations" },
+        { href: "/blog/hyrox-12-week-no-equipment-training-plan/", label: "12-week no-equipment plan" },
+        { href: "/blog/hyrox-50-pound-equipment-upgrade/", label: "£50 home equipment upgrade" },
+        { href: "/blog/hyrox-park-outdoor-training/", label: "Park & outdoor training" },
+        { href: "/blog/hyrox-hotel-room-training/", label: "Hotel room sessions" },
+        { href: "/blog/hyrox-race-week-no-gym-taper/", label: "No-gym race-week taper" },
+      ].map((link) => (
+        <a
+          href={link.href}
+          class="group flex items-center justify-between gap-2 bg-bg-card border border-border rounded-xl px-4 py-3 hover:border-accent/30 hover:bg-bg-card-hover transition-all no-underline min-h-[44px]"
+        >
+          <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors leading-tight">
+            {link.label}
+          </span>
+          <span class="text-accent/60 text-sm flex-shrink-0">→</span>
+        </a>
+      ))}
+    </div>
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-2">Race-prep workouts</h2>
+    <p class="text-text-muted text-sm mb-6 max-w-2xl">
+      Tests and simulations to use in the back half of any block.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      {[
+        { href: "/workouts/compromised-running-test/", label: "Compromised running test" },
+        { href: "/blog/hyrox-simulation-workouts/", label: "Hyrox race simulations" },
+        { href: "/blog/hyrox-peak-for-race/", label: "Peak for race" },
+        { href: "/blog/hyrox-race-week-protocol/", label: "Race-week protocol" },
+        { href: "/blog/hyrox-warmup-protocol/", label: "Race-day warm-up" },
+        { href: "/race-day-checklist/", label: "Race-day checklist (printable)" },
+      ].map((link) => (
+        <a
+          href={link.href}
+          class="group flex items-center justify-between gap-2 bg-bg-card border border-border rounded-xl px-4 py-3 hover:border-accent/30 hover:bg-bg-card-hover transition-all no-underline min-h-[44px]"
+        >
+          <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors leading-tight">
+            {link.label}
+          </span>
+          <span class="text-accent/60 text-sm flex-shrink-0">→</span>
+        </a>
+      ))}
+    </div>
   </section>
 </BaseLayout>

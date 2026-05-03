@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const lastUpdated = "May 3, 2026";
+
+interface ChecklistGroup {
+  heading: string;
+  blurb?: string;
+  items: string[];
+}
+
+const groups: ChecklistGroup[] = [
+  {
+    heading: "Race bag — packed the night before",
+    blurb:
+      "Pack everything except your race-morning kit and breakfast. Set the bag by the front door.",
+    items: [
+      "Race ID / confirmation email saved offline on phone",
+      "Photo ID (some venues check at bib pickup)",
+      "Hyrox singlet or top you've trained in (no first-time fabric)",
+      "Race shorts / tights you've trained in",
+      "Race shoes (cross-training, not road runners)",
+      "Backup pair of socks",
+      "Compression sleeves if you train with them",
+      "Headphones (if allowed at your venue)",
+      "Watch on, fully charged",
+      "Heart-rate monitor (charged, paired)",
+      "1 L water bottle",
+      "Pre-race carb source (banana, bagel, oats — what you've practised)",
+      "2–3 race fuel gels (caffeinated for the back half if you tolerate it)",
+      "Electrolyte sachets or tablets",
+      "Towel",
+      "Plastic bag for sweaty kit on the way home",
+      "Foam roller / lacrosse ball for warm-up",
+      "Cash or card (post-race food and travel)",
+    ],
+  },
+  {
+    heading: "Race morning — 3 hours before start",
+    blurb:
+      "Eat breakfast, get hydrated, and arrive at the venue at least 75 minutes before your wave.",
+    items: [
+      "Breakfast eaten ≥ 3 hours pre-race (carbs + protein, low fat, low fibre)",
+      "500–750 ml water with electrolytes by the time you leave home",
+      "Toilet visit before leaving home",
+      "Bag, ID, and phone with you",
+      "Travel buffer: assume one delayed train",
+      "Bib collected, pinned, and visible on chest",
+      "Bag drop located before the warm-up area",
+      "Course walk: find SkiErg, sleds, transitions, finish line",
+      "Caffeine 30–45 minutes before start (if you use it)",
+    ],
+  },
+  {
+    heading: "Warm-up — 25 minutes before your wave",
+    blurb:
+      "Short, sharp, race-specific. Do not redline. Goal: open lungs, prime hips and shoulders.",
+    items: [
+      "5 minute easy jog or row",
+      "Leg swings, hip openers, scapular pulls",
+      "10 air squats, 10 lunges, 10 push-ups",
+      "30–60 seconds at race-effort SkiErg or row",
+      "5 wall balls at race weight to find catch rhythm",
+      "Final sip of water 10 minutes before start",
+      "Final toilet visit",
+      "Singlet on, bib visible, watch in race mode",
+      "In start corral 5 minutes before gun",
+    ],
+  },
+  {
+    heading: "Race — pacing rules of thumb",
+    blurb:
+      "Hyrox blows up athletes who go out too hard on the first SkiErg or sled push. Run conservative for the first half.",
+    items: [
+      "Run 1: hold 10–15 sec/km slower than your 5K race pace",
+      "SkiErg: smooth and rhythmic, do not match 1K row effort",
+      "Sled push: short steps, low body position, no early sprint",
+      "Sled pull: hand-over-hand, full extension at the rope",
+      "Burpee broad jumps: chest down, jump consistent, do not rush feet",
+      "Rowing: damper 5–7, even split, breathe",
+      "Farmers carry: walk at brisk pace, no resets in the back half",
+      "Sandbag lunges: knee touches, count out loud if it helps",
+      "Wall balls: break early, sets of 15-15-15-15-15-10-10-10-5 if needed",
+      "Last run: free to send. Sub-finish-line lift only if you want it.",
+    ],
+  },
+  {
+    heading: "Post-race — first 60 minutes",
+    blurb:
+      "Recovery starts at the finish line, not at home.",
+    items: [
+      "Walk for 5 minutes before sitting down",
+      "500 ml water with electrolytes",
+      "Carbs + protein within 30 min (e.g. recovery shake, sandwich, banana + yoghurt)",
+      "Cold shower or ice bath if available",
+      "Photos at the finish (you earned them)",
+      "Bag re-pack, dry kit on",
+      "Eat a real meal within 2 hours",
+      "Schedule a deload week before any new training block",
+    ],
+  },
+];
+
+const totalItems = groups.reduce((sum, g) => sum + g.items.length, 0);
+---
+
+<BaseLayout
+  title="Hyrox Race-Day Checklist (Free Printable, 2026)"
+  description="A complete race-day checklist for Hyrox: bag, breakfast, warm-up, pacing rules, and post-race recovery. Free to print, screenshot, or save for race week."
+  breadcrumbs={[{ name: "Race-Day Checklist" }]}
+>
+  <section class="container-main py-10 md:py-16 print:py-2">
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-10 print:mb-4">
+        <p class="text-xs font-bold uppercase tracking-wider text-accent print:text-black mb-2">
+          Free printable · {totalItems} items
+        </p>
+        <h1 class="text-3xl md:text-5xl font-black mb-4 print:text-2xl print:mb-2">
+          <span class="text-gradient-accent print:text-black">Hyrox race-day checklist</span>
+        </h1>
+        <p class="text-base text-text-muted leading-relaxed print:text-sm print:text-black mb-2">
+          Everything to pack, eat, drink, and execute on race day. Printable on
+          one or two sides of A4. Built and tested by John, our race-strategy
+          editor, across the European circuit.
+        </p>
+        <p class="text-xs text-text-muted print:text-black">
+          Last updated: {lastUpdated}
+        </p>
+      </header>
+
+      <div class="flex flex-wrap gap-3 mb-10 print:hidden">
+        <button
+          type="button"
+          onclick="window.print()"
+          class="inline-flex items-center gap-2 bg-accent text-bg font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-accent-hover transition-colors min-h-[44px] cursor-pointer"
+        >
+          Print or save as PDF
+        </button>
+        <a
+          href="/calculator/"
+          class="inline-flex items-center gap-2 bg-bg-card border border-border text-text-heading font-semibold text-sm px-5 py-2.5 rounded-lg hover:border-accent/40 transition-colors min-h-[44px]"
+        >
+          Predict my finish time →
+        </a>
+      </div>
+
+      <div class="space-y-10 print:space-y-4">
+        {groups.map((g) => (
+          <section class="bg-bg-card border border-border rounded-2xl p-6 md:p-8 print:bg-transparent print:border-0 print:p-0 print:break-inside-avoid">
+            <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2 print:text-base print:text-black print:mb-1">
+              {g.heading}
+            </h2>
+            {g.blurb && (
+              <p class="text-sm text-text-muted leading-relaxed mb-5 print:text-xs print:text-black print:mb-2">
+                {g.blurb}
+              </p>
+            )}
+            <ul class="space-y-2 print:space-y-0.5">
+              {g.items.map((item) => (
+                <li class="flex items-start gap-3 text-sm text-text-heading leading-relaxed print:text-xs print:text-black print:gap-2">
+                  <span
+                    class="mt-0.5 inline-flex w-5 h-5 flex-shrink-0 rounded border border-text-muted/40 print:border-black print:w-3.5 print:h-3.5"
+                    aria-hidden="true"
+                  ></span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+
+      <aside class="mt-12 bg-bg-card border border-border rounded-2xl p-6 print:hidden">
+        <h2 class="text-base font-black text-text-heading mb-3">Race week, beyond the checklist</h2>
+        <p class="text-sm text-text-muted leading-relaxed mb-4">
+          The checklist covers race day. For race week itself — taper, sleep,
+          carb loading, and pre-race nutrition — read these:
+        </p>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a href="/blog/hyrox-race-week-protocol/" class="text-accent hover:underline">Race-week protocol (Mon–Sun)</a>
+          </li>
+          <li>
+            <a href="/blog/hyrox-carb-loading-guide/" class="text-accent hover:underline">Carb loading guide</a>
+          </li>
+          <li>
+            <a href="/blog/hyrox-race-day-breakfast/" class="text-accent hover:underline">Race-day breakfast</a>
+          </li>
+          <li>
+            <a href="/blog/best-hyrox-pacing-strategy/" class="text-accent hover:underline">Pacing strategy</a>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <style is:global>
+    @media print {
+      header[class*="sticky"], footer { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+    }
+  </style>
+</BaseLayout>
