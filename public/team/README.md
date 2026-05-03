@@ -1,35 +1,32 @@
 # Team portrait images
 
-The site renders `/team/john.jpg`, `/team/niklas.jpg`, and `/team/jesper.jpg`
-on:
+Real portraits of John, Niklas, and Jesper live in this folder as
+`john.jpg`, `niklas.jpg`, `jesper.jpg`. They are referenced from:
 
-- `/author/` (the team listing page) — 64 × 64 circular crop.
+- `/author/` (the team listing) — 64 × 64 circular crop.
 - `/author/<slug>/` (individual profile pages) — 128 × 128 circular crop.
 - `/about/` (the team grid in the About page) — 48 × 48 circular crop.
+- Person JSON-LD on each `/author/<slug>/` page.
 
-## What to drop in here
+## Replacing a portrait
 
-Three JPG files, exactly named:
+Drop a new file under the same filename. Specs we use:
 
-- `john.jpg`
-- `niklas.jpg`
-- `jesper.jpg`
-
-## Recommended specs
-
-- Square crop, **head and shoulders**, face roughly centred.
-- Minimum **256 × 256 px**, ideally **512 × 512 px** so retina screens stay
-  sharp.
-- Optimised JPG, target **< 80 kB** per file. Use `npx @squoosh/cli` or
-  similar before committing if the originals are heavy.
+- Square crop, head and shoulders, face roughly centred.
+- Minimum **256 × 256 px**, ideally **512 × 512 px**.
+- Optimised JPG, target **< 80 kB**.
 - Solid or softly-blurred background reads better than a busy scene at
   thumbnail size.
 
-## Until real photos exist
+## Re-cropping from a triptych source
 
-If a portrait is missing, the `<img>` tag still renders — the browser will
-show a broken-image icon. To avoid that, ship a neutral placeholder JPG
-(initials on a brand-coloured square works) under each filename until the
-real photos arrive. The Person JSON-LD on each `/author/<slug>/` page will
-reference whatever file is at the path, so make sure something always
-exists.
+If you have a horizontal triptych (left/middle/right portraits in one
+image) and want to regenerate all three portraits at once:
+
+1. Save the triptych as `team-source.png` in the repo root.
+2. Run `node scripts/crop-team-portraits.mjs`.
+
+The script splits the source into thirds, takes a centred square out of
+each panel, biases the crop upward so the face lands roughly in the
+middle, and writes 512 × 512 JPGs back into this folder. Delete
+`team-source.png` after running.
