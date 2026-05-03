@@ -9,6 +9,10 @@
     "indexnow": "node scripts/index-now.mjs",
     "refresh-check": "node scripts/refresh-old-posts.mjs",
     "gsc-weekly": "node scripts/gsc-refresh-candidates.mjs",
+    "gsc-plan": "node scripts/gsc-action-plan.mjs",
+    "reddit-prompts": "node scripts/reddit-prompts.mjs",
+    "link-audit": "node scripts/link-graph-audit.mjs",
+    "image-audit": "node scripts/image-audit.mjs",
     "new-post": "node scripts/new-post.mjs"
   },
   "dependencies": {

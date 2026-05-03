@@ -33,7 +33,25 @@ export interface Author {
   image: string;
   credentials: string[];
   topics: string[];
-  /** Social profile URLs that resolve to a real, owned profile of this person. */
+  /**
+   * Social profile URLs that resolve to a real, owned profile of this person.
+   * Used in the Person JSON-LD `sameAs` array on the author profile page —
+   * this is one of the strongest E-E-A-T signals Google uses to reconcile
+   * authorship.
+   *
+   * IMPORTANT: every URL here must:
+   *   - resolve to a 200 (no 404, no soft-redirect)
+   *   - be a profile genuinely owned and operated by this author
+   *
+   * A broken or wrong-person URL is worse than no URL at all because Google
+   * fails the entity reconciliation check and may downgrade trust.
+   *
+   * Recommended additions in priority order:
+   *   1. LinkedIn  (highest trust signal, most reliable to claim)
+   *   2. Strava    (relevant to a Hyrox athlete; supports Person schema)
+   *   3. Instagram (only if the profile is genuinely active)
+   *   4. X / Twitter (only if active)
+   */
   sameAs?: string[];
 }
 

@@ -2,6 +2,7 @@
 import BaseLayout from "./BaseLayout.astro";
 import ShareButtons from "../components/ShareButtons.astro";
 import GuideCrossSell from "../components/GuideCrossSell.astro";
+import StickyTOC from "../components/StickyTOC.astro";
 import { formatDate } from "../data/blog";
 import { findAuthorByName } from "../data/authors";
 
@@ -26,6 +27,8 @@ interface Props {
   howToSteps?: HowToStep[];
   howToName?: string;
   showMeta?: boolean;
+  /** When true, render a sticky in-article TOC sidebar (long posts). */
+  showToc?: boolean;
 }
 
 const {
@@ -43,6 +46,7 @@ const {
   howToSteps,
   howToName,
   showMeta = false,
+  showToc = false,
 } = Astro.props;
 
 const schemaBreadcrumbs = breadcrumbs.map((crumb) => ({
@@ -207,6 +211,7 @@ const sidebarLinks = [
 
       <aside class="hidden lg:block">
         <div class="sticky top-24 space-y-6">
+          {showToc && <StickyTOC />}
           <div class="bg-bg-card border border-border rounded-2xl p-6">
             <h3 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">
               Explore

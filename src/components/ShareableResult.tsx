@@ -135,6 +135,12 @@ function ResultCard({ inputs }: { inputs: CalculationInputs }) {
         >
           Run my own prediction →
         </a>
+        <a
+          href={`/calculator/pacing-band/${typeof window !== "undefined" ? window.location.search : ""}`}
+          className="inline-flex items-center gap-1 text-sm font-bold text-[#a1a1aa] hover:text-[#f4f4f5] transition-colors no-underline bg-[#27272a] border border-[#27272a] hover:border-[#52525b] px-4 py-2 rounded-lg"
+        >
+          Print pacing band →
+        </a>
       </div>
 
       <div className="mt-6 text-center text-[10px] text-[#52525b] tracking-wider uppercase">

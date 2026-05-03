@@ -26,6 +26,12 @@ const { entry, posts } = Astro.props;
 const { Content } = await render(entry);
 const categoryMeta = BLOG_CATEGORY_META[entry.data.category];
 
+// Show the sticky TOC for long posts (rough proxy: >12k characters of body
+// text). The component itself self-hides when there are <3 H2/H3 headings,
+// so we err on the side of opting in here.
+const wordCountRough = entry.body?.length ?? 0;
+const showToc = wordCountRough > 12000;
+
 const seriesName = entry.data.series?.name;
 const seriesPosts = seriesName
   ? posts
@@ -60,6 +66,7 @@ const nextInSeries = currentOrder
   howToSteps={entry.data.howToSteps}
   howToName={entry.data.howToName ?? entry.data.title}
   showMeta={true}
+  showToc={showToc}
 >
   <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-6 not-prose">
     <a

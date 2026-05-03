@@ -1,0 +1,137 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { RECORDS, RECORDS_LAST_REVIEWED } from "../../data/records";
+
+const title = "Hyrox World Records — Open, Pro, Doubles, Relay";
+const metaTitle = "Hyrox World Records 2026 — Fastest Times by Division";
+const description = "The fastest confirmed Hyrox finish times worldwide. Open, Pro, Doubles, Relay, and notable age-group records — verified against results.hyrox.com.";
+
+const breadcrumbs = [{ name: "Records" }];
+
+const faqItems = [
+  {
+    question: "What is the Hyrox world record?",
+    answer: "The fastest confirmed Hyrox Open Men time is around 54 minutes 42 seconds, held by Hunter McIntyre. The fastest Open Women time is around 1:00:50, held by Lauren Weeks. Pro division records sit at roughly 55:45 (men) and 1:03:09 (women) due to heavier station weights.",
+  },
+  {
+    question: "Where do these Hyrox records come from?",
+    answer: "Every record on this page is cross-referenced against results.hyrox.com, the official results portal. We update the table after each Hyrox World Championship and major regional event. If an entry cannot be verified, we leave it out rather than approximate.",
+  },
+  {
+    question: "What's the fastest age-group Hyrox time?",
+    answer: "Sub-60 finishes in the 40-44 age group are the rarest masters performances; only a handful of athletes per season clock under 60 in that bracket. Sub-65 is more common in 35-39 men. We list selected age-group ceilings further down the page.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+  datePublished="2026-01-01"
+  dateModified={`${RECORDS_LAST_REVIEWED}-01`}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Records</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <p class="text-sm text-text-muted mb-3">Last reviewed {RECORDS_LAST_REVIEWED}</p>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        Fastest confirmed Hyrox finish times by division. Cross-referenced against <a href="https://results.hyrox.com/" rel="external" class="text-accent hover:underline">results.hyrox.com</a> after each major event.
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <p>
+        Hyrox records turn over fast. The sport is young, the global field is growing, and major venues regularly produce a new ceiling time. We refresh this page after every Hyrox World Championship and the largest regional events.
+      </p>
+      <p>
+        The records below cover Open Singles, Pro Singles, Doubles, and Relay across men, women, and mixed where applicable. Pro is not directly comparable to Open: heavier sleds, heavier sandbag, and a higher wall-ball target add roughly 5-10 minutes for the same athlete.
+      </p>
+    </section>
+
+    {RECORDS.map((section) => (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-2">{section.heading}</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">{section.blurb}</p>
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="min-w-full text-sm border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Category</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Time</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Athlete / Team</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Event</th>
+              </tr>
+            </thead>
+            <tbody>
+              {section.records.map((r) => (
+                <tr>
+                  <th class="border border-border p-3 text-left font-bold text-text-heading">
+                    {r.category}
+                  </th>
+                  <td class="border border-border p-3 font-mono text-accent font-bold">{r.time}</td>
+                  <td class="border border-border p-3 text-text">
+                    {r.athlete}
+                    {r.country && <span class="text-text-muted"> · {r.country}</span>}
+                  </td>
+                  <td class="border border-border p-3 text-text-muted">
+                    <div>{r.event}</div>
+                    <div class="text-xs">{r.date}</div>
+                    {r.sourceUrl && (
+                      <a href={r.sourceUrl} rel="external" class="text-xs text-accent hover:underline">
+                        results.hyrox.com →
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+
+    <section class="mb-10 bg-bg-card border border-accent/30 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Predict your own time</div>
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2">
+        Where do you sit relative to the records?
+      </h2>
+      <p class="text-text-muted text-sm leading-relaxed mb-4 max-w-2xl">
+        Use the calculator with your real numbers — 5K time, bench press, deadlift, bodyweight — and you'll get a predicted finish, station-by-station splits, and a peer benchmark for your level.
+      </p>
+      <a href="/calculator/" class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline">
+        Open the calculator →
+      </a>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <h2>How we verify a record</h2>
+      <p>
+        Every record on this page must have a public, verifiable source — typically a result on <a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a>, an official Hyrox event press release, or a video timestamp from the official Hyrox stream. If we cannot verify, we omit. Approximate or rumour-based records would destroy the trust this page is built to earn.
+      </p>
+      <h2>What counts as a "world record"</h2>
+      <p>
+        Hyrox does not currently maintain a centralised world-record book the way World Athletics does for track. The numbers on this page are the fastest <em>confirmed public</em> times — typically World Championship and regional Championship results. If you've raced a faster time in a sanctioned Hyrox event with a public result, contact us and we'll review and update.
+      </p>
+      <h2>How records compare to your peer benchmark</h2>
+      <p>
+        World records sit roughly 22-30% ahead of the elite band on our peer benchmark scale. For most amateur athletes, a more useful target is the <a href="/calculator/">predicted time</a> for your training profile and the <a href="/times/">finish-time benchmarks by age group</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

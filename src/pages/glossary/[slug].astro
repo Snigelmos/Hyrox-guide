@@ -87,6 +87,17 @@ const definedTermSchema = {
         </>
       )}
 
+      {term.deepDive && term.deepDive.length > 0 && (
+        <>
+          {term.deepDive.map((section) => (
+            <>
+              <h2>{section.heading}</h2>
+              <p>{section.body}</p>
+            </>
+          ))}
+        </>
+      )}
+
       <h2>Frequently asked questions</h2>
       {term.faqs.map((f) => (
         <>
@@ -94,6 +105,20 @@ const definedTermSchema = {
           <p>{f.answer}</p>
         </>
       ))}
+
+      {term.learnMoreLinks && term.learnMoreLinks.length > 0 && (
+        <>
+          <h2>Learn more</h2>
+          <ul>
+            {term.learnMoreLinks.map((l) => (
+              <li>
+                <a href={l.href}><strong>{l.label}</strong></a>
+                {l.description && <> — {l.description}</>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {relatedTerms.length > 0 && (
         <>

@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  CITY_EVERGREENS,
+  getCityEvergreen,
+} from "../../data/city-evergreens";
+import { EVENTS, formatEventDate } from "../../data/events";
+import { getGymsByCity } from "../../data/gym-finder";
+
+export async function getStaticPaths() {
+  return CITY_EVERGREENS.map((c) => ({
+    params: { city: c.slug },
+    props: { city: c.slug },
+  }));
+}
+
+const { city } = Astro.props;
+const ev = getCityEvergreen(city as string);
+if (!ev) throw new Error(`Unknown city evergreen: ${city}`);
+
+const cityEvents = EVENTS.filter((e) => e.slug === ev.slug).sort(
+  (a, b) => b.year - a.year,
+);
+
+const upcoming = cityEvents.find((e) => new Date(e.startDate).getTime() >= Date.now());
+const previousYears = cityEvents.filter((e) => !upcoming || e.year < upcoming.year);
+
+const cityGyms = getGymsByCity(ev.citySlug).slice(0, 6);
+
+const title = `Hyrox ${ev.city} — Race History, Venue, Local Gyms & Pacing Tips`;
+const metaTitle = `Hyrox ${ev.city} — Events, Venues, and Local Training`;
+const description = `${ev.tagline} Full race history at ${ev.city}, current event date, venue notes, and the best local Hyrox-affiliated training gyms.`;
+
+const breadcrumbs = [{ name: ev.city }];
+
+const faqItems = [
+  {
+    question: `When is the next Hyrox in ${ev.city}?`,
+    answer: upcoming
+      ? `The next confirmed Hyrox event in ${ev.city} is ${formatEventDate(upcoming.startDate, upcoming.endDate)} at ${upcoming.venue}.`
+      : `No upcoming Hyrox event is currently confirmed in ${ev.city}. Past events are listed below — the official 2026/27 calendar is published at hyrox.com.`,
+  },
+  {
+    question: `Where is Hyrox ${ev.city} held?`,
+    answer: cityEvents[0]
+      ? `Hyrox ${ev.city} is typically held at ${cityEvents[0].venue}.`
+      : `Hyrox ${ev.city} venues are confirmed annually. See the year pages below for the most recent venue.`,
+  },
+  {
+    question: `Where can I train for Hyrox in ${ev.city}?`,
+    answer: cityGyms.length > 0
+      ? `${ev.city} has ${cityGyms.length}+ Hyrox-affiliated training gyms. The closest by neighbourhood are ${cityGyms.map((g) => g.name).slice(0, 3).join(", ")}. See the gyms section below for the full list.`
+      : `Hyrox-affiliated gyms in ${ev.city} are listed on the gym finder. We pull live affiliations there.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/hyrox/" class="text-text-muted hover:text-accent transition-colors no-underline">Hyrox cities</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">{ev.city}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+        {ev.country} · Race city
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox {ev.city}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">{ev.tagline}</p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      {ev.intro.map((p) => <p>{p}</p>)}
+    </section>
+
+    {upcoming && (
+      <section class="mb-10 bg-bg-card border border-accent/30 rounded-2xl p-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Next confirmed event</div>
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+          Hyrox {ev.city} {upcoming.year}
+        </h2>
+        <p class="text-text-muted text-base leading-relaxed mb-1">
+          <strong class="text-text-heading">Date:</strong> {formatEventDate(upcoming.startDate, upcoming.endDate)}
+        </p>
+        <p class="text-text-muted text-base leading-relaxed mb-4">
+          <strong class="text-text-heading">Venue:</strong> {upcoming.venue}
+        </p>
+        <a
+          href={`/events/${upcoming.year}/${upcoming.slug}/`}
+          class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline"
+        >
+          Full event guide →
+        </a>
+      </section>
+    )}
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Venue and city notes</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {ev.cityNotes.map((n) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <h3 class="text-base font-black text-text-heading mb-2">{n.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{n.detail}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {cityGyms.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-2">Train for Hyrox in {ev.city}</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">
+          Hyrox-affiliated training gyms in {ev.city}. Drop in for a sled session in race-week or build a full block.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {cityGyms.map((g) => (
+            <a
+              href={g.description ? `/gyms/g/${g.slug}/` : g.website ?? "#"}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                {g.neighbourhood ?? ev.city}
+              </div>
+              <h3 class="text-base font-black text-text-heading">{g.name}</h3>
+              <p class="text-xs text-text-muted mt-1">{g.address}</p>
+            </a>
+          ))}
+        </div>
+        <a
+          href={`/gyms/${ev.citySlug}/`}
+          class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline"
+        >
+          See all {ev.city} gyms →
+        </a>
+      </section>
+    )}
+
+    {previousYears.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-4">Past Hyrox {ev.city} events</h2>
+        <div class="grid gap-3">
+          {previousYears.map((e) => (
+            <a
+              href={`/events/${e.year}/${e.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{e.year}</div>
+              <div class="text-base font-black text-text-heading">
+                Hyrox {ev.city} {e.year} — {formatEventDate(e.startDate, e.endDate)}
+              </div>
+              <div class="text-xs text-text-muted mt-1">Venue: {e.venue}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-10 prose md:prose-lg max-w-none max-w-3xl">
+      <h2>Pacing for {ev.city}</h2>
+      <p>
+        Use the Race Time Predictor to size your target finish at {ev.city}. Drop in a 5K time, a bench press, a deadlift, and your bodyweight to get full station splits. Then check the city note above for venue-specific adjustments to your sled push pace.
+      </p>
+      <p>
+        For a structured 12-week build to a confident {ev.city} finish, the <a href="/training/intermediate/">intermediate plan</a> is the right starting point. Tighten the final two weeks with the <a href="/race-day-checklist/">race-day checklist</a> so nothing gets missed in the venue chaos.
+      </p>
+    </section>
+
+    <aside class="pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">Other Hyrox cities</h2>
+      <div class="grid gap-3 grid-cols-2 md:grid-cols-4">
+        {CITY_EVERGREENS.filter((c) => c.slug !== ev.slug).map((c) => (
+          <a
+            href={`/hyrox/${c.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">City</div>
+            <div class="text-base font-black text-text-heading">{c.city}</div>
+            <div class="text-xs text-text-muted mt-1">{c.country}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

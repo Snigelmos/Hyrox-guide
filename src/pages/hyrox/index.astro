@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CITY_EVERGREENS } from "../../data/city-evergreens";
+
+const title = "Hyrox by City — Race Locations, Venues, Local Gyms";
+const description = "Evergreen guides to every major Hyrox city. Race history, venue notes, pacing tips, and the best local Hyrox-affiliated gyms in London, Berlin, New York, LA, Sydney, Hong Kong, Dubai, and more.";
+
+const breadcrumbs = [{ name: "Hyrox cities" }];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="container-main py-10 md:py-16">
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">{description}</p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <p>
+        Each city page is year-agnostic. Race history, venue notes, local gyms, and pacing notes that don't change between events. For the year-tied event date and registration, see the linked event page from each city.
+      </p>
+    </section>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {CITY_EVERGREENS.map((c) => (
+        <a
+          href={`/hyrox/${c.slug}/`}
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            {c.country}
+          </div>
+          <div class="text-2xl font-black text-text-heading mb-2">
+            Hyrox {c.city}
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">{c.tagline}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

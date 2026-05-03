@@ -14,6 +14,20 @@ export interface GlossaryTerm {
   examples?: string[];
   related: string[]; // slugs of related terms
   faqs: { question: string; answer: string }[];
+  /**
+   * Optional deep-dive section turning the entry into a 300-500 word
+   * mini-article. Each paragraph below the longDefinition / context.
+   * Use these to cite specifics, link to relevant calculator/training
+   * pages, and explain edge cases.
+   */
+  deepDive?: { heading: string; body: string }[];
+  /**
+   * Internal links surfaced as a "Learn more" block at the bottom of
+   * the entry. Use when the term has a corresponding training,
+   * calculator, or playbook page that goes deeper than the glossary
+   * entry can.
+   */
+  learnMoreLinks?: { href: string; label: string; description?: string }[];
 }
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
@@ -31,6 +45,28 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     faqs: [
       { question: "Does Roxzone time count in Hyrox?", answer: "Yes — every second from the start of run 1 to the moment you cross the finish line counts, including all time in the Roxzone. Efficient transitions can save 2-3 minutes." },
       { question: "How much Roxzone time is typical?", answer: "Fast athletes (sub-70 men) typically have 4-6 minutes of cumulative Roxzone time. Average athletes have 6-10 minutes. First-timers often lose 10-12 minutes here." },
+    ],
+    deepDive: [
+      {
+        heading: "Why Roxzone time eats more race than people think",
+        body:
+          "There are 16 Roxzone touches per Hyrox race — 8 entries from the loop into the station and 8 exits back out. If each touch costs you 30 seconds (a not-unreasonable figure for a first-timer who walks slowly while looking for their station number), you lose 8 minutes. That's the difference between a sub-90 finish and a 1:38 for an athlete with the actual race fitness for sub-90.",
+      },
+      {
+        heading: "How elite athletes manage Roxzone",
+        body:
+          "Top-10 finishers treat Roxzone as a deliberate jog, not a recovery walk. They keep heart rate at the lower end of Z4 by jogging slowly rather than dropping to Z2 walking. This avoids the cardiovascular shock of restarting work after a full deload between stations.",
+      },
+      {
+        heading: "The 30-60-90 second rule",
+        body:
+          "A practical pacing target: under 30 seconds per Roxzone touch for elite, under 60 for competitive, under 90 for first-timers. The walking time itself isn't the limit — it's the indecision (looking for your station, fumbling with chalk, adjusting clothing) that adds the lost minutes.",
+      },
+    ],
+    learnMoreLinks: [
+      { href: "/blog/what-is-the-hyrox-roxzone/", label: "Hyrox Roxzone explained in detail", description: "Full breakdown with diagrams of the venue layout." },
+      { href: "/calculator/", label: "Race time predictor", description: "Includes a default Roxzone allotment in every prediction." },
+      { href: "/blog/best-hyrox-pacing-strategy/", label: "Hyrox pacing strategy", description: "How to manage heart rate through transitions." },
     ],
   },
   {
@@ -97,6 +133,28 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       { question: "What is a no-rep in Hyrox?", answer: "A no-rep is a rep ruled invalid by the judge. The rep doesn't count toward your total and you must do another correctly. There's no other penalty." },
       { question: "What's the most common no-rep in Hyrox?", answer: "Wall balls — failing to hit the target (10 ft for men, 9 ft for women) or failing to reach parallel squat depth. Burpee broad jumps and sandbag lunges are also frequent no-rep stations." },
     ],
+    deepDive: [
+      {
+        heading: "Why no-reps cost more than the rep itself",
+        body:
+          "A wall-ball no-rep at rep 73 doesn't just cost the 1.5 seconds of the redo. It costs the morale hit, the broken rhythm, and almost always 2-3 more reps that follow because you're now over-correcting depth or over-reaching the target. A single no-rep can compound into 8-12 seconds of lost time.",
+      },
+      {
+        heading: "Train the standard, not the rep count",
+        body:
+          "Most first-timers can hit 100 wall balls in a vacuum. They cannot hit 100 valid wall balls under race fatigue. Build training sets where every rep is judged to standard — film yourself or have a partner judge. Better to fail at 70 valid reps than to count 90 sketchy ones in training.",
+      },
+      {
+        heading: "Stations with the highest no-rep rate",
+        body:
+          "Wall balls top the list (about 8-12% of attempted reps no-rep at major events). Burpee broad jumps come second, with line violations the most common cause. Sandbag lunges are third, with knee-touch failures concentrated in reps 60+ when fatigue closes the hip-flexion window.",
+      },
+    ],
+    learnMoreLinks: [
+      { href: "/training/stations/wall-balls/", label: "Wall balls technique playbook", description: "Drill the standard so race-day reps don't get no-repped." },
+      { href: "/blog/hyrox-wall-balls-technique/", label: "Wall ball technique deep-dive", description: "Squat depth and target accuracy under fatigue." },
+      { href: "/stations/", label: "All 8 station standards", description: "What each judge is looking for at every station." },
+    ],
   },
   {
     slug: "compression-sleeve",
@@ -145,6 +203,28 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     faqs: [
       { question: "What's the difference between Hyrox Open and Pro?", answer: "Pro uses heavier weights on the sled push (+40 kg), sled pull (+50 kg), sandbag (+10 kg), and wall ball (+3 kg). Pro also requires hitting a qualifying time. Most athletes who race the same year in both report Pro is 5-10 minutes slower." },
       { question: "Should I race Open or Pro?", answer: "Open if it's your first race or you haven't yet hit Pro qualifying time. Pro if you've already raced Open faster than your age group's Pro threshold and want a heavier test." },
+    ],
+    deepDive: [
+      {
+        heading: "When to make the Open-to-Pro jump",
+        body:
+          "The signal is consistency, not a single fast race. If you've raced Open multiple times under your age group's Pro qualifying time, with similar splits each time and no station that blew up, you're ready. If you only hit it once on a perfect day, race Open another season — Pro punishes inconsistent racers harder than Open does.",
+      },
+      {
+        heading: "What changes most in Pro",
+        body:
+          "The sled push delta (+40 kg for men) is the single biggest change. The sandbag lunge weight increase (+10 kg) is the second. Wall ball weight only matters if your shoulder strength was already at a ceiling in Open. Most Pro upgraders lose 80% of their added time on those three stations.",
+      },
+      {
+        heading: "Training-week change going Pro",
+        body:
+          "Plan an extra 8-12 weeks of strength block before your first Pro race. The aerobic base built for Open is enough; the strength base usually isn't. Add one weekly heavy sled session (race-weight Pro sled, 4-6 sets of 50 m), one heavier-than-race sandbag session, and one wall ball volume session at Pro weight.",
+      },
+    ],
+    learnMoreLinks: [
+      { href: "/compare/hyrox-open-vs-pro/", label: "Hyrox Open vs Pro full comparison", description: "Side-by-side weights, qualifying times, and recommended training adjustments." },
+      { href: "/qualifiers/", label: "Hyrox qualifying times", description: "Full age-group table for the current season." },
+      { href: "/training/advanced/", label: "Advanced Hyrox training plan", description: "12-week block tuned for Pro-weight sled and sandbag." },
     ],
   },
   {

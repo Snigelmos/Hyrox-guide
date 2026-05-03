@@ -11,3 +11,9 @@ Thumbs.db
 _bootstrap/
 _research/
 build-gym-finder.log
+gsc-export.csv
+gsc-export-*.csv
+docs/gsc-action-plan.md
+docs/reddit-prompts.md
+docs/link-graph-audit.md
+docs/image-audit.md

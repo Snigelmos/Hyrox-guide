@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SledPushCalculator from "../../components/SledPushCalculator";
+
+const title = "Hyrox Sled Push Watts Calculator";
+const metaTitle = "Hyrox Sled Push Watts Calculator — Power, Force, and Pacing";
+const description = "Free Hyrox sled push physics calculator. Enter sled weight, distance, push time, and friction to compute average watts, watts/kg, and force at the rope. Pacing tool for Open and Pro divisions.";
+
+const breadcrumbs = [
+  { name: "Race Time Predictor", url: "/calculator/" },
+  { name: "Sled push watts" },
+];
+
+const faqItems = [
+  {
+    question: "How many watts does a Hyrox sled push take?",
+    answer: "For Open Men (152 kg sled, 50 m, typical indoor turf, 90 second push), the average power demand is roughly 380-440 watts. Pro Men (202 kg, slower push) sit at 480-540 watts. Pro Women (152 kg, similar friction) sit at 380-440 watts.",
+  },
+  {
+    question: "What's a good watts-per-kg target for the sled push?",
+    answer: "Athletes who clear sled push smoothly typically sustain 4.5-5.5 W/kg of bodyweight for 60-90 seconds. Below 4.0 W/kg the sled will stop and a restart adds 10-15 seconds. Above 6.0 W/kg you're in elite territory.",
+  },
+  {
+    question: "Why does the friction coefficient matter so much?",
+    answer: "Sled friction can swing 30-50% between venues. Indoor turf is typically μ=0.55-0.70; sled-track style surfaces can drop to 0.40-0.50. The same 152 kg sled requires very different power to move depending on the surface, so always benchmark against the venue you're actually racing in.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors no-underline">Race Time Predictor</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Sled push watts</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+        Sled push physics
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox sled push watts calculator
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        Enter the sled weight, the surface friction, the distance, and your target push time. The calculator returns required force, total work, average power, and watts per kg of bodyweight.
+      </p>
+    </header>
+
+    <SledPushCalculator client:only="react" />
+
+    <section class="prose md:prose-lg max-w-none mt-10 max-w-3xl">
+      <h2>How the model works</h2>
+      <p>
+        The Hyrox sled push is a frictional constant-velocity problem. We assume the sled moves at roughly steady speed across the lane (the brief acceleration and any stops are folded into your input "push time"). The maths:
+      </p>
+      <ul>
+        <li><strong>Force at the rope:</strong> F = m × g × μ — sled mass times gravity (9.81 m/s²) times the friction coefficient.</li>
+        <li><strong>Work:</strong> W = F × d — force times the distance pushed.</li>
+        <li><strong>Average power:</strong> P = W / t — total work divided by your push time.</li>
+      </ul>
+      <p>
+        For a 152 kg sled across 50 m on typical Hyrox indoor turf (μ ≈ 0.6) in 90 seconds, that's roughly 895 N of force, 44,750 J of work, and 497 W of average power. For an 80 kg athlete that lands at 6.2 W/kg — comfortably elite. Most Open Men sit at 4.5-5.5 W/kg and most Pro Men at 5.5-6.5 W/kg.
+      </p>
+      <h2>Why we don't include acceleration</h2>
+      <p>
+        The acceleration phase of a Hyrox sled push lasts roughly 1-2 seconds. Building it into the model adds complexity without changing the average wattage figure that matters for pacing. The peak watts during the start are 30-50% higher than the steady-state number, which is why first-time racers often "redline" in the first 3 metres and then can't keep going.
+      </p>
+      <h2>Friction coefficient cheat sheet</h2>
+      <ul>
+        <li><strong>Slick rubber or smooth concrete:</strong> μ = 0.30-0.45. Rare at Hyrox events.</li>
+        <li><strong>Sled track / artificial turf:</strong> μ = 0.40-0.55. Common at events with dedicated lanes.</li>
+        <li><strong>Typical Hyrox indoor turf:</strong> μ = 0.55-0.70. The default for most race venues.</li>
+        <li><strong>Tacky / heavily textured turf:</strong> μ = 0.70-0.85. Slower, found at smaller events.</li>
+      </ul>
+      <h2>Using the watts target in training</h2>
+      <p>
+        The most useful application is calibration. Push the race-weight sled in your gym for the same distance and time the calculator. If your real-time effort feels harder than the watts number, your gym's surface is probably tackier than the race venue — and you should push at a slightly slower pace in training to avoid over-cooking. If it feels easier, the race venue may be slower, so train at higher wattage.
+      </p>
+      <p>
+        For the full race-time prediction, see our <a href="/calculator/">Hyrox race time predictor</a>. For the technique side of the sled push, the <a href="/training/stations/sled-push/">sled push playbook</a> and our <a href="/blog/hyrox-sled-push-technique/">sled push technique deep-dive</a> cover it in detail.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,199 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  AGE_BANDS,
+  getAgeBand,
+  getAgeGradedTable,
+  formatRaceTime,
+} from "../../data/age-grade";
+import { LEVEL_LABELS } from "../../data/station-benchmarks";
+
+export async function getStaticPaths() {
+  return AGE_BANDS.map((band) => ({
+    params: { age: band.slug },
+    props: { age: band.slug },
+  }));
+}
+
+const { age } = Astro.props;
+const band = getAgeBand(age as string);
+if (!band) throw new Error(`Unknown age band: ${age}`);
+
+const rows = getAgeGradedTable(band);
+const otherBands = AGE_BANDS.filter((b) => b.slug !== band.slug);
+
+const title = `Good Hyrox Time for a ${band.age} Year Old (${band.rangeLabel}) — Open + Pro Benchmarks`;
+const metaTitle = `Good Hyrox Time at ${band.age} (Men & Women, Open + Pro)`;
+const description = `Age-graded Hyrox finish times for ${band.rangeLabel} year-olds. Beginner, average, competitive, and elite benchmarks for Open Men, Open Women, Pro Men, and Pro Women.`;
+
+const breadcrumbs = [
+  { name: "Race Time Predictor", url: "/calculator/" },
+  { name: `Age ${band.age}` },
+];
+
+const openMenAvg = rows.find((r) => r.level === "average")!.openMen;
+const openWomenAvg = rows.find((r) => r.level === "average")!.openWomen;
+const openMenComp = rows.find((r) => r.level === "competitive")!.openMen;
+const openWomenComp = rows.find((r) => r.level === "competitive")!.openWomen;
+
+const faqItems = [
+  {
+    question: `What is a good Hyrox time for a ${band.age} year old man?`,
+    answer: `For a ${band.rangeLabel} year-old Open Men athlete, average is around ${formatRaceTime(openMenAvg)} and competitive is around ${formatRaceTime(openMenComp)}. Anything below the competitive number puts you in roughly the top quarter of finishers in your age group.`,
+  },
+  {
+    question: `What is a good Hyrox time for a ${band.age} year old woman?`,
+    answer: `For a ${band.rangeLabel} year-old Open Women athlete, average is around ${formatRaceTime(openWomenAvg)} and competitive is around ${formatRaceTime(openWomenComp)}. The benchmarks scale from the 25-34 baseline by ${(band.multiplier * 100 - 100).toFixed(1)}%.`,
+  },
+  {
+    question: `How much does Hyrox finish time slow down with age?`,
+    answer: `Hyrox finish times slow gradually until about age 45, then accelerate. The typical slowdown vs the 25-34 baseline is 2% at 35, 5% at 40, 9% at 45, 14% at 50, 20% at 55, and 28% at 60. Strength stations age slowest; running pace is where most lost time comes from.`,
+  },
+  {
+    question: `Are these times for Open or Pro division?`,
+    answer: `Both. The table below shows benchmarks for Open Men, Open Women, Pro Men, and Pro Women separately. Pro times are typically 5-10 minutes slower than Open for the same athlete due to heavier sleds, sandbag, and wall-ball loads.`,
+  },
+];
+---
+
+<BaseLayout
+  title={`${metaTitle} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors no-underline">Race Time Predictor</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Age {band.age}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+        Age band · {band.rangeLabel} year olds
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        {title}
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        {band.tagline}
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <p>{band.intro}</p>
+      <p>
+        These benchmarks scale the 25-34 population baseline by a factor of <span class="font-mono text-accent">{band.multiplier.toFixed(3)}×</span>. The slowdown comes mostly from running pace, not station output.
+      </p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black mb-4">Hyrox finish times at {band.age}</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">
+        Total race-time benchmarks by performance level and division. Times include 1 km running × 8, all 8 stations, and roughly 5 minutes of total transition time.
+      </p>
+      <div class="overflow-x-auto -mx-4 md:mx-0">
+        <table class="min-w-full text-sm border-separate border-spacing-0">
+          <thead>
+            <tr>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">
+                Level
+              </th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">
+                Open Men
+              </th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">
+                Open Women
+              </th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">
+                Pro Men
+              </th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">
+                Pro Women
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                <th class="border border-border p-3 text-left font-bold text-text-heading">
+                  {LEVEL_LABELS[row.level]}
+                </th>
+                <td class="border border-border p-3 font-mono text-accent">{formatRaceTime(row.openMen)}</td>
+                <td class="border border-border p-3 font-mono text-accent">{formatRaceTime(row.openWomen)}</td>
+                <td class="border border-border p-3 font-mono text-accent">{formatRaceTime(row.proMen)}</td>
+                <td class="border border-border p-3 font-mono text-accent">{formatRaceTime(row.proWomen)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-text-muted/70 mt-3">
+        Beginner = bottom ~25% of finishers in band. Average = population median. Competitive = top ~25%. Elite = top ~5-10%.
+      </p>
+    </section>
+
+    <section class="mb-10 bg-bg-card border border-accent/30 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Predict your own time</div>
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2">
+        Use the calculator with your real numbers
+      </h2>
+      <p class="text-text-muted text-sm leading-relaxed mb-4 max-w-2xl">
+        Drop your 5K time, bench press, deadlift, and bodyweight into the calculator and get a predicted finish time, station-by-station splits, and a peer benchmark for your level.
+      </p>
+      <a
+        href="/calculator/"
+        class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline"
+      >
+        Open the calculator →
+      </a>
+    </section>
+
+    <section class="mb-10 prose md:prose-lg max-w-none max-w-3xl">
+      <h2>How the {band.age}-year-old curve works</h2>
+      <p>
+        Hyrox aging follows the same pattern as endurance running. Output stays high into the late 30s, then race-day pace starts to fall about 1% per year through the 40s, accelerating to roughly 2% per year through the 50s.
+      </p>
+      <p>
+        What does <em>not</em> follow that curve is strength. Sled push, sled pull, and wall ball times age 30-50% slower than running pace. The implication for {band.rangeLabel} athletes: defend your running base. A masters athlete who keeps running 30-40 km per week often holds a competitive Hyrox time long after peers who only lift have fallen off.
+      </p>
+      <h2>Training priorities at {band.age}</h2>
+      <ul>
+        <li><strong>Z2 running 2-3x/week</strong> — the single highest-leverage masters intervention.</li>
+        <li><strong>One weekly threshold session</strong> — keeps the lactate ceiling from collapsing.</li>
+        <li><strong>2x/week strength</strong> — heavy enough to keep sled output, brief enough to recover from.</li>
+        <li><strong>Recovery emphasis</strong> — sleep, protein at 1.6-1.8 g/kg, and one full rest day weekly.</li>
+      </ul>
+      <p>
+        For a structured plan tuned to your level, the <a href="/training/intermediate/">intermediate plan</a> works for most {band.rangeLabel} year-olds. If you're new to structured training, start with the <a href="/training/beginner/">beginner plan</a>.
+      </p>
+    </section>
+
+    <aside class="pt-10 border-t border-border">
+      <h2 class="text-2xl font-black text-text-heading mb-4">Other age bands</h2>
+      <div class="grid gap-3 grid-cols-2 md:grid-cols-4">
+        {otherBands.map((b) => (
+          <a
+            href={`/calculator/age-${b.slug}/`}
+            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Age</div>
+            <div class="text-lg font-black text-text-heading">{b.age} year old</div>
+            <div class="text-xs text-text-muted mt-1">{b.rangeLabel}</div>
+          </a>
+        ))}
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

@@ -341,4 +341,220 @@ export const COMPARISONS: Comparison[] = [
       { href: "/blog/first-hyrox-race-guide/", label: "First Hyrox race guide" },
     ],
   },
+  {
+    slug: "hyrox-vs-f45",
+    hyroxLabel: "Hyrox",
+    otherLabel: "F45",
+    title: "Hyrox vs F45 — From the Studio Floor to the Race",
+    metaDescription:
+      "Hyrox vs F45: how F45 training transfers to a Hyrox race, where it falls short, and the supplemental work an F45 member needs to add for a competitive finish.",
+    intro:
+      "F45 is a 45-minute group functional training class. Hyrox is an 8 km running race punctuated with eight functional stations. The cardio overlap is real but partial — F45 builds the engine for short, mixed-modal efforts, while Hyrox demands sustained running on top of that.",
+    bottomLine:
+      "Pick Hyrox if you want a measurable race with a finish line. Stay with F45 (or use it as supplemental conditioning) if your goal is general fitness with social accountability.",
+    rows: [
+      { attribute: "Format", hyrox: "Solo race, 8 km running + 8 stations", other: "45-minute group class, varied workouts" },
+      { attribute: "Running volume", hyrox: "8 km on race day, 30-50 km/week training", other: "Minimal sustained running" },
+      { attribute: "Class length", hyrox: "75-95 min race-day effort", other: "45 min" },
+      { attribute: "Strength carryover", hyrox: "Direct — sled push, lunges, wall balls", other: "Partial — hypertrophy + mixed-modal" },
+      { attribute: "Cost", hyrox: "Race fee €85-€150 + gym access", other: "€150-€250/month studio fee" },
+      { attribute: "Trainability for first race", hyrox: "8-16 weeks structured", other: "F45 alone won't get you there" },
+      { attribute: "Skill ceiling", hyrox: "Pacing + sled technique", other: "Low — every class is led" },
+      { attribute: "Community", hyrox: "Race-day buzz, Discord groups", other: "Daily studio community" },
+    ],
+    bestFor: {
+      hyrox: ["Athletes who want a race goal", "Anyone bored of group classes", "Runners adding strength", "Measurable PR chasers"],
+      other: ["Group-fitness preference", "Time-constrained 45-min slots", "General body composition goals", "Athletes returning to fitness"],
+    },
+    faqs: [
+      { question: "Can F45 prepare you for a Hyrox?", answer: "Partially. F45 builds the strength-endurance base for stations like wall balls, burpees, and lunges, but it does not build the running fitness needed for 8 km of compromised running. Add 2-3 dedicated runs per week for at least 8 weeks before your race." },
+      { question: "Which F45 classes transfer best to Hyrox?", answer: "Romans (cardio-focused) and Athletica (strength + cardio) carry the most over. Pure strength days like Hollywood help with sled push capacity. Skip pure mobility days during your Hyrox prep block." },
+      { question: "How long after starting F45 can I race a Hyrox?", answer: "Most F45 members need 12-16 weeks of additional running and at least one weekly Hyrox-style station session before they're ready for a competitive Open finish. Without those additions, expect to walk most of the running." },
+    ],
+    internalLinks: [
+      { href: "/blog/f45-to-hyrox-transition/", label: "F45 to Hyrox transition" },
+      { href: "/training/beginner/", label: "Hyrox beginner training plan" },
+      { href: "/calculator/", label: "Hyrox time predictor" },
+    ],
+  },
+  {
+    slug: "hyrox-vs-orangetheory",
+    hyroxLabel: "Hyrox",
+    otherLabel: "Orangetheory Fitness",
+    title: "Hyrox vs Orangetheory — Does OTF Translate to a Race?",
+    metaDescription:
+      "Hyrox vs Orangetheory Fitness: which heart-rate zones overlap, where OTF members win and lose at a Hyrox race, and what to add to a typical OTF week.",
+    intro:
+      "Orangetheory Fitness (OTF) is a heart-rate-based 60-minute group class blending treadmill running, rowing, and floor strength work. The format already mirrors a fragment of Hyrox, which is why OTF members often migrate easily into the race.",
+    bottomLine:
+      "Orangetheory members are better prepared than most newcomers. The gap to a competitive Hyrox is sustained running and station-specific strength, not cardiovascular base.",
+    rows: [
+      { attribute: "Format", hyrox: "Solo race, fixed protocol", other: "60-min coach-led HR class" },
+      { attribute: "Treadmill volume", hyrox: "8 km on race day", other: "1.5-3 km per class" },
+      { attribute: "Rowing volume", hyrox: "1,000 m race-pace once", other: "200-1,000 m, multiple intervals" },
+      { attribute: "Strength stations", hyrox: "Sled push 152 kg, 100 wall balls", other: "Dumbbell hypertrophy work" },
+      { attribute: "HR zone use", hyrox: "Mostly threshold + tempo", other: "All five zones, splash pursuit" },
+      { attribute: "Cost", hyrox: "€85-€150 race fee + gym", other: "€150-€220/month" },
+      { attribute: "Carryover to race", hyrox: "—", other: "60-70% of fitness transfers" },
+      { attribute: "Gap to fix", hyrox: "—", other: "Heavy sled, sandbag lunges, sustained sub-threshold running" },
+    ],
+    bestFor: {
+      hyrox: ["Race-driven athletes", "Anyone wanting a measurable yearly PR", "Strength-trained athletes"],
+      other: ["Coach-led structure", "Athletes who like HR-based feedback", "Group-fitness consistency", "Beginner conditioning"],
+    },
+    faqs: [
+      { question: "Can an Orangetheory member do well in a Hyrox?", answer: "Yes, with two additions: one weekly long Z2 run of 60-90 minutes and one weekly station-specific session (sled, lunges, wall balls). OTF gives you the cardio base; Hyrox needs the long-running endurance and the sled load that OTF doesn't push." },
+      { question: "Which OTF metrics correlate with Hyrox finish time?", answer: "Splat points across a 60-minute class is a rough proxy for race-day intensity tolerance. A consistent 16-22 splat performance suggests you can hold race-day intensity for 75-90 minutes. Treadmill all-out 1-mile pace also correlates strongly with Hyrox running splits." },
+      { question: "How many OTF classes should I keep during Hyrox prep?", answer: "Cap OTF at 2-3 classes per week during a 12-week Hyrox build, replacing the rest with sustained running, strength work, and one full Hyrox-style station rehearsal. OTF's variety is the enemy of race-specific adaptation." },
+    ],
+    internalLinks: [
+      { href: "/blog/orangetheory-member-doing-hyrox/", label: "Orangetheory member doing Hyrox" },
+      { href: "/blog/hyrox-heart-rate-zones/", label: "Hyrox heart-rate zones" },
+      { href: "/training/beginner/", label: "Hyrox beginner plan" },
+    ],
+  },
+  {
+    slug: "hyrox-vs-half-marathon",
+    hyroxLabel: "Hyrox",
+    otherLabel: "Half Marathon",
+    title: "Hyrox vs Half Marathon — Which 90-Minute Race Suits You?",
+    metaDescription:
+      "Hyrox vs half marathon: similar finish times but very different training. Volume, pace, strength demands, and how to choose your A-race.",
+    intro:
+      "A half marathon and a Hyrox Open finish at roughly the same time for many athletes, around 90 minutes. The training looks nothing alike. A half is a single-discipline aerobic test; Hyrox is repeated intensity bursts with strength stations between runs.",
+    bottomLine:
+      "Pick Hyrox if you want a hybrid race that fits a 6-8 hour training week. Pick a half marathon if you love sustained running and want to chase a single-pace number.",
+    rows: [
+      { attribute: "Distance", hyrox: "8 km running + 8 stations", other: "21.1 km running" },
+      { attribute: "Typical Open finish", hyrox: "75-95 min", other: "1h 30 min - 2h 15 min" },
+      { attribute: "Running volume needed", hyrox: "30-50 km/week", other: "50-80 km/week" },
+      { attribute: "Strength training needed", hyrox: "2 sessions/week minimum", other: "Optional" },
+      { attribute: "Long run length", hyrox: "12-18 km", other: "16-25 km" },
+      { attribute: "Training timeline (first race)", hyrox: "8-16 weeks", other: "12-16 weeks" },
+      { attribute: "Race-day weather", hyrox: "Indoor — none", other: "Outdoor — variable" },
+      { attribute: "Pacing complexity", hyrox: "High — 8 transitions", other: "Low — single pace target" },
+    ],
+    bestFor: {
+      hyrox: ["Hybrid athletes", "Lifters adding cardio", "Anyone bored of single-pace running", "Indoor preference"],
+      other: ["Pure runners", "Athletes chasing a sub-2 hour or sub-90 number", "Outdoor lovers", "Marathon-stepping-stone athletes"],
+    },
+    faqs: [
+      { question: "Can a half marathon runner walk into a Hyrox?", answer: "Yes for the running portion — your 1 km splits will be comfortable. The sled push (152 kg), 100 wall balls, and sandbag lunges will expose you if you've not lifted. Add 8-12 weeks of strength work before racing." },
+      { question: "Is Hyrox harder than a half marathon?", answer: "Most athletes who do both report Hyrox feels harder per minute due to the strength spikes. The half marathon feels harder by total perceived suffering because it's longer and at a steadier near-threshold effort." },
+      { question: "Which gives a better cardio adaptation?", answer: "Half marathon training builds higher VO2 max ceilings because of the higher weekly running volume. Hyrox training builds broader fitness — VO2 max, strength endurance, and movement variety. Pick based on your A-race goal, not the adaptation." },
+    ],
+    internalLinks: [
+      { href: "/compare/hyrox-vs-marathon/", label: "Hyrox vs marathon" },
+      { href: "/blog/marathon-runner-doing-hyrox/", label: "Marathon runner doing Hyrox" },
+      { href: "/blog/hyrox-running-strategy/", label: "Hyrox running strategy" },
+    ],
+  },
+  {
+    slug: "hyrox-vs-strongman",
+    hyroxLabel: "Hyrox",
+    otherLabel: "Strongman",
+    title: "Hyrox vs Strongman — Engine Race Meets Maximal Strength",
+    metaDescription:
+      "Hyrox vs Strongman: how the heaviest functional sport compares to the world's biggest fitness race. Loads, training time, and crossover potential.",
+    intro:
+      "Strongman is a maximal-strength sport — atlas stones, log press, deadlift medleys, yoke walks. Hyrox is a sustained 75-95-minute race blending running with submaximal functional efforts. The two share equipment family but live at opposite ends of the strength-endurance continuum.",
+    bottomLine:
+      "Pick Hyrox for endurance with strength flavour. Pick Strongman if you want to chase pure load numbers and short, brutal events.",
+    rows: [
+      { attribute: "Effort length", hyrox: "75-95 min sustained", other: "30-90 sec per event, 4-6 events" },
+      { attribute: "Heaviest single load", hyrox: "152 kg sled push", other: "180-360 kg events" },
+      { attribute: "Running volume", hyrox: "8 km race day, 30-50 km/week", other: "Minimal" },
+      { attribute: "Bodyweight class system", hyrox: "Open + Pro, age groups", other: "Strict weight classes" },
+      { attribute: "Equipment cost", hyrox: "€150 (shoes + grip)", other: "€500-€2000 (suit, sleeves, deadlift kit)" },
+      { attribute: "Average training session", hyrox: "60-90 min", other: "90-150 min" },
+      { attribute: "Bodyweight target", hyrox: "Lean, 75-90 kg typical", other: "Higher, 95-140 kg typical for U105+" },
+      { attribute: "Recovery between events", hyrox: "Full race in one block", other: "10-30 min between events" },
+    ],
+    bestFor: {
+      hyrox: ["Hybrid athletes", "Lean strength-cardio mix", "Athletes who like running"],
+      other: ["Pure strength athletes", "Athletes 95 kg+", "Anyone chasing a 1RM number"],
+    },
+    faqs: [
+      { question: "Can a strongman compete in Hyrox?", answer: "Yes, but most strongmen lose 10-15 kg of bodyweight and add 10-12 weeks of running volume before they're competitive. Pure strongmen often clock 90-110 min for their first Hyrox simply because the running gasses them faster than the strength work." },
+      { question: "Does strongman training help your Hyrox?", answer: "Heavy yoke and farmers carries directly transfer to the Hyrox sled push and farmers carry. Atlas stones build the posterior chain that supports lunges. Skip max event work in the 8 weeks before a Hyrox race — it bleeds running adaptation." },
+      { question: "Are there hybrid athletes doing both?", answer: "A few. Most pick a primary sport per season because the bodyweight and recovery demands diverge sharply. The closest crossover sport is Strongwoman/Strongman 'Beast' classes that include time-cap medleys; those skills carry over best to Hyrox." },
+    ],
+    internalLinks: [
+      { href: "/compare/hyrox-vs-marathon/", label: "Hyrox vs marathon" },
+      { href: "/blog/powerlifter-hyrox-training/", label: "Powerlifter doing Hyrox" },
+      { href: "/blog/hyrox-for-heavy-athletes/", label: "Hyrox for heavy athletes" },
+    ],
+  },
+  {
+    slug: "hyrox-vs-tactical-fitness-test",
+    hyroxLabel: "Hyrox",
+    otherLabel: "Tactical Fitness Test (CPAT, ACFT, etc.)",
+    title: "Hyrox vs Tactical Fitness Tests — Which Trains the Other?",
+    metaDescription:
+      "Hyrox vs CPAT, ACFT, and other tactical fitness tests: where the formats overlap, where they diverge, and how to use Hyrox training to prep for the job.",
+    intro:
+      "Firefighter (CPAT), military (ACFT, RFT), and police selection tests share Hyrox's DNA: weighted carries, sleds, ladders, and sustained running. Hyrox is sometimes used as off-season prep for tactical athletes precisely because the demands rhyme.",
+    bottomLine:
+      "Hyrox is excellent off-season prep for any tactical fitness test. The reverse is also true — tactical training builds 70-80% of Hyrox-ready fitness without the running base.",
+    rows: [
+      { attribute: "Total event length", hyrox: "75-95 min", other: "10-25 min (test) or 60-90 min (selection)" },
+      { attribute: "Weighted carry standard", hyrox: "Farmers 2 × 24 kg, 200 m", other: "Equipment dummy 75 kg, 30 m (CPAT)" },
+      { attribute: "Sled / sled-substitute", hyrox: "152 kg push, 50 m", other: "70 kg pull/drag, 30 m (CPAT)" },
+      { attribute: "Running standard", hyrox: "8 km race-day", other: "2 mile run sub-15 min (ACFT)" },
+      { attribute: "Strength standard", hyrox: "Sled push, sandbag lunges", other: "Deadlift 3RM (ACFT)" },
+      { attribute: "Format", hyrox: "Race", other: "Pass/fail or scored test" },
+      { attribute: "Real-world transfer", hyrox: "Indirect", other: "Direct job task simulation" },
+      { attribute: "Carryover from Hyrox", hyrox: "—", other: "High — most tasks share movement family" },
+    ],
+    bestFor: {
+      hyrox: ["Civilians wanting a race goal", "Tactical athletes off-season", "Hybrid programming"],
+      other: ["Job applicants in scoring window", "Active-duty re-test cycles", "Selection candidates"],
+    },
+    faqs: [
+      { question: "Will Hyrox training pass a CPAT or ACFT?", answer: "If you're hitting an Open Hyrox sub-80 min, you almost certainly pass CPAT and the cardio half of ACFT. The deadlift max in ACFT is the only piece Hyrox training doesn't directly build — add 6-8 weeks of strength block before the test." },
+      { question: "Are firefighter and military athletes good at Hyrox?", answer: "Yes, especially in mid-pack and competitive Open. Tactical athletes have built-in farmers carry and sled prep. The gap is usually wall ball mechanics and sustained running pace, not strength." },
+      { question: "Can I train for both at once?", answer: "Yes. Use Hyrox training as the off-season block (12-20 weeks out from the test) then sharpen with task-specific drills 4-6 weeks out. Don't try to peak both in the same month." },
+    ],
+    internalLinks: [
+      { href: "/training/intermediate/", label: "Intermediate Hyrox plan" },
+      { href: "/blog/hyrox-for-heavy-athletes/", label: "Hyrox for heavy athletes" },
+      { href: "/blog/hyrox-cyclist-transition/", label: "Hyrox for cyclists" },
+    ],
+  },
+  {
+    slug: "hyrox-vs-ultramarathon",
+    hyroxLabel: "Hyrox",
+    otherLabel: "Ultramarathon",
+    title: "Hyrox vs Ultramarathon — Sprint Hybrid or All-Day Endurance?",
+    metaDescription:
+      "Hyrox vs ultramarathon: training time, finish time, fuelling, and how the two endurance worlds compare for hybrid athletes choosing a season goal.",
+    intro:
+      "An ultramarathon is anything beyond 42.2 km — typically 50 km, 50 mi, 100 km, or 100 mi. Hyrox is a 75-95 minute hybrid race. Calling them both endurance sports buries how different the training, fuelling, and race-day mindset really are.",
+    bottomLine:
+      "Pick Hyrox if you want measurable, repeatable, intense racing that fits a normal life. Pick an ultra if you want to spend a Saturday running through mountains and have the time to train for it.",
+    rows: [
+      { attribute: "Race time range", hyrox: "75-95 min", other: "5-30+ hours" },
+      { attribute: "Distance", hyrox: "8 km running + stations", other: "50-160+ km running" },
+      { attribute: "Training time per week", hyrox: "6-8 hours", other: "10-20 hours" },
+      { attribute: "Long run length", hyrox: "12-18 km", other: "30-60 km" },
+      { attribute: "Race-day fuelling", hyrox: "60-90 g carbs/hr, 2-3 gels", other: "Solid food + 60-90 g carbs/hr for hours" },
+      { attribute: "Surface", hyrox: "Indoor flat", other: "Trail, road, mountain" },
+      { attribute: "Strength training needed", hyrox: "2 sessions/week", other: "Minimal, hill-only" },
+      { attribute: "Recovery time post-race", hyrox: "3-7 days", other: "2-6 weeks" },
+    ],
+    bestFor: {
+      hyrox: ["Time-constrained athletes", "Hybrid fitness goals", "Indoor preference", "Strength-leaning runners"],
+      other: ["Long-distance specialists", "Trail and mountain lovers", "Athletes wanting deep solitude in training", "Anyone with 10+ training hours/week"],
+    },
+    faqs: [
+      { question: "Can ultra runners do Hyrox?", answer: "Yes, but expect a 5-10 minute penalty on first race compared to peer marathoners. Ultramarathon training under-builds the high-intensity ceiling needed for sled push and wall balls. Add 8-12 weeks of strength + threshold work before racing Hyrox." },
+      { question: "Which is harder: a 50 km ultra or a Hyrox?", answer: "They are different kinds of hard. A 50 km ultra is sustained moderate effort for 5-7 hours; Hyrox is 75-95 minutes of repeated near-threshold work. Most athletes who have done both say the ultra is harder by total volume; Hyrox is harder per minute." },
+      { question: "Can I train for both in the same year?", answer: "Yes, with careful season planning. The aerobic base from ultra training transfers well to Hyrox; the high-intensity work from Hyrox keeps your top-end pace sharp. Sequence them at least 8 weeks apart and don't try to peak both in the same month." },
+    ],
+    internalLinks: [
+      { href: "/compare/hyrox-vs-marathon/", label: "Hyrox vs marathon" },
+      { href: "/blog/marathon-runner-doing-hyrox/", label: "Marathon runner doing Hyrox" },
+      { href: "/blog/hyrox-zone-2-training/", label: "Zone 2 training for Hyrox" },
+    ],
+  },
 ];

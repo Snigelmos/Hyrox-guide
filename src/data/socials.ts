@@ -13,12 +13,18 @@
  *    the entity reconciliation check.
  *
  * Recommended targets to claim and add (in priority order):
- *  1. Instagram (@hyroxvault)
- *  2. X / Twitter (@hyroxvault)
+ *  1. Reddit u/HyroxVault — if posting on r/Hyrox is the active off-site
+ *     channel, the Reddit profile URL belongs here too. Strong sameAs for
+ *     entity reconciliation when the same brand is posting answers.
+ *  2. Instagram (@hyroxvault)
  *  3. YouTube (Hyrox training and race-day content)
  *  4. Strava club ("HyroxVault" or similar)
- *  5. LinkedIn company page
- *  6. TikTok (if the audience supports it)
+ *  5. X / Twitter (@hyroxvault)
+ *  6. LinkedIn company page
+ *  7. TikTok (if the audience supports it)
+ *
+ * Even claiming and parking these handles (no posting required) populates
+ * the array and strengthens the Organization JSON-LD on the about page.
  */
 
 export const SITE_SOCIALS: string[] = [

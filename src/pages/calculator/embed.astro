@@ -1,0 +1,30 @@
+---
+import HyroxCalculator from "../../components/HyroxCalculator";
+import "../../styles/global.css";
+
+const title = "Hyrox Race Time Predictor (embed) — HyroxVault";
+const description = "Embeddable Hyrox race time predictor. Free for any site to iframe.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, follow" />
+    <title>{title}</title>
+    <style is:global>
+      html, body { background: #09090b; }
+      body { margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div class="container-main py-6">
+      <HyroxCalculator client:only="react" />
+      <div class="mt-6 text-center text-xs text-text-muted/70">
+        Powered by <a href="https://www.hyroxvault.com/calculator/" target="_blank" rel="noopener" class="text-accent hover:underline">HyroxVault</a>
+      </div>
+    </div>
+  </body>
+</html>

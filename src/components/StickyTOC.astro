@@ -1,0 +1,102 @@
+---
+/**
+ * StickyTOC
+ *
+ * Auto-extracts H2/H3 headings from rendered Markdown content and renders
+ * a sticky desk-side table of contents. Only shown on long posts (controlled
+ * by the `enabled` prop on the consumer side, typically driven by post word
+ * count) and only on lg+ breakpoints — mobile uses the existing inline outline.
+ *
+ * Implementation: client-side only. The rendered article is queried in a
+ * mounted hook, headings are read with their existing IDs (Astro's rehype
+ * autolink-headings sets ids), and the active heading is tracked with an
+ * IntersectionObserver.
+ */
+
+interface Props {
+  /** CSS selector for the article content scope. Defaults to "article". */
+  scopeSelector?: string;
+  /** Optional title shown above the TOC list. */
+  title?: string;
+}
+
+const { scopeSelector = "article", title = "On this page" } = Astro.props;
+---
+
+<div data-toc-scope={scopeSelector} class="bg-bg-card/40 border border-border rounded-xl p-4 max-h-[calc(100vh-8rem)] overflow-y-auto">
+  <p class="text-xs font-bold uppercase tracking-wider text-accent mb-3">{title}</p>
+  <ul id="sticky-toc-list" class="space-y-1.5 text-sm">
+    <li class="text-text-muted text-xs italic">Building outline…</li>
+  </ul>
+</div>
+
+<script>
+  // Build a TOC from the rendered article H2/H3 elements.
+  //
+  // We run on DOMContentLoaded because rehype IDs are baked in at build
+  // time. Astro's content collections add ids via rehype-slug by default.
+  function buildToc() {
+    const wrap = document.querySelector("[data-toc-scope]");
+    if (!wrap) return;
+    const scopeSel = wrap.getAttribute("data-toc-scope") ?? "article";
+    const article = document.querySelector(scopeSel);
+    const list = document.getElementById("sticky-toc-list");
+    if (!article || !list) return;
+
+    const headings = Array.from(
+      article.querySelectorAll<HTMLHeadingElement>("h2, h3"),
+    );
+
+    if (headings.length < 3) {
+      // Too few headings to bother with; hide the TOC.
+      const panel = wrap as HTMLElement;
+      panel.classList.add("hidden");
+      return;
+    }
+
+    list.innerHTML = "";
+    headings.forEach((h) => {
+      const id = h.id;
+      if (!id) return;
+      const li = document.createElement("li");
+      li.className = h.tagName === "H3" ? "pl-3" : "";
+      const a = document.createElement("a");
+      a.href = `#${id}`;
+      a.textContent = h.textContent ?? "";
+      a.className =
+        "block text-text-muted hover:text-accent transition-colors no-underline leading-tight py-0.5";
+      a.dataset.tocLink = id;
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    // Active-section tracking. Highlight the heading currently in view
+    // by toggling text-accent on the matching anchor.
+    const activeMap = new Map<string, HTMLAnchorElement>();
+    list.querySelectorAll<HTMLAnchorElement>("[data-toc-link]").forEach((a) => {
+      activeMap.set(a.dataset.tocLink ?? "", a);
+    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const intersecting = entries.filter((e) => e.isIntersecting);
+        if (intersecting.length === 0) return;
+        const top = intersecting.sort(
+          (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+        )[0];
+        const id = (top.target as HTMLElement).id;
+        activeMap.forEach((a, key) => {
+          a.classList.toggle("text-accent", key === id);
+          a.classList.toggle("font-semibold", key === id);
+        });
+      },
+      { rootMargin: "0px 0px -80% 0px" },
+    );
+    headings.forEach((h) => observer.observe(h));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", buildToc);
+  } else {
+    buildToc();
+  }
+</script>

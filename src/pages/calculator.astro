@@ -233,6 +233,56 @@ const doublesWomenGoals = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience ===
       </div>
     </div>
 
+    <div class="max-w-6xl mt-12 pt-10 border-t border-border">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">More free Hyrox tools</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">
+        Specialised calculators built on the same race data engine.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="/calculator/sled-push-watts/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Tool</div>
+          <h3 class="text-base font-black text-text-heading mb-1">Sled push watts</h3>
+          <p class="text-xs text-text-muted">Force, power, watts/kg from sled weight, friction, and time.</p>
+        </a>
+        <a href="/records/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Reference</div>
+          <h3 class="text-base font-black text-text-heading mb-1">Hyrox world records</h3>
+          <p class="text-xs text-text-muted">Open, Pro, Doubles, Relay — fastest confirmed times.</p>
+        </a>
+        <a href="/race-day-checklist/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Race day</div>
+          <h3 class="text-base font-black text-text-heading mb-1">Race-day checklist</h3>
+          <p class="text-xs text-text-muted">Printable, taper to start-line.</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mt-12 pt-10 border-t border-border bg-bg-card/40 rounded-2xl p-6">
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2">Embed this calculator</h2>
+      <p class="text-text-muted text-sm mb-4 max-w-2xl">
+        Free for any site or coach to embed. Drop this snippet into a blog post or training page. Link back is appreciated but not required.
+      </p>
+      <pre class="bg-bg border border-border rounded-lg p-4 text-xs text-text-muted overflow-x-auto"><code>&lt;iframe src="https://www.hyroxvault.com/calculator/embed/" width="100%" height="900" style="border:0;border-radius:12px" title="Hyrox Race Time Predictor"&gt;&lt;/iframe&gt;</code></pre>
+    </div>
+
+    <div class="max-w-6xl mt-12 pt-10 border-t border-border">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Age-graded benchmarks</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">
+        What a "good" Hyrox time looks like by age. Same engine, scaled by Hyrox masters slowdown factors.
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        {[30, 35, 40, 45, 50, 55, 60].map((age) => (
+          <a
+            href={`/calculator/age-${age}/`}
+            class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline group text-center"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Age</div>
+            <div class="text-lg font-black text-text-heading group-hover:text-accent transition-colors">{age}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+
     <script is:inline define:vars={{ goalConfigs: ALL_GOAL_TIME_CONFIGS.map(g => ({ slug: g.slug, audience: g.audience, goalSeconds: g.goalSeconds })) }}>
       var btn   = document.getElementById("goal-time-btn");
       var input = document.getElementById("goal-time-input");

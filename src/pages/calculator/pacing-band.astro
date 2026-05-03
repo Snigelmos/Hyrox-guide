@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PacingBand from "../../components/PacingBand";
+---
+
+<BaseLayout
+  title="Hyrox Pacing Band — Printable Race-Day Wristband"
+  description="Generate a printable race-day pacing band from your Hyrox calculator prediction. Per-station target times and cumulative splits, sized to fold around your wrist."
+  noindex={true}
+>
+  <section class="container-main py-10 md:py-16">
+    <nav class="mb-6 text-sm print:hidden" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors">Race Time Predictor</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Pacing band</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 max-w-2xl mx-auto text-center print:hidden">
+      <h1 class="text-3xl md:text-4xl font-black">
+        <span class="text-gradient-accent">Race-day pacing band</span>
+      </h1>
+      <p class="mt-3 text-base text-text-muted leading-relaxed">
+        Print this strip, cut it out, and fold it around your wrist on race day. Target chunk per stage and cumulative split, generated from your calculator prediction.
+      </p>
+    </header>
+
+    <PacingBand client:only="react" />
+  </section>
+</BaseLayout>

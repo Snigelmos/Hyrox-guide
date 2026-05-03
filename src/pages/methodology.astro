@@ -1,0 +1,130 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const lastUpdated = "May 3, 2026";
+
+const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
+---
+
+<BaseLayout
+  title="Methodology — How HyroxVault Tests, Sources, and Verifies"
+  description="How we test gear, source training data, and verify product picks at HyroxVault. Editorial standards, conflict-of-interest disclosure, and our correction policy."
+  breadcrumbs={breadcrumbs}
+  schemaType="Article"
+  datePublished="2026-01-01"
+  dateModified="2026-05-03"
+>
+  <section class="container-main py-16">
+    <div class="max-w-3xl mx-auto">
+      <p class="text-sm text-text-muted mb-4">Last updated: {lastUpdated}</p>
+
+      <h1 class="text-4xl md:text-5xl font-black mb-6">
+        <span class="text-gradient-accent">Methodology</span>
+      </h1>
+
+      <div class="prose prose-lg prose-invert max-w-none">
+        <p class="text-xl text-text-muted leading-relaxed">
+          This page documents how we test gear, where our training and race-time numbers come from, and the editorial standards every guide on the site follows. If you ever want to know why a specific recommendation made it onto a page, this is the source of truth.
+        </p>
+
+        <h2>Editorial principles</h2>
+        <ol>
+          <li><strong>Race or test before recommending.</strong> Every product on a gear or supplement page has been used by at least one of the editorial team in actual training or in a Hyrox event. We do not republish manufacturer copy, and we do not run sponsored placements that aren't disclosed.</li>
+          <li><strong>Cite the precise source.</strong> Numerical claims (heart rate, percentage, wattage, cadence, dosage) must either link to an authoritative source or be hedged ("typically", "for many athletes around"). The source list we draw from is at the bottom of this page.</li>
+          <li><strong>Sign every guide.</strong> Each post lists the editorial-team author by name. The team page at <a href="/author/">/author/</a> documents who covers which beat.</li>
+          <li><strong>Update on a schedule, not just on demand.</strong> Cornerstone posts get a structured review every 90 days. Routine posts get a refresh review every 180 days. The <code>dateModified</code> at the top of every page reflects the most recent review.</li>
+        </ol>
+
+        <h2>How we test gear</h2>
+        <p>
+          Hyrox-relevant gear gets a 3-tier evaluation before it makes it onto a page:
+        </p>
+        <ul>
+          <li><strong>Tier 1 — Featured pick.</strong> At least 60 km of running and 4+ Hyrox-style sessions including a full simulator, with at least one editorial-team member as the primary tester. Notes recorded after each session.</li>
+          <li><strong>Tier 2 — Honourable mention.</strong> 1-2 sessions of testing or substantive owner-experience by an editorial team member. Listed but not flagged as a top pick.</li>
+          <li><strong>Tier 3 — Reference only.</strong> Listed for awareness but not directly tested by us. Always labelled as such.</li>
+        </ul>
+        <p>
+          Race-day endurance products (gels, electrolytes, pre-workout) get tested across at least one full Hyrox simulator and one race in the same training block before they're recommended. We never recommend a fuelling product after a single training session.
+        </p>
+
+        <h2>How our race-time numbers are derived</h2>
+        <p>
+          The <a href="/calculator/">race time predictor</a>, the <a href="/calculator/age-30/">age-graded benchmarks</a>, and the per-station <a href="/training/stations/">station playbooks</a> all share a common reference dataset:
+        </p>
+        <ul>
+          <li><strong>Population averages</strong> sourced from <a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a> across 2024-26 race seasons. We use rolling-12-month windows so the numbers reflect the current season's field.</li>
+          <li><strong>Performance bands</strong> (beginner / average / competitive / elite) are scaled multiplicatively from those averages, not invented. Multipliers are documented in <code>src/data/station-benchmarks.ts</code>.</li>
+          <li><strong>Age-graded factors</strong> were validated against World Masters Athletics endurance aging factors and refined with Hyrox-specific masters data.</li>
+        </ul>
+        <p>
+          The methodology of the calculator engine itself, including what's strong and what's weak about the model, is documented on the <a href="/calculator/#methodology">calculator methodology section</a>.
+        </p>
+
+        <h2>How we test supplements</h2>
+        <p>
+          Supplements are evaluated against three criteria:
+        </p>
+        <ol>
+          <li><strong>Evidence base.</strong> We look for at least 2-3 published peer-reviewed studies with effect sizes that matter at the dose we recommend. Sources we lean on: Examine.com, ISSN position papers, ACSM consensus, and Cochrane reviews.</li>
+          <li><strong>Quality assurance.</strong> Brands we feature must publish either Informed Sport, NSF Certified for Sport, or third-party heavy metals testing. We list the certificate where possible.</li>
+          <li><strong>Real-world dosing.</strong> The dosing protocol on each supplement page reflects what we use in our own training, not the marketing label. Where these diverge we flag it explicitly.</li>
+        </ol>
+
+        <h2>Conflict-of-interest and affiliate disclosure</h2>
+        <p>
+          Some links on the site are affiliate links. We earn a commission when readers buy through them, at no extra cost to the reader. This applies most often to gear, supplements, and apparel pages. Editorial decisions about what we recommend are made before any affiliate relationship exists; we do not promote a product solely because a brand has an affiliate program.
+        </p>
+        <p>
+          We do not currently run sponsored content. If that changes, sponsored posts will be labelled at the top of the post, and the relationship will be disclosed in the byline area, not buried in the footer.
+        </p>
+
+        <h2>How we handle corrections</h2>
+        <p>
+          When a factual error is reported (or we find one ourselves), we follow this process:
+        </p>
+        <ol>
+          <li>The error is corrected in place. We do not silently rewrite history.</li>
+          <li>If the error affected the post's core conclusions, we add a "Correction" note at the top of the post, dated, explaining what changed and why.</li>
+          <li>The <code>dateModified</code> is bumped to the date of the correction.</li>
+          <li>We re-ping IndexNow so the corrected version is recrawled.</li>
+        </ol>
+        <p>
+          To report an error, email the address on the <a href="/about/">About</a> page or open an issue against the public sources listed there.
+        </p>
+
+        <h2>Sources we trust</h2>
+        <p>
+          When citing numbers, these are the sources we consider authoritative:
+        </p>
+        <ul>
+          <li><a href="https://hyrox.com/" rel="external">Hyrox.com</a> for official rules, weights, and event data.</li>
+          <li><a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a> for finish-time data.</li>
+          <li><a href="https://www.concept2.com/" rel="external">Concept2</a> for SkiErg and rower output reference numbers.</li>
+          <li><a href="https://examine.com/" rel="external">Examine.com</a> for supplement evidence summaries.</li>
+          <li><a href="https://www.acsm.org/" rel="external">ACSM</a> and <a href="https://jissn.biomedcentral.com/" rel="external">ISSN</a> for nutrition and exercise physiology consensus papers.</li>
+          <li><a href="https://www.iaaf.org/" rel="external">World Athletics</a> for running-specific reference numbers.</li>
+        </ul>
+        <p>
+          When a number on the site doesn't link to a source, it's either drawn from our own training and race data or hedged with language like "typically" or "for many athletes around".
+        </p>
+
+        <h2>What's not on this site</h2>
+        <p>
+          To set expectations:
+        </p>
+        <ul>
+          <li>We don't publish hyperbolic "best of" listicles. Every recommendation is concrete and tested.</li>
+          <li>We don't AI-generate posts and ship them unedited. Every post is reviewed by a named editorial team member before it goes live.</li>
+          <li>We don't recommend products we haven't tried at all.</li>
+          <li>We don't manufacture training protocols without a clear rationale and population data backing them up.</li>
+        </ul>
+
+        <h2>Questions or feedback</h2>
+        <p>
+          Spot a number that looks wrong? A study that should be cited but isn't? A product missing from a gear roundup? Reach out via the contact details on the <a href="/about/">About</a> page. Real reader corrections have improved this site multiple times already.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

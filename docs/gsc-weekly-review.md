@@ -92,10 +92,36 @@ Track results 4 weeks after each action — most refreshes show position improve
 To quickly identify recent posts that are likely in the "ranking maturation window" (30-90 days old), run:
 
 ```bash
-node scripts/gsc-refresh-candidates.mjs
+npm run gsc-weekly
 ```
 
 This lists every blog post published 30-90 days ago, sorted oldest first. These are typically the pages most worth reviewing in GSC each week — they've been indexed long enough to have data but are still in the climbing window where intervention helps most.
+
+---
+
+## Cursor-driven action plan (the loop)
+
+Once you have the GSC export, generate an actionable, page-matched plan:
+
+1. In GSC, open Performance -> Search results, last 28 days, no filters needed.
+2. Click the **Queries** tab, then **Export -> Download CSV**.
+3. Save the file at the repo root as `gsc-export.csv` (already gitignored).
+4. Run:
+
+```bash
+npm run gsc-plan
+```
+
+This writes `docs/gsc-action-plan.md`, a ranked plan that:
+
+- Filters to position 4-16, impressions >= 30
+- Joins each query to the best-matching on-site page
+- Recommends one of three actions per query: `add-content`, `rewrite-meta`, or `add-internal-links`
+- Outputs a copy-paste Cursor prompt for each top-12 priority
+
+Then ask Cursor: **"Read `docs/gsc-action-plan.md` and execute the top 5 priorities."** Review the diffs in 15 minutes and merge.
+
+Re-run weekly. The action plan filename always overwrites; archive prior weeks via git history.
 
 ---
 
