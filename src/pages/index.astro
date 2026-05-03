@@ -4,11 +4,11 @@ import Hero from "../components/Hero.astro";
 import GeoAffiliateButton from "../components/GeoAffiliateButton";
 import ModuleIcons from "../components/icons/ModuleIcons.astro";
 import { primaryNav, type NavIcon } from "../config/nav";
-import { getCollection } from "astro:content";
+import { getAllPosts } from "../data/blog";
 
-const allPosts = (await getCollection("blog")).sort(
-  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
-);
+// `getAllPosts` already filters out posts with pubDate in the future and
+// sorts by pubDate desc, so Latest Insights only shows what's actually live.
+const allPosts = await getAllPosts();
 const latestPosts = allPosts.slice(0, 3);
 
 type SupplementIcon = NavIcon | "spark" | "stopwatch" | "flag";

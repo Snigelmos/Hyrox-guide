@@ -10,7 +10,12 @@ import {
 } from "../../data/blog";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const all = await getCollection("blog");
+  // Hide scheduled posts (pubDate in the future) from build output. The
+  // every-2-day Vercel rebuild in .github/workflows/scheduled-publish.yml
+  // promotes them as their pubDate arrives.
+  const now = new Date();
+  const posts = all.filter((p) => p.data.pubDate <= now);
   return posts.map((entry) => ({
     params: { slug: entry.id },
     props: { entry, posts },

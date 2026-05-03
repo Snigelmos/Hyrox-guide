@@ -32,7 +32,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
     props: { title: "The Hyrox Vault — Race, Train, Fuel.", category: "home" },
   });
 
-  const blogPosts = await getCollection("blog");
+  const allBlogPosts = await getCollection("blog");
+  // Skip OG images for scheduled (future-dated) posts — their /blog/<slug>/
+  // page does not exist yet, so the OG would be orphan output.
+  const now = new Date();
+  const blogPosts = allBlogPosts.filter((p) => p.data.pubDate <= now);
   for (const post of blogPosts) {
     entries.push({
       params: { path: `blog/${post.id}` },
