@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ShareableResult from "../../components/ShareableResult";
+---
+
+<BaseLayout
+  title="My Hyrox Race-Time Prediction | Hyrox Vault"
+  description="A shared Hyrox race-time prediction. Run the calculator yourself to compare splits, station times, and the goal-time guides matched to your prediction."
+  noindex={true}
+>
+  <section class="container-main py-10 md:py-16">
+    <nav class="mb-6 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors">Calculator</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Shared prediction</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-8 max-w-2xl mx-auto text-center">
+      <h1 class="text-3xl md:text-4xl font-black">
+        <span class="text-gradient-accent">Shared race-time prediction</span>
+      </h1>
+      <p class="mt-3 text-base text-text-muted leading-relaxed">
+        This is someone's predicted Hyrox finish time. Take a screenshot, or
+        run the calculator yourself to see how your prediction compares.
+      </p>
+    </header>
+
+    <ShareableResult client:only="react" />
+  </section>
+</BaseLayout>

@@ -1,36 +1,20 @@
 import { useMemo, useState } from "react";
-import {
-  getBenchmarkValue,
-  LEVEL_LABELS,
-  type DivisionGender,
-  type Level,
-} from "../data/station-benchmarks";
+import { getBenchmarkValue } from "../data/station-benchmarks";
 import { getPlaybook } from "../data/station-playbooks";
 import { ALL_GOAL_TIME_CONFIGS, type GoalTimeConfig } from "../data/calculator-goals";
 import { TRAINING_PLANS } from "../data/training-plans";
-
-type Gender = "men" | "women";
-type Division = "open" | "pro";
-
-interface StationResult {
-  slug: string;
-  name: string;
-  time: number;
-}
-
-function formatTime(totalSeconds: number): string {
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = Math.round(totalSeconds % 60);
-  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-function formatTimeHM(totalSeconds: number): string {
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.round((totalSeconds % 3600) / 60);
-  return `${h}:${m.toString().padStart(2, "0")}`;
-}
+import {
+  calculate,
+  getLevel,
+  divisionGenderToken,
+  formatTime,
+  formatTimeHM,
+  encodeShareParams,
+  STATION_NAMES,
+  STATION_SLUGS,
+  type Gender,
+  type Division,
+} from "../lib/hyroxEngine";
 
 function formatGap(seconds: number): string {
   const sign = seconds >= 0 ? "+" : "−";
@@ -56,181 +40,6 @@ function parseTimeInput(input: string): number | null {
   const n = parseFloat(trimmed);
   if (isNaN(n) || n < 0) return null;
   return n;
-}
-
-// Thresholds derived from 2026 aggregated race data.
-function getLevel(
-  totalSeconds: number,
-  gender: Gender,
-  division: Division,
-): { token: Level; label: string; color: string } {
-  const mins = totalSeconds / 60;
-  const make = (token: Level, color: string) => ({
-    token,
-    label: LEVEL_LABELS[token],
-    color,
-  });
-  if (division === "pro") {
-    if (gender === "men") {
-      if (mins < 65) return make("elite", "#10b981");
-      if (mins < 80) return make("competitive", "#38bdf8");
-      if (mins < 100) return make("average", "#f59e0b");
-      return make("beginner", "#f87171");
-    }
-    if (mins < 75) return make("elite", "#10b981");
-    if (mins < 90) return make("competitive", "#38bdf8");
-    if (mins < 110) return make("average", "#f59e0b");
-    return make("beginner", "#f87171");
-  }
-  if (gender === "men") {
-    if (mins < 70) return make("elite", "#10b981");
-    if (mins < 90) return make("competitive", "#38bdf8");
-    if (mins < 110) return make("average", "#f59e0b");
-    return make("beginner", "#f87171");
-  }
-  if (mins < 80) return make("elite", "#10b981");
-  if (mins < 100) return make("competitive", "#38bdf8");
-  if (mins < 120) return make("average", "#f59e0b");
-  return make("beginner", "#f87171");
-}
-
-// Base station times in seconds, derived from 2026 aggregated race averages.
-const BASE_OPEN: Record<Gender, number[]> = {
-  men:   [260, 160, 170, 300, 285, 140, 270, 360],
-  women: [305, 155, 170, 330, 305, 145, 300, 420],
-};
-
-const STATION_NAMES = [
-  "SkiErg",
-  "Sled Push",
-  "Sled Pull",
-  "Burpee Broad Jumps",
-  "Rowing",
-  "Farmers Carry",
-  "Sandbag Lunges",
-  "Wall Balls",
-];
-
-const STATION_SLUGS = [
-  "skierg",
-  "sled-push",
-  "sled-pull",
-  "burpee-broad-jumps",
-  "rowing",
-  "farmers-carry",
-  "sandbag-lunges",
-  "wall-balls",
-];
-
-// Per-station multipliers for Pro division.
-const PRO_MULTIPLIERS: number[] = [0.92, 1.28, 1.20, 0.85, 0.92, 1.05, 1.08, 1.05];
-
-// Target lift-to-bodyweight ratios for the "average" athlete in each division.
-function getStrengthRatios(gender: Gender, division: Division) {
-  if (gender === "men") {
-    return division === "pro"
-      ? { benchPerBw: 1.25, deadliftPerBw: 1.85 }
-      : { benchPerBw: 1.0, deadliftPerBw: 1.5 };
-  }
-  return division === "pro"
-    ? { benchPerBw: 1.0, deadliftPerBw: 1.4 }
-    : { benchPerBw: 0.75, deadliftPerBw: 1.1 };
-}
-
-function divisionGenderToken(gender: Gender, division: Division): DivisionGender {
-  if (division === "pro") return gender === "men" ? "proMen" : "proWomen";
-  return gender === "men" ? "openMen" : "openWomen";
-}
-
-// Neutral bodyweight per division/gender — engine produces today's prediction
-// when the athlete is at this weight. Deltas in either direction shift station
-// times: heavier athletes pay on running and bodyweight stations, but get a
-// real advantage on the sleds (mass = leverage/grip).
-function getReferenceBodyweight(gender: Gender, division: Division): number {
-  if (gender === "men") return division === "pro" ? 82 : 80;
-  return division === "pro" ? 67 : 65;
-}
-
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, v));
-}
-
-function calculate(
-  gender: Gender,
-  division: Division,
-  fiveKmMinutes: number,
-  fiveKmSeconds: number,
-  benchKg: number,
-  deadliftKg: number,
-  bodyweightKg: number,
-) {
-  const fiveKmTotal = fiveKmMinutes * 60 + fiveKmSeconds;
-  const pacePerKm = fiveKmTotal / 5;
-
-  // Lift / bodyweight ratios, normalised against division-specific targets.
-  const targets = getStrengthRatios(gender, division);
-  const benchNorm    = (benchKg / bodyweightKg) / targets.benchPerBw;
-  const deadliftNorm = (deadliftKg / bodyweightKg) / targets.deadliftPerBw;
-
-  const upperFactor    = Math.max(0.75, Math.min(1.30, 1.5 - benchNorm * 0.5));
-  const lowerFactor    = Math.max(0.75, Math.min(1.30, 1.5 - deadliftNorm * 0.5));
-  const combinedFactor = (upperFactor + lowerFactor) / 2;
-
-  const proRunBonus = division === "pro" ? 0.03 : 0;
-  const fatigueFactor =
-    combinedFactor < 0.90
-      ? 1.05 - proRunBonus
-      : combinedFactor < 1.05
-      ? 1.13 - proRunBonus
-      : 1.22 - proRunBonus;
-
-  // Bodyweight as an independent factor on top of strength ratios.
-  // bwDelta is signed: positive = heavier than reference, negative = lighter.
-  // At the reference weight all factors collapse to 1.0 (regression-safe).
-  const refBw   = getReferenceBodyweight(gender, division);
-  const bwDelta = (bodyweightKg - refBw) / refBw;
-
-  const runWeightFactor = clamp(1 + bwDelta * 0.18, 0.95, 1.10);
-
-  // Station order: SkiErg, Sled Push, Sled Pull, Burpees, Row, FC, Lunges, WB
-  const weightFactors = [
-    1.0,
-    clamp(1 - bwDelta * 0.30, 0.85, 1.15),
-    clamp(1 - bwDelta * 0.30, 0.85, 1.15),
-    clamp(1 + bwDelta * 0.35, 0.90, 1.20),
-    1.0,
-    1.0,
-    clamp(1 + bwDelta * 0.15, 0.95, 1.10),
-    clamp(1 + bwDelta * 0.18, 0.95, 1.10),
-  ];
-
-  const runTimePerKm = pacePerKm * fatigueFactor * runWeightFactor;
-  const totalRunning = runTimePerKm * 8;
-
-  const stationFactors = [
-    upperFactor,
-    lowerFactor,
-    upperFactor,
-    lowerFactor,
-    combinedFactor,
-    upperFactor,
-    lowerFactor,
-    upperFactor,
-  ];
-
-  const bases = BASE_OPEN[gender];
-  const stations: StationResult[] = STATION_NAMES.map((name, i) => {
-    const base = bases[i] * (division === "pro" ? PRO_MULTIPLIERS[i] : 1.0);
-    return { slug: STATION_SLUGS[i], name, time: base * stationFactors[i] * weightFactors[i] };
-  });
-
-  const totalStations = stations.reduce((sum, st) => sum + st.time, 0);
-
-  const roxBase = division === "pro" ? 300 : 420;
-  const transitions = combinedFactor < 0.90 ? roxBase * 0.75 : combinedFactor < 1.05 ? roxBase : roxBase * 1.35;
-  const total = totalRunning + totalStations + transitions;
-
-  return { totalRunning, totalStations, transitions, total, stations, runTimePerKm };
 }
 
 interface DiagnosisGap {
@@ -282,7 +91,15 @@ export default function HyroxCalculator() {
   const parsedBw       = Math.max(35, parseInt(bodyweightKg, 10) || 80);
 
   const result = useMemo(
-    () => calculate(gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift, parsedBw),
+    () => calculate({
+      gender,
+      division,
+      fiveKmMinutes: parsedMin,
+      fiveKmSeconds: parsedSec,
+      benchKg: parsedBench,
+      deadliftKg: parsedDeadlift,
+      bodyweightKg: parsedBw,
+    }),
     [gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift, parsedBw],
   );
   const level         = getLevel(result.total, gender, division);
@@ -353,6 +170,35 @@ export default function HyroxCalculator() {
       : undefined,
     [nearestGoal],
   );
+
+  const shareUrl = useMemo(() => {
+    const params = encodeShareParams({
+      gender,
+      division,
+      fiveKmMinutes: parsedMin,
+      fiveKmSeconds: parsedSec,
+      benchKg: parsedBench,
+      deadliftKg: parsedDeadlift,
+      bodyweightKg: parsedBw,
+    });
+    if (typeof window === "undefined") return `/calculator/share/?${params}`;
+    return `${window.location.origin}/calculator/share/?${params}`;
+  }, [gender, division, parsedMin, parsedSec, parsedBench, parsedDeadlift, parsedBw]);
+
+  const shareText = useMemo(
+    () =>
+      `Predicted Hyrox finish time: ${formatTimeHM(result.total)} (${divisionLabel}). What's your prediction?`,
+    [result.total, divisionLabel],
+  );
+
+  const [copied, setCopied] = useState(false);
+  function copyShareLink() {
+    if (typeof navigator === "undefined") return;
+    navigator.clipboard?.writeText(shareUrl).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    }).catch(() => {});
+  }
 
   const s = {
     card:        "bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6",
@@ -602,6 +448,43 @@ export default function HyroxCalculator() {
               </div>
             </div>
           )}
+
+          {/* ── Share row ── */}
+          <div className="mb-6 bg-[#09090b] border border-[#27272a] rounded-xl p-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Share your prediction</div>
+                <div className="text-xs text-[#52525b]">A clean result page opens at /calculator/share/</div>
+              </div>
+              <button
+                type="button"
+                onClick={copyShareLink}
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors bg-[#38bdf8]/10 border border-[#38bdf8]/30 px-3 py-1.5 rounded-lg"
+              >
+                {copied ? "Link copied" : "Copy link"}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={`https://twitter.com/intent/tweet?${new URLSearchParams({ text: shareText, url: shareUrl }).toString()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+              >Share on X</a>
+              <a
+                href={`https://reddit.com/submit?${new URLSearchParams({ url: shareUrl, title: shareText }).toString()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+              >Share on Reddit</a>
+              <a
+                href={`https://api.whatsapp.com/send?${new URLSearchParams({ text: `${shareText} ${shareUrl}` }).toString()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+              >Send on WhatsApp</a>
+            </div>
+          </div>
 
           {/* Per-station breakdown */}
           <div className="space-y-1.5">            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#52525b] px-1 mb-1">
