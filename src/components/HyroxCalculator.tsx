@@ -217,7 +217,7 @@ export default function HyroxCalculator() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {/* ── INPUTS ── */}
@@ -425,7 +425,7 @@ export default function HyroxCalculator() {
             <div className="mb-6 bg-[#0c1a25] border border-[#38bdf8]/30 rounded-xl p-4">
               <div className="text-[10px] font-bold uppercase tracking-wider text-[#38bdf8] mb-1">Your next target</div>
               <div className="text-sm font-black text-[#f4f4f5] mb-1">
-                {nearestGoal.goalShort} — {nearestGoal.goalLabel}
+                {nearestGoal.goalShort} Hyrox
               </div>
               <p className="text-xs text-[#a1a1aa] leading-relaxed mb-3">
                 {nearestGoal.description}

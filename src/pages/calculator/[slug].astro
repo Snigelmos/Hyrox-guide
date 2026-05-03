@@ -14,21 +14,14 @@ const { slug } = Astro.props;
 const goal = GOAL_TIME_CONFIGS.find((g) => g.slug === slug)!;
 const matchingPlan = TRAINING_PLANS.find((p) => p.relatedCalculatorSlug === goal.slug);
 
-const formatHM = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.round((seconds % 3600) / 60);
-  return `${h}:${m.toString().padStart(2, "0")}:00`;
-};
-
 const totalRunMinutes = Math.floor(goal.totalRunSeconds / 60);
-const totalStationMinutes = Math.floor(goal.totalStationSeconds / 60);
 
 const title = `How to Hit ${goal.goalShort} Hyrox (${goal.audienceLabel}) — Splits, Pace, and Training Plan`;
 const metaTitle = `${goal.goalShort} Hyrox Splits & Training Plan — ${goal.audienceLabel} Guide`;
 const description = `Detailed split breakdown for ${goal.goalShort} Hyrox (${goal.audienceLabel}) — ${goal.runningPace} running pace, station-by-station targets, and the training plan to build it.`;
 
 const breadcrumbs = [
-  { name: "Calculator", url: "/calculator/" },
+  { name: "Race Time Predictor", url: "/calculator/" },
   { name: `${goal.goalShort} Hyrox` },
 ];
 
@@ -46,6 +39,18 @@ const faqItems = [
     answer: `Most ${goal.audienceLabel} need ${goal.goalSeconds < 4500 ? "9-12 months of structured training" : goal.goalSeconds < 5400 ? "6-9 months" : "8-16 weeks"} to hit ${goal.goalShort}, depending on starting fitness. The biggest variables are running base and sled push capacity.`,
   },
 ];
+
+const otherGoals = GOAL_TIME_CONFIGS.filter(
+  (g) => g.slug !== goal.slug && g.audience === goal.audience,
+).slice(0, 6);
+
+const roxzoneMin = Math.floor(goal.totalRoxzoneSeconds / 60);
+const roxzoneSec = (goal.totalRoxzoneSeconds % 60).toString().padStart(2, "0");
+const totalRunMin = Math.floor(goal.totalRunSeconds / 60);
+const totalRunSec = (goal.totalRunSeconds % 60).toString().padStart(2, "0");
+const totalStationMin = Math.floor(goal.totalStationSeconds / 60);
+const totalStationSec = (goal.totalStationSeconds % 60).toString().padStart(2, "0");
+const avgRunMinutes = Math.round((goal.totalRunSeconds / 8 / 60) * 100) / 100;
 ---
 
 <BaseLayout
@@ -62,7 +67,7 @@ const faqItems = [
         <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
         <li class="flex items-center gap-2">
           <span class="text-text-muted/40">/</span>
-          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors no-underline">Calculator</a>
+          <a href="/calculator/" class="text-text-muted hover:text-accent transition-colors no-underline">Race Time Predictor</a>
         </li>
         <li class="flex items-center gap-2">
           <span class="text-text-muted/40">/</span>
@@ -71,7 +76,7 @@ const faqItems = [
       </ol>
     </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
       <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{goal.audienceLabel} · Goal time</div>
       <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-gradient-accent break-words">
         How to Hit {goal.goalShort} Hyrox ({goal.audienceLabel})
@@ -81,7 +86,7 @@ const faqItems = [
       </p>
     </header>
 
-    <section class="mb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <section class="mb-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl">
       <div class="bg-bg-card border border-border rounded-2xl p-5 min-h-[92px]">
         <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Goal time</div>
         <div class="text-xl sm:text-2xl md:text-3xl font-black text-text-heading tabular-nums tracking-tight">{goal.goalLabel}</div>
@@ -92,90 +97,192 @@ const faqItems = [
       </div>
       <div class="bg-bg-card border border-border rounded-2xl p-5 min-h-[92px]">
         <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Total run time</div>
-        <div class="text-xl sm:text-2xl md:text-3xl font-black text-text-heading tabular-nums tracking-tight">{Math.floor(goal.totalRunSeconds / 60)}:{(goal.totalRunSeconds % 60).toString().padStart(2, "0")}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl font-black text-text-heading tabular-nums tracking-tight">{totalRunMin}:{totalRunSec}</div>
       </div>
       <div class="bg-bg-card border border-border rounded-2xl p-5 min-h-[92px]">
         <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Total station time</div>
-        <div class="text-xl sm:text-2xl md:text-3xl font-black text-text-heading tabular-nums tracking-tight">{Math.floor(goal.totalStationSeconds / 60)}:{(goal.totalStationSeconds % 60).toString().padStart(2, "0")}</div>
+        <div class="text-xl sm:text-2xl md:text-3xl font-black text-text-heading tabular-nums tracking-tight">{totalStationMin}:{totalStationSec}</div>
       </div>
     </section>
 
-    <section class="prose md:prose-lg max-w-none">
-      <h2>Athlete profile to hit {goal.goalShort}</h2>
-      <p>{goal.athleteProfile}</p>
-
-      <h2>Recommended station splits for {goal.goalShort}</h2>
-      <p>
+    <!-- Primary content: Recommended station splits — always visible, top priority -->
+    <article class="max-w-4xl mb-10">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Race plan</div>
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">Recommended station splits for {goal.goalShort}</h2>
+      <p class="text-text-muted leading-relaxed mb-6 max-w-2xl">
         These are the per-station target times you need to average to hit {goal.goalLabel}. Slow on one? Make it up on running or another station. Faster on one? Bank time for fatigue later.
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Station</th>
-            <th>Target time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {goal.splits.map((s) => (
+      <div class="overflow-x-auto rounded-2xl border border-border">
+        <table class="w-full text-sm">
+          <thead class="bg-bg-card">
             <tr>
-              <td><strong>{s.name}</strong></td>
-              <td>{s.time}</td>
+              <th class="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent">Station</th>
+              <th class="text-right px-5 py-3 text-xs font-bold uppercase tracking-wider text-accent">Target time</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2>Running splits</h2>
-      <p>
-        Hold {goal.runningPace} for each of the 8 × 1 km runs. That's {Math.round(goal.totalRunSeconds / 8 / 60 * 100) / 100} minutes per run on average. Don't surge in run 1 — bank patience instead.
+          </thead>
+          <tbody>
+            {goal.splits.map((s) => (
+              <tr class="border-t border-border/50">
+                <td class="px-5 py-3 text-text-heading font-medium">{s.name}</td>
+                <td class="px-5 py-3 text-right font-mono text-accent font-semibold tabular-nums">{s.time}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-text-muted mt-3">
+        Hold {goal.runningPace} for each of the 8 × 1 km runs ({avgRunMinutes} min per run on average) and budget ~{roxzoneMin}:{roxzoneSec} cumulative for the 16 transitions.
       </p>
+    </article>
 
-      <h2>Roxzone budget</h2>
-      <p>
-        Allow approximately {Math.floor(goal.totalRoxzoneSeconds / 60)}:{(goal.totalRoxzoneSeconds % 60).toString().padStart(2, "0")} cumulative across the 16 transitions (run-to-station and station-to-run). This is one of the biggest hidden time costs — practice efficient transitions.
-      </p>
-
-      <h2>Training focus to build {goal.goalShort} fitness</h2>
-      <ul>
-        {goal.trainingFocus.map((f) => <li>{f}</li>)}
-      </ul>
-
-      {matchingPlan && (
-        <div class="not-prose my-8 bg-bg-card border border-accent/30 rounded-2xl p-6">
-          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Ready-to-follow training plan</div>
-          <h3 class="text-xl font-black text-text-heading mb-2">
-            <a href={`/training-plans/${matchingPlan.slug}/`} class="hover:text-accent transition-colors no-underline">
-              {matchingPlan.title} →
-            </a>
-          </h3>
-          <p class="text-text-muted text-sm leading-relaxed">
-            {matchingPlan.durationWeeks} weeks, {matchingPlan.sessionsPerWeek} sessions/week, week-by-week schedule pre-calibrated to {goal.goalShort} pace and station targets.
+    <!-- Collapsible deeper sections -->
+    <div class="max-w-4xl space-y-3 mb-12">
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Roxzone budget</div>
+            <div class="text-base font-bold text-text-heading">~{roxzoneMin}:{roxzoneSec} across 16 transitions</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 text-sm text-text-muted leading-relaxed">
+          <p>
+            Allow approximately {roxzoneMin}:{roxzoneSec} cumulative across the 16 transitions (run-to-station and station-to-run). This is one of the biggest hidden time costs in a Hyrox — practising clean, efficient transitions in training is worth 30–60 seconds on race day.
           </p>
         </div>
+      </details>
+
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Running splits</div>
+            <div class="text-base font-bold text-text-heading">{goal.runningPace} per km, 8 × 1 km runs</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 text-sm text-text-muted leading-relaxed">
+          <p>
+            Hold {goal.runningPace} for each of the 8 × 1 km runs. That's {avgRunMinutes} minutes per run on average. Don't surge in run 1 — bank patience instead. The runs after the sled push and burpee broad jumps will feel the hardest; trust the pace and let your legs come back over the next 200–300 m.
+          </p>
+        </div>
+      </details>
+
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Training focus</div>
+            <div class="text-base font-bold text-text-heading">What to build to hit {goal.goalShort}</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1">
+          <ul class="text-sm text-text-muted leading-relaxed space-y-2 list-disc pl-5 marker:text-accent">
+            {goal.trainingFocus.map((f) => <li>{f}</li>)}
+          </ul>
+          {matchingPlan && (
+            <a
+              href={`/training-plans/${matchingPlan.slug}/`}
+              class="mt-5 block bg-bg border border-accent/30 rounded-xl p-5 hover:border-accent/60 hover:bg-accent/5 transition-all no-underline group/plan"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Ready-to-follow training plan</div>
+              <div class="text-base font-black text-text-heading group-hover/plan:text-accent transition-colors">{matchingPlan.title} →</div>
+              <p class="text-text-muted text-sm leading-relaxed mt-1">
+                {matchingPlan.durationWeeks} weeks, {matchingPlan.sessionsPerWeek} sessions/week, week-by-week schedule pre-calibrated to {goal.goalShort} pace and station targets.
+              </p>
+            </a>
+          )}
+        </div>
+      </details>
+
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Athlete profile</div>
+            <div class="text-base font-bold text-text-heading">Who hits {goal.goalShort}</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 text-sm text-text-muted leading-relaxed">
+          <p>{goal.athleteProfile}</p>
+        </div>
+      </details>
+
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Realism check</div>
+            <div class="text-base font-bold text-text-heading">Where {goal.goalShort} sits in the field</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 text-sm text-text-muted leading-relaxed">
+          <p>{goal.realismCheck}</p>
+        </div>
+      </details>
+
+      <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">FAQ</div>
+            <div class="text-base font-bold text-text-heading">Common questions about {goal.goalShort}</div>
+          </div>
+          <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 space-y-4">
+          {faqItems.map((f) => (
+            <div>
+              <h3 class="text-sm font-bold text-text-heading mb-1">{f.question}</h3>
+              <p class="text-sm text-text-muted leading-relaxed">{f.answer}</p>
+            </div>
+          ))}
+        </div>
+      </details>
+
+      {otherGoals.length > 0 && (
+        <details class="group bg-bg-card border border-border rounded-2xl overflow-hidden">
+          <summary class="cursor-pointer px-5 py-4 flex items-center justify-between gap-3 hover:bg-bg-card-hover transition-colors list-none">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-0.5">Other goal-time guides</div>
+              <div class="text-base font-bold text-text-heading">More targets for {goal.audienceLabel}</div>
+            </div>
+            <span class="text-accent text-xl transition-transform group-open:rotate-180" aria-hidden="true">▾</span>
+          </summary>
+          <div class="px-5 pb-5 pt-1">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {otherGoals.map((g) => (
+                <a
+                  href={`/calculator/${g.slug}/`}
+                  class="bg-bg border border-border rounded-xl p-3 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline group/tile"
+                >
+                  <div class="text-sm font-black text-text-heading group-hover/tile:text-accent transition-colors">{g.goalShort}</div>
+                  <div class="text-xs text-text-muted">{g.goalLabel}</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </details>
       )}
+    </div>
 
-      <h2>Use the live calculator to validate</h2>
-      <p>
-        These splits are average-athlete projections. Your real splits will skew based on your strengths — fast runners can give back time on stations; strong lifters can give back time on running. <a href="/calculator/">Run your specific 5K time, bench, and deadlift through our calculator</a> to see your projected finish and where to focus.
+    <!-- Validate-with-calculator CTA: kept outside the collapsibles since it's a navigation hook -->
+    <div class="max-w-4xl bg-accent/5 border border-accent/20 rounded-2xl p-5 sm:p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Validate against your stats</div>
+      <h3 class="text-lg sm:text-xl font-black text-text-heading mb-2">Run your own numbers through the predictor</h3>
+      <p class="text-text-muted text-sm leading-relaxed mb-3 max-w-2xl">
+        These splits are average-athlete projections. Your real splits will skew based on your strengths — fast runners can give back time on stations; strong lifters can give back time on running. Plug in your 5 km, bench and deadlift to see how your prediction compares.
       </p>
-
-      <h2>Realism check</h2>
-      <p>{goal.realismCheck}</p>
-
-      <h2>Frequently asked questions</h2>
-      {faqItems.map((f) => (
-        <>
-          <h3>{f.question}</h3>
-          <p>{f.answer}</p>
-        </>
-      ))}
-
-      <h2>Other goal-time guides</h2>
-      <ul>
-        {GOAL_TIME_CONFIGS.filter((g) => g.slug !== goal.slug && g.audience === goal.audience).slice(0, 5).map((g) => (
-          <li><a href={`/calculator/${g.slug}/`}>{g.goalShort} Hyrox ({g.audienceLabel}) splits and training plan</a></li>
-        ))}
-      </ul>
-    </section>
+      <a
+        href="/calculator/"
+        class="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent-dim transition-colors no-underline"
+      >
+        Open the Race Time Predictor →
+      </a>
+    </div>
   </div>
 </BaseLayout>
+
+<style>
+  /* Hide the default disclosure marker so we can use our own chevron */
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary { list-style: none; }
+</style>

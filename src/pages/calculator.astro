@@ -3,8 +3,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import HyroxCalculator from "../components/HyroxCalculator";
 import { GOAL_TIME_CONFIGS, PRO_GOAL_TIME_CONFIGS } from "../data/calculator-goals";
 
-const menGoals    = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men");
-const womenGoals  = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women");
+// Overview grid: keep one tile per 10-minute bucket so men and women rows are
+// visually balanced and free of 5-minute clutter. Cap women at 2:00 (7200s) so
+// the row matches the men's 60–120 set; the longer slow-end pages
+// (sub-130 → sub-180) still exist as URLs and via the "Jump to your goal time"
+// search box below.
+const menGoals    = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men"   && g.goalSeconds % 600 === 0);
+const womenGoals  = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women" && g.goalSeconds % 600 === 0 && g.goalSeconds <= 7200);
 const proMenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-men");
 const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-women");
 ---
@@ -20,7 +25,7 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
       <nav class="mb-4 text-sm" aria-label="Breadcrumb">
         <ol class="flex items-center gap-2 flex-wrap">
           <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
-          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Time Calculator</span></li>
+          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Race Time Predictor</span></li>
         </ol>
       </nav>
       <h1 class="text-3xl md:text-5xl font-black">
@@ -33,117 +38,6 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
 
     <!-- Calculator first, immediately visible -->
     <HyroxCalculator client:only="react" />
-
-    <!-- Methodology -->
-    <div class="max-w-3xl mt-12 space-y-8" id="methodology">
-      <header>
-        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Methodology</div>
-        <h2 class="text-2xl md:text-3xl font-black text-text-heading">How this calculator works</h2>
-        <p class="mt-2 text-sm text-text-muted leading-relaxed">
-          Built and maintained by John, our race-strategy editor, against aggregated 2026 results data.
-        </p>
-      </header>
-
-      <div class="bg-bg-card border border-border rounded-2xl p-6">
-        <h3 class="text-base font-black text-text-heading mb-3">Why we ask for these inputs</h3>
-        <p class="text-text-muted text-sm leading-relaxed mb-3">
-          Three numbers cover most of the variance in Hyrox finish times:
-        </p>
-        <ul class="text-sm text-text-muted leading-relaxed space-y-2 mb-3">
-          <li><strong class="text-text-heading">5 km time:</strong> sets your running baseline. Half of a Hyrox is running, so this number alone explains roughly 40–50% of your finish time.</li>
-          <li><strong class="text-text-heading">Bench press 1RM:</strong> proxy for upper-body strength endurance. Drives SkiErg, sled pull, farmers carry, and wall balls.</li>
-          <li><strong class="text-text-heading">Deadlift 1RM:</strong> proxy for lower-body strength. Drives sled push, sandbag lunges, and burpee broad jumps recovery.</li>
-          <li><strong class="text-text-heading">Bodyweight:</strong> matters in two directions. Heavier athletes pay on running and bodyweight stations; lighter athletes pay on the sleds.</li>
-        </ul>
-        <p class="text-text-muted text-sm leading-relaxed">
-          We chose bench and deadlift instead of, say, sled push 1RM or rowing 500 m PR because most readers know their gym lifts. They are an imperfect proxy, which is the point of the next section.
-        </p>
-      </div>
-
-      <div class="bg-bg-card border border-border rounded-2xl p-6">
-        <h3 class="text-base font-black text-text-heading mb-3">Where the model is weak</h3>
-        <p class="text-text-muted text-sm leading-relaxed mb-3">
-          The model assumes your strength is roughly balanced and that your aerobic engine matches your 5 km pace under fresh legs. It will be off if any of these are true:
-        </p>
-        <ul class="text-sm text-text-muted leading-relaxed space-y-2 mb-3">
-          <li><strong class="text-text-heading">Strong on lifts, weak on conditioning:</strong> the calculator will under-predict because it does not know how badly you'll fade in the back half. Open the trainer panel below the result and enter real station times for a corrected diagnosis.</li>
-          <li><strong class="text-text-heading">Pure runner with no station experience:</strong> we under-weight the technical penalty on first-time wall balls and burpee broad jumps. Expect to land 5–10 minutes slower than the prediction in your first race.</li>
-          <li><strong class="text-text-heading">Pacing failures:</strong> going out too hard on SkiErg or sled push can add 10+ minutes to a Hyrox. The model assumes a competent pacing strategy.</li>
-        </ul>
-        <p class="text-text-muted text-sm leading-relaxed">
-          <strong class="text-text-heading">Realistic accuracy band:</strong> most athletes land within 5–15 minutes of their actual finish time on a first prediction. For trained athletes with at least one race under their belt, the band typically narrows to ±5 minutes.
-        </p>
-      </div>
-
-      <div class="bg-bg-card border border-border rounded-2xl p-6">
-        <h3 class="text-base font-black text-text-heading mb-3">Open vs Pro assumptions</h3>
-        <p class="text-text-muted text-sm leading-relaxed mb-3">
-          Pro division uses heavier sleds, heavier sandbag, heavier wall ball, and heavier kettlebells. The engine multiplies each station's base time by Pro-specific factors when you flip the toggle. The biggest deltas:
-        </p>
-        <ul class="text-sm text-text-muted leading-relaxed space-y-2">
-          <li>Sled push: ~28% longer in Pro</li>
-          <li>Sled pull: ~20% longer in Pro</li>
-          <li>Burpee broad jumps: ~15% faster (Pro athletes are typically fitter, not heavier-burpees)</li>
-          <li>Strength-ratio targets: bench 1.0×bw → 1.25×bw and deadlift 1.5×bw → 1.85×bw for the "competent" Pro Open Men benchmark.</li>
-        </ul>
-      </div>
-
-      <div class="bg-accent/5 border border-accent/20 rounded-2xl p-6">
-        <h3 class="text-base font-black text-text-heading mb-2">Calibration is ongoing</h3>
-        <p class="text-text-muted text-sm leading-relaxed">
-          The model is recalibrated against new race data on every cycle. The version live today is built against the 2026 results dataset and updated when the next major event drop is published. If you spot a prediction that is way off versus your real finish time, that data will end up in the next pass.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <a
-          href="/racing-guide/times/"
-          class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
-        >
-          <span class="text-2xl">⏱️</span>
-          <div>
-            <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Full time benchmarks</h3>
-            <p class="text-text-muted text-xs">Detailed benchmark tables for every level</p>
-          </div>
-        </a>
-        <a
-          href="/training/"
-          class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
-        >
-          <span class="text-2xl">💪</span>
-          <div>
-            <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Training programs</h3>
-            <p class="text-text-muted text-xs">Get faster with structured plans</p>
-          </div>
-        </a>
-      </div>
-
-      <div class="bg-bg-card border border-border rounded-2xl p-6">
-        <h3 class="text-base font-black text-text-heading mb-3">Match your prediction to a goal-time blueprint</h3>
-        <p class="text-text-muted text-sm leading-relaxed mb-4">
-          Pick the blueprint closest to your predicted finish for a station-by-station split target plus the training plan that gets you there.
-        </p>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-          {[
-            { href: "/blog/hyrox-sub-60-blueprint/", label: "Sub-60 blueprint" },
-            { href: "/blog/hyrox-sub-75-blueprint/", label: "Sub-75 blueprint" },
-            { href: "/blog/hyrox-sub-90-blueprint/", label: "Sub-90 blueprint" },
-            { href: "/blog/best-hyrox-pacing-strategy/", label: "Pacing strategy" },
-            { href: "/race-day-checklist/", label: "Race-day checklist" },
-          ].map((link) => (
-            <a
-              href={link.href}
-              class="group flex items-center justify-between gap-1 bg-bg border border-border rounded-lg px-3 py-2 hover:border-accent/40 transition-all no-underline min-h-[44px]"
-            >
-              <span class="text-xs font-semibold text-text-heading group-hover:text-accent transition-colors leading-tight">
-                {link.label}
-              </span>
-              <span class="text-accent/60 text-xs flex-shrink-0">→</span>
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
 
     <div class="max-w-4xl mt-16 pt-10 border-t border-border">
       <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Goal-time split guides</h2>
@@ -321,6 +215,110 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
         if (e.key === "Enter" && btn) btn.click();
       });
     </script>
+
+    <!-- Methodology — moved to the bottom so the calculator and goal-time guides come first -->
+    <div class="max-w-3xl mt-16 pt-10 border-t border-border space-y-8" id="methodology">
+      <header>
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Methodology</div>
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading">How this calculator works</h2>
+        <p class="mt-2 text-sm text-text-muted leading-relaxed">
+          Built by the editorial team against aggregated 2026 results data: running coefficients by Niklas (5K input), strength coefficients by John (bench and deadlift), and the race-strategy weighting by Jesper.
+        </p>
+      </header>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <h3 class="text-base font-black text-text-heading mb-3">Why we ask for these inputs</h3>
+        <p class="text-text-muted text-sm leading-relaxed mb-3">
+          Three numbers cover most of the variance in Hyrox finish times:
+        </p>
+        <ul class="text-sm text-text-muted leading-relaxed space-y-2 mb-3">
+          <li><strong class="text-text-heading">5 km time:</strong> sets your running baseline. Half of a Hyrox is running, so this number alone explains roughly 40–50% of your finish time.</li>
+          <li><strong class="text-text-heading">Bench press 1RM:</strong> proxy for upper-body strength endurance. Drives SkiErg, sled pull, farmers carry, and wall balls.</li>
+          <li><strong class="text-text-heading">Deadlift 1RM:</strong> proxy for lower-body strength. Drives sled push, sandbag lunges, and burpee broad jumps recovery.</li>
+          <li><strong class="text-text-heading">Bodyweight:</strong> matters in two directions. Heavier athletes pay on running and bodyweight stations; lighter athletes pay on the sleds.</li>
+        </ul>
+        <p class="text-text-muted text-sm leading-relaxed">
+          We chose bench and deadlift instead of, say, sled push 1RM or rowing 500 m PR because most readers know their gym lifts. They are an imperfect proxy, which is the point of the next section.
+        </p>
+      </div>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <h3 class="text-base font-black text-text-heading mb-3">Where the model is weak</h3>
+        <p class="text-text-muted text-sm leading-relaxed mb-3">
+          The model assumes your strength is roughly balanced and that your aerobic engine matches your 5 km pace under fresh legs. It will be off if any of these are true:
+        </p>
+        <ul class="text-sm text-text-muted leading-relaxed space-y-2 mb-3">
+          <li><strong class="text-text-heading">Strong on lifts, weak on conditioning:</strong> the calculator will under-predict because it does not know how badly you'll fade in the back half. Open the trainer panel below the result and enter real station times for a corrected diagnosis.</li>
+          <li><strong class="text-text-heading">Pure runner with no station experience:</strong> we under-weight the technical penalty on first-time wall balls and burpee broad jumps. Expect to land 5–10 minutes slower than the prediction in your first race.</li>
+          <li><strong class="text-text-heading">Pacing failures:</strong> going out too hard on SkiErg or sled push can add 10+ minutes to a Hyrox. The model assumes a competent pacing strategy.</li>
+        </ul>
+        <p class="text-text-muted text-sm leading-relaxed">
+          <strong class="text-text-heading">Realistic accuracy band:</strong> most athletes land within 5–15 minutes of their actual finish time on a first prediction. For trained athletes with at least one race under their belt, the band typically narrows to ±5 minutes.
+        </p>
+      </div>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <h3 class="text-base font-black text-text-heading mb-3">Open vs Pro assumptions</h3>
+        <p class="text-text-muted text-sm leading-relaxed mb-3">
+          Pro division uses heavier sleds, heavier sandbag, heavier wall ball, and heavier kettlebells. The engine multiplies each station's base time by Pro-specific factors when you flip the toggle. The biggest deltas:
+        </p>
+        <ul class="text-sm text-text-muted leading-relaxed space-y-2">
+          <li>Sled push: ~28% longer in Pro</li>
+          <li>Sled pull: ~20% longer in Pro</li>
+          <li>Burpee broad jumps: ~15% faster (Pro athletes are typically fitter, not heavier-burpees)</li>
+          <li>Strength-ratio targets: bench 1.0×bw → 1.25×bw and deadlift 1.5×bw → 1.85×bw for the "competent" Pro Open Men benchmark.</li>
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a
+          href="/racing-guide/times/"
+          class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
+        >
+          <span class="text-2xl">⏱️</span>
+          <div>
+            <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Full time benchmarks</h3>
+            <p class="text-text-muted text-xs">Detailed benchmark tables for every level</p>
+          </div>
+        </a>
+        <a
+          href="/training/"
+          class="group flex items-center gap-4 bg-bg-card border border-border rounded-xl p-5 hover:border-accent/30 transition-all"
+        >
+          <span class="text-2xl">💪</span>
+          <div>
+            <h3 class="font-bold text-text-heading group-hover:text-accent transition-colors text-sm">Training programs</h3>
+            <p class="text-text-muted text-xs">Get faster with structured plans</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="bg-bg-card border border-border rounded-2xl p-6">
+        <h3 class="text-base font-black text-text-heading mb-3">Goal-time blueprints — deeper reads</h3>
+        <p class="text-text-muted text-sm leading-relaxed mb-4">
+          Long-form blueprints with the training block, mindset, and race-day execution behind each tier.
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+          {[
+            { href: "/blog/hyrox-sub-60-blueprint/", label: "Sub-60 blueprint" },
+            { href: "/blog/hyrox-sub-75-blueprint/", label: "Sub-75 blueprint" },
+            { href: "/blog/hyrox-sub-90-blueprint/", label: "Sub-90 blueprint" },
+            { href: "/blog/best-hyrox-pacing-strategy/", label: "Pacing strategy" },
+            { href: "/race-day-checklist/", label: "Race-day checklist" },
+          ].map((link) => (
+            <a
+              href={link.href}
+              class="group flex items-center justify-between gap-1 bg-bg border border-border rounded-lg px-3 py-2 hover:border-accent/40 transition-all no-underline min-h-[44px]"
+            >
+              <span class="text-xs font-semibold text-text-heading group-hover:text-accent transition-colors leading-tight">
+                {link.label}
+              </span>
+              <span class="text-accent/60 text-xs flex-shrink-0">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
 
   </section>
 </BaseLayout>
