@@ -36,6 +36,18 @@ import { UK_GYMS } from "./uk-gyms.generated";
 import { DE_GYMS } from "./de-gyms.generated";
 import { FR_GYMS } from "./fr-gyms.generated";
 import { US_GYMS } from "./us-gyms.generated";
+import { ES_GYMS } from "./es-gyms.generated";
+import { IT_GYMS } from "./it-gyms.generated";
+import { AU_GYMS } from "./au-gyms.generated";
+import { NL_GYMS } from "./nl-gyms.generated";
+import { PL_GYMS } from "./pl-gyms.generated";
+import { CH_GYMS } from "./ch-gyms.generated";
+import { AT_GYMS } from "./at-gyms.generated";
+import { CA_GYMS } from "./ca-gyms.generated";
+import { SG_GYMS } from "./sg-gyms.generated";
+import { HK_GYMS } from "./hk-gyms.generated";
+import { CZ_GYMS } from "./cz-gyms.generated";
+import { AE_GYMS } from "./ae-gyms.generated";
 
 export type Region = "EU" | "NA" | "APAC" | "ME" | "SA";
 
@@ -573,6 +585,18 @@ const ALL_GYMS: Gym[] = dedupeBySlug(
   DE_GYMS,
   FR_GYMS,
   US_GYMS,
+  ES_GYMS,
+  IT_GYMS,
+  AU_GYMS,
+  NL_GYMS,
+  PL_GYMS,
+  CH_GYMS,
+  AT_GYMS,
+  CA_GYMS,
+  SG_GYMS,
+  HK_GYMS,
+  CZ_GYMS,
+  AE_GYMS,
 );
 
 const countryGymCounts = ALL_GYMS.reduce<Map<string, number>>((acc, gym) => {

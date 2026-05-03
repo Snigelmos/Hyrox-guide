@@ -18,6 +18,33 @@ const COUNTRY_TO_SLUG = {
   "France": "france",
   "United States": "united-states",
   "USA": "united-states",
+  "Spain": "spain",
+  "España": "spain",
+  "Italy": "italy",
+  "Italia": "italy",
+  "Australia": "australia",
+  "Netherlands": "netherlands",
+  "The Netherlands": "netherlands",
+  "Nederland": "netherlands",
+  "Poland": "poland",
+  "Polska": "poland",
+  "Switzerland": "switzerland",
+  "Schweiz": "switzerland",
+  "Suisse": "switzerland",
+  "Svizzera": "switzerland",
+  "Austria": "austria",
+  "Österreich": "austria",
+  "Canada": "canada",
+  "Singapore": "singapore",
+  "Hong Kong": "hong-kong",
+  "Hong Kong SAR": "hong-kong",
+  "Hong Kong SAR China": "hong-kong",
+  "Czech Republic": "czech-republic",
+  "Czechia": "czech-republic",
+  "Česko": "czech-republic",
+  "Česká republika": "czech-republic",
+  "United Arab Emirates": "united-arab-emirates",
+  "UAE": "united-arab-emirates",
 };
 
 const COUNTRY_TO_CODE = {
@@ -35,6 +62,33 @@ const COUNTRY_TO_CODE = {
   "France": "FR",
   "United States": "US",
   "USA": "US",
+  "Spain": "ES",
+  "España": "ES",
+  "Italy": "IT",
+  "Italia": "IT",
+  "Australia": "AU",
+  "Netherlands": "NL",
+  "The Netherlands": "NL",
+  "Nederland": "NL",
+  "Poland": "PL",
+  "Polska": "PL",
+  "Switzerland": "CH",
+  "Schweiz": "CH",
+  "Suisse": "CH",
+  "Svizzera": "CH",
+  "Austria": "AT",
+  "Österreich": "AT",
+  "Canada": "CA",
+  "Singapore": "SG",
+  "Hong Kong": "HK",
+  "Hong Kong SAR": "HK",
+  "Hong Kong SAR China": "HK",
+  "Czech Republic": "CZ",
+  "Czechia": "CZ",
+  "Česko": "CZ",
+  "Česká republika": "CZ",
+  "United Arab Emirates": "AE",
+  "UAE": "AE",
 };
 
 const COUNTRY_TO_NAME = {
@@ -43,6 +97,21 @@ const COUNTRY_TO_NAME = {
   "Wales": "United Kingdom",
   "Northern Ireland": "United Kingdom",
   "USA": "United States",
+  "España": "Spain",
+  "Italia": "Italy",
+  "The Netherlands": "Netherlands",
+  "Nederland": "Netherlands",
+  "Polska": "Poland",
+  "Schweiz": "Switzerland",
+  "Suisse": "Switzerland",
+  "Svizzera": "Switzerland",
+  "Österreich": "Austria",
+  "Hong Kong SAR": "Hong Kong",
+  "Hong Kong SAR China": "Hong Kong",
+  "Czechia": "Czech Republic",
+  "Česko": "Czech Republic",
+  "Česká republika": "Czech Republic",
+  "UAE": "United Arab Emirates",
 };
 
 // Canonical city aliases. Maps WPSL local-language / abbreviated /
@@ -58,6 +127,31 @@ const CITY_ALIASES = {
   "N Bellmore": "North Bellmore",
   "N. Bellmore": "North Bellmore",
   "Br2 9be": "London",
+  // Italy
+  "Roma": "Rome",
+  "Milano": "Milan",
+  // Austria
+  "Wien": "Vienna",
+  // Poland
+  "Warszawa": "Warsaw",
+  // Switzerland
+  "Zürich": "Zurich",
+  "Genève": "Geneva",
+  "Geneve": "Geneva",
+  // Czech Republic — collapse Praha district suffixes to Prague
+  "Praha": "Prague",
+  "Praha 1": "Prague",
+  "Praha 2": "Prague",
+  "Praha 3": "Prague",
+  "Praha 4": "Prague",
+  "Praha 5": "Prague",
+  "Praha 6": "Prague",
+  "Praha 7": "Prague",
+  "Praha 8": "Prague",
+  "Praha 9": "Prague",
+  "Praha 10": "Prague",
+  // Singapore — fix mixed-case typo
+  "SIngapore": "Singapore",
 };
 
 function titleCaseCity(c) {
@@ -153,19 +247,36 @@ export function regionFromCountry(country) {
       "Germany",
       "France",
       "Spain",
+      "España",
       "Italy",
+      "Italia",
       "Netherlands",
+      "The Netherlands",
+      "Nederland",
       "Belgium",
       "Poland",
+      "Polska",
       "Czech Republic",
+      "Czechia",
+      "Česko",
+      "Česká republika",
       "Austria",
+      "Österreich",
       "Switzerland",
+      "Schweiz",
+      "Suisse",
+      "Svizzera",
       "Ireland",
       "Portugal",
     ].includes(country)
   )
     return "EU";
   if (["United States", "Canada", "Mexico", "USA"].includes(country)) return "NA";
+  if (
+    ["Australia", "Singapore", "Hong Kong", "Hong Kong SAR", "Hong Kong SAR China"].includes(country)
+  )
+    return "APAC";
+  if (["United Arab Emirates", "UAE"].includes(country)) return "ME";
   return "EU";
 }
 
@@ -181,8 +292,25 @@ export function toGym(rec, options = {}) {
   const region = regionFromCountry(country);
   const aff = classifyAffiliation(rec.slug, rec.name);
 
+  // Some upstream WordPress slugs contain URL-encoded multi-byte characters
+  // (e.g. "kolour%e2%80%a7tsuen-wan"). URL-decode and re-slugify so the
+  // resulting slug is always [a-z0-9-] only and round-trips through Astro
+  // routing without escapement mismatch.
+  let safeSlug = rec.slug;
+  try {
+    if (safeSlug && /%[0-9a-fA-F]{2}/.test(safeSlug)) {
+      safeSlug = decodeURIComponent(safeSlug);
+    }
+  } catch {
+    // leave as-is on malformed escapes
+  }
+  if (safeSlug && !/^[a-z0-9-]+$/.test(safeSlug)) {
+    const cleaned = slugify(safeSlug);
+    if (cleaned) safeSlug = cleaned;
+  }
+
   return {
-    slug: rec.slug,
+    slug: safeSlug,
     name: rec.name,
     address: rec.address,
     city,

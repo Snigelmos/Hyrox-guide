@@ -219,7 +219,7 @@ export default function GymMap({
         : "320px");
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-border bg-bg-card">
+    <div className="hyrox-map-shell rounded-2xl overflow-hidden border border-border bg-bg">
       {showFilters && (
         <div className="p-4 md:p-5 border-b border-border bg-bg-card-hover">
           <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
@@ -274,27 +274,63 @@ export default function GymMap({
       <div
         ref={containerRef}
         style={{ height: mapHeight, width: "100%" }}
-        className="hyrox-map-canvas bg-bg"
+        className="hyrox-map-canvas"
         aria-label="Hyrox gym map"
         role="application"
       />
       <style>{`
+        .hyrox-map-shell {
+          background: #06111a;
+        }
+        .hyrox-map-canvas {
+          background: #06111a;
+        }
         .hyrox-map-canvas .leaflet-container {
           background: #06111a;
           color: #d7eef6;
+          min-height: 100%;
         }
         .hyrox-map-canvas .leaflet-tile-pane {
           filter: saturate(0.88) contrast(1.04) brightness(0.92);
         }
-        .hyrox-map-canvas .leaflet-control-zoom a {
+        .hyrox-map-canvas .leaflet-control-zoom a,
+        .hyrox-map-canvas .leaflet-bar a {
           background: #071824;
           border-bottom-color: #17384a;
           color: #d7eef6;
         }
         .hyrox-map-canvas .leaflet-control-zoom a:hover,
-        .hyrox-map-canvas .leaflet-control-zoom a:focus {
+        .hyrox-map-canvas .leaflet-control-zoom a:focus,
+        .hyrox-map-canvas .leaflet-bar a:hover,
+        .hyrox-map-canvas .leaflet-bar a:focus {
           background: #0b2233;
           color: #67e8f9;
+        }
+        .hyrox-map-canvas .leaflet-bar {
+          border: 1px solid #17384a;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        }
+        .hyrox-map-canvas .leaflet-control-attribution,
+        .hyrox-map-canvas .leaflet-control-attribution.leaflet-control {
+          background: rgba(7, 24, 36, 0.85);
+          color: #9cc9d8;
+          border-top-left-radius: 6px;
+          padding: 2px 8px;
+          font-size: 10px;
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
+        }
+        .hyrox-map-canvas .leaflet-control-attribution a {
+          color: #67e8f9;
+        }
+        .hyrox-map-canvas .leaflet-control-attribution a:hover {
+          color: #a5f3fc;
+        }
+        .hyrox-map-canvas .leaflet-control-scale-line {
+          background: rgba(7, 24, 36, 0.78);
+          color: #d7eef6;
+          border-color: #17384a;
+          text-shadow: none;
         }
         .hyrox-map-canvas .leaflet-popup-content-wrapper,
         .hyrox-map-canvas .leaflet-popup-tip {
@@ -310,6 +346,12 @@ export default function GymMap({
         }
         .hyrox-map-canvas .leaflet-popup-close-button:hover {
           color: #67e8f9;
+        }
+        @supports (padding: max(0px)) {
+          .hyrox-map-canvas .leaflet-bottom.leaflet-right,
+          .hyrox-map-canvas .leaflet-bottom.leaflet-left {
+            padding-bottom: max(0px, env(safe-area-inset-bottom));
+          }
         }
         .hyrox-cluster {
           background: rgba(8, 47, 73, 0.38);
