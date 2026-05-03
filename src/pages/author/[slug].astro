@@ -86,7 +86,7 @@ const personSchema = {
     <section class="prose md:prose-lg max-w-none">
       <p class="text-text-muted leading-relaxed">{author.longBio}</p>
 
-      <h2>What {author.name} writes about</h2>
+      <h2>What {author.firstName} writes about</h2>
       <ul>
         {author.topics.map((t) => <li>{t}</li>)}
       </ul>
@@ -105,7 +105,7 @@ const personSchema = {
     {authorPosts.length > 0 && (
       <section class="mt-16 pt-10 border-t border-border">
         <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
-          Articles by {author.name}
+          Articles by {author.firstName}
         </h2>
         <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {authorPosts.map((post) => <PostCard post={post} variant="default" />)}

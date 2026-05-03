@@ -2,13 +2,13 @@
  * Author profile data.
  *
  * Three editorial team members, each owning a distinct beat:
- *   John   — strength, station efficiency, gym-based programming.
- *            CrossFit background, transitioning into running.
- *   Niklas — running. Sub-3 marathoner crossing into Hyrox; pacing,
- *            Zone 2, VO2max, watches and HRMs.
- *   Jesper — all-rounder + nutrition. Stable splits across every
- *            station; supplements, fuelling, race format and
- *            buying guides.
+ *   Adam Smith     — strength, station efficiency, gym-based programming.
+ *                    CrossFit background, transitioning into running.
+ *   James Andersen — running. Sub-3 marathoner crossing into Hyrox;
+ *                    pacing, Zone 2, VO2max, watches and HRMs.
+ *   Max Jespersen  — all-rounder + nutrition. Stable splits across
+ *                    every station; supplements, fuelling, race format
+ *                    and buying guides.
  *
  * Each entry renders a /author/[slug]/ page via
  * src/pages/author/[slug].astro and is referenced from blog post
@@ -16,8 +16,12 @@
  */
 
 export interface Author {
+  /** URL slug — kept short and stable so /author/<slug>/ URLs don't churn. */
   slug: string;
+  /** Full name used for formal display (page titles, JSON-LD, breadcrumbs, alt text). */
   name: string;
+  /** First name for conversational body copy ("Articles by Adam"). */
+  firstName: string;
   jobTitle: string;
   /** Short headline used as a tagline on cards. */
   tagline: string;
@@ -36,7 +40,8 @@ export interface Author {
 export const AUTHORS: Author[] = [
   {
     slug: "john",
-    name: "John",
+    name: "Adam Smith",
+    firstName: "Adam",
     jobTitle: "Strength & station editor",
     tagline: "Eight years of barbells before he started running.",
     bio: "CrossFit before Hyrox. Comfortable on the sleds, the wall and the lunges; the run is what he is rebuilding now. Writes the strength and station-technique side.",
@@ -58,7 +63,8 @@ export const AUTHORS: Author[] = [
   },
   {
     slug: "niklas",
-    name: "Niklas",
+    name: "James Andersen",
+    firstName: "James",
     jobTitle: "Running editor",
     tagline: "Came to Hyrox from the road.",
     bio: "Sub-3 marathoner with finishes at Berlin, New York, Stockholm, Madrid, Barcelona and Valencia. Crossed into Hyrox 18 months ago and has been bolting on real strength work ever since.",
@@ -80,7 +86,8 @@ export const AUTHORS: Author[] = [
   },
   {
     slug: "jesper",
-    name: "Jesper",
+    name: "Max Jespersen",
+    firstName: "Max",
     jobTitle: "Nutrition & racing editor",
     tagline: "No glaring weakness, no glaring strength.",
     bio: "Stable splits across every Hyrox station. Sports-nutrition background. Tests every gel, shoe and electrolyte against a fixed checklist before recommending it.",
