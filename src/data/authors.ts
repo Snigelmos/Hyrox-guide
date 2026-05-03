@@ -1,19 +1,18 @@
 /**
  * Author profile data.
  *
- * Three named authors (first names only — the team has chosen to remain
- * anonymous on surnames). Each entry renders a /author/[slug]/ page via
- * src/pages/author/[slug].astro and is referenced from blog post `author`
- * frontmatter so the Article JSON-LD resolves to a Person.
- *
- * Beat split:
+ * Three editorial team members, each owning a distinct beat:
  *   John   — strength, station efficiency, gym-based programming.
  *            CrossFit background, transitioning into running.
- *   Niklas — running. Sub-3 marathoner crossing into Hyrox; owns
- *            pacing, Zone 2, VO2max, watches and HRMs.
+ *   Niklas — running. Sub-3 marathoner crossing into Hyrox; pacing,
+ *            Zone 2, VO2max, watches and HRMs.
  *   Jesper — all-rounder + nutrition. Stable splits across every
- *            station; owns supplements, fuelling, race format and
+ *            station; supplements, fuelling, race format and
  *            buying guides.
+ *
+ * Each entry renders a /author/[slug]/ page via
+ * src/pages/author/[slug].astro and is referenced from blog post
+ * `author` frontmatter so the Article JSON-LD resolves to a Person.
  */
 
 export interface Author {
@@ -39,14 +38,14 @@ export const AUTHORS: Author[] = [
     slug: "john",
     name: "John",
     jobTitle: "Strength & station editor",
-    tagline: "Built strong, learning to run.",
-    bio: "CrossFit background. Eight years of barbell, sled and gymnastics work before Hyrox. Owns the strength and station-technique beats; spends most of his current training time fixing the running side.",
+    tagline: "Eight years of barbells before he started running.",
+    bio: "CrossFit before Hyrox. Comfortable on the sleds, the wall and the lunges; the run is what he is rebuilding now. Writes the strength and station-technique side.",
     longBio:
-      "John came up through traditional CrossFit — eight years of barbell sessions, sled pieces and gymnastics circuits before Hyrox existed in his life. The first time he raced one he flew through every station inside the elite bracket and then bled time on the running. That race is why his programming looks the way it does today: heavy lifts and station work are still the easy half of his week, the rest of it is base-building mileage, Zone 2 sessions and the kind of long, boring runs no CrossFitter ever wanted to do. He owns the strength and station beats on the site — sled push, sled pull, wall balls, sandbag lunges, burpee broad jumps, farmers carry, technique, no-gym programming — because that is where he can write from real experience. On the running side he writes as someone still rebuilding it, not as the resident expert; that is Niklas's beat.",
+      "Eight years of CrossFit programming — barbell sessions, sled pieces and gymnastics circuits — before he raced his first Hyrox. The first time he went to the line he flew through every station inside the elite bracket and then bled time on the running. That race is why his programming looks the way it does today: heavy lifts and station work are still the easy half of the week, the rest of it is base-building mileage, Zone 2 and the kind of long, boring runs no CrossFitter wanted to do. He writes the strength and station-technique side — sleds, wall balls, lunges, burpees, farmers carry, no-gym programming — because that is the half he can write from a decade of practice.",
     image: "/team/john.jpg",
     credentials: [
       "Eight years of competitive CrossFit programming before transitioning to Hyrox",
-      "Hyrox station splits comfortably inside the elite bracket; running is the limiter",
+      "Hyrox station splits inside the elite bracket; running is the limiter",
       "Final editor on every strength, station-technique, and gym-based programming guide",
     ],
     topics: [
@@ -61,10 +60,10 @@ export const AUTHORS: Author[] = [
     slug: "niklas",
     name: "Niklas",
     jobTitle: "Running editor",
-    tagline: "Running first, lifting second.",
-    bio: "Sub-3 marathoner. Berlin, New York, Stockholm, Madrid, Barcelona, Valencia. Came to Hyrox 18 months ago and has been adding strength work ever since. Owns everything running on the site.",
+    tagline: "Came to Hyrox from the road.",
+    bio: "Sub-3 marathoner with finishes at Berlin, New York, Stockholm, Madrid, Barcelona and Valencia. Crossed into Hyrox 18 months ago and has been bolting on real strength work ever since.",
     longBio:
-      "Niklas is a runner first. Ten years of structured run training across 5K to marathon distances, with finisher medals from Berlin, New York, Stockholm, Madrid, Barcelona and Valencia, and a sub-3 marathon time on the road CV. Track background underneath that — he still races as a strong sprinter when the season runs short. He came to Hyrox 18 months ago because the running-heavy format suited him on paper, then promptly got punished on the sled push and the wall balls in his first race. Since then he has been bolting on real strength work without losing the engine he spent a decade building. Owns the running side of the site: pacing, Zone 2, VO2max, heart-rate zones, watches and HRMs (Garmin, Coros, Polar, Apple Watch), and every guide written for runners crossing into Hyrox. The 5K input on the calculator is his territory — that number is what most people are misusing when they predict a Hyrox time.",
+      "Ten years of structured run training across 5K to marathon distances, with finishes at Berlin, New York, Stockholm, Madrid, Barcelona and Valencia and a sub-3 marathon on the road CV. Track background underneath that, which is why he still races as a strong sprinter when the season runs short. He came to Hyrox 18 months ago because the running-heavy format suited him on paper, then got punished on the sled push and the wall balls in his first race. The work since has been adding real strength sessions without losing the engine he spent a decade building. The 5K input on the calculator is the one he is most opinionated about — that number is what most readers misuse when they predict a Hyrox time.",
     image: "/team/niklas.jpg",
     credentials: [
       "Sub-3 marathoner with finishes at Berlin, New York, Stockholm, Madrid, Barcelona and Valencia",
@@ -82,11 +81,11 @@ export const AUTHORS: Author[] = [
   {
     slug: "jesper",
     name: "Jesper",
-    jobTitle: "All-rounder & nutrition editor",
-    tagline: "Solid everywhere, stronger on detail.",
-    bio: "The all-rounder. Stable splits across every Hyrox station, no glaring weakness, a nutrition background, and the patience to test every gel, shoe and electrolyte against a fixed checklist.",
+    jobTitle: "Nutrition & racing editor",
+    tagline: "No glaring weakness, no glaring strength.",
+    bio: "Stable splits across every Hyrox station. Sports-nutrition background. Tests every gel, shoe and electrolyte against a fixed checklist before recommending it.",
     longBio:
-      "Jesper is the all-rounder of the team. The kind of athlete whose splits look almost identical at every station — no glaring weakness, no glaring strength, just stable execution end to end. He has raced more Hyrox events than the other two combined and is the one who actually pays attention to the small things on race week: when he eats, what he wears, which gel he takes after which station, what the line for bag drop looks like 75 minutes before the wave. His background is in sports nutrition — he reads the ISSN, ACSM and IOC consensus statements as they update — which is why every fuelling, hydration, carb-loading and recovery guide on the site goes through him. Beyond nutrition he owns the racing beat: sub-X assessments, race-week protocol, doubles strategy, the population-specific guides (over-40, masters, heavy, small-framed), the buying guides for shoes, bags, sleeves and watches, and the pacing playbook the rest of us use on race day.",
+      "Stable splits across every Hyrox station — no glaring weakness, no glaring strength, just steady execution end to end. He pays attention to the small things on race week: when he eats, what he wears, which gel he takes after which station, what the line for bag drop looks like 75 minutes before the wave. His background is in sports nutrition — he reads the ISSN, ACSM and IOC consensus statements as they update — which is why every fuelling, hydration, carb-loading and recovery guide on the site goes through him. He also writes most of the racing side: sub-X assessments, race-week protocol, doubles, the population-specific guides, and the buying guides for shoes, bags, sleeves and watches.",
     image: "/team/jesper.jpg",
     credentials: [
       "Stable Open Men Hyrox splits across all eight stations, no station weakness",
