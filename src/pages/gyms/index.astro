@@ -132,9 +132,9 @@ const byRegion = {
     </section>
 
     <section class="mb-12">
-      <h2 class="text-3xl font-black text-text-heading mb-6">Europe</h2>
+      <h2 class="text-3xl font-black text-text-heading mb-6">North America</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {byRegion.EU.map((c) => (
+        {byRegion.NA.map((c) => (
           <a
             href={`/gyms/${c.citySlug}/`}
             class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
@@ -148,9 +148,9 @@ const byRegion = {
     </section>
 
     <section class="mb-12">
-      <h2 class="text-3xl font-black text-text-heading mb-6">North America</h2>
+      <h2 class="text-3xl font-black text-text-heading mb-6">Europe</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {byRegion.NA.map((c) => (
+        {byRegion.EU.map((c) => (
           <a
             href={`/gyms/${c.citySlug}/`}
             class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"

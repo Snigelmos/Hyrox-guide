@@ -61,7 +61,7 @@ const regionLabels: Record<string, string> = {
       </p>
     </header>
 
-    {(["EU", "NA", "APAC", "ME", "SA"] as const).map((region) => {
+    {(["NA", "EU", "APAC", "ME", "SA"] as const).map((region) => {
       const list = byRegion[region];
       if (!list || list.length === 0) return null;
       return (

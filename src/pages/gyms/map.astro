@@ -15,15 +15,19 @@ const countries = listCountries();
 const totalGyms = GYMS.length;
 
 const REGION_LABELS: Record<Region, string> = {
-  EU: "Europe",
   NA: "North America",
+  EU: "Europe",
   APAC: "Asia-Pacific",
   ME: "Middle East",
   SA: "South America",
 };
 
-// Group countries by region, then sort regions by total gym count desc.
-const regionGroups = (Object.keys(REGION_LABELS) as Region[])
+// Audience-led ordering: North America first (largest visitor share), then
+// Europe, then APAC / ME / SA. Within each region, countries sort by gym
+// count desc.
+const REGION_ORDER: Region[] = ["NA", "EU", "APAC", "ME", "SA"];
+
+const regionGroups = REGION_ORDER
   .map((region) => {
     const regionCountries = countries
       .filter((c) => c.region === region)
@@ -31,8 +35,7 @@ const regionGroups = (Object.keys(REGION_LABELS) as Region[])
     const totalGymsInRegion = regionCountries.reduce((sum, c) => sum + c.gyms.length, 0);
     return { region, label: REGION_LABELS[region], countries: regionCountries, totalGymsInRegion };
   })
-  .filter((g) => g.countries.length > 0)
-  .sort((a, b) => b.totalGymsInRegion - a.totalGymsInRegion);
+  .filter((g) => g.countries.length > 0);
 
 const faqItems = [
   {
