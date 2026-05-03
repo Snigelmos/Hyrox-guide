@@ -217,7 +217,7 @@ export default function HyroxCalculator() {
   }
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-6xl">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {/* ── INPUTS ── */}
@@ -340,16 +340,34 @@ export default function HyroxCalculator() {
             <button
               type="button"
               onClick={() => setTrainerOpen(o => !o)}
-              className="w-full flex items-center justify-between gap-3 text-left"
+              aria-expanded={trainerOpen}
+              className={`w-full flex items-center justify-between gap-3 text-left rounded-xl border px-4 py-3 transition-all cursor-pointer min-h-[64px] ${
+                trainerOpen
+                  ? "bg-[#0c1a25] border-[#38bdf8]/40"
+                  : "bg-[#0a1620] border-[#38bdf8]/30 hover:border-[#38bdf8]/60 hover:bg-[#0c1a25]"
+              }`}
             >
-              <div>
-                <div className="text-sm font-bold text-[#f4f4f5]">Got actual station times?</div>
-                <div className="text-xs text-[#a1a1aa] mt-0.5">
-                  Optional — diagnose your weakest stations against peer benchmarks.
+              <div className="flex items-center gap-3 min-w-0">
+                <span
+                  className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#38bdf8]/15 border border-[#38bdf8]/40 flex items-center justify-center text-[#38bdf8] text-lg font-bold"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-[#f4f4f5]">
+                    {trainerOpen ? "Hide station times" : "Add your real station times"}
+                    <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#38bdf8]/15 text-[#38bdf8] align-middle">
+                      Optional
+                    </span>
+                  </div>
+                  <div className="text-xs text-[#a1a1aa] mt-0.5">
+                    Tap to expand — diagnose your weakest stations against peer benchmarks.
+                  </div>
                 </div>
               </div>
               <span
-                className={`text-[#38bdf8] text-xl transition-transform ${trainerOpen ? "rotate-180" : ""}`}
+                className={`text-[#38bdf8] text-xl transition-transform flex-shrink-0 ${trainerOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               >▾</span>
             </button>

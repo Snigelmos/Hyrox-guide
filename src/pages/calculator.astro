@@ -1,17 +1,24 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HyroxCalculator from "../components/HyroxCalculator";
-import { GOAL_TIME_CONFIGS, PRO_GOAL_TIME_CONFIGS } from "../data/calculator-goals";
+import {
+  GOAL_TIME_CONFIGS,
+  PRO_GOAL_TIME_CONFIGS,
+  DOUBLES_GOAL_TIME_CONFIGS,
+  ALL_GOAL_TIME_CONFIGS,
+} from "../data/calculator-goals";
 
-// Overview grid: keep one tile per 10-minute bucket so men and women rows are
-// visually balanced and free of 5-minute clutter. Cap women at 2:00 (7200s) so
-// the row matches the men's 60–120 set; the longer slow-end pages
-// (sub-130 → sub-180) still exist as URLs and via the "Jump to your goal time"
-// search box below.
-const menGoals    = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men"   && g.goalSeconds % 600 === 0);
-const womenGoals  = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women" && g.goalSeconds % 600 === 0 && g.goalSeconds <= 7200);
-const proMenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-men");
-const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-women");
+// Overview grid: keep one tile per 10-minute bucket on Open + Doubles so men
+// and women rows are visually balanced. Pro stays on 5-minute steps so we
+// keep the existing 7 men + 7 women guides. Cap Open / Doubles Women at the
+// same end-tile their men's row reaches; longer slow-end pages still exist
+// as URLs and via the "Jump to your goal time" search input below.
+const menGoals       = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-men"     && g.goalSeconds % 600 === 0);
+const womenGoals     = GOAL_TIME_CONFIGS.filter((g) => g.audience === "open-women"   && g.goalSeconds % 600 === 0 && g.goalSeconds <= 7200);
+const proMenGoals    = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-men");
+const proWomenGoals  = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-women");
+const doublesMenGoals   = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience === "doubles-men");
+const doublesWomenGoals = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience === "doubles-women");
 ---
 
 <BaseLayout
@@ -39,7 +46,7 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
     <!-- Calculator first, immediately visible -->
     <HyroxCalculator client:only="react" />
 
-    <div class="max-w-4xl mt-16 pt-10 border-t border-border">
+    <div class="max-w-6xl mt-16 pt-10 border-t border-border">
       <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Goal-time split guides</h2>
       <p class="text-text-muted mb-6 max-w-2xl">
         Pick a target finish time and get a pre-built split breakdown — running pace required, station-by-station targets, and the training plan that builds the fitness.
@@ -65,6 +72,8 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
             <option value="open-women">Open Women</option>
             <option value="pro-men">Pro Men</option>
             <option value="pro-women">Pro Women</option>
+            <option value="doubles-men">Doubles Men</option>
+            <option value="doubles-women">Doubles Women</option>
           </select>
           <button
             id="goal-time-btn"
@@ -173,9 +182,58 @@ const proWomenGoals = PRO_GOAL_TIME_CONFIGS.filter((g) => g.audience === "pro-wo
           </div>
         </div>
       </div>
+
+      {/* ── Doubles Division ── */}
+      <div class="mb-8 rounded-2xl border border-violet-500/40 overflow-hidden">
+        <div class="bg-violet-500/10 px-6 py-4 border-b border-violet-500/20 flex items-center gap-3">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-violet-400 flex-shrink-0"></span>
+          <div>
+            <span class="text-sm font-black text-violet-300 uppercase tracking-wide">Doubles Division</span>
+            <span class="ml-3 text-xs text-text-muted">Two-athlete teams · station reps split, all 8 km run together</span>
+          </div>
+        </div>
+
+        {/* Doubles Men */}
+        <div class="px-6 py-5 border-b border-border/50">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-violet-300 mb-4 flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Men
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {doublesMenGoals.map((g) => (
+              <a
+                href={`/calculator/${g.slug}/`}
+                class="bg-bg border border-border rounded-xl p-4 hover:border-violet-400/40 hover:bg-bg-card-hover transition-all no-underline group"
+              >
+                <div class="text-base font-black text-text-heading group-hover:text-violet-300 transition-colors">{g.goalShort}</div>
+                <div class="text-xs text-text-muted">{g.goalLabel}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Doubles Women */}
+        <div class="px-6 py-5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-violet-200 mb-4 flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Women
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {doublesWomenGoals.map((g) => (
+              <a
+                href={`/calculator/${g.slug}/`}
+                class="bg-bg border border-border rounded-xl p-4 hover:border-violet-300/40 hover:bg-bg-card-hover transition-all no-underline group"
+              >
+                <div class="text-base font-black text-text-heading group-hover:text-violet-200 transition-colors">{g.goalShort}</div>
+                <div class="text-xs text-text-muted">{g.goalLabel}</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script is:inline define:vars={{ goalConfigs: [...GOAL_TIME_CONFIGS, ...PRO_GOAL_TIME_CONFIGS].map(g => ({ slug: g.slug, audience: g.audience, goalSeconds: g.goalSeconds })) }}>
+    <script is:inline define:vars={{ goalConfigs: ALL_GOAL_TIME_CONFIGS.map(g => ({ slug: g.slug, audience: g.audience, goalSeconds: g.goalSeconds })) }}>
       var btn   = document.getElementById("goal-time-btn");
       var input = document.getElementById("goal-time-input");
       var sel   = document.getElementById("goal-audience-input");

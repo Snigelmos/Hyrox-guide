@@ -1,17 +1,17 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { GOAL_TIME_CONFIGS } from "../../data/calculator-goals";
+import { ALL_GOAL_TIME_CONFIGS } from "../../data/calculator-goals";
 import { TRAINING_PLANS } from "../../data/training-plans";
 
 export async function getStaticPaths() {
-  return GOAL_TIME_CONFIGS.map((g) => ({
+  return ALL_GOAL_TIME_CONFIGS.map((g) => ({
     params: { slug: g.slug },
     props: { slug: g.slug },
   }));
 }
 
 const { slug } = Astro.props;
-const goal = GOAL_TIME_CONFIGS.find((g) => g.slug === slug)!;
+const goal = ALL_GOAL_TIME_CONFIGS.find((g) => g.slug === slug)!;
 const matchingPlan = TRAINING_PLANS.find((p) => p.relatedCalculatorSlug === goal.slug);
 
 const totalRunMinutes = Math.floor(goal.totalRunSeconds / 60);
@@ -40,7 +40,7 @@ const faqItems = [
   },
 ];
 
-const otherGoals = GOAL_TIME_CONFIGS.filter(
+const otherGoals = ALL_GOAL_TIME_CONFIGS.filter(
   (g) => g.slug !== goal.slug && g.audience === goal.audience,
 ).slice(0, 6);
 
