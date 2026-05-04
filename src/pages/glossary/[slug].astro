@@ -32,7 +32,7 @@ const definedTermSchema = {
   inDefinedTermSet: {
     "@type": "DefinedTermSet",
     name: "Hyrox Glossary",
-    url: "https://hyroxvault.com/glossary/",
+    url: new URL("/glossary/", Astro.site).toString(),
   },
 };
 ---
