@@ -62,6 +62,36 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
       </a>
     </div>
 
+    {/* Train at a Hyrox-affiliated gym */}
+    <div class="mb-12">
+      <a
+        href="/gyms/map/"
+        class="group block bg-bg-card border-2 border-accent/20 rounded-2xl p-8 hover:border-accent/40 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1"
+      >
+        <div class="md:flex md:items-center md:gap-8">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full text-accent bg-accent/10 border border-accent/20">
+                Train at a real Hyrox box
+              </span>
+            </div>
+            <h2 class="text-2xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
+              Find a Hyrox-affiliated gym near you
+            </h2>
+            <p class="text-text-muted text-sm leading-relaxed mb-0">
+              Plans work better when you can train on the actual rig. Use our Hyrox Gym Finder to locate Affiliated Training Clubs and partner gyms with sleds, wall-ball targets, and SkiErgs in your city.
+            </p>
+          </div>
+          <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0 mt-4 md:mt-0">
+            Open Gym Finder
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+
     {/* Goal-time and constraint plans hub */}
     <div class="mb-12">
       <a
@@ -149,7 +179,7 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
     {/* Topic guides — hub-and-spoke into the deep blog content */}
     <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-2">Train each station</h2>
     <p class="text-text-muted text-sm mb-6 max-w-2xl">
-      Adam's technique deep-dives. Each one covers the movement pattern, the common mistakes, and the drills we actually program for athletes.
+      Adam's technique deep-dives. Each one covers the movement pattern, the common mistakes, and the drills we actually program for athletes. For per-station playbooks with sets, reps, and progression, see the <a href="/training/stations/" class="text-accent hover:underline">station playbooks hub</a>; for official weights and no-rep rules, see the <a href="/stations/" class="text-accent hover:underline">stations standards page</a>.
     </p>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {[

@@ -25,7 +25,7 @@
  * suitable for a map overview. Exact entrances and addresses should be
  * re-checked before visiting.
  *
- * Hyrox affiliations change. Always verify on hyrox.com/find-a-hyrox-partner-gym/
+ * Hyrox affiliations change. Always verify on hyrox.com/affiliated-training-clubs/
  * before planning a session or trip.
  *
  * Last reviewed: 2026-04

@@ -35,6 +35,7 @@ const illustration = illustrationMap[entry.id];
   ]}
   showIllustration={!!illustration}
   crossSellContext="racing"
+  faqItems={entry.data.faqs}
 >
   {illustration?.type === "station" && (
     <StationIcons slot="illustration" station={illustration.variant} size={240} />

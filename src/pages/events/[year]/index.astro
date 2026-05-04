@@ -13,8 +13,8 @@ export async function getStaticPaths() {
 const { year } = Astro.props;
 const yearEvents = getEventsByYear(year);
 
-const title = `Hyrox ${year} Races — Full Schedule by City`;
-const description = `All Hyrox races in ${year} by city and date, with venue information and training resources for each event.`;
+const title = `Hyrox ${year} Events Calendar — Full Race Schedule by City`;
+const description = `The official Hyrox ${year} events calendar. All Hyrox races in ${year} by city and date, with venue information and training resources for each event.`;
 ---
 
 <BaseLayout
@@ -50,6 +50,11 @@ const description = `All Hyrox races in ${year} by city and date, with venue inf
         {description}
       </p>
     </header>
+
+    <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">Hyrox {year} Calendar by City</h2>
+    <p class="text-text-muted mb-8 max-w-3xl">
+      Browse every confirmed and announced Hyrox race for the {year} season. Click any city to open the full event page with venue details, training resources, and links to register.
+    </p>
 
     <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
       {yearEvents.map((event) => (

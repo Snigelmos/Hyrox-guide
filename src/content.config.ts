@@ -8,6 +8,14 @@ const racingGuide = defineCollection({
     description: z.string(),
     order: z.number().optional(),
     icon: z.string().optional(),
+    faqs: z
+      .array(
+        z.object({
+          question: z.string(),
+          answer: z.string(),
+        })
+      )
+      .optional(),
   }),
 });
 

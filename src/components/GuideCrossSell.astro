@@ -15,17 +15,20 @@ const links = context === "training"
   ? [
       { label: "Sample Workouts", href: "/training/workouts/", icon: "🏋️" },
       { label: "Station Drills", href: "/training/stations/", icon: "🎯" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
       { label: "Time Calculator", href: "/calculator/", icon: "⏱️" },
     ]
   : context === "racing"
   ? [
       { label: "Training Programs", href: "/training/", icon: "📋" },
       { label: "Station Benchmarks", href: "/racing-guide/times/", icon: "⏱️" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
       { label: "Supplements Guide", href: "/supplements/", icon: "💊" },
     ]
   : [
       { label: "Racing Guide", href: "/racing-guide/", icon: "🏁" },
       { label: "Training Programs", href: "/training/", icon: "📋" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
       { label: "Time Calculator", href: "/calculator/", icon: "⏱️" },
     ];
 ---

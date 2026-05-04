@@ -3,8 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { CITY_GYMS } from "../../data/gyms";
 import { GYMS, listCountries } from "../../data/gym-finder";
 
-const title = "Hyrox Affiliated Gyms by City — Find a Hyrox Training Club Near You";
-const description = "Curated directory of Hyrox-affiliated gyms and training clubs by city. Interactive map, country and city pages, plus full gym detail pages for the most established Hyrox training partners worldwide.";
+const title = "Hyrox Affiliated Gyms — Directory of Training Clubs and Partner Gyms";
+const description = "Curated directory of Hyrox-affiliated gyms, training clubs, and partner gyms by city. Interactive map, country and city pages, plus full gym detail pages for the most established Hyrox training partners worldwide.";
 const breadcrumbs = [{ name: "Gyms" }];
 
 const totalMappedGyms = GYMS.length;
@@ -12,6 +12,34 @@ const publicCountries = listCountries();
 const publicCountryCodes = new Set(publicCountries.map((c) => c.countryCode));
 const visibleCityGyms = CITY_GYMS.filter((c) => publicCountryCodes.has(c.countryCode));
 const totalCountries = publicCountries.length;
+
+const faqItems = [
+  {
+    question: "What is a Hyrox affiliated gym?",
+    answer:
+      "A Hyrox affiliated gym is an accredited training club with official affiliation to Hyrox. It carries the equipment for the 8 race stations (sled, SkiErg, rower, sandbags, wall-ball targets, kettlebells) and runs Hyrox-branded classes or race simulations. Affiliated clubs get access to the Hyrox Performance Hub for daily programming.",
+  },
+  {
+    question: "What is the difference between an Affiliated Training Club and a Hyrox partner gym?",
+    answer:
+      "Affiliated Training Clubs have a formal Hyrox partnership and follow official Hyrox programming. Partner gyms or partner chains (like F45 or selected CrossFit affiliates) often run Hyrox simulations and prep classes without holding the Affiliated Training Club designation. Both are useful for race prep; Affiliated Training Clubs are typically closest to true race conditions.",
+  },
+  {
+    question: "How do I find a Hyrox gym near me?",
+    answer:
+      "Use the Hyrox Gym Finder map to filter by country, affiliation type, or search a city. Cross-check the official Hyrox affiliated training clubs directory for the latest accreditations, then search local CrossFit affiliates and boutique studios for Hyrox sim classes in the weeks before an event.",
+  },
+  {
+    question: "Do I have to train at a Hyrox affiliated gym to race Hyrox?",
+    answer:
+      "No. Anyone can register for a Hyrox race regardless of where they train. Affiliated and partner gyms make race-specific preparation easier because the equipment is already there, but a well-equipped commercial gym plus a structured plan also works.",
+  },
+  {
+    question: "How do I become a Hyrox affiliated gym?",
+    answer:
+      "Apply directly through the official Hyrox affiliated training clubs portal. Hyrox vets equipment, programming standards, and coaching credentials before issuing accreditation. There is no path to affiliation through Hyrox Vault.",
+  },
+];
 
 const byRegion = {
   EU: visibleCityGyms.filter((c) => c.region === "EU"),
@@ -27,6 +55,7 @@ const byRegion = {
   ogType="article"
   schemaType="Article"
   breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
 >
   <div class="container-main py-10 md:py-16">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
@@ -131,6 +160,11 @@ const byRegion = {
       </p>
     </section>
 
+    <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">Find a Hyrox training club</h2>
+    <p class="text-text-muted mb-10 max-w-3xl">
+      Browse Hyrox-affiliated gyms and training clubs by region. Each city card lists the partner clubs we have verified, with links to maps, websites, and gym detail pages.
+    </p>
+
     <section class="mb-12">
       <h2 class="text-3xl font-black text-text-heading mb-6">North America</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -206,10 +240,18 @@ const byRegion = {
       <h2>How to find a Hyrox gym near you</h2>
       <ol>
         <li>Open the <a href="/gyms/map/">interactive Hyrox Gym Finder map</a> and filter by country or search by neighbourhood.</li>
-        <li>Check the <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer">official Hyrox training clubs directory</a>.</li>
+        <li>Check the <a href="https://hyrox.com/affiliated-training-clubs/" rel="noopener noreferrer">official Hyrox affiliated training clubs directory</a>.</li>
         <li>Search local CrossFit affiliates — many run weekly Hyrox sim sessions.</li>
         <li>Ask in your local Hyrox Facebook group or Strava club.</li>
       </ol>
+
+      <h2>Common questions about Hyrox affiliated gyms</h2>
+      {faqItems.map((item) => (
+        <>
+          <h3>{item.question}</h3>
+          <p>{item.answer}</p>
+        </>
+      ))}
     </section>
   </div>
 </BaseLayout>

@@ -38,7 +38,7 @@ const groups: ChecklistGroup[] = [
   {
     heading: "Race morning — 3 hours before start",
     blurb:
-      "Eat breakfast, get hydrated, and arrive at the venue at least 75 minutes before your wave.",
+      "Eat breakfast, get hydrated, and arrive at the venue 75-90 minutes before your wave (90 if you want a full warm-up; 75 minimum to be safe).",
     items: [
       "Breakfast eaten ≥ 3 hours pre-race (carbs + protein, low fat, low fibre)",
       "500–750 ml water with electrolytes by the time you leave home",
@@ -102,12 +102,54 @@ const groups: ChecklistGroup[] = [
 ];
 
 const totalItems = groups.reduce((sum, g) => sum + g.items.length, 0);
+
+const howToSteps = groups.map((g) => ({
+  name: g.heading,
+  text: `${g.blurb ?? ""} ${g.items.slice(0, 4).join("; ")}.`.trim(),
+}));
+
+const faqItems = [
+  {
+    question: "What should I pack in my Hyrox race-day bag?",
+    answer:
+      "Race ID and photo ID, a Hyrox singlet and shorts you have trained in, cross-training shoes, a backup pair of socks, watch and heart-rate monitor, 1 L water, electrolytes, 2-3 race fuel gels, a tested pre-race carb source, a towel, and cash or card for after the race.",
+  },
+  {
+    question: "How early should I arrive at a Hyrox race?",
+    answer:
+      "Arrive at the venue 75-90 minutes before your wave. 90 minutes gives you time for bag drop, course walk, toilet, and a full warm-up; 75 minutes is the minimum if you have to cut anything.",
+  },
+  {
+    question: "What should I eat before a Hyrox race?",
+    answer:
+      "Eat your tested race-morning breakfast at least 3 hours before the gun. Aim for carbohydrates with a small amount of protein, low fat and low fibre. Sip 500-750 ml of water with electrolytes between waking and leaving home.",
+  },
+  {
+    question: "Should I warm up before Hyrox?",
+    answer:
+      "Yes, but keep it short and race-specific. Roughly 25 minutes before your wave: 5 minutes of easy jog or row, mobility for hips and shoulders, a few air squats, lunges and push-ups, 30-60 seconds at race effort on the SkiErg or rower, and 5 wall balls at race weight to find your catch rhythm.",
+  },
+  {
+    question: "What should I do immediately after finishing Hyrox?",
+    answer:
+      "Walk for 5 minutes before sitting down, drink 500 ml of water with electrolytes, and eat carbohydrates plus protein within 30 minutes. Cold shower or ice bath if available, then a real meal within 2 hours, and schedule a deload week before any new training block.",
+  },
+];
 ---
 
 <BaseLayout
   title="Hyrox Race-Day Checklist (Free Printable, 2026)"
   description="A complete race-day checklist for Hyrox: bag, breakfast, warm-up, pacing rules, and post-race recovery. Free to print, screenshot, or save for race week."
-  breadcrumbs={[{ name: "Race-Day Checklist" }]}
+  schemaType="Article"
+  ogType="article"
+  breadcrumbs={[
+    { name: "Racing Guide", url: "/racing-guide/" },
+    { name: "Race-Day Checklist" },
+  ]}
+  howToName="How to execute a Hyrox race day"
+  howToDescription="Step-by-step checklist for Hyrox race day: race bag, race morning, warm-up, pacing, and recovery."
+  howToSteps={howToSteps}
+  faqItems={faqItems}
 >
   <section class="container-main py-10 md:py-16 print:py-2">
     <div class="max-w-3xl mx-auto">
@@ -177,6 +219,9 @@ const totalItems = groups.reduce((sum, g) => sum + g.items.length, 0);
           carb loading, and pre-race nutrition — read these:
         </p>
         <ul class="space-y-2 text-sm">
+          <li>
+            <a href="/racing-guide/race-day-tips/" class="text-accent hover:underline">Full Hyrox race day guide</a>
+          </li>
           <li>
             <a href="/blog/hyrox-race-week-protocol/" class="text-accent hover:underline">Race-week protocol (Mon–Sun)</a>
           </li>

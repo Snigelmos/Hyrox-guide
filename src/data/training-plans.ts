@@ -189,19 +189,19 @@ const subNinety: TrainingPlan = {
 // =====================================================================
 const subSeventyFive: TrainingPlan = {
   slug: "sub-75-hyrox-training-plan",
-  title: "Sub-1:15 Hyrox Training Plan",
-  metaTitle: "Sub-75 Hyrox Training Plan — 12 Weeks, 6 Days a Week",
+  title: "Sub-70 to Sub-75 Hyrox Training Plan",
+  metaTitle: "Sub-70 to Sub-75 Hyrox Training Plan — 12 Weeks, 6 Days a Week",
   metaDescription:
-    "Free 12-week sub-1:15 Hyrox training plan. 6 sessions per week with VO₂ max work, heavy sled volume, full simulation, and race-week taper. Built for top-10% Open Men or Pro division.",
+    "Free 12-week sub-70 to sub-75 Hyrox training plan. 6 sessions per week with VO₂ max work, heavy sled volume, full simulation, and race-week taper. Built for top-10% Open Men or Pro Men chasing a sub-1:15 (sub-75) or sub-1:10 (sub-70) finish.",
   category: "goal-time",
   durationWeeks: 12,
   sessionsPerWeek: "6",
   difficulty: "advanced",
   audienceLabel: "Open Men (top 10%) or Pro Men",
   goalSummary:
-    "Break 1 hour 15 minutes — top 5-10% of Open Men or a competitive Pro Men finish. Requires 4:10/km running and unbroken station execution.",
+    "Break 1 hour 15 minutes (sub-75) or push toward a sub-70 finish — top 5-10% of Open Men or a competitive Pro Men time. Requires 4:00-4:10/km running and unbroken station execution.",
   athleteProfile:
-    "You've raced Hyrox between 1:18 and 1:30, run a sub-19 5K, and squat 1.75× bodyweight. You're chasing a podium age-group finish or a Pro qualification.",
+    "You've raced Hyrox between 1:18 and 1:30, run a sub-19 5K, and squat 1.75× bodyweight. You're chasing a sub-70 or sub-75 finish, a podium age-group result, or Pro qualification.",
   prerequisites: [
     "At least 2 Hyrox races completed",
     "Sub-19 5K and sub-40 10K",
@@ -209,7 +209,7 @@ const subSeventyFive: TrainingPlan = {
     "Can train 6 days/week with one easy day",
   ],
   intro:
-    "Sub-75 is where Hyrox transitions from 'I trained for this' to 'I'm racing this.' This 12-week plan adds VO₂ max work, heavier sled volume above race weight, and bigger long runs to build the engine that holds 4:10/km pace through 8 km of stations. Six sessions per week, four phases, one full simulation.",
+    "Sub-70 to sub-75 is where Hyrox transitions from 'I trained for this' to 'I'm racing this.' This 12-week plan adds VO₂ max work, heavier sled volume above race weight, and bigger long runs to build the engine that holds 4:00-4:10/km pace through 8 km of stations. Six sessions per week, four phases, one full simulation. Athletes already running a 1:13-1:15 use the upper end of every prescribed pace and target sub-70.",
   whyItWorks:
     "At sub-75, you can't out-strength your way to the time — you need top-end VO₂ max and the ability to sustain it under load. The plan's threshold and 8×1k workouts develop the aerobic ceiling; heavy sled and station-specific strength preserve neuromuscular efficiency at race weights; long runs build the durability that makes the back half (lunges + wall balls) finishable at race pace.",
   weeks: [
@@ -237,10 +237,11 @@ const subSeventyFive: TrainingPlan = {
     "Cramming a second full sim in the taper. One full sim in week 11 is sufficient. A second risks fatigue you can't recover from in 7 days.",
   ],
   faqs: [
-    { question: "Is sub-75 Hyrox a good time?", answer: "Sub-75 is top 5-10% of Open Men globally — competitive at any major race and qualifying-quality for Pro division. For Pro, you'll need to be closer to 1:05 to qualify for Worlds." },
-    { question: "Should I race Pro instead of Open at sub-75?", answer: "If you can break 1:15 in Open, you can likely finish Pro in 1:25-1:35. Try a Pro race after your sub-75 Open result if your goal is competition rather than time alone." },
-    { question: "How important is body weight at sub-75?", answer: "Very. Athletes who break 1:15 are typically 75-85 kg with low body fat. Excess weight punishes you on lunges, burpees and wall balls. Don't crash diet — slim sustainably 8-12 weeks out." },
-    { question: "Can I add a second strength session in the build phase?", answer: "Only if you're recovering well. The plan deliberately limits strength to 2 sessions because aerobic work is the rate-limiter at sub-75 — adding a third strength day usually compromises threshold quality." },
+    { question: "Can this plan get me a sub-70 Hyrox?", answer: "Yes, if you start the block already running 1:13-1:15. Sub-70 needs ~4:00/km running and station splits at the lower end of every range in the plan. If you are coming from 1:20+, target sub-75 first using the same template, then run another 12 weeks at the sub-70 paces." },
+    { question: "Is sub-70 or sub-75 Hyrox a good time?", answer: "Sub-75 is top 5-10% of Open Men globally; sub-70 is top 2-3% and competitive at any major race. Both are qualifying-quality for Pro division. For Pro, expect to need closer to 1:05 to qualify for Worlds." },
+    { question: "Should I race Pro instead of Open at sub-70 or sub-75?", answer: "If you can break 1:15 in Open you can likely finish Pro in 1:25-1:35. Try a Pro race after your first sub-75 result; if you have already raced sub-70 in Open, Pro qualification is in reach." },
+    { question: "How important is body weight at sub-70 or sub-75?", answer: "Very. Athletes who break 1:15 are typically 75-85 kg with low body fat. Excess weight punishes you on lunges, burpees and wall balls. Don't crash diet — slim sustainably 8-12 weeks out." },
+    { question: "Can I add a second strength session in the build phase?", answer: "Only if you're recovering well. The plan deliberately limits strength to 2 sessions because aerobic work is the rate-limiter at this level — adding a third strength day usually compromises threshold quality." },
   ],
   relatedCalculatorSlug: "sub-75-hyrox",
   relatedWorkoutSlugs: ["hyrox-simulation-workout", "hyrox-1k-repeats", "compromised-running-test", "100-wall-ball-test"],
@@ -382,9 +383,9 @@ const subNinetyWomen: TrainingPlan = {
 const subEightyWomen: TrainingPlan = {
   slug: "sub-80-women-hyrox-training-plan",
   title: "Sub-1:20 Hyrox Training Plan for Women",
-  metaTitle: "Sub-80 Hyrox Training Plan for Women — 12 Weeks, 6 Days a Week",
+  metaTitle: "Sub-80 Hyrox Training Plan (Women + Men) — 12 Weeks, 6 Days a Week",
   metaDescription:
-    "Free 12-week sub-1:20 Hyrox training plan for Pro Women or top-5% Open Women. 6 sessions/week with VO₂ work, heavy sled, and full simulation. Built for podium-level finishes.",
+    "Free 12-week sub-80 Hyrox training plan. Built for Pro Women or top-5% Open Women, with adaptations for Open Men chasing a sub-80 finish. 6 sessions/week with VO₂ work, heavy sled, and full simulation.",
   category: "goal-time",
   durationWeeks: 12,
   sessionsPerWeek: "6",
@@ -401,7 +402,7 @@ const subEightyWomen: TrainingPlan = {
     "6 days/week training availability with adequate recovery",
   ],
   intro:
-    "Sub-1:20 for women is the threshold where Hyrox becomes a competition rather than a workout. This 12-week plan layers VO₂ max work, heavy sled training, and bigger long runs onto a strength base. Six sessions per week, four phases, one full simulation in week 11.",
+    "Sub-1:20 for women is the threshold where Hyrox becomes a competition rather than a workout. This 12-week plan layers VO₂ max work, heavy sled training, and bigger long runs onto a strength base. Six sessions per week, four phases, one full simulation in week 11. Open Men chasing a literal sub-80 finish can also run this plan: keep all the running paces the same and bump the sled, farmers carry, sandbag, and wall-ball weights to the Open Men's race standard (152 kg sled push, 2×24 kg kettlebells, 20 kg sandbag, 6 kg wall ball).",
   whyItWorks:
     "Sub-80 women combine sub-23 minute 5K running fitness with the strength to push 102 kg sled near-unbroken. The plan's threshold and 8×1k workouts develop the aerobic ceiling; heavy sled and station-specific strength preserve neuromuscular efficiency at race weight; long runs build the durability that holds 4:50/km pace through the back half of the race.",
   weeks: [
@@ -430,8 +431,9 @@ const subEightyWomen: TrainingPlan = {
   ],
   faqs: [
     { question: "Is sub-80 a good Hyrox time for women?", answer: "Yes — top 5% Open Women globally and competitive Pro Women. It's a podium-quality time at most regional events and a qualifying-quality time for Pro Worlds in many regions." },
+    { question: "Can men use this plan to chase a sub-80 Hyrox?", answer: "Yes. Open Men coming from a 1:25-1:30 race can follow the same six-day structure to target sub-80, but lift the sled push to 152 kg, the farmers carry to 2×24 kg, the sandbag to 20 kg, and the wall ball to 6 kg. The running and threshold paces stay the same — sub-80 still requires sub-22 minute 5K fitness regardless of gender." },
     { question: "Should I race Pro instead of Open?", answer: "If you can break 1:20 Open, Pro is realistic — expect 1:30-1:40 in Pro division. Race Pro if your goal is competition; race Open if your goal is the time itself." },
-    { question: "How heavy should my sled training weight be?", answer: "Race weight (102 kg push, 78 kg pull) for normal sled volume; race weight + 15 kg on heavy sled days. Skip lighter weights — they don't build the right pattern." },
+    { question: "How heavy should my sled training weight be?", answer: "Women: race weight (102 kg push, 78 kg pull) for normal sled volume; race weight + 15 kg on heavy sled days. Men using this plan for sub-80: 152 kg push, 103 kg pull at race weight; +15 kg on heavy sled days. Skip lighter weights — they don't build the right pattern." },
   ],
   relatedCalculatorSlug: "sub-80-hyrox-women",
   relatedWorkoutSlugs: ["hyrox-simulation-workout", "hyrox-1k-repeats", "100-wall-ball-test"],

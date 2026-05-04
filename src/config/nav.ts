@@ -106,14 +106,15 @@ export const primaryNav: NavItem[] = [
     badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
   },
   {
-    label: "Competitions",
-    href: "/competitions/",
+    label: "2026 Calendar",
+    href: "/events/2026/",
+    activePrefix: "/events/",
     icon: "trophy",
     iconColor: "text-amber-400",
     description:
-      "Upcoming Hyrox races worldwide. Find your event, check the date, sign up.",
-    cta: "Find a Race",
-    badge: "Upcoming Races",
+      "Hyrox 2026 events calendar. Every confirmed and announced race - city, date, venue, sign-up.",
+    cta: "Open the Calendar",
+    badge: "2026 Races",
     badgeColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
   },
 ];
