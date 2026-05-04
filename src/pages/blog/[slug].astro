@@ -11,20 +11,30 @@ import {
 
 export async function getStaticPaths() {
   const all = await getCollection("blog");
-  // Hide scheduled posts (pubDate in the future) from build output. The
-  // every-2-day Vercel rebuild in .github/workflows/scheduled-publish.yml
-  // promotes them as their pubDate arrives.
+  // We build EVERY post, including scheduled ones with a future pubDate, so
+  // that internal cross-links between the post graph never 404. Scheduled
+  // posts are emitted with `noindex` (see noindex prop below) and excluded
+  // from the sitemap (see astro.config.ts) until the every-2-day Vercel
+  // rebuild in .github/workflows/scheduled-publish.yml promotes them.
   const now = new Date();
-  const posts = all.filter((p) => p.data.pubDate <= now);
-  return posts.map((entry) => ({
+  const published = all.filter((p) => p.data.pubDate <= now);
+  return all.map((entry) => ({
     params: { slug: entry.id },
-    props: { entry, posts },
+    // `posts` (passed to series + related-posts components) only contains
+    // already-published entries to avoid surfacing scheduled drafts in
+    // related-content rails on live pages.
+    props: { entry, posts: published },
   }));
 }
 
 const { entry, posts } = Astro.props;
 const { Content } = await render(entry);
 const categoryMeta = BLOG_CATEGORY_META[entry.data.category];
+
+// A post is scheduled (not yet published) when its pubDate is in the future.
+// Build it for link-graph hygiene but emit `noindex, follow` so search engines
+// do not index it before its real publish date.
+const isScheduled = entry.data.pubDate > new Date();
 
 // Show the sticky TOC for long posts (rough proxy: >12k characters of body
 // text). The component itself self-hides when there are <3 H2/H3 headings,
@@ -67,6 +77,7 @@ const nextInSeries = currentOrder
   howToName={entry.data.howToName ?? entry.data.title}
   showMeta={true}
   showToc={showToc}
+  noindex={isScheduled}
 >
   <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-6 not-prose">
     <a

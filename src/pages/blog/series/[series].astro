@@ -1,9 +1,17 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 import { getAllPosts, formatDate, SERIES_META } from "../../../data/blog";
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
+  // Build a series page for every series that any post (published OR
+  // scheduled) belongs to. Without this, internal links to the series hub
+  // 404 until the first post in the series goes live, which currently
+  // breaks several "/blog/series/<slug>/" cross-links from already-published
+  // posts. The page itself only lists published posts — scheduled ones show
+  // as "Coming soon" placeholders — and is `noindex` until at least one
+  // post in the series is live.
+  const posts = await getCollection("blog");
   const seriesNames = new Set<string>();
   for (const p of posts) {
     if (p.data.series?.name) seriesNames.add(p.data.series.name);
@@ -30,8 +38,13 @@ const totalPlanned = meta.totalPlanned ?? posts.length;
 const publishedCount = posts.length;
 const progressPercent = Math.min(
   100,
-  Math.round((publishedCount / totalPlanned) * 100)
+  totalPlanned > 0 ? Math.round((publishedCount / totalPlanned) * 100) : 0
 );
+
+// Hide pre-launch series hubs from search engines until at least one post
+// in the series is live — otherwise we'd be indexing thin "Coming soon"
+// pages.
+const isPreLaunch = publishedCount === 0;
 ---
 
 <BaseLayout
@@ -41,6 +54,7 @@ const progressPercent = Math.min(
     { name: "Blog", url: "/blog/" },
     { name: meta.label },
   ]}
+  noindex={isPreLaunch}
 >
   <section class="container-main py-16">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
