@@ -1,13 +1,25 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { GEAR_COMPARISONS } from "../../data/gear-comparisons";
+import { getCollection } from "astro:content";
 
-const title = "Hyrox Gear Comparisons — Shoes, Equipment, and Brand-by-Brand";
-const description = "Side-by-side gear comparisons for Hyrox racing and training: shoe brands, training equipment, and which gear fits your race goal and body type.";
+const title = "Hyrox Gear Guide — Shoes, Apparel, Accessories & Comparisons";
+const description = "Hyrox gear, fully tested: buying guides for shoes, clothing, accessories, and home gym setup, plus side-by-side brand comparisons for race day.";
 const breadcrumbs = [{ name: "Gear" }];
 
 const shoes = GEAR_COMPARISONS.filter((c) => c.category === "shoes");
 const equipment = GEAR_COMPARISONS.filter((c) => c.category === "equipment");
+
+const buyingGuides = (await getCollection("gear")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99),
+);
+
+const guideIcons: Record<string, string> = {
+  shoes: "👟",
+  clothing: "👕",
+  accessories: "🎒",
+  "home-gym": "🏠",
+};
 ---
 
 <BaseLayout
@@ -30,15 +42,39 @@ const equipment = GEAR_COMPARISONS.filter((c) => c.category === "equipment");
 
     <header class="mb-10 pb-8 border-b border-border">
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        Hyrox Gear Comparisons
+        Hyrox Gear Guide
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        Direct head-to-head comparisons for the gear you'll actually use in Hyrox: race shoes, training shoes, and conditioning equipment.
+        Buying guides and head-to-head comparisons for the gear you'll actually use in Hyrox: race shoes, apparel, accessories, and home-gym kit.
       </p>
       <p class="mt-3 text-sm text-text-muted/80">
         Every recommendation is tested by the editorial team before it ships. See our <a href="/methodology/" class="text-accent hover:underline">methodology</a> for the 3-tier evaluation we run on every product.
       </p>
     </header>
+
+    <section class="mb-16">
+      <h2 class="text-3xl font-black text-text-heading mb-2">Buying guides</h2>
+      <p class="text-text-muted mb-6 max-w-2xl">
+        Start here if you're picking your first Hyrox kit. Category-by-category recommendations with what to look for, why it matters, and our top picks.
+      </p>
+      <div class="grid gap-4 md:grid-cols-2">
+        {buyingGuides.map((g) => (
+          <a
+            href={`/gear/${g.id}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-2xl">{guideIcons[g.data.category] ?? "🛒"}</span>
+              <div class="text-xs font-bold uppercase tracking-wider text-accent">
+                {g.data.category.replace("-", " ")}
+              </div>
+            </div>
+            <h3 class="text-xl font-black text-text-heading mb-2">{g.data.title}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{g.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
 
     <section class="mb-16">
       <h2 class="text-3xl font-black text-text-heading mb-6">Shoe comparisons</h2>

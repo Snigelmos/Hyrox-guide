@@ -1,122 +1,240 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GuideLayout from "../../layouts/GuideLayout.astro";
 import { GEAR_COMPARISONS } from "../../data/gear-comparisons";
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+type ComparisonProps = {
+  kind: "comparison";
+  slug: string;
+};
+
+type GuideProps = {
+  kind: "guide";
+  entry: CollectionEntry<"gear">;
+};
+
+type Props = ComparisonProps | GuideProps;
 
 export async function getStaticPaths() {
-  return GEAR_COMPARISONS.map((c) => ({
+  const comparisonPaths = GEAR_COMPARISONS.map((c) => ({
     params: { slug: c.slug },
-    props: { slug: c.slug },
+    props: { kind: "comparison" as const, slug: c.slug },
   }));
+
+  const guideEntries = await getCollection("gear");
+  const guidePaths = guideEntries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { kind: "guide" as const, entry },
+  }));
+
+  return [...comparisonPaths, ...guidePaths];
 }
 
-const { slug } = Astro.props;
-const comp = GEAR_COMPARISONS.find((c) => c.slug === slug)!;
+const props = Astro.props as Props;
 
-const breadcrumbs = [
-  { name: "Gear", url: "/gear/" },
-  { name: `${comp.productALabel} vs ${comp.productBLabel}` },
-];
+// Resolve everything async up-front so the template stays sync.
+const comp =
+  props.kind === "comparison"
+    ? GEAR_COMPARISONS.find((c) => c.slug === props.slug)!
+    : null;
+
+const guideEntry = props.kind === "guide" ? props.entry : null;
+const GuideContent =
+  guideEntry !== null ? (await render(guideEntry)).Content : null;
+
+const otherGuides =
+  guideEntry !== null
+    ? (await getCollection("gear"))
+        .filter((g) => g.id !== guideEntry.id)
+        .sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99))
+    : [];
 ---
 
-<BaseLayout
-  title={`${comp.title} | Hyrox Vault`}
-  description={comp.metaDescription}
-  ogType="article"
-  schemaType="Article"
-  breadcrumbs={breadcrumbs}
-  faqItems={comp.faqs}
->
-  <div class="container-main py-10 md:py-16">
-    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center gap-2 flex-wrap">
-        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
-        <li class="flex items-center gap-2">
-          <span class="text-text-muted/40">/</span>
-          <a href="/gear/" class="text-text-muted hover:text-accent transition-colors no-underline">Gear</a>
-        </li>
-        <li class="flex items-center gap-2">
-          <span class="text-text-muted/40">/</span>
-          <span class="text-text">{comp.productALabel} vs {comp.productBLabel}</span>
-        </li>
-      </ol>
-    </nav>
+{
+  comp && (
+    <BaseLayout
+      title={`${comp.title} | Hyrox Vault`}
+      description={comp.metaDescription}
+      ogType="article"
+      schemaType="Article"
+      breadcrumbs={[
+        { name: "Gear", url: "/gear/" },
+        { name: `${comp.productALabel} vs ${comp.productBLabel}` },
+      ]}
+      faqItems={comp.faqs}
+    >
+      <div class="container-main py-10 md:py-16">
+        <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+          <ol class="flex items-center gap-2 flex-wrap">
+            <li>
+              <a
+                href="/"
+                class="text-text-muted hover:text-accent transition-colors no-underline"
+              >
+                Home
+              </a>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-text-muted/40">/</span>
+              <a
+                href="/gear/"
+                class="text-text-muted hover:text-accent transition-colors no-underline"
+              >
+                Gear
+              </a>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-text-muted/40">/</span>
+              <span class="text-text">
+                {comp.productALabel} vs {comp.productBLabel}
+              </span>
+            </li>
+          </ol>
+        </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
-      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        {comp.title}
-      </h1>
-      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        {comp.intro}
-      </p>
-    </header>
+        <header class="mb-10 pb-8 border-b border-border">
+          <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+            {comp.title}
+          </h1>
+          <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+            {comp.intro}
+          </p>
+        </header>
 
-    <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
-      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Bottom line</div>
-      <p class="text-lg text-text-heading font-semibold leading-relaxed">{comp.bottomLine}</p>
-    </section>
+        <section class="mb-12 bg-accent/5 border border-accent/20 rounded-2xl p-6">
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            Bottom line
+          </div>
+          <p class="text-lg text-text-heading font-semibold leading-relaxed">
+            {comp.bottomLine}
+          </p>
+        </section>
 
-    <section class="prose md:prose-lg max-w-none">
-      <h2>Side-by-side comparison</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Attribute</th>
-            <th>{comp.productALabel}</th>
-            <th>{comp.productBLabel}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {comp.rows.map((row) => (
-            <tr>
-              <th>{row.attribute}</th>
-              <td>{row.productA}</td>
-              <td>{row.productB}</td>
-            </tr>
+        <section class="prose md:prose-lg max-w-none">
+          <h2>Side-by-side comparison</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>{comp.productALabel}</th>
+                <th>{comp.productBLabel}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comp.rows.map((row) => (
+                <tr>
+                  <th>{row.attribute}</th>
+                  <td>{row.productA}</td>
+                  <td>{row.productB}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2>Who should pick {comp.productALabel}</h2>
+          <ul>
+            {comp.bestFor.productA.map((b) => (
+              <li>{b}</li>
+            ))}
+          </ul>
+
+          <h2>Who should pick {comp.productBLabel}</h2>
+          <ul>
+            {comp.bestFor.productB.map((b) => (
+              <li>{b}</li>
+            ))}
+          </ul>
+
+          <h2>Frequently asked questions</h2>
+          {comp.faqs.map((f) => (
+            <>
+              <h3>{f.question}</h3>
+              <p>{f.answer}</p>
+            </>
           ))}
-        </tbody>
-      </table>
 
-      <h2>Who should pick {comp.productALabel}</h2>
-      <ul>
-        {comp.bestFor.productA.map((b) => <li>{b}</li>)}
-      </ul>
+          <h2>Related reading</h2>
+          <ul>
+            {comp.internalLinks.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <h2>Who should pick {comp.productBLabel}</h2>
-      <ul>
-        {comp.bestFor.productB.map((b) => <li>{b}</li>)}
-      </ul>
-
-      <h2>Frequently asked questions</h2>
-      {comp.faqs.map((f) => (
-        <>
-          <h3>{f.question}</h3>
-          <p>{f.answer}</p>
-        </>
-      ))}
-
-      <h2>Related reading</h2>
-      <ul>
-        {comp.internalLinks.map((link) => (
-          <li><a href={link.href}>{link.label}</a></li>
-        ))}
-      </ul>
-    </section>
-
-    <aside class="mt-16 pt-10 border-t border-border">
-      <h2 class="text-2xl font-black text-text-heading mb-4">More gear comparisons</h2>
-      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
-        {GEAR_COMPARISONS.filter((c) => c.slug !== comp.slug).map((c) => (
-          <a
-            href={`/gear/${c.slug}/`}
-            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-          >
-            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
-              {c.category === "shoes" ? "Shoes" : "Equipment"}
-            </div>
-            <div class="text-sm text-text-heading font-bold">{c.productALabel} vs {c.productBLabel}</div>
-          </a>
-        ))}
+        <aside class="mt-16 pt-10 border-t border-border">
+          <h2 class="text-2xl font-black text-text-heading mb-4">
+            More gear comparisons
+          </h2>
+          <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
+            {GEAR_COMPARISONS.filter((c) => c.slug !== comp.slug).map((c) => (
+              <a
+                href={`/gear/${c.slug}/`}
+                class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                  {c.category === "shoes" ? "Shoes" : "Equipment"}
+                </div>
+                <div class="text-sm text-text-heading font-bold">
+                  {c.productALabel} vs {c.productBLabel}
+                </div>
+              </a>
+            ))}
+          </div>
+        </aside>
       </div>
-    </aside>
-  </div>
-</BaseLayout>
+    </BaseLayout>
+  )
+}
+
+{
+  guideEntry && GuideContent && (
+    <GuideLayout
+      title={guideEntry.data.title}
+      description={guideEntry.data.description}
+      breadcrumbs={[
+        { label: "Gear", href: "/gear/" },
+        { label: guideEntry.data.title },
+      ]}
+      crossSellContext="general"
+    >
+      <GuideContent />
+
+      {otherGuides.length > 0 && (
+        <aside class="mt-16 pt-10 border-t border-border not-prose">
+          <h2 class="text-2xl font-black text-text-heading mb-4">
+            More Hyrox gear guides
+          </h2>
+          <div class="grid gap-3 md:grid-cols-2">
+            {otherGuides.map((g) => (
+              <a
+                href={`/gear/${g.id}/`}
+                class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                  {g.data.category}
+                </div>
+                <div class="text-sm text-text-heading font-bold">
+                  {g.data.title}
+                </div>
+                <p class="mt-1 text-xs text-text-muted leading-relaxed">
+                  {g.data.description}
+                </p>
+              </a>
+            ))}
+          </div>
+          <p class="mt-6 text-sm text-text-muted">
+            Looking for a head-to-head pick?{" "}
+            <a href="/gear/" class="text-accent hover:underline">
+              Browse our brand-by-brand gear comparisons
+            </a>
+            .
+          </p>
+        </aside>
+      )}
+    </GuideLayout>
+  )
+}
