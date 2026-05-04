@@ -161,7 +161,7 @@ export const STATIONS: StationDefinition[] = [
       "Putting bells down inside the lane",
       "Running across the line",
     ],
-    techniquePostHref: "/racing-guide/stations/",
+    techniquePostHref: "/blog/hyrox-farmers-carry-sandbag-lunges/",
     overviewText:
       "Grip management under race-load cardiovascular stress.",
     howToSteps: [
@@ -183,10 +183,12 @@ export const STATIONS: StationDefinition[] = [
       { division: "Pro Women", spec: "20kg sandbag" },
     ],
     commonNoReps: [
-      "Back knee not touching floor",
+      "Trailing (back) knee not touching the ground — 15-second penalty per infringement",
+      "Not standing tall at the top of each lunge — 15-second penalty per infringement",
+      "Sandbag coming off the shoulders before the rep is complete",
       "Feet passing each other (must be true walking lunges)",
     ],
-    techniquePostHref: "/racing-guide/stations/",
+    techniquePostHref: "/blog/hyrox-farmers-carry-sandbag-lunges/",
     overviewText:
       "100m of walking lunges with a loaded sandbag across the shoulders.",
     howToSteps: [
@@ -200,18 +202,18 @@ export const STATIONS: StationDefinition[] = [
     slug: "wall-balls",
     name: "Wall Balls",
     position: 8,
-    reps: "100 reps (75 for women / masters in some categories)",
+    reps: "100 reps (all divisions)",
     standards: [
-      { division: "Open Men", spec: "9kg ball, 3m target" },
-      { division: "Open Women", spec: "6kg ball, 2.7m target" },
+      { division: "Open Men", spec: "6kg ball, 3m target" },
+      { division: "Open Women", spec: "4kg ball, 2.7m target" },
       { division: "Pro Men", spec: "9kg ball, 3m target" },
-      { division: "Pro Women", spec: "6kg ball, 3m target" },
+      { division: "Pro Women", spec: "6kg ball, 2.7m target" },
     ],
     commonNoReps: [
       "Hips not breaking parallel in the squat",
       "Ball not hitting or above the target line",
     ],
-    techniquePostHref: "/racing-guide/stations/",
+    techniquePostHref: "/blog/hyrox-wall-balls-technique/",
     overviewText:
       "The final boss — grip shot, legs shot, and target accuracy becomes the limiter.",
     howToSteps: [

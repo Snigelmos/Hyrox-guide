@@ -3,6 +3,17 @@ title: "The 8 Hyrox Stations"
 description: "A detailed breakdown of all 8 Hyrox workout stations, what to expect, weights by category, common mistakes, and tips for each one."
 order: 2
 icon: "💪"
+faqs:
+  - question: "What are the 8 Hyrox stations in order?"
+    answer: "SkiErg (1,000 m), Sled Push (50 m), Sled Pull (50 m), Burpee Broad Jumps (80 m), Rowing (1,000 m), Farmers Carry (200 m), Sandbag Lunges (100 m), and Wall Balls (100 reps). A 1 km run separates each station."
+  - question: "What is the weight for the Hyrox sled push?"
+    answer: "Open Men 152 kg, Open Women 102 kg, Pro Men 202 kg, Pro Women 152 kg - including the sled itself - over 50 m."
+  - question: "How many wall balls in Hyrox?"
+    answer: "100 reps for all divisions. Targets are 3.0 m for Men and 2.7 m for Women. Ball weights are 4 kg (Open Women), 6 kg (Open Men and Women Pro), and 9 kg (Men Pro)."
+  - question: "What weight is the Hyrox farmers carry?"
+    answer: "Open Men 2×24 kg, Open Women 2×16 kg, Pro Men 2×32 kg, Pro Women 2×24 kg, carried for 200 m."
+  - question: "What weight is the Hyrox sandbag for lunges?"
+    answer: "Open Men 20 kg, Open Women 10 kg, Pro Men 30 kg, Pro Women 20 kg, carried across both shoulders for 100 m of walking lunges."
 ---
 
 import StationIllustration from "../../components/StationIllustration.astro";
@@ -49,8 +60,10 @@ You push a weighted sled across 50 meters of smooth floor. The weights vary by d
 
 | Category | Men | Women |
 |----------|-----|-------|
-| Open | 102 kg | 72 kg |
-| Pro | 152 kg | 102 kg |
+| Open | 152 kg | 102 kg |
+| Pro | 202 kg | 152 kg |
+
+Sled weights are total mass including the sled itself, per the [official Hyrox Singles Rulebook](https://hyrox.com/wp-content/uploads/2025/06/25_26-Singles-Rulebook_en_R1.pdf).
 
 **What makes it tough:** Pure leg strength and willpower. The sled can feel impossibly heavy if you lose momentum.
 
@@ -219,20 +232,20 @@ Carry a sandbag on your shoulder and lunge for 100 meters. Alternate legs with e
 
 ---
 
-<StationIllustration station="wall-balls" name="Wall Balls" metric="75–100 reps" number={8} />
+<StationIllustration station="wall-balls" name="Wall Balls" metric="100 reps" number={8} />
 
-## Station 8: Wall Balls, 75/100 reps
+## Station 8: Wall Balls, 100 reps
 
-The final station. Perform a squat and throw a medicine ball to a target height, catch it, and repeat.
+The final station. Perform a squat and throw a medicine ball to a target height, catch it, and repeat. Per the current Hyrox Singles Rulebook, **all divisions complete 100 reps** — the older 75-rep women's standard is no longer used.
 
 | Category | Reps | Ball Weight | Target Height |
 |----------|------|-------------|---------------|
-| Men Open | 100 | 6 kg | 2.8m / 9ft |
+| Men Open | 100 | 6 kg | 3.0m / 10ft |
 | Men Pro | 100 | 9 kg | 3.0m / 10ft |
-| Women Open | 75 | 4 kg | 2.5m / 8ft |
-| Women Pro | 75 | 6 kg | 2.8m / 9ft |
+| Women Open | 100 | 4 kg | 2.7m / 9ft |
+| Women Pro | 100 | 6 kg | 2.7m / 9ft |
 
-**What makes it tough:** 75–100 reps when you're completely gassed. Your legs, shoulders, and lungs are all screaming. But the finish line is right after this.
+**What makes it tough:** 100 reps when you're completely gassed. Your legs, shoulders, and lungs are all screaming. But the finish line is right after this.
 
 **Pro tips:**
 - Break it into **sets** (e.g., 25-25-25-25 or 20-20-20-15)
@@ -241,12 +254,12 @@ The final station. Perform a squat and throw a medicine ball to a target height,
 - Keep a **steady rhythm:** don't sprint the first 30 and die
 - Remember: this is the last thing between you and the finish line
 
-| Level | Men (100 reps) | Women (75 reps) |
-|-------|----------------|-----------------|
-| Elite | 3:00–3:30 | 2:45–3:15 |
-| Competitive | 3:45–4:30 | 3:30–4:15 |
-| Average | 4:30–6:00 | 4:15–5:30 |
-| Beginner | 6:00–8:00+ | 5:30–7:00+ |
+| Level | Men (100 reps) | Women (100 reps) |
+|-------|----------------|------------------|
+| Elite | 3:00–3:30 | 3:15–3:45 |
+| Competitive | 3:45–4:30 | 4:00–4:45 |
+| Average | 4:30–6:00 | 4:45–6:00 |
+| Beginner | 6:00–8:00+ | 6:00–7:30+ |
 
 **Deep dive:** [Hyrox Wall Balls, The Final Boss](/blog/hyrox-wall-balls-technique/).
 
@@ -290,7 +303,7 @@ And don't forget the 8km of running between stations, see our [Hyrox Running Str
     { station: "Rowing", metric: "1,000m", elite: "3:50", competitive: "4:15", average: "4:50", beginner: "5:50" },
     { station: "Farmers Carry", metric: "200m", elite: "2:05", competitive: "2:50", average: "3:50", beginner: "5:30" },
     { station: "Sandbag Lunges", metric: "100m", elite: "3:30", competitive: "4:30", average: "5:45", beginner: "7:45" },
-    { station: "Wall Balls", metric: "75 reps", elite: "3:00", competitive: "3:45", average: "4:50", beginner: "6:15" },
+    { station: "Wall Balls", metric: "100 reps", elite: "3:30", competitive: "4:15", average: "5:15", beginner: "6:45" },
   ]}
   totals={{
     elite: "1:15",
