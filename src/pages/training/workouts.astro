@@ -843,7 +843,7 @@ const totalWorkouts = typedWorkouts.length;
 
       <!-- Sidebar -->
       <aside class="hidden lg:block">
-        <div class="sticky top-24 max-h-[calc(100vh-7rem)] space-y-4 overflow-y-auto overscroll-contain pr-1">
+        <div class="sticky top-24 max-h-[calc(100vh-7rem)] space-y-4 overflow-y-auto overscroll-contain pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categoriesWithCounts.map((cat) => {
             const catWorkouts = typedWorkouts.filter(w => w.category === cat.id);
             return (
