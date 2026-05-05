@@ -222,19 +222,19 @@ export default function GymMap({
     <div className="hyrox-map-shell rounded-2xl overflow-hidden border border-border bg-bg">
       {showFilters && (
         <div className="p-4 md:p-5 border-b border-border bg-bg-card-hover">
-          <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
+          <div className="flex flex-wrap md:grid md:grid-cols-[1fr_auto_auto_auto] gap-3">
             <input
               type="search"
               placeholder="Search by gym, city, neighbourhood, or country"
               value={filters.q}
               onChange={(e) => updateFilter("q", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg bg-bg border border-border text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm"
+              className="basis-full md:basis-auto w-full px-4 py-2.5 rounded-lg bg-bg border border-border text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-base"
               aria-label="Search gyms"
             />
             <select
               value={filters.country}
               onChange={(e) => updateFilter("country", e.target.value)}
-              className="px-4 py-2.5 rounded-lg bg-bg border border-border text-text focus:outline-none focus:ring-2 focus:ring-accent text-sm min-w-[160px]"
+              className="flex-1 min-w-0 md:min-w-[160px] px-4 py-2.5 rounded-lg bg-bg border border-border text-text focus:outline-none focus:ring-2 focus:ring-accent text-base"
               aria-label="Filter by country"
             >
               <option value="">All countries</option>
@@ -247,7 +247,7 @@ export default function GymMap({
             <select
               value={filters.type}
               onChange={(e) => updateFilter("type", e.target.value as AffiliationType | "")}
-              className="px-4 py-2.5 rounded-lg bg-bg border border-border text-text focus:outline-none focus:ring-2 focus:ring-accent text-sm min-w-[160px]"
+              className="flex-1 min-w-0 md:min-w-[160px] px-4 py-2.5 rounded-lg bg-bg border border-border text-text focus:outline-none focus:ring-2 focus:ring-accent text-base"
               aria-label="Filter by type"
             >
               <option value="">All types</option>
@@ -260,7 +260,7 @@ export default function GymMap({
             <button
               type="button"
               onClick={clearFilters}
-              className="px-4 py-2.5 rounded-lg bg-transparent border border-border text-text-muted hover:text-text hover:border-border-hover text-sm font-medium"
+              className="basis-full md:basis-auto px-4 py-2.5 rounded-lg bg-transparent border border-border text-text-muted hover:text-text hover:border-border-hover text-sm font-medium"
             >
               Clear
             </button>

@@ -88,10 +88,10 @@ const sidebarLinks = [
   howToDescription={description}
   noindex={noindex}
 >
-  <div class="container-main py-10 md:py-16">
+  <div class="container-main py-6 md:py-16">
     {
       breadcrumbs.length > 0 && (
-        <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+        <nav class="mb-4 md:mb-8 text-sm" aria-label="Breadcrumb">
           <ol class="flex items-center gap-2 flex-wrap">
             <li>
               <a
@@ -122,7 +122,7 @@ const sidebarLinks = [
     }
 
     {/* Mobile guide nav — visible below lg */}
-    <details class="lg:hidden mb-8 bg-bg-card border border-border rounded-xl group">
+    <details class="lg:hidden mb-4 bg-bg-card border border-border rounded-xl group">
       <summary class="flex items-center justify-between px-5 py-3 cursor-pointer min-h-[44px] text-sm font-semibold text-text-heading select-none">
         <span class="flex items-center gap-2">
           <svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,7 +160,7 @@ const sidebarLinks = [
           )}
           <div class="relative z-10">
             <h1
-              class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent"
+              class="text-3xl md:text-5xl font-black leading-tight text-gradient-accent"
             >
               {title}
             </h1>
@@ -205,6 +205,8 @@ const sidebarLinks = [
             }
           </div>
         </header>
+
+        {showToc && <StickyTOC variant="mobile" />}
 
         <div class="prose md:prose-lg max-w-none">
           <slot />
@@ -265,4 +267,61 @@ const sidebarLinks = [
       </aside>
     </div>
   </div>
+
+  {/* Mobile-only floating CTA. Dismissible per session and only appears
+      after the reader has scrolled past the article header so it never
+      covers content above the fold. */}
+  <div
+    id="mobile-floating-cta"
+    class="lg:hidden fixed right-4 z-30 hidden items-center gap-1 bg-accent text-bg rounded-full shadow-lg shadow-accent/30 pl-4 pr-1.5 py-1.5"
+    style="bottom: max(1rem, env(safe-area-inset-bottom));"
+  >
+    <a
+      href="/calculator/"
+      class="inline-flex items-center gap-2 text-xs font-bold text-bg no-underline py-1"
+    >
+      Try the calculator
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </a>
+    <button
+      type="button"
+      id="mobile-floating-cta-close"
+      class="ml-1 w-7 h-7 flex items-center justify-center rounded-full bg-bg/20 hover:bg-bg/40 text-bg cursor-pointer"
+      aria-label="Dismiss"
+    >
+      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // Floating "Try the calculator" CTA on guide pages. We only show it on
+    // narrow viewports, after the user has scrolled at least 600px (so it
+    // never covers the article header), and we respect a per-session dismiss.
+    const cta = document.getElementById("mobile-floating-cta");
+    const closeBtn = document.getElementById("mobile-floating-cta-close");
+    if (cta) {
+      const dismissed = sessionStorage.getItem("guide-cta-dismissed") === "1";
+      const onCalculator = window.location.pathname.startsWith("/calculator");
+      if (!dismissed && !onCalculator) {
+        const onScroll = () => {
+          if (window.scrollY > 600) {
+            cta.classList.remove("hidden");
+            cta.classList.add("inline-flex");
+            window.removeEventListener("scroll", onScroll);
+          }
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+      }
+      closeBtn?.addEventListener("click", () => {
+        cta.classList.add("hidden");
+        cta.classList.remove("inline-flex");
+        sessionStorage.setItem("guide-cta-dismissed", "1");
+      });
+    }
+  </script>
 </BaseLayout>

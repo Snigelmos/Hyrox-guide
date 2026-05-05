@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getBenchmarkValue } from "../data/station-benchmarks";
 import { getPlaybook } from "../data/station-playbooks";
 import { ALL_GOAL_TIME_CONFIGS, type GoalTimeConfig } from "../data/calculator-goals";
@@ -200,13 +200,32 @@ export default function HyroxCalculator() {
     }).catch(() => {});
   }
 
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  useEffect(() => {
+    setCanNativeShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+
+  async function nativeShare() {
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: "My Hyrox prediction", text: shareText, url: shareUrl });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard fallback.
+      }
+    }
+    copyShareLink();
+  }
+
+  const [moreShareOpen, setMoreShareOpen] = useState(false);
+
   const s = {
     card:        "bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 space-y-6",
     label:       "block text-xs font-bold uppercase tracking-wider text-[#a1a1aa] mb-2",
-    input:       "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-sm text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]",
+    input:       "w-full bg-[#09090b] border border-[#27272a] rounded-lg px-4 py-3 text-base text-[#e4e4e7] focus:outline-none focus:border-[#38bdf8] min-h-[44px]",
     btnActive:   "bg-[#38bdf8] text-[#09090b] font-bold",
     btnInactive: "bg-[#131316] border border-[#27272a] text-[#a1a1aa] hover:border-[#38bdf8]/40 hover:text-[#e4e4e7]",
-    btn:         "px-4 py-2.5 rounded-lg text-sm transition-all min-h-[44px] cursor-pointer w-full",
+    btn:         "px-4 py-2.5 rounded-lg text-base transition-all min-h-[44px] cursor-pointer w-full",
   };
 
   function setStationInput(slug: string, val: string) {
@@ -218,6 +237,23 @@ export default function HyroxCalculator() {
 
   return (
     <div className="max-w-6xl">
+      {/* Mobile-only sticky mini-result. Surfaces the predicted finish time
+          while the user is still filling in the inputs card below. */}
+      <div className="lg:hidden sticky top-16 z-30 mb-4 -mx-6 sm:-mx-8 px-6 sm:px-8 py-2.5 bg-bg/90 backdrop-blur border-y border-border flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Predicted</div>
+          <div className="text-xl font-mono font-black truncate" style={{ color: level.color }}>
+            {formatTimeHM(result.total)}
+          </div>
+        </div>
+        <a
+          href="#race-result"
+          className="text-xs font-bold text-accent border border-accent/30 bg-accent/10 rounded-lg px-3 py-2 whitespace-nowrap"
+        >
+          Breakdown ↓
+        </a>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {/* ── INPUTS ── */}
@@ -270,6 +306,7 @@ export default function HyroxCalculator() {
               <div>
                 <input
                   type="number" min={15} max={55}
+                  inputMode="numeric"
                   value={fiveKmMin}
                   onChange={e => setFiveKmMin(e.target.value)}
                   className={s.input}
@@ -279,6 +316,7 @@ export default function HyroxCalculator() {
               <div>
                 <input
                   type="number" min={0} max={59}
+                  inputMode="numeric"
                   value={fiveKmSec}
                   onChange={e => setFiveKmSec(e.target.value)}
                   className={s.input}
@@ -296,6 +334,7 @@ export default function HyroxCalculator() {
             </label>
             <input
               type="number" min={35} max={180}
+              inputMode="numeric"
               value={bodyweightKg}
               onChange={e => setBodyweightKg(e.target.value)}
               className={s.input}
@@ -315,6 +354,7 @@ export default function HyroxCalculator() {
             </label>
             <input
               type="number" min={20} max={250}
+              inputMode="numeric"
               value={benchKg}
               onChange={e => setBenchKg(e.target.value)}
               className={s.input}
@@ -329,6 +369,7 @@ export default function HyroxCalculator() {
             </label>
             <input
               type="number" min={20} max={350}
+              inputMode="numeric"
               value={deadliftKg}
               onChange={e => setDeadliftKg(e.target.value)}
               className={s.input}
@@ -378,7 +419,7 @@ export default function HyroxCalculator() {
                   Enter mm:ss for any stations you have real times for. The more you fill, the more confident the diagnosis. Leave blank to skip.
                 </p>
                 {STATION_SLUGS.map((slug, i) => (
-                  <div key={slug} className="grid grid-cols-[1fr_120px] gap-3 items-center">
+                  <div key={slug} className="grid grid-cols-[1fr_100px] sm:grid-cols-[1fr_120px] gap-3 items-center">
                     <label className="text-sm text-[#e4e4e7]" htmlFor={`station-${slug}`}>
                       {STATION_NAMES[i]}
                     </label>
@@ -407,11 +448,11 @@ export default function HyroxCalculator() {
         </div>
 
         {/* ── RESULTS ── */}
-        <div className="bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8">
+        <div id="race-result" className="bg-[#131316] border border-[#27272a] rounded-2xl p-6 md:p-8 scroll-mt-24">
           <h3 className="text-lg font-bold text-[#f4f4f5] mb-6">Predicted Race Time</h3>
 
           <div className="text-center mb-8">
-            <div className="text-5xl md:text-6xl font-black font-mono" style={{ color: level.color }}>
+            <div className="text-4xl sm:text-5xl md:text-6xl font-black font-mono" style={{ color: level.color }}>
               {formatTimeHM(result.total)}
             </div>
             <div className="mt-1 text-xs text-[#52525b] font-medium">{divisionLabel}</div>
@@ -470,36 +511,64 @@ export default function HyroxCalculator() {
           {/* ── Share row ── */}
           <div className="mb-6 bg-[#09090b] border border-[#27272a] rounded-xl p-4">
             <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
-              <div>
+              <div className="min-w-0">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Share your prediction</div>
                 <div className="text-xs text-[#52525b]">A clean result page opens at /calculator/share/</div>
               </div>
+              <div className="flex gap-2">
+                {canNativeShare && (
+                  <button
+                    type="button"
+                    onClick={nativeShare}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#09090b] bg-[#38bdf8] hover:bg-[#0ea5e9] transition-colors px-3 py-1.5 rounded-lg"
+                  >
+                    Share
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={copyShareLink}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors bg-[#38bdf8]/10 border border-[#38bdf8]/30 px-3 py-1.5 rounded-lg"
+                >
+                  {copied ? "Link copied" : "Copy link"}
+                </button>
+              </div>
+            </div>
+            {/* On mobile (when native share is available) the granular buttons
+                are tucked behind a "More options" disclosure; on desktop they
+                are always visible. */}
+            {canNativeShare && (
               <button
                 type="button"
-                onClick={copyShareLink}
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#38bdf8] hover:text-[#0ea5e9] transition-colors bg-[#38bdf8]/10 border border-[#38bdf8]/30 px-3 py-1.5 rounded-lg"
+                onClick={() => setMoreShareOpen((o) => !o)}
+                aria-expanded={moreShareOpen}
+                className="sm:hidden text-xs font-semibold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors"
               >
-                {copied ? "Link copied" : "Copy link"}
+                {moreShareOpen ? "Hide more options" : "More options ↓"}
               </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
+            )}
+            <div
+              className={`grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mt-2 ${
+                canNativeShare && !moreShareOpen ? "hidden sm:flex" : ""
+              }`}
+            >
               <a
                 href={`https://twitter.com/intent/tweet?${new URLSearchParams({ text: shareText, url: shareUrl }).toString()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+                className="inline-flex items-center justify-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-2 rounded-lg"
               >Share on X</a>
               <a
                 href={`https://reddit.com/submit?${new URLSearchParams({ url: shareUrl, title: shareText }).toString()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+                className="inline-flex items-center justify-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-2 rounded-lg"
               >Share on Reddit</a>
               <a
                 href={`https://api.whatsapp.com/send?${new URLSearchParams({ text: `${shareText} ${shareUrl}` }).toString()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-1.5 rounded-lg"
+                className="inline-flex items-center justify-center gap-1 text-xs font-bold text-[#a1a1aa] hover:text-[#e4e4e7] transition-colors no-underline border border-[#27272a] px-3 py-2 rounded-lg col-span-2 sm:col-span-1"
               >Send on WhatsApp</a>
             </div>
           </div>
