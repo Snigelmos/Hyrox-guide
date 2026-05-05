@@ -1,0 +1,35 @@
+---
+description: Keep the workspace lean — auto-delete build artifacts and log files after tasks
+alwaysApply: true
+---
+
+# Workspace Hygiene
+
+This project lives on OneDrive. Build artifacts dramatically slow down sync. Always keep the workspace lean.
+
+## After any build or `npm install`, delete these immediately
+
+- `dist/` — Astro build output (regenerate with `npm run build`)
+- `node_modules/` — npm packages (regenerate with `npm install`)
+- `.vercel/` — Vercel local cache (auto-regenerates on deploy)
+- `.astro/` — Astro cache (auto-regenerates on next build)
+
+## After any script run, delete these
+
+- `*.log` files in the project root
+- `*.log` files in `_research/`
+
+## Never commit these
+
+All of the above are already in `.gitignore`. Do not stage or commit them under any circumstances.
+
+## Restoring when needed for a task
+
+Only restore these folders if the current task explicitly requires a local build or install:
+
+```bash
+npm install          # restores node_modules/
+npm run build        # restores dist/
+```
+
+Delete them again once the task is complete.

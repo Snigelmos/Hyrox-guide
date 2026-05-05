@@ -1,0 +1,4 @@
+# Normalise all text files to LF on commit and checkout.
+# Eliminates CRLF noise on Windows where files show as "modified" due to line-ending differences.
+* text=auto eol=lf
+*.bat text eol=crlf
