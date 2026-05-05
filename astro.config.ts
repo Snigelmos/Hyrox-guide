@@ -8,8 +8,20 @@ import tailwindcss from "@tailwindcss/vite";
 import vercel from "@astrojs/vercel";
 
 import { GYMS, hasIndexablePage } from "./src/data/gym-finder";
-import { allEventPaths } from "./src/data/events";
+import { allEventPaths, RETIRED_EVENT_SLUGS } from "./src/data/events";
 import { getResults } from "./src/data/event-results";
+
+// Permanent 301 redirects for events that used to have a live page but have
+// been retired (no longer on the calendar, replaced by another city, etc.).
+// Source of truth: RETIRED_EVENT_SLUGS in src/data/events.ts. Each retired
+// entry covers BOTH the detail page and its /results/ sub-page so external
+// links and old Google results never 404.
+const retiredEventRedirects: Record<string, string> = Object.fromEntries(
+  RETIRED_EVENT_SLUGS.flatMap(({ year, slug, redirectTo }) => [
+    [`/events/${year}/${slug}/`, redirectTo],
+    [`/events/${year}/${slug}/results/`, redirectTo],
+  ]),
+);
 
 /**
  * Sitemap noindex allowlist.
@@ -137,6 +149,7 @@ export default defineConfig({
   site: "https://www.hyroxvault.com",
   output: "static",
   adapter: vercel(),
+  redirects: retiredEventRedirects,
   integrations: [
     react(),
     mdx(),

@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "Page not found";
+const description =
+  "The page you were looking for doesn't exist. We'll send you back to the homepage in a few seconds.";
+---
+
+<BaseLayout title={`${title} | HyroxVault`} description={description} noindex>
+  <meta http-equiv="refresh" content="6;url=/" slot="head" />
+
+  <div class="container-main py-16 md:py-24">
+    <div class="max-w-2xl mx-auto text-center">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+        404 — Not found
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent mb-5">
+        Race not found
+      </h1>
+      <p class="text-lg text-text-muted leading-relaxed mb-3">
+        We couldn't find the page you were looking for. It may have been an
+        event that's no longer on the Hyrox calendar, or a link that's been
+        renamed.
+      </p>
+      <p class="text-sm text-text-muted/70 mb-10">
+        We'll send you back to the homepage in a few seconds — or pick a
+        destination below.
+      </p>
+
+      <div class="grid gap-3 md:grid-cols-3 mb-10">
+        <a
+          href="/"
+          class="block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+            Home
+          </div>
+          <div class="text-base text-text-heading font-bold">
+            Back to HyroxVault
+          </div>
+        </a>
+        <a
+          href="/events/"
+          class="block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+            All races
+          </div>
+          <div class="text-base text-text-heading font-bold">
+            2026 Hyrox calendar
+          </div>
+        </a>
+        <a
+          href="/gyms/"
+          class="block bg-bg-card border border-border rounded-xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+            Train
+          </div>
+          <div class="text-base text-text-heading font-bold">
+            Find a Hyrox gym
+          </div>
+        </a>
+      </div>
+
+      <p class="text-xs text-text-muted/60">
+        If you reached this page from a link on another site, please let us
+        know — we'd like to set up a permanent redirect.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

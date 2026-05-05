@@ -51,6 +51,36 @@ const DEFAULT_DIVISIONS = [
 const HYROX_RESULTS_BASE = "https://www.hyresult.com/event/s8-2026-";
 const HYROX_OFFICIAL = "https://hyrox.com/find-your-race/";
 
+/**
+ * Slugs that previously had a live `/events/<year>/<slug>/` page but no
+ * longer correspond to a real event on the current calendar.
+ *
+ * MAINTENANCE CONTRACT — read before editing EVENTS:
+ * If you remove or rename a slug from `EVENTS`, ADD an entry here in the
+ * SAME commit. Every entry below becomes a permanent 301 redirect at build
+ * time (see `astro.config.ts`), so external links, Google results, and old
+ * bookmarks never 404. Never delete from this list — it grows forever.
+ *
+ * Pick the most relevant `redirectTo`:
+ *   - the closest replacement city if one exists (e.g. Zurich -> Geneva)
+ *   - otherwise the year landing page (`/events/<year>/`)
+ */
+export const RETIRED_EVENT_SLUGS: {
+  year: number;
+  slug: string;
+  redirectTo: string;
+}[] = [
+  { year: 2026, slug: "gothenburg", redirectTo: "/events/2026/" },
+  { year: 2026, slug: "munich", redirectTo: "/events/2026/" },
+  { year: 2026, slug: "madrid", redirectTo: "/events/2026/" },
+  { year: 2026, slug: "zurich", redirectTo: "/events/2026/geneva/" },
+  { year: 2026, slug: "prague", redirectTo: "/events/2026/" },
+  { year: 2026, slug: "los-angeles", redirectTo: "/events/2026/anaheim/" },
+  { year: 2026, slug: "chicago", redirectTo: "/events/2026/" },
+  { year: 2026, slug: "melbourne", redirectTo: "/events/2026/sydney/" },
+  { year: 2026, slug: "dubai", redirectTo: "/events/2026/" },
+];
+
 export const EVENTS: HyroxEvent[] = [
   // ============================================================
   // SEASON 25/26 — January – June 2026 (Road to World Champs)
@@ -1870,3 +1900,34 @@ export function formatEventDate(startDate: string, endDate?: string): string {
   }
   return s.toLocaleDateString("en-US", fmt);
 }
+
+/**
+ * Build-time guard: throws if the same `${year}/${slug}` appears more than
+ * once in EVENTS, or if a live EVENTS entry collides with a RETIRED slug.
+ *
+ * Runs eagerly at module load (i.e. during `astro build`) so the deploy
+ * fails loudly instead of silently emitting a broken `getStaticPaths`
+ * collision or a redirect that overrides a real page.
+ */
+function assertSlugsUnique(): void {
+  const seen = new Map<string, string>();
+  for (const e of EVENTS) {
+    const key = `${e.year}/${e.slug}`;
+    if (seen.has(key)) {
+      throw new Error(
+        `[events.ts] Duplicate event slug for ${key} — every (year, slug) pair must be unique. Existing: ${seen.get(key)}, conflict: ${e.city}.`,
+      );
+    }
+    seen.set(key, e.city);
+  }
+  for (const r of RETIRED_EVENT_SLUGS) {
+    const key = `${r.year}/${r.slug}`;
+    if (seen.has(key)) {
+      throw new Error(
+        `[events.ts] Slug ${key} is in both EVENTS and RETIRED_EVENT_SLUGS — a retired slug cannot also be a live event. Remove it from one of the two.`,
+      );
+    }
+  }
+}
+
+assertSlugsUnique();
