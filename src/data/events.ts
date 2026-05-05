@@ -18,12 +18,24 @@ export interface HyroxEvent {
   venue: string;
   registrationUrl?: string;
   officialUrl: string;
+  resultsUrl?: string; // link to official results (e.g. hyresult.com) once race is done
   notes?: string;
   confirmed: boolean;
   sponsor?: string;
   region?: "EU" | "NA" | "APAC" | "ME" | "SA" | "AF";
   populationDescriptor?: string;
   divisions?: string[];
+}
+
+/**
+ * Returns true if the event's end date (or start date if no end) is before
+ * the supplied reference date (defaults to today at build time).
+ */
+export function isPastEvent(event: HyroxEvent, now: Date = new Date()): boolean {
+  const end = new Date(event.endDate ?? event.startDate);
+  // Treat the full end day as still-current by advancing to next day midnight
+  end.setDate(end.getDate() + 1);
+  return now >= end;
 }
 
 const DEFAULT_DIVISIONS = [
@@ -94,10 +106,11 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-04-27",
     venue: "Grand Palais",
     officialUrl: "https://hyrox.com/find-your-race/",
+    resultsUrl: "https://www.hyresult.com/event/s8-2026-paris",
     confirmed: true,
     sponsor: "Maybelline",
     region: "EU",
-    populationDescriptor: "the most architecturally spectacular Hyrox of the year, hosted inside the Grand Palais.",
+    populationDescriptor: "the most architecturally spectacular Hyrox of the year, hosted inside the Grand Palais — over 20,000 athletes raced the 2026 edition.",
     divisions: DEFAULT_DIVISIONS,
   },
   {
@@ -201,6 +214,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-04-19",
     venue: "PGE Narodowy (National Stadium)",
     officialUrl: "https://hyrox.com/find-your-race/",
+    resultsUrl: "https://www.hyresult.com/event/s8-2026-warsaw",
     confirmed: true,
     region: "EU",
     populationDescriptor: "the fourth and final Major of the season — Elite 15 athletes battle for World Championship spots.",
@@ -353,6 +367,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-04-05",
     venue: "Miami Beach Convention Center",
     officialUrl: "https://hyrox.com/find-your-race/",
+    resultsUrl: "https://www.hyresult.com/event/s8-2026-miami",
     confirmed: true,
     sponsor: "LEGENDZ",
     region: "NA",
@@ -426,12 +441,13 @@ export const EVENTS: HyroxEvent[] = [
     year: 2026,
     startDate: "2026-04-03",
     endDate: "2026-04-05",
-    venue: "Singapore Expo",
+    venue: "Singapore National Stadium",
     officialUrl: "https://hyrox.com/find-your-race/",
+    resultsUrl: "https://www.hyresult.com/event/s8-2026-singapore",
     confirmed: true,
     sponsor: "AIA",
     region: "APAC",
-    populationDescriptor: "three high-energy days of competition in one of APAC's most international cities.",
+    populationDescriptor: "the first three-day Hyrox in Southeast Asia — over 14,000 athletes packed Singapore National Stadium for Friday Night Relays and three days of racing.",
     divisions: DEFAULT_DIVISIONS,
   },
   {
