@@ -125,6 +125,21 @@ const faqItems = [
 const otherEventsInYear = EVENTS.filter(
   (e) => e.year === year && e.slug !== event.slug
 ).slice(0, 9);
+
+// Pull the top podium entry from the marquee divisions so the city page
+// can surface "this is who won" without bouncing the user to /results/.
+function findWinner(divisionMatchers: string[]) {
+  if (!raceResults) return undefined;
+  for (const matcher of divisionMatchers) {
+    const d = raceResults.divisions.find((x) =>
+      x.division.toLowerCase().includes(matcher),
+    );
+    if (d?.podium?.[0]) return { division: d.division, ...d.podium[0] };
+  }
+  return undefined;
+}
+const proMenWinner = findWinner(["pro men", "elite 15 men", "men"]);
+const proWomenWinner = findWinner(["pro women", "elite 15 women", "women"]);
 ---
 
 <BaseLayout
@@ -229,40 +244,66 @@ const otherEventsInYear = EVENTS.filter(
         </div>
       </dl>
 
-      <h2>How to register for Hyrox {event.city} {year}</h2>
-      <p>
-        Registration is on the <a href={event.officialUrl} rel="noopener noreferrer">official Hyrox site</a>. Larger stops like Berlin, London, and New York sell out 4–8 weeks before race day. Early-bird pricing typically saves €20–€30 vs late entry. Doubles and Relay slots usually sell out before Singles.
-      </p>
+      {!isPast && (
+        <>
+          <h2>How to register for Hyrox {event.city} {year}</h2>
+          <p>
+            Registration is on the <a href={event.officialUrl} rel="noopener noreferrer">official Hyrox site</a>. Larger stops like Berlin, London, and New York sell out 4–8 weeks before race day. Early-bird pricing typically saves €20–€30 vs late entry. Doubles and Relay slots usually sell out before Singles.
+          </p>
 
-      <h2>How to prepare for Hyrox {event.city}</h2>
-      <p>
-        Depending on your current fitness, plan 8–16 weeks of specific preparation. The biggest contributors to finish time are:
-      </p>
-      <ul>
-        <li>Your <a href="/training/running/">running base and intervals</a> — running is 50% of race time.</li>
-        <li>Station-specific strength, especially <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a>.</li>
-        <li>Grip endurance for <a href="/racing-guide/stations/">farmers carry</a>, sled pull, and wall balls.</li>
-        <li>A dialled <a href="/supplements/protocol/">race-day fuelling protocol</a>.</li>
-      </ul>
-      <p>
-        If this is your first Hyrox, read our <a href="/blog/first-hyrox-race-guide/">first Hyrox race guide</a> and the <a href="/blog/hyrox-race-week-protocol/">race-week taper protocol</a>.
-      </p>
+          <h2>How to prepare for Hyrox {event.city}</h2>
+          <p>
+            Depending on your current fitness, plan 8–16 weeks of specific preparation. The biggest contributors to finish time are:
+          </p>
+          <ul>
+            <li>Your <a href="/training/running/">running base and intervals</a> — running is 50% of race time.</li>
+            <li>Station-specific strength, especially <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a>.</li>
+            <li>Grip endurance for <a href="/racing-guide/stations/">farmers carry</a>, sled pull, and wall balls.</li>
+            <li>A dialled <a href="/supplements/protocol/">race-day fuelling protocol</a>.</li>
+          </ul>
+          <p>
+            If this is your first Hyrox, read our <a href="/blog/first-hyrox-race-guide/">first Hyrox race guide</a> and the <a href="/blog/hyrox-race-week-protocol/">race-week taper protocol</a>.
+          </p>
 
-      <h2>Predicted finish time at Hyrox {event.city}</h2>
-      <p>
-        Use the <a href="/calculator/">Hyrox time calculator</a> or browse our <a href="/times/">time standards by division and age group</a> to set a realistic target before you line up. Hyrox times are globally comparable — your {event.city} time will line up directly against athletes who race in Berlin, London, or New York.
-      </p>
+          <h2>Predicted finish time at Hyrox {event.city}</h2>
+          <p>
+            Use the <a href="/calculator/">Hyrox time calculator</a> or browse our <a href="/times/">time standards by division and age group</a> to set a realistic target before you line up. Hyrox times are globally comparable — your {event.city} time will line up directly against athletes who race in Berlin, London, or New York.
+          </p>
+        </>
+      )}
 
       {isPast ? (
         <div class="not-prose my-8 bg-bg-card border border-border rounded-2xl p-6">
-          <h2 class="text-xl font-black text-text-heading mb-2">Race report & results</h2>
-          <p class="text-text-muted text-sm mb-4">
+          <h2 class="text-xl font-black text-text-heading mb-2">Race report &amp; results</h2>
+          <p class="text-text-muted text-sm mb-5">
             Hyrox {event.city} {year} is complete.
             {raceResults?.totalAthletes ? ` ${raceResults.totalAthletes.toLocaleString()} athletes raced.` : ""}
             {raceResults
               ? " Full podium, finish-time breakdown, and key takeaways are available in the race report."
               : " The race report is being compiled — check back shortly."}
           </p>
+
+          {(proMenWinner || proWomenWinner) && (
+            <div class="grid gap-3 sm:grid-cols-2 mb-5">
+              {proMenWinner && (
+                <div class="bg-bg-card-hover border border-border rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{proMenWinner.division} winner</div>
+                  <div class="text-lg font-black text-text-heading leading-tight">{proMenWinner.athlete}</div>
+                  <div class="text-2xl font-black font-mono text-accent mt-1">{proMenWinner.time}</div>
+                  {proMenWinner.country && <div class="text-xs text-text-muted mt-1">{proMenWinner.country}</div>}
+                </div>
+              )}
+              {proWomenWinner && (
+                <div class="bg-bg-card-hover border border-border rounded-xl p-4">
+                  <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{proWomenWinner.division} winner</div>
+                  <div class="text-lg font-black text-text-heading leading-tight">{proWomenWinner.athlete}</div>
+                  <div class="text-2xl font-black font-mono text-accent mt-1">{proWomenWinner.time}</div>
+                  {proWomenWinner.country && <div class="text-xs text-text-muted mt-1">{proWomenWinner.country}</div>}
+                </div>
+              )}
+            </div>
+          )}
+
           <div class="flex flex-wrap gap-3">
             <a href={`/events/${year}/${event.slug}/results/`} class="inline-flex items-center gap-2 bg-accent text-white font-bold text-sm rounded-xl px-5 py-2.5 hover:opacity-90 transition-opacity no-underline">
               {raceResults ? "Read the race report →" : "Results page →"}

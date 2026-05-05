@@ -11,12 +11,50 @@
  * distributions across the Open Singles divisions unless noted.
  */
 
+/**
+ * A single segment of a Hyrox race for split-time analysis.
+ *
+ * Hyrox is structured as 8 × (1 km run + 1 functional station). We use the
+ * 16-leg granularity by default — 8 runs alternating with 8 stations —
+ * because that's what hyresult.com publishes and what athletes use to
+ * compare splits. The leg names below match the canonical official order.
+ */
+export interface StationSplit {
+  segment: string; // "Run 1", "SkiErg", "Run 2", "Sled Push", ...
+  segmentTime: string; // mm:ss for this leg
+  cumulativeTime?: string; // h:mm:ss running total at end of this leg
+}
+
+/** Canonical leg order for a standard Singles Hyrox race. */
+export const HYROX_SEGMENTS = [
+  "Run 1",
+  "SkiErg",
+  "Run 2",
+  "Sled Push",
+  "Run 3",
+  "Sled Pull",
+  "Run 4",
+  "Burpee Broad Jumps",
+  "Run 5",
+  "Rowing",
+  "Run 6",
+  "Farmers Carry",
+  "Run 7",
+  "Sandbag Lunges",
+  "Run 8",
+  "Wall Balls",
+] as const;
+
 export interface PodiumEntry {
   rank: 1 | 2 | 3;
   athlete: string;
   time: string; // h:mm:ss
   country?: string; // ISO
   team?: string;
+  /** Short tag like "World record", "Personal best", "Pro debut". */
+  notes?: string;
+  /** Per-segment splits for marquee winners. Render in the splits accordion. */
+  splits?: StationSplit[];
 }
 
 export interface DivisionResult {
@@ -202,7 +240,13 @@ export const RACE_RESULTS: RaceResult[] = [
         athleteCount: 15,
         fastestTime: "0:53:16",
         podium: [
-          { rank: 1, athlete: "Alexander Roncevic", time: "0:53:16", country: "AT" },
+          {
+            rank: 1,
+            athlete: "Alexander Roncevic",
+            time: "0:53:16",
+            country: "AT",
+            notes: "1 second off his own world record",
+          },
         ],
       },
       {
@@ -210,7 +254,13 @@ export const RACE_RESULTS: RaceResult[] = [
         athleteCount: 15,
         fastestTime: "0:56:03",
         podium: [
-          { rank: 1, athlete: "Joanna Wietrzyk", time: "0:56:03", country: "AU" },
+          {
+            rank: 1,
+            athlete: "Joanna Wietrzyk",
+            time: "0:56:03",
+            country: "AU",
+            notes: "World record (broke previous mark by 20s)",
+          },
         ],
       },
       {
@@ -739,7 +789,33 @@ export const RACE_RESULTS: RaceResult[] = [
         athleteCount: 15,
         fastestTime: "0:52:42",
         podium: [
-          { rank: 1, athlete: "Hidde Weersma", time: "0:52:42", country: "NL" },
+          {
+            rank: 1,
+            athlete: "Hidde Weersma",
+            time: "0:52:42",
+            country: "NL",
+            notes: "World record (broke Roncevic's 53:15 by 33s)",
+            // Full 16-segment splits, sourced from Weersma's published record-day data.
+            // Total run time 29:53 (3:45/km avg), total station time 22:49.
+            splits: [
+              { segment: "Run 1", segmentTime: "3:27" },
+              { segment: "SkiErg", segmentTime: "3:36" },
+              { segment: "Run 2", segmentTime: "3:33" },
+              { segment: "Sled Push", segmentTime: "2:10" },
+              { segment: "Run 3", segmentTime: "3:29" },
+              { segment: "Sled Pull", segmentTime: "2:48" },
+              { segment: "Run 4", segmentTime: "3:41" },
+              { segment: "Burpee Broad Jumps", segmentTime: "2:09" },
+              { segment: "Run 5", segmentTime: "3:34" },
+              { segment: "Rowing", segmentTime: "3:49" },
+              { segment: "Run 6", segmentTime: "4:01" },
+              { segment: "Farmers Carry", segmentTime: "1:21" },
+              { segment: "Run 7", segmentTime: "3:50" },
+              { segment: "Sandbag Lunges", segmentTime: "2:51" },
+              { segment: "Run 8", segmentTime: "4:27" },
+              { segment: "Wall Balls", segmentTime: "4:05" },
+            ],
+          },
           { rank: 2, athlete: "Tim Wenisch", time: "0:53:01", country: "DE" },
           { rank: 3, athlete: "Tomas Tvrdik", time: "0:53:18", country: "CZ" },
         ],
@@ -1142,7 +1218,25 @@ export const RACE_RESULTS: RaceResult[] = [
         athleteCount: 15,
         fastestTime: "0:51:59",
         podium: [
-          { rank: 1, athlete: "Alexander Roncevic", time: "0:51:59", country: "AT" },
+          {
+            rank: 1,
+            athlete: "Alexander Roncevic",
+            time: "0:51:59",
+            country: "AT",
+            notes: "World record (first sub-52 in history)",
+            // Station-only splits for Roncevic's record run; total stations
+            // 22:09 (#1 in Elite 15), total runs 29:54 (#3, avg 3:44/km).
+            splits: [
+              { segment: "SkiErg", segmentTime: "3:42" },
+              { segment: "Sled Push", segmentTime: "2:04" },
+              { segment: "Sled Pull", segmentTime: "2:49" },
+              { segment: "Burpee Broad Jumps", segmentTime: "2:25" },
+              { segment: "Rowing", segmentTime: "3:54" },
+              { segment: "Farmers Carry", segmentTime: "1:18" },
+              { segment: "Sandbag Lunges", segmentTime: "2:28" },
+              { segment: "Wall Balls", segmentTime: "3:29" },
+            ],
+          },
           { rank: 2, athlete: "Dylan Scott", time: "0:52:40", country: "US" },
           { rank: 3, athlete: "Sebastian Ifversen", time: "0:53:18", country: "DK" },
         ],
@@ -1152,7 +1246,13 @@ export const RACE_RESULTS: RaceResult[] = [
         athleteCount: 15,
         fastestTime: "0:54:25",
         podium: [
-          { rank: 1, athlete: "Joanna Wietrzyk", time: "0:54:25", country: "AU" },
+          {
+            rank: 1,
+            athlete: "Joanna Wietrzyk",
+            time: "0:54:25",
+            country: "AU",
+            notes: "World record · Grand Slam (4 of 4 Majors)",
+          },
         ],
       },
       {

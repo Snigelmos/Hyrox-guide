@@ -68,6 +68,21 @@ const faqItems = [
     answer: `Hyrox times are globally standardised — a "good" time at ${event.city} matches a "good" time anywhere else. See our full breakdown by division and age group in the time benchmarks section.`,
   },
 ];
+
+// Pull marquee winners for the hero stats strip. Match common division
+// names; fall back gracefully if the event uses non-standard labels.
+function pickWinner(matchers: string[]) {
+  if (!results) return undefined;
+  for (const matcher of matchers) {
+    const d = results.divisions.find((x) =>
+      x.division.toLowerCase().includes(matcher),
+    );
+    if (d?.podium?.[0]) return { division: d.division, ...d.podium[0] };
+  }
+  return undefined;
+}
+const heroMen = pickWinner(["pro men", "elite 15 men", "men"]);
+const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
 ---
 
 <BaseLayout
@@ -102,7 +117,7 @@ const faqItems = [
       </ol>
     </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
+    <header class="mb-8 md:mb-10">
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
         Hyrox {event.city} {year} Results
       </h1>
@@ -125,63 +140,214 @@ const faqItems = [
     </header>
 
     {results && (
-      <section class="prose md:prose-lg max-w-none">
-        <p>
-          <strong>Hyrox {event.city} {year}</strong> wrapped up on {formatEventDate(event.endDate ?? event.startDate)} after {results.totalAthletes ? `${results.totalAthletes.toLocaleString()} athletes` : "thousands of athletes"} raced through the standard 8 km of running and 8 functional stations. Below is the full podium across every division, plus the finish-time distribution.
-        </p>
+      <>
+        {/* ---- Hero stats strip ----------------------------------- */}
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10 pb-10 border-b border-border">
+          <div class="bg-bg-card border border-border rounded-xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Athletes</div>
+            <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">
+              {results.totalAthletes ? results.totalAthletes.toLocaleString() : "—"}
+            </div>
+            <div class="text-xs text-text-muted mt-2">across all divisions</div>
+          </div>
 
+          <div class="bg-bg-card border border-border rounded-xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Race date</div>
+            <div class="text-2xl md:text-3xl font-black text-text-heading leading-tight">
+              {formatEventDate(event.startDate, event.endDate)}
+            </div>
+            <div class="text-xs text-text-muted mt-2">{event.venue}</div>
+          </div>
+
+          {heroMen ? (
+            <div class="bg-gradient-to-br from-accent/10 to-bg-card border border-accent/30 rounded-xl p-5">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{heroMen.division} winner</div>
+              <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">{heroMen.time}</div>
+              <div class="text-sm text-text font-bold mt-2 truncate">{heroMen.athlete}</div>
+              {heroMen.country && <div class="text-xs text-text-muted mt-0.5">{heroMen.country}</div>}
+            </div>
+          ) : (
+            <div class="bg-bg-card border border-border rounded-xl p-5 opacity-60">
+              <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Pro Men winner</div>
+              <div class="text-2xl font-black text-text-muted">—</div>
+            </div>
+          )}
+
+          {heroWomen ? (
+            <div class="bg-gradient-to-br from-accent/10 to-bg-card border border-accent/30 rounded-xl p-5">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{heroWomen.division} winner</div>
+              <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">{heroWomen.time}</div>
+              <div class="text-sm text-text font-bold mt-2 truncate">{heroWomen.athlete}</div>
+              {heroWomen.country && <div class="text-xs text-text-muted mt-0.5">{heroWomen.country}</div>}
+            </div>
+          ) : (
+            <div class="bg-bg-card border border-border rounded-xl p-5 opacity-60">
+              <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Pro Women winner</div>
+              <div class="text-2xl font-black text-text-muted">—</div>
+            </div>
+          )}
+        </section>
+
+        {/* ---- Headlines (story cards) ---------------------------- */}
         {results.notableStories && results.notableStories.length > 0 && (
-          <>
-            <h2>Headlines from race weekend</h2>
-            <ul>
-              {results.notableStories.map((story) => <li>{story}</li>)}
-            </ul>
-          </>
+          <section class="mb-12">
+            <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">Headlines from race weekend</h2>
+            <div class="grid gap-3 md:grid-cols-2">
+              {results.notableStories.map((story) => (
+                <div class="relative bg-bg-card border border-border rounded-xl p-5 pl-6">
+                  <div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-accent/60" />
+                  <p class="text-sm md:text-base text-text leading-relaxed m-0">{story}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
 
-        <h2>Podium results by division</h2>
-        {results.divisions.map((d) => (
-          <>
-            <h3>{d.division}</h3>
-            {d.podium && d.podium.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Athlete</th>
-                    <th>Country</th>
-                    <th>Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {d.podium.map((p) => (
-                    <tr>
-                      <td>{p.rank}</td>
-                      <td>{p.athlete}</td>
-                      <td>{p.country ?? "—"}</td>
-                      <td>{p.time}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>Podium not yet published for this division.</p>
-            )}
-            <p class="text-sm text-text-muted">
-              {d.athleteCount && <>Athletes: {d.athleteCount.toLocaleString()}. </>}
-              {d.medianTime && <>Median finish: {d.medianTime}. </>}
-              {d.fastestTime && <>Fastest: {d.fastestTime}.</>}
-            </p>
-          </>
-        ))}
+        {/* ---- Podium cards + splits per division ----------------- */}
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">Podium results by division</h2>
 
+          {results.divisions.map((d) => {
+            const podium = d.podium ?? [];
+            const first = podium.find((p) => p.rank === 1);
+            const second = podium.find((p) => p.rank === 2);
+            const third = podium.find((p) => p.rank === 3);
+            const hasSplits = podium.some((p) => p.splits && p.splits.length > 0);
+            const isSingleEntry = podium.length === 1;
+
+            return (
+              <div class="mb-10 last:mb-0">
+                <div class="flex items-baseline justify-between flex-wrap gap-2 mb-4">
+                  <h3 class="text-xl md:text-2xl font-black text-text-heading">{d.division}</h3>
+                  <div class="text-xs text-text-muted">
+                    {d.athleteCount && <span>{d.athleteCount.toLocaleString()} athletes</span>}
+                    {d.athleteCount && d.medianTime && <span class="mx-2">·</span>}
+                    {d.medianTime && <span>median {d.medianTime}</span>}
+                    {(d.athleteCount || d.medianTime) && d.fastestTime && <span class="mx-2">·</span>}
+                    {d.fastestTime && <span>fastest {d.fastestTime}</span>}
+                  </div>
+                </div>
+
+                {podium.length === 0 ? (
+                  <div class="bg-bg-card border border-border rounded-xl p-5 text-sm text-text-muted">
+                    Podium not yet published for this division.
+                  </div>
+                ) : (
+                  <div class={`grid gap-3 ${isSingleEntry ? "" : "md:grid-cols-3"}`}>
+                    {first && (
+                      <article class={`relative bg-gradient-to-br from-amber-500/15 via-bg-card to-bg-card border-2 border-amber-500/40 rounded-2xl p-5 md:p-6 ${isSingleEntry ? "" : "md:col-span-3 lg:col-span-1 lg:row-span-2"}`}>
+                        <div class="flex items-center gap-2 mb-3">
+                          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-black text-base">1</span>
+                          <span class="text-xs font-bold uppercase tracking-wider text-amber-300">Champion</span>
+                        </div>
+                        <div class="text-xl md:text-2xl lg:text-3xl font-black text-text-heading leading-tight mb-3 break-words">
+                          {first.athlete}
+                        </div>
+                        <div class="text-3xl md:text-4xl lg:text-5xl font-black font-mono text-accent leading-none">
+                          {first.time}
+                        </div>
+                        <div class="mt-3 flex items-center gap-2 flex-wrap">
+                          {first.country && <span class="text-xs font-bold uppercase tracking-wider text-text-muted">{first.country}</span>}
+                          {first.notes && (
+                            <span class="inline-block text-xs font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-2.5 py-1">
+                              {first.notes}
+                            </span>
+                          )}
+                        </div>
+                      </article>
+                    )}
+
+                    {second && (
+                      <article class="bg-bg-card border border-border rounded-2xl p-4 md:p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-400/20 border border-slate-400/40 text-slate-300 font-black text-sm">2</span>
+                          <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Silver</span>
+                        </div>
+                        <div class="text-base md:text-lg font-black text-text-heading leading-tight mb-2 break-words">
+                          {second.athlete}
+                        </div>
+                        <div class="text-2xl md:text-3xl font-black font-mono text-text">{second.time}</div>
+                        {second.country && <div class="mt-2 text-xs font-bold uppercase tracking-wider text-text-muted">{second.country}</div>}
+                      </article>
+                    )}
+
+                    {third && (
+                      <article class="bg-bg-card border border-border rounded-2xl p-4 md:p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-orange-700/30 border border-orange-700/50 text-orange-300 font-black text-sm">3</span>
+                          <span class="text-xs font-bold uppercase tracking-wider text-orange-300">Bronze</span>
+                        </div>
+                        <div class="text-base md:text-lg font-black text-text-heading leading-tight mb-2 break-words">
+                          {third.athlete}
+                        </div>
+                        <div class="text-2xl md:text-3xl font-black font-mono text-text">{third.time}</div>
+                        {third.country && <div class="mt-2 text-xs font-bold uppercase tracking-wider text-text-muted">{third.country}</div>}
+                      </article>
+                    )}
+                  </div>
+                )}
+
+                {hasSplits && first?.splits && (
+                  <details class="mt-4 group bg-bg-card border border-border rounded-xl overflow-hidden">
+                    <summary class="cursor-pointer flex items-center justify-between px-5 py-3 hover:bg-bg-card-hover transition-colors">
+                      <span class="text-sm font-bold text-text-heading">
+                        Station splits — {first.athlete}
+                      </span>
+                      <svg class="w-4 h-4 text-text-muted transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <div class="border-t border-border">
+                      <table class="w-full text-sm">
+                        <thead class="bg-bg-card-hover/50">
+                          <tr class="text-xs uppercase tracking-wider text-text-muted">
+                            <th class="text-left p-3 font-bold">Segment</th>
+                            <th class="text-right p-3 font-bold">Split</th>
+                            {first.splits.some((s) => s.cumulativeTime) && (
+                              <th class="text-right p-3 font-bold hidden sm:table-cell">Cumulative</th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border/60">
+                          {first.splits.map((s) => {
+                            const isStation = !s.segment.toLowerCase().startsWith("run");
+                            return (
+                              <tr class={isStation ? "bg-accent/5" : ""}>
+                                <td class={`p-3 ${isStation ? "text-text-heading font-semibold" : "text-text-muted"}`}>
+                                  {s.segment}
+                                </td>
+                                <td class="p-3 text-right font-mono text-text-heading font-bold">
+                                  {s.segmentTime}
+                                </td>
+                                {first.splits!.some((x) => x.cumulativeTime) && (
+                                  <td class="p-3 text-right font-mono text-text-muted hidden sm:table-cell">
+                                    {s.cumulativeTime ?? "—"}
+                                  </td>
+                                )}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      <div class="px-5 py-3 text-xs text-text-muted bg-bg-card-hover/30">
+                        Stations highlighted; runs in muted text. Splits sourced from published race-day data.
+                      </div>
+                    </div>
+                  </details>
+                )}
+              </div>
+            );
+          })}
+        </section>
+
+        {/* ---- Finish-time histogram ------------------------------ */}
         {results.histogram && results.histogram.length > 0 && (
-          <>
-            <h2>Finish-time distribution</h2>
-            <p>
+          <section class="mb-12">
+            <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">Finish-time distribution</h2>
+            <p class="text-text-muted mb-6 max-w-2xl">
               Across the Open division, here's how the field broke down by finish-time band. Use this to benchmark where your time would have placed.
             </p>
-            <div class="not-prose my-8 space-y-2">
+            <div class="space-y-2">
               {(() => {
                 const max = Math.max(...results.histogram!.map((b) => b.count));
                 return results.histogram!.map((b) => (
@@ -200,25 +366,34 @@ const faqItems = [
                 ));
               })()}
             </div>
-          </>
+          </section>
         )}
 
+        {/* ---- Takeaways (story cards) ---------------------------- */}
         {results.takeaways && results.takeaways.length > 0 && (
-          <>
-            <h2>Key takeaways for next year</h2>
-            <ul>
-              {results.takeaways.map((t) => <li>{t}</li>)}
-            </ul>
-          </>
+          <section class="mb-12">
+            <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">Key takeaways for next year</h2>
+            <div class="grid gap-3 md:grid-cols-2">
+              {results.takeaways.map((t) => (
+                <div class="relative bg-bg-card border border-border rounded-xl p-5 pl-6">
+                  <div class="absolute left-0 top-4 bottom-4 w-1 rounded-r bg-emerald-500/60" />
+                  <p class="text-sm md:text-base text-text leading-relaxed m-0">{t}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
 
-        <h2>Want to race here next year?</h2>
-        <ul>
-          <li>Read our <a href={`/events/${year + 1}/${event.slug}/`}>Hyrox {event.city} {year + 1} preview</a> (when available).</li>
-          <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a target based on this year's median finish.</li>
-          <li>Browse <a href="/training/">training programs</a> matched to your goal.</li>
-        </ul>
-      </section>
+        {/* ---- Outbound CTAs -------------------------------------- */}
+        <section class="prose md:prose-lg max-w-none">
+          <h2>Want to race here next year?</h2>
+          <ul>
+            <li>Read our <a href={`/events/${year + 1}/${event.slug}/`}>Hyrox {event.city} {year + 1} preview</a> (when available).</li>
+            <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a target based on this year's median finish.</li>
+            <li>Browse <a href="/training/">training programs</a> matched to your goal.</li>
+          </ul>
+        </section>
+      </>
     )}
 
     {!results && isPast && (
