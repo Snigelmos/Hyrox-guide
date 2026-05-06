@@ -26,6 +26,12 @@ export interface HyroxEvent {
   region?: "EU" | "NA" | "APAC" | "ME" | "SA" | "AF";
   populationDescriptor?: string;
   divisions?: string[];
+  /**
+   * Alternate-language city names for SEO. Surfaced in the event page title,
+   * H1 subtitle, and FAQ so non-English searchers (e.g. "Hyrox Milano 2026",
+   * "Hyrox München 2026") can find the page.
+   */
+  localNames?: string[];
 }
 
 /**
@@ -71,15 +77,155 @@ export const RETIRED_EVENT_SLUGS: {
   redirectTo: string;
 }[] = [
   { year: 2026, slug: "gothenburg", redirectTo: "/events/2026/" },
-  { year: 2026, slug: "munich", redirectTo: "/events/2026/" },
-  { year: 2026, slug: "madrid", redirectTo: "/events/2026/" },
-  { year: 2026, slug: "zurich", redirectTo: "/events/2026/geneva/" },
-  { year: 2026, slug: "prague", redirectTo: "/events/2026/" },
   { year: 2026, slug: "los-angeles", redirectTo: "/events/2026/anaheim/" },
-  { year: 2026, slug: "chicago", redirectTo: "/events/2026/" },
   { year: 2026, slug: "melbourne", redirectTo: "/events/2026/sydney/" },
-  { year: 2026, slug: "dubai", redirectTo: "/events/2026/" },
 ];
+
+/**
+ * Year-tied retired events that render an explainer page instead of redirecting.
+ *
+ * Used when there is meaningful search demand for `Hyrox <city> <year>` even
+ * though the city is not on this year's calendar. The explainer page lives at
+ * `/events/<year>/<slug>/`, captures the year-specific query intent, and
+ * funnels readers to the closest substitute races and the matching
+ * `/hyrox/<city>/` evergreen page.
+ *
+ * MAINTENANCE: never put a slug in BOTH `RETIRED_EVENT_SLUGS` and
+ * `RETIRED_EVENT_EXPLAINERS` for the same year. Explainers take precedence
+ * over redirects (see astro.config.ts and `events/[year]/[city].astro`).
+ */
+export interface RetiredEventExplainer {
+  year: number;
+  slug: string;
+  city: string;
+  /** Local-language name shown next to the headline (e.g. München for Munich). */
+  localCity?: string;
+  country: string;
+  countryCode: string;
+  /** 1-2 paragraph explanation of why the city isn't on this year's calendar. */
+  intro: string[];
+  /** Suggested substitute races on this season's calendar. */
+  substitutes: { slug: string; city: string; year: number; note: string }[];
+  /** Slug for the matching /hyrox/[city]/ evergreen page if one exists. */
+  evergreenCitySlug?: string;
+}
+
+export const RETIRED_EVENT_EXPLAINERS: RetiredEventExplainer[] = [
+  {
+    year: 2026,
+    slug: "munich",
+    city: "Munich",
+    localCity: "München",
+    country: "Germany",
+    countryCode: "DE",
+    intro: [
+      "Hyrox München 2026 is not on the official calendar. Hyrox dropped the Munich stop from the 2025/26 season rotation, with German races concentrated in Hamburg, Frankfurt, Düsseldorf, and Stuttgart.",
+      "If you're a Munich-based athlete searching for Hyrox München 2026, the closest options on the current calendar are Frankfurt and Hamburg, both reachable by ICE high-speed rail. The Munich Hyrox training-club ecosystem remains active and runs weekly race-prep classes for athletes targeting away events.",
+    ],
+    substitutes: [
+      { slug: "frankfurt", city: "Frankfurt", year: 2026, note: "Closest German race by ICE rail. Held at Messe Frankfurt in December." },
+      { slug: "hamburg", city: "Hamburg", year: 2026, note: "Hyrox's original home venue. Held at Hamburg Messe in late October / early November." },
+      { slug: "st-gallen", city: "St Gallen", year: 2026, note: "The closest non-German alternative across the Austrian border. Held at OLMA Messen in mid-January." },
+    ],
+    evergreenCitySlug: "munich",
+  },
+  {
+    year: 2026,
+    slug: "zurich",
+    city: "Zurich",
+    localCity: "Zürich",
+    country: "Switzerland",
+    countryCode: "CH",
+    intro: [
+      "Hyrox Zürich 2026 is not on the official calendar. The 2025/26 Swiss Hyrox calendar consolidates around St Gallen in January and Geneva later in the spring, with no separate Zurich stop.",
+      "If you're a Zurich-based athlete searching for Hyrox Zurich 2026, St Gallen is the obvious A-race (1 hour by SBB) and Geneva is the second option (3 hours by SBB). Zurich's Hyrox-affiliated training clubs continue to run weekly Hyrox classes year-round for athletes building toward an away race.",
+    ],
+    substitutes: [
+      { slug: "st-gallen", city: "St Gallen", year: 2026, note: "The closest Swiss race. SBB rail Zurich HB to St Gallen is 1 hour 5 minutes. Held at OLMA Messen in mid-January." },
+      { slug: "geneva", city: "Geneva", year: 2026, note: "The other Swiss stop. SBB rail Zurich HB to Geneva is around 2 hours 45 minutes." },
+      { slug: "frankfurt", city: "Frankfurt", year: 2026, note: "If you want a closer German race instead, Frankfurt is reachable by ICE rail in around 4 hours." },
+    ],
+    evergreenCitySlug: "zurich",
+  },
+  {
+    year: 2026,
+    slug: "madrid",
+    city: "Madrid",
+    country: "Spain",
+    countryCode: "ES",
+    intro: [
+      "Hyrox Madrid 2026 is not on the official calendar. The 2026 Spanish Hyrox race moves to Barcelona, with no separate Madrid stop scheduled this season.",
+      "If you're a Madrid-based athlete searching for Hyrox Madrid 2026, Barcelona is your domestic option. Travel-wise the AVE high-speed train Madrid Atocha to Barcelona Sants is 2 hours 30 minutes. Madrid's Hyrox-affiliated training clubs remain the largest Hyrox prep ecosystem in Iberia and run weekly classes through autumn.",
+    ],
+    substitutes: [
+      { slug: "barcelona", city: "Barcelona", year: 2026, note: "Spain's 2026 Hyrox race. AVE high-speed train from Madrid Atocha is 2 hours 30 minutes. Held at Fira de Barcelona." },
+      { slug: "barcelona-autumn", city: "Barcelona (Autumn)", year: 2026, note: "The second 2026 Barcelona stop in November, opening the new Spanish Hyrox season." },
+    ],
+    evergreenCitySlug: "madrid",
+  },
+  {
+    year: 2026,
+    slug: "prague",
+    city: "Prague",
+    localCity: "Praha",
+    country: "Czech Republic",
+    countryCode: "CZ",
+    intro: [
+      "Hyrox Prague 2026 is not on the official calendar. The closest active stops for Czech and Slovak athletes in 2026 are Vienna in February and Frankfurt in December.",
+      "If you're based in the Czech Republic and searching for Hyrox Prague 2026, Vienna is your closest A-race (4 hours by car or 5 hours by rail). Polish athletes have a closer option in Poznań (November). The Prague Hyrox training-club community remains active even without a home race.",
+    ],
+    substitutes: [
+      { slug: "vienna", city: "Vienna", year: 2026, note: "The closest Hyrox to Prague. Around 4 hours by car or 5 hours by rail. Held in February at Reed Messe Vienna." },
+      { slug: "poznan", city: "Poznań", year: 2026, note: "Polish race in November. Around 6 hours by car or rail from Prague." },
+      { slug: "frankfurt", city: "Frankfurt", year: 2026, note: "Closest German race. Around 5 hours by ICE rail. Held in December at Messe Frankfurt." },
+    ],
+  },
+  {
+    year: 2026,
+    slug: "chicago",
+    city: "Chicago",
+    country: "United States",
+    countryCode: "US",
+    intro: [
+      "Hyrox Chicago 2026 is not on the official calendar. The 2026 US Hyrox calendar concentrates on Anaheim, Dallas, Denver, Nashville, and the Northeast stops, with no Chicago race scheduled this year.",
+      "If you're a Chicago-based athlete searching for Hyrox Chicago 2026, Dallas is the closest A-race (~2 hours by air) and Denver is the next-closest at altitude. Chicago's Hyrox-affiliated training clubs run race-prep blocks for athletes flying out for events.",
+    ],
+    substitutes: [
+      { slug: "dallas", city: "Dallas", year: 2026, note: "The closest US Hyrox by flight time. Held in November at the Kay Bailey Hutchison Convention Center." },
+      { slug: "denver", city: "Denver", year: 2026, note: "Hyrox at altitude. Held in November at the Colorado Convention Center." },
+      { slug: "nashville", city: "Nashville", year: 2026, note: "Mid-South stop in late autumn." },
+    ],
+  },
+  {
+    year: 2026,
+    slug: "dubai",
+    city: "Dubai",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+    intro: [
+      "Hyrox Dubai 2026 is not currently confirmed on the official calendar. The Middle Eastern Hyrox stop has historically rotated between Dubai and Riyadh, and the 2026 calendar may yet add a Dubai date as the season progresses.",
+      "If you're a Dubai-based athlete searching for Hyrox Dubai 2026, the closest international Hyrox is Hong Kong in May. Several UAE-based training clubs charter group bookings for nearby races.",
+    ],
+    substitutes: [
+      { slug: "hong-kong", city: "Hong Kong", year: 2026, note: "The closest Asia-Pacific Hyrox. Held at AsiaWorld-Expo on Lantau Island, directly connected to the airport." },
+      { slug: "singapore", city: "Singapore", year: 2026, note: "Southeast Asia's flagship Hyrox. Held at Singapore Expo." },
+    ],
+    evergreenCitySlug: "dubai",
+  },
+];
+
+export function getRetiredExplainer(
+  year: number,
+  slug: string,
+): RetiredEventExplainer | undefined {
+  return RETIRED_EVENT_EXPLAINERS.find(
+    (e) => e.year === year && e.slug === slug,
+  );
+}
+
+export function allRetiredExplainerPaths(): { year: number; slug: string }[] {
+  return RETIRED_EVENT_EXPLAINERS.map((e) => ({ year: e.year, slug: e.slug }));
+}
 
 export const EVENTS: HyroxEvent[] = [
   // ============================================================
@@ -223,6 +369,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Austria's only Hyrox of the 2026 season — a three-day race weekend at Messe Wien.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Wien"],
   },
   {
     slug: "guadalajara",
@@ -273,6 +420,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Hyrox returns to the French Riviera — four days at the Palais des Expositions Nice.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Nizza"],
   },
   {
     slug: "istanbul",
@@ -406,6 +554,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Denmark's only 2026 stop — Annie Emilsson set a Swedish women's Pro record (1:00:07) here.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["København", "Kopenhagen"],
   },
   {
     slug: "cancun",
@@ -707,6 +856,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Hyrox alongside FIBO at Koelnmesse — Germany's prestige spring race.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Köln"],
   },
   {
     slug: "malaga",
@@ -1427,6 +1577,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Switzerland's flagship 2026 Hyrox — a three-day race at Palexpo on the shores of Lake Geneva.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Genève", "Genf", "Ginevra"],
   },
   {
     slug: "gdansk",
@@ -1517,6 +1668,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "the original home of Hyrox — Hamburg has hosted the race every year since 2018.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Hamborg"],
   },
   {
     slug: "nice-autumn",
@@ -1778,6 +1930,7 @@ export const EVENTS: HyroxEvent[] = [
     region: "EU",
     populationDescriptor: "Hyrox returns to Milan for the city's most festive race weekend.",
     divisions: DEFAULT_DIVISIONS,
+    localNames: ["Milano", "Mailand"],
   },
   {
     slug: "frankfurt",
@@ -1925,6 +2078,25 @@ function assertSlugsUnique(): void {
     if (seen.has(key)) {
       throw new Error(
         `[events.ts] Slug ${key} is in both EVENTS and RETIRED_EVENT_SLUGS — a retired slug cannot also be a live event. Remove it from one of the two.`,
+      );
+    }
+  }
+  // Explainer slugs must not collide with active events or with redirect-only
+  // retired slugs. They render an explainer page; the redirect lists must skip
+  // these slugs.
+  const retiredKeys = new Set(
+    RETIRED_EVENT_SLUGS.map((r) => `${r.year}/${r.slug}`),
+  );
+  for (const r of RETIRED_EVENT_EXPLAINERS) {
+    const key = `${r.year}/${r.slug}`;
+    if (seen.has(key)) {
+      throw new Error(
+        `[events.ts] Slug ${key} is in both EVENTS and RETIRED_EVENT_EXPLAINERS — an explainer slug cannot also be a live event. Remove it from one of the two.`,
+      );
+    }
+    if (retiredKeys.has(key)) {
+      throw new Error(
+        `[events.ts] Slug ${key} is in both RETIRED_EVENT_SLUGS and RETIRED_EVENT_EXPLAINERS — explainers take precedence over redirects. Remove it from one of the two.`,
       );
     }
   }

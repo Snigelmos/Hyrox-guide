@@ -1,0 +1,178 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { EVENTS, formatEventDate, isPastEvent } from "../../data/events";
+import { CITY_EVERGREENS } from "../../data/city-evergreens";
+
+const COUNTRY_CODE = "CH";
+const COUNTRY_NAME = "Switzerland";
+
+const allChEvents = EVENTS.filter((e) => e.countryCode === COUNTRY_CODE).sort(
+  (a, b) => a.startDate.localeCompare(b.startDate),
+);
+const upcoming = allChEvents.filter((e) => !isPastEvent(e));
+const past = allChEvents.filter((e) => isPastEvent(e));
+const cityHubs = CITY_EVERGREENS.filter((c) => c.countryCode === COUNTRY_CODE);
+
+const title = "Hyrox Switzerland 2026: Calendar (Hyrox Schweiz / Svizzera)";
+const description =
+  "Hyrox Switzerland 2026 calendar: every Swiss Hyrox race, venue, and date. St Gallen and Geneva are confirmed; Zurich is not on the 2026 calendar. Plus city guides for athletes searching Hyrox Schweiz 2026 or Hyrox Svizzera 2026.";
+const breadcrumbs = [
+  { name: "Hyrox cities", url: "/hyrox/" },
+  { name: "Switzerland" },
+];
+
+const faqItems = [
+  {
+    question: "How many Hyrox races are in Switzerland in 2026?",
+    answer: `The 2026 Hyrox Switzerland calendar has ${upcoming.length} confirmed Swiss stops${upcoming.length > 0 ? `: ${upcoming.map((e) => e.city).join(", ")}.` : "."} St Gallen opens the season in January and Geneva runs in October.`,
+  },
+  {
+    question: "Is Hyrox Zürich on the 2026 calendar?",
+    answer:
+      "No. Hyrox Zürich 2026 is not on the official calendar. The 2026 Swiss season uses St Gallen (1 hour by SBB from Zurich HB) and Geneva (about 2 hours 45 minutes by SBB). Searches for Hyrox Zürich 2026, Hyrox Schweiz 2026, and Hyrox Svizzera 2026 mostly route to those substitute races.",
+  },
+  {
+    question: "What is the largest Hyrox in Switzerland?",
+    answer:
+      "Geneva is the larger of the two 2026 Swiss stops, with a three-day weekend at Palexpo Geneva. St Gallen is a smaller, more intimate race at OLMA Messen but draws international attention as the European season opener.",
+  },
+  {
+    question: "How do I find a Hyrox-affiliated training club in Switzerland?",
+    answer:
+      "The Hyrox Vault gym finder lists Hyrox-affiliated training clubs across Switzerland, with concentrations in Zurich, Geneva, Basel, and Bern. Filter by city on the gym map for the closest options.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/hyrox/" class="text-text-muted hover:text-accent transition-colors no-underline">Hyrox cities</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Switzerland</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Country hub · Schweiz · Svizzera</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Switzerland 2026
+      </h1>
+      <p class="mt-2 text-base text-text-muted/80 leading-relaxed">
+        Also searched as Hyrox Schweiz 2026, Hyrox Svizzera 2026, Hyrox Suisse 2026
+      </p>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        Switzerland's 2026 Hyrox calendar runs through St Gallen in January and Geneva in October. Zurich is not on the calendar this season.
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <p>
+        The 2026 Swiss Hyrox season consolidates around two stops. St Gallen kicks off the European Hyrox calendar in mid-January at OLMA Messen. Geneva runs the larger autumn race at Palexpo on the shores of Lake Geneva.
+      </p>
+      <p>
+        If you're searching Hyrox Zürich 2026, the city does not host a 2026 race. St Gallen is 1 hour from Zurich by SBB high-speed rail; Geneva is around 2 hours 45 minutes. The Zurich training-club ecosystem remains active for athletes building toward an away race.
+      </p>
+    </section>
+
+    {upcoming.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Hyrox Switzerland 2026 calendar</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">All confirmed Swiss Hyrox stops on the 2026 calendar. Click any city for the full event guide with venue, registration, and training prep.</p>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {upcoming.map((e) => (
+            <a
+              href={`/events/${e.year}/${e.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{e.year}</div>
+              <div class="text-lg font-black text-text-heading mb-1">Hyrox {e.city} {e.year}</div>
+              {e.localNames && e.localNames.length > 0 && (
+                <div class="text-xs text-text-muted/80 mb-1">Hyrox {e.localNames.join(" / ")} {e.year}</div>
+              )}
+              <div class="text-sm text-text-muted">{formatEventDate(e.startDate, e.endDate)}</div>
+              <div class="text-xs text-text-muted/80 mt-1">{e.venue}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-12 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Not on the 2026 calendar</div>
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-3">Hyrox Zürich 2026</h2>
+      <p class="text-text-muted leading-relaxed mb-4">
+        Zurich is the centre of the Swiss Hyrox community by training volume but isn't on the 2026 calendar. The 2026 Swiss races consolidate around St Gallen and Geneva.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/events/2026/zurich/" class="inline-flex items-center gap-2 bg-accent text-white font-bold text-sm rounded-xl px-5 py-2.5 hover:opacity-90 transition-opacity no-underline">
+          Hyrox Zürich 2026 explainer →
+        </a>
+        <a href="/hyrox/zurich/" class="inline-flex items-center gap-2 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
+          Zurich evergreen guide →
+        </a>
+      </div>
+    </section>
+
+    {cityHubs.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Hyrox by city in Switzerland</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">Year-agnostic city guides for Swiss Hyrox host cities. Race history, venue notes, training-club ecosystem, and pacing tips.</p>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {cityHubs.map((c) => (
+            <a
+              href={`/hyrox/${c.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">City</div>
+              <div class="text-lg font-black text-text-heading mb-1">Hyrox {c.city}</div>
+              <p class="text-sm text-text-muted leading-relaxed">{c.tagline}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {past.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Past Hyrox Switzerland races</h2>
+        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {past.map((e) => (
+            <a
+              href={`/events/${e.year}/${e.slug}/`}
+              class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline opacity-75"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Race complete</div>
+              <div class="text-sm text-text-heading font-bold">Hyrox {e.city} {e.year}</div>
+              <div class="text-xs text-text-muted mt-1">{formatEventDate(e.startDate, e.endDate)}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <h2>Training for Hyrox Switzerland</h2>
+      <p>
+        Swiss Hyrox-affiliated training clubs are concentrated in Zurich, Geneva, Basel, and Bern. The <a href="/gyms/country/switzerland/">Swiss gym directory</a> lists every verified club. Most run weekly Hyrox simulation classes through autumn.
+      </p>
+      <p>
+        For a structured 8 to 16-week plan, see our <a href="/training/intermediate/">intermediate Hyrox plan</a>. The final 7 days follow the <a href="/blog/hyrox-race-week-protocol/">race-week taper protocol</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

@@ -65,6 +65,7 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     internalLinks: [
       { href: "/blog/hyrox-shoe-rules/", label: "Hyrox shoe rules explained" },
       { href: "/blog/best-hyrox-pacing-strategy/", label: "Hyrox pacing strategy" },
+      { href: "/gear/reebok-nano-vs-nike-metcon/", label: "Reebok Nano X4 vs Nike Metcon 9" },
       { href: "/calculator/", label: "Hyrox time calculator" },
     ],
   },
@@ -104,6 +105,7 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     internalLinks: [
       { href: "/blog/hyrox-shoe-rules/", label: "Hyrox shoe rules explained" },
       { href: "/gear/puma-fast-r-vs-nike-metcon/", label: "Puma Fast-R vs Nike Metcon 9" },
+      { href: "/gear/reebok-nano-vs-nike-metcon/", label: "Reebok Nano X4 vs Nike Metcon 9" },
     ],
   },
   {
@@ -111,11 +113,11 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     productALabel: "Puma Deviate Nitro 3",
     productBLabel: "Nike Pegasus 41",
     category: "shoes",
-    title: "Puma Deviate Nitro 3 vs Nike Pegasus 41 for Hyrox Running",
+    title: "Puma Deviate Nitro 3 vs Nike Pegasus 41: Hyrox and Daily Running Comparison (Puma Nitro vs Nike Pegasus)",
     metaDescription:
-      "Puma Deviate Nitro 3 vs Nike Pegasus 41 for Hyrox: running speed, station stability, and which is the better all-around Hyrox running shoe.",
+      "Puma Deviate Nitro 3 vs Nike Pegasus 41 for Hyrox and daily running: running speed, station stability, weight, and which is the better all-around running shoe in the Puma Nitro vs Nike Pegasus debate.",
     intro:
-      "The Puma Deviate Nitro 3 and Nike Pegasus 41 are both daily-trainer running shoes capable of handling Hyrox. Neither has a rigid carbon plate, so they're both legal and comfortable across the 8 km of running plus 8 functional stations.",
+      "The Puma Deviate Nitro 3 and Nike Pegasus 41 are both daily-trainer running shoes capable of handling Hyrox. The Puma Nitro vs Nike Pegasus question comes up constantly because both sit at the same price point and target the same runner. Neither has a rigid carbon plate, so they're both legal and comfortable across the 8 km of running plus 8 functional stations.",
     bottomLine:
       "Pick the Puma Deviate Nitro 3 for slightly faster running and better breathability. Pick the Nike Pegasus 41 for more cushioning and a more forgiving fit during stations.",
     rows: [
@@ -148,13 +150,13 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     productALabel: "Reebok Nano X4",
     productBLabel: "Nike Metcon 9",
     category: "shoes",
-    title: "Reebok Nano X4 vs Nike Metcon 9 for Hyrox — Which Trainer Wins?",
+    title: "Reebok Nano X4 vs Nike Metcon 9: CrossFit and Hyrox Trainer Comparison (2026)",
     metaDescription:
-      "Reebok Nano X4 vs Nike Metcon 9 for Hyrox: running, sled push, wall balls, and which is the more versatile cross-training shoe for Hyrox.",
+      "Reebok Nano X4 vs Nike Metcon 9 for CrossFit and Hyrox: running, sled push, wall balls, durability, and which is the better hybrid functional fitness trainer in 2026.",
     intro:
-      "Reebok Nano X4 and Nike Metcon 9 are the two classic functional fitness shoes — both designed for CrossFit but adopted heavily by Hyrox racers. They've evolved closer to each other over the years; the X4 is now more comfortable for running and the Metcon 9 firmer for stations than previous generations.",
+      "Reebok Nano X4 and Nike Metcon 9 are the two classic functional fitness shoes. Both were built for CrossFit and both are now adopted heavily by Hyrox racers, so the comparison covers the same shoes whether you're pushing a sled at a Hyrox or grinding through Murph in your CrossFit box. They've evolved closer to each other over the years: the X4 is now more comfortable for running, and the Metcon 9 is firmer underfoot for stations than previous generations.",
     bottomLine:
-      "Pick the Reebok Nano X4 if you run more than you lift in training and want more comfort. Pick the Nike Metcon 9 if you spend more time on stations and prioritise rigid stability.",
+      "Pick the Reebok Nano X4 if you run more than you lift and want a softer ride. Pick the Nike Metcon 9 if your training is heavier on lifting, sled work, and wall balls and you want a stiffer platform. The same logic applies whether you're optimising for CrossFit metcons or Hyrox intervals.",
     rows: [
       { attribute: "Running comfort", productA: "Better — softer midsole", productB: "Stiffer — feels harder underfoot" },
       { attribute: "Sled push", productA: "Very good", productB: "Excellent" },
@@ -167,17 +169,23 @@ export const GEAR_COMPARISONS: GearComparison[] = [
       { attribute: "Price (RRP)", productA: "€140-160", productB: "€140-160" },
     ],
     bestFor: {
-      productA: ["Athletes who run 30+ km per week", "Athletes with sensitive feet", "First-time Hyrox racers"],
-      productB: ["Sled push and station-heavy training", "Athletes prioritising stability", "Heavy athletes (over 90 kg)"],
+      productA: ["Athletes who run 30+ km per week", "Athletes with sensitive feet", "First-time Hyrox racers", "CrossFitters who do high-volume metcons with running"],
+      productB: ["Sled push and station-heavy training", "Athletes prioritising stability", "Heavy athletes (over 90 kg)", "CrossFitters who lift heavy and value a stiff platform"],
     },
     faqs: [
-      { question: "Is Reebok Nano X4 good for Hyrox?", answer: "Yes — Nano X4 is one of the most versatile Hyrox training shoes. The 7 mm drop and softer midsole make 8 km of running more comfortable than the Metcon line, and the platform is firm enough for sled and wall balls." },
-      { question: "Which is better for sled push?", answer: "Nike Metcon 9 has a slight edge for sled push due to its firmer outsole and lower drop. But the Nano X4 is fully capable — most athletes won't notice the difference unless they're sub-75 racers maximising every second." },
+      { question: "Which is better for CrossFit, Reebok Nano X4 or Nike Metcon 9?", answer: "It depends on what your CrossFit programming looks like. The Metcon 9 is the better all-round CrossFit shoe for athletes who lift heavy and do shorter, lift-dominant WODs. The Nano X4 is the better pick if your box does more running, double-unders, and longer engine pieces, where the softer midsole pays off." },
+      { question: "Is Reebok Nano X4 good for Hyrox?", answer: "Yes. Nano X4 is one of the most versatile Hyrox training shoes. The 7 mm drop and softer midsole make 8 km of running more comfortable than the Metcon line, and the platform is firm enough for sled and wall balls." },
+      { question: "Are Nano X4 and Metcon 9 essentially the same shoe?", answer: "They've converged but they're not identical. The Metcon 9 still has a lower 4 mm drop and a firmer overall ride, which makes it more lift-friendly. The Nano X4 has a higher 7 mm drop and a softer midsole, which makes it more run-friendly. On stations both feel stable, on running the Nano feels noticeably softer." },
+      { question: "Which is better for sled push?", answer: "Nike Metcon 9 has a slight edge for sled push due to its firmer outsole and lower drop. The Nano X4 is fully capable for most athletes; the difference only matters at the sub-75 Hyrox or competitive CrossFit level where every second on the platform counts." },
       { question: "Can I race Hyrox in Nano X4?", answer: "Yes. Many Hyrox racers train and race in the Nano X4 for sub-90 finishes. Faster racers (sub-75) sometimes switch to a dedicated running shoe for race day." },
+      { question: "Which lasts longer in heavy CrossFit and Hyrox use?", answer: "Both are built for the abuse of functional training. Most users report 9-12 months of heavy daily use before the outsole starts to show wear. The Metcon 9 tends to wear faster on the medial forefoot from rope climbs; the Nano X4 wears faster on the outsole heel." },
     ],
     internalLinks: [
       { href: "/gear/nike-metcon-9-vs-nobull-trainer/", label: "Nike Metcon 9 vs NoBull Trainer+" },
+      { href: "/gear/puma-fast-r-vs-nike-metcon/", label: "Puma Fast-R vs Nike Metcon 9" },
+      { href: "/gear/puma-deviate-nitro-vs-nike-pegasus/", label: "Puma Deviate Nitro 3 vs Nike Pegasus 41" },
       { href: "/blog/hyrox-shoe-rules/", label: "Hyrox shoe rules" },
+      { href: "/blog/best-hyrox-pacing-strategy/", label: "Hyrox pacing strategy" },
     ],
   },
   {

@@ -12,8 +12,14 @@ export async function getStaticPaths() {
 const { stationSlug } = Astro.props;
 const station = STATIONS.find((s) => s.slug === stationSlug)!;
 
-const title = `Hyrox ${station.name} Standards, Weights, and Technique`;
-const description = `Official Hyrox ${station.name} station: weights by division, common no-reps, and a proven technique breakdown. ${station.distance ?? station.reps ?? ""}`.trim();
+const hasWeightStandards = station.standards.some((s) => /\d+\s*kg/i.test(s.spec));
+
+const title = hasWeightStandards
+  ? `Hyrox ${station.name} Weight by Division: Open, Pro, and Doubles Standards`
+  : `Hyrox ${station.name} Standards, Rules, and Technique`;
+const description = hasWeightStandards
+  ? `Official Hyrox ${station.name} weights for Open Men, Open Women, Pro Men, and Pro Women, plus common no-reps and a step-by-step technique breakdown.${station.distance ? ` ${station.distance} format.` : station.reps ? ` ${station.reps}.` : ""}`.trim()
+  : `Official Hyrox ${station.name} rules and standards: ${station.distance ?? station.reps}, common no-reps, and a step-by-step technique breakdown.`.trim();
 
 const breadcrumbs = [
   { name: "Stations", url: "/stations/" },
@@ -22,7 +28,9 @@ const breadcrumbs = [
 
 const faqItems = [
   {
-    question: `What is the weight for Hyrox ${station.name}?`,
+    question: hasWeightStandards
+      ? `What is the weight for Hyrox ${station.name}?`
+      : `What are the rules for Hyrox ${station.name}?`,
     answer: station.standards
       .map((s) => `${s.division}: ${s.spec}`)
       .join(". ") + ".",
@@ -66,23 +74,46 @@ const faqItems = [
 
     <header class="mb-10 pb-8 border-b border-border">
       <div class="text-sm font-bold uppercase tracking-wider text-accent mb-3">
-        Station {station.position} of 8
+        Station {station.position} of 8 · {station.distance ?? station.reps}
       </div>
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        {station.name} — Standards & Technique
+        {hasWeightStandards
+          ? `Hyrox ${station.name} Weight by Division`
+          : `Hyrox ${station.name} Standards`}
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
         {station.overviewText}
       </p>
     </header>
 
+    <section class="mb-10">
+      <h2 class="sr-only">Hyrox {station.name} {hasWeightStandards ? "weights" : "standards"} by division</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {station.standards.map((std) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-4 hover:border-accent/40 transition-colors">
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1.5">
+              {std.division}
+            </div>
+            <div class="text-base text-text-heading font-bold leading-snug">
+              {std.spec}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p class="mt-4 text-sm text-text-muted">
+        {hasWeightStandards
+          ? `Hyrox ${station.name.toLowerCase()} weights are identical at every Hyrox event globally. Doubles teams race Open weights with one partner working at a time.`
+          : `Hyrox ${station.name.toLowerCase()} format is identical at every Hyrox event globally. Open and Pro athletes do the same distance.`}
+      </p>
+    </section>
+
     <section class="prose md:prose-lg max-w-none">
-      <h2>Hyrox {station.name} weights by division</h2>
+      <h2>Hyrox {station.name} {hasWeightStandards ? "weight breakdown" : "specification"}</h2>
       <table>
         <thead>
           <tr>
             <th>Division</th>
-            <th>Specification</th>
+            <th>{hasWeightStandards ? "Weight / specification" : "Specification"}</th>
           </tr>
         </thead>
         <tbody>

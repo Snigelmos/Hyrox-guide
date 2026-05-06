@@ -8,7 +8,11 @@ import tailwindcss from "@tailwindcss/vite";
 import vercel from "@astrojs/vercel";
 
 import { GYMS, hasIndexablePage } from "./src/data/gym-finder";
-import { allEventPaths, RETIRED_EVENT_SLUGS } from "./src/data/events";
+import {
+  allEventPaths,
+  RETIRED_EVENT_SLUGS,
+  RETIRED_EVENT_EXPLAINERS,
+} from "./src/data/events";
 import { getResults } from "./src/data/event-results";
 
 // Permanent 301 redirects for events that used to have a live page but have
@@ -22,6 +26,14 @@ const retiredEventRedirects: Record<string, string> = Object.fromEntries(
     [`/events/${year}/${slug}/results/`, redirectTo],
   ]),
 );
+
+// Retired-with-explainer events render a real page at /events/<year>/<slug>/
+// (handled by events/[year]/[city].astro). The /results/ subpage has no data,
+// so 301 it to the parent explainer page rather than 404.
+for (const { year, slug } of RETIRED_EVENT_EXPLAINERS) {
+  retiredEventRedirects[`/events/${year}/${slug}/results/`] =
+    `/events/${year}/${slug}/`;
+}
 
 /**
  * Sitemap noindex allowlist.

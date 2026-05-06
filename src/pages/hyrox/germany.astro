@@ -1,0 +1,179 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { EVENTS, formatEventDate, isPastEvent } from "../../data/events";
+import { CITY_EVERGREENS } from "../../data/city-evergreens";
+
+const COUNTRY_CODE = "DE";
+const COUNTRY_NAME = "Germany";
+
+const allDeEvents = EVENTS.filter((e) => e.countryCode === COUNTRY_CODE).sort(
+  (a, b) => a.startDate.localeCompare(b.startDate),
+);
+const upcoming = allDeEvents.filter((e) => !isPastEvent(e));
+const past = allDeEvents.filter((e) => isPastEvent(e));
+const cityHubs = CITY_EVERGREENS.filter((c) => c.countryCode === COUNTRY_CODE);
+
+const title = "Hyrox Germany 2026: Full Race Calendar (Hyrox Deutschland)";
+const description =
+  "Hyrox Germany 2026 calendar: every German Hyrox race city, venue, and date. Hamburg, Frankfurt, Düsseldorf, Cologne, and more. Plus evergreen city guides and training-club info for athletes searching Hyrox Deutschland 2026.";
+const breadcrumbs = [
+  { name: "Hyrox cities", url: "/hyrox/" },
+  { name: "Germany" },
+];
+
+const faqItems = [
+  {
+    question: "How many Hyrox races are in Germany in 2026?",
+    answer: `The 2026 Hyrox Germany calendar has ${upcoming.length} confirmed German stops${upcoming.length > 0 ? `: ${upcoming.map((e) => e.city).join(", ")}.` : "."} Hamburg remains Hyrox's original home venue and runs every year.`,
+  },
+  {
+    question: "Is Hyrox München (Munich) on the 2026 calendar?",
+    answer:
+      "No. Hyrox dropped the Munich stop from the 2025/26 season rotation. Munich-based athletes are searching Hyrox München 2026 frequently, but the closest German alternatives are Hamburg, Frankfurt, and Düsseldorf. See the dedicated Munich explainer for details on getting to a substitute race.",
+  },
+  {
+    question: "What is the largest Hyrox in Germany?",
+    answer:
+      "Hamburg and Berlin have historically been the two largest German Hyrox events. In 2026, Hamburg runs five days of racing at Hamburg Messe in late October to early November.",
+  },
+  {
+    question: "How do I find a Hyrox-affiliated training club in Germany?",
+    answer:
+      "The Hyrox Vault gym finder lists Hyrox-affiliated training clubs across Germany, with concentrations in Berlin, Hamburg, Munich, Frankfurt, and Cologne. Filter by city on the gym map for the closest options.",
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Hyrox Vault`}
+  description={description}
+  ogType="article"
+  schemaType="Article"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <a href="/hyrox/" class="text-text-muted hover:text-accent transition-colors no-underline">Hyrox cities</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Germany</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border max-w-4xl">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Country hub · Deutschland</div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Germany 2026
+      </h1>
+      <p class="mt-2 text-base text-text-muted/80 leading-relaxed">
+        Also searched as Hyrox Deutschland 2026, Hyrox Termine 2026
+      </p>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        Germany has the deepest Hyrox calendar of any country. The 2026 season covers Hamburg, Frankfurt, Düsseldorf, Cologne, and more. Munich is not on the 2026 calendar.
+      </p>
+    </header>
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <p>
+        Hyrox was born in Hamburg in 2017 and Germany has been the centre of the global Hyrox community ever since. The 2026 German calendar runs from late spring through year-end, with multi-day events at the country's largest exhibition venues.
+      </p>
+      <p>
+        If you're searching Hyrox München 2026, Munich is not on this season's schedule. Hamburg, Frankfurt, and Düsseldorf are the closest substitutes for Bavarian athletes. Athletes in the south of Germany also race St Gallen across the Swiss border.
+      </p>
+    </section>
+
+    {upcoming.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Hyrox Germany 2026 calendar</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">All confirmed German Hyrox stops on the 2026 calendar. Click any city for the full event guide with venue, registration, and training prep.</p>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {upcoming.map((e) => (
+            <a
+              href={`/events/${e.year}/${e.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{e.year}</div>
+              <div class="text-lg font-black text-text-heading mb-1">Hyrox {e.city} {e.year}</div>
+              {e.localNames && e.localNames.length > 0 && (
+                <div class="text-xs text-text-muted/80 mb-1">Hyrox {e.localNames.join(" / ")} {e.year}</div>
+              )}
+              <div class="text-sm text-text-muted">{formatEventDate(e.startDate, e.endDate)}</div>
+              <div class="text-xs text-text-muted/80 mt-1">{e.venue}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-12 bg-amber-500/5 border border-amber-500/20 rounded-2xl p-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Not on the 2026 calendar</div>
+      <h2 class="text-xl md:text-2xl font-black text-text-heading mb-3">Hyrox München 2026</h2>
+      <p class="text-text-muted leading-relaxed mb-4">
+        Munich is a top-3 search destination for Hyrox in Germany but isn't on the 2026 calendar. The Munich Hyrox training-club ecosystem remains active, and the closest German races are Frankfurt and Hamburg.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/events/2026/munich/" class="inline-flex items-center gap-2 bg-accent text-white font-bold text-sm rounded-xl px-5 py-2.5 hover:opacity-90 transition-opacity no-underline">
+          Hyrox München 2026 explainer →
+        </a>
+        <a href="/hyrox/munich/" class="inline-flex items-center gap-2 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
+          Munich evergreen guide →
+        </a>
+      </div>
+    </section>
+
+    {cityHubs.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Hyrox by city in Germany</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">Year-agnostic city guides for German Hyrox host cities. Race history, venue notes, training-club ecosystem, and pacing tips that don't change between events.</p>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {cityHubs.map((c) => (
+            <a
+              href={`/hyrox/${c.slug}/`}
+              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">City</div>
+              <div class="text-lg font-black text-text-heading mb-1">Hyrox {c.city}</div>
+              <p class="text-sm text-text-muted leading-relaxed">{c.tagline}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {past.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Past Hyrox Germany races</h2>
+        <p class="text-text-muted mb-6 max-w-3xl">German Hyrox events from earlier in the 2026 season.</p>
+        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {past.map((e) => (
+            <a
+              href={`/events/${e.year}/${e.slug}/`}
+              class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline opacity-75"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Race complete</div>
+              <div class="text-sm text-text-heading font-bold">Hyrox {e.city} {e.year}</div>
+              <div class="text-xs text-text-muted mt-1">{formatEventDate(e.startDate, e.endDate)}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
+      <h2>Training for Hyrox Germany</h2>
+      <p>
+        German Hyrox-affiliated training clubs are concentrated around the major race cities. The <a href="/gyms/country/germany/">German gym directory</a> lists every verified Hyrox club, and most run weekly Hyrox simulation classes through the autumn build-up.
+      </p>
+      <p>
+        For an 8 to 16-week structured plan, see our <a href="/training/intermediate/">intermediate Hyrox plan</a>. Tighten the final week with the <a href="/blog/hyrox-race-week-protocol/">race-week protocol</a> and the <a href="/race-day-checklist/">race-day checklist</a>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

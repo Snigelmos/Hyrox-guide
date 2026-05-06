@@ -100,9 +100,9 @@ export const COMPARISONS: Comparison[] = [
     slug: "hyrox-vs-deka",
     hyroxLabel: "Hyrox",
     otherLabel: "DEKA",
-    title: "Hyrox vs DEKA — How They Compare and Which to Choose",
+    title: "Hyrox vs DEKA (DEKA vs Hyrox): Format, Stations, and Which to Choose",
     metaDescription:
-      "Hyrox vs DEKA: format, scoring, time targets, and the key differences between Hyrox and Spartan's DEKA fitness race series.",
+      "Hyrox vs DEKA compared: format, stations, scoring, time targets, and the key differences between Hyrox and Spartan's DEKA fitness race series. Whether you searched Hyrox vs DEKA or DEKA vs Hyrox, this is the side-by-side breakdown.",
     intro:
       "DEKA is Spartan's response to Hyrox — an indoor functional fitness race with standardised stations. Both events look similar at a glance but have meaningful differences in format, weights, and culture.",
     bottomLine:

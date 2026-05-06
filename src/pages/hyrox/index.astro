@@ -29,6 +29,29 @@ const breadcrumbs = [{ name: "Hyrox cities" }];
       </p>
     </section>
 
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Country hubs</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        <a
+          href="/hyrox/germany/"
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Country · Deutschland</div>
+          <div class="text-2xl font-black text-text-heading mb-2">Hyrox Germany 2026</div>
+          <p class="text-sm text-text-muted leading-relaxed">Full German Hyrox calendar plus a Hyrox München 2026 explainer for athletes whose home race isn't on the calendar.</p>
+        </a>
+        <a
+          href="/hyrox/switzerland/"
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Country · Schweiz · Svizzera</div>
+          <div class="text-2xl font-black text-text-heading mb-2">Hyrox Switzerland 2026</div>
+          <p class="text-sm text-text-muted leading-relaxed">St Gallen and Geneva on the 2026 calendar. Hyrox Zürich 2026 explainer for Zurich-based athletes.</p>
+        </a>
+      </div>
+    </section>
+
+    <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Hyrox by city</h2>
     <div class="grid gap-4 md:grid-cols-2">
       {CITY_EVERGREENS.map((c) => (
         <a
