@@ -7,6 +7,9 @@ import {
   computeExpectedFinish,
   formatHMS,
   formatMinSec,
+  CATEGORY_GUIDANCE,
+  AGE_GUIDANCE,
+  findClosestGoalSlug,
 } from "../../../data/hyrox-times";
 
 export async function getStaticPaths() {
@@ -20,6 +23,9 @@ const { category, ageGroup } = Astro.props;
 const cat = CATEGORIES.find((c) => c.id === category)!;
 const age = AGE_GROUPS.find((a) => a.id === ageGroup)!;
 const finish = computeExpectedFinish(category, ageGroup);
+const categoryGuidance = CATEGORY_GUIDANCE[category];
+const ageGuidance = AGE_GUIDANCE[ageGroup];
+const closestGoalSlug = findClosestGoalSlug(category, ageGroup);
 
 // Tiers used for SEO body copy + schema
 const podiumSeconds = Math.round(finish.totalSeconds * 0.82);
@@ -50,6 +56,9 @@ const breadcrumbs = [
   { name: age.label },
 ];
 
+// FAQ structure: 2 (category, age)-specific computed FAQs + 2 category-unique FAQs + 1 age-unique FAQ.
+// This means every (category, age) combination produces a different FAQ block, which prevents
+// FAQ duplication across the 56 generated pages.
 const faqItems = [
   {
     question: `What is a good Hyrox time for ${cat.label} ${ageWord}?`,
@@ -59,20 +68,8 @@ const faqItems = [
     question: `What is the average Hyrox time for ${cat.label} ${ageWord}?`,
     answer: `The average Hyrox finish for ${cat.label} ${pronoun} ${ageWord} is approximately ${formatHMS(averageSeconds)}. This is based on aggregated medians across the 2024-2025 racing seasons. A first-time racer with a sensible 8-12 week prep typically finishes between ${formatHMS(averageSeconds)} and ${formatHMS(beginnerSeconds)}.`,
   },
-  {
-    question: "How much of Hyrox time is running vs stations?",
-    answer: `In this group, running accounts for about ${formatHMS(finish.runSeconds)} at a pace of roughly ${formatMinSec(finish.runPerKm)}/km, while the eight stations plus transitions total ${formatHMS(finish.totalSeconds - finish.runSeconds)}. Running is usually where races are won or lost for athletes over 40.`,
-  },
-  {
-    question: "How do I improve my Hyrox finish time fastest?",
-    answer:
-      "For most athletes, the biggest time gains come from improving 5k run pace (not strength). Next is grip endurance for sled pull + farmers carry. Wall balls and sled push come last — they reward specific practice rather than raw fitness.",
-  },
-  {
-    question: `Do I need to be in the Pro division to be competitive at age ${age.label}?`,
-    answer:
-      "No. The Open division is the standard competitive class and hosts World Championship qualifiers in every age group. Pro is heavier weights and suits athletes who already break the 70-minute mark in Open.",
-  },
+  ...categoryGuidance.faqs,
+  ageGuidance.faq,
 ];
 
 const pacingTargets = [
@@ -159,6 +156,16 @@ const datasetSchema = {
       </p>
     </section>
 
+    <section class="mb-10 max-w-3xl">
+      <h2 class="text-2xl md:text-3xl font-black mb-3">{cat.label}: what this division means</h2>
+      <p class="text-text-muted leading-relaxed">{categoryGuidance.divisionContext}</p>
+    </section>
+
+    <section class="mb-10 max-w-3xl">
+      <h2 class="text-2xl md:text-3xl font-black mb-3">What changes at {ageWord}</h2>
+      <p class="text-text-muted leading-relaxed">{ageGuidance.physiology}</p>
+    </section>
+
     <section class="mb-12 grid gap-6 md:grid-cols-3">
       <div class="bg-bg-card border border-border rounded-2xl p-6">
         <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Average finish</div>
@@ -234,52 +241,64 @@ const datasetSchema = {
         ))}
       </ol>
 
-      <h2>How to train to hit a good time for {cat.label} {ageWord}</h2>
-      <ul>
-        <li>
-          Build your run to {formatMinSec(finish.runPerKm)}/km for a 5km time trial. Use our <a href="/training/running/">running programming guide</a>.
-        </li>
-        <li>
-          Train <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a> with race-weight at least once per week.
-        </li>
-        <li>
-          Practice <a href="/training/stations/">station-specific circuits</a> so pacing feels familiar under fatigue.
-        </li>
-        <li>
-          Plan your <a href="/supplements/protocol/">race-day fuelling</a> — most 10+ min losses in this time range come from underfuelling, not fitness.
-        </li>
-        <li>
-          If you're chasing sub-{formatHMS(goodSeconds).replace(/^0:/, "")}, follow our <a href="/calculator/">goal-time calculator</a> to back-solve your weekly training paces.
-        </li>
-      </ul>
+      <h2>Training reality for {cat.label}</h2>
+      <p>{categoryGuidance.trainingReality}</p>
+
+      <h2>How training shifts at {ageWord}</h2>
+      <p>{ageGuidance.trainingAdjustment}</p>
+
+      <h2>Race strategy for {cat.label} {ageWord}</h2>
+      <p>{categoryGuidance.raceStrategy}</p>
+      <p>
+        Anchor every weekly plan around three specifics for this group: hold {formatMinSec(finish.runPerKm)}/km on tempo runs, train <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a> at race weight twice per week, and rehearse the <a href="/training/stations/">sandbag-lunges-into-wall-balls</a> sequence so the legs are familiar with the transition. Race-day fuelling matters more than most {ageWord} athletes plan for; see the <a href="/supplements/protocol/">supplement and fuelling protocol</a>.
+      </p>
 
       <h2>Ready to plan your race?</h2>
       <p>
-        Use the <a href="/calculator/">Hyrox time calculator</a> to tweak splits based on your current fitness, or browse <a href="/training/">training programs</a> matched to your finish-time goal.
+        {closestGoalSlug ? (
+          <>The closest matching goal-time guide for this group is <a href={`/calculator/${closestGoalSlug}/`}><strong>{closestGoalSlug.replace("sub-", "Sub-").replace("-hyrox", "")}-minute Hyrox</strong> for {cat.label}</a>, with a full plan, splits, and athlete profile. </>
+        ) : (
+          <>For Doubles Mixed pacing, see the <a href="/blog/hyrox-doubles-strategy/">Doubles strategy guide</a>. </>
+        )}
+        Use the <a href="/calculator/">Hyrox time calculator</a> to tweak splits against your own 5 km, bench, and deadlift, or browse <a href="/training/">training programs</a> matched to your finish-time goal.
       </p>
     </section>
 
     <aside class="mt-16 pt-10 border-t border-border">
-      <h2 class="text-2xl font-black text-text-heading mb-4">More time standards</h2>
-      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
-        {CATEGORIES.filter((c) => c.id !== cat.id).slice(0, 3).map((c) => (
-          <a
-            href={`/times/${c.slug}/${age.slug}/`}
-            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-          >
-            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.label}</div>
-            <div class="text-sm text-text-heading">Age {age.label}</div>
-          </a>
-        ))}
-        {AGE_GROUPS.filter((a) => a.id !== age.id).slice(0, 3).map((a) => (
-          <a
-            href={`/times/${cat.slug}/${a.slug}/`}
-            class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-          >
-            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{cat.label}</div>
-            <div class="text-sm text-text-heading">Age {a.label}</div>
-          </a>
-        ))}
+      <h2 class="text-2xl font-black text-text-heading mb-2">Compare times across age groups for {cat.label}</h2>
+      <p class="text-text-muted text-sm mb-5">Same division, different age bands. See how the average finish shifts with age.</p>
+      <div class="grid gap-3 grid-cols-2 md:grid-cols-4 not-prose mb-10">
+        {AGE_GROUPS.filter((a) => a.id !== age.id).map((a) => {
+          const otherFinish = computeExpectedFinish(cat.id, a.id);
+          return (
+            <a
+              href={`/times/${cat.slug}/${a.slug}/`}
+              class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Age {a.label}</div>
+              <div class="text-base font-black text-text-heading tabular-nums">{formatHMS(otherFinish.totalSeconds)}</div>
+              <div class="text-xs text-text-muted mt-1">Average</div>
+            </a>
+          );
+        })}
+      </div>
+
+      <h2 class="text-2xl font-black text-text-heading mb-2">Compare divisions at {ageWord}</h2>
+      <p class="text-text-muted text-sm mb-5">Same age band, different divisions. See how Pro and Doubles change the math.</p>
+      <div class="grid gap-3 grid-cols-2 md:grid-cols-3 not-prose">
+        {CATEGORIES.filter((c) => c.id !== cat.id).map((c) => {
+          const otherFinish = computeExpectedFinish(c.id, age.id);
+          return (
+            <a
+              href={`/times/${c.slug}/${age.slug}/`}
+              class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">{c.label}</div>
+              <div class="text-base font-black text-text-heading tabular-nums">{formatHMS(otherFinish.totalSeconds)}</div>
+              <div class="text-xs text-text-muted mt-1">Average at {age.label}</div>
+            </a>
+          );
+        })}
       </div>
     </aside>
   </div>
