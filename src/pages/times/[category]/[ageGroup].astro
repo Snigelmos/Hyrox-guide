@@ -9,7 +9,7 @@ import {
   formatMinSec,
   CATEGORY_GUIDANCE,
   AGE_GUIDANCE,
-  findClosestGoalSlug,
+  findClosestGoal,
 } from "../../../data/hyrox-times";
 
 export async function getStaticPaths() {
@@ -25,7 +25,7 @@ const age = AGE_GROUPS.find((a) => a.id === ageGroup)!;
 const finish = computeExpectedFinish(category, ageGroup);
 const categoryGuidance = CATEGORY_GUIDANCE[category];
 const ageGuidance = AGE_GUIDANCE[ageGroup];
-const closestGoalSlug = findClosestGoalSlug(category, ageGroup);
+const closestGoal = findClosestGoal(category, ageGroup);
 
 // Tiers used for SEO body copy + schema
 const podiumSeconds = Math.round(finish.totalSeconds * 0.82);
@@ -255,8 +255,8 @@ const datasetSchema = {
 
       <h2>Ready to plan your race?</h2>
       <p>
-        {closestGoalSlug ? (
-          <>The closest matching goal-time guide for this group is <a href={`/calculator/${closestGoalSlug}/`}><strong>{closestGoalSlug.replace("sub-", "Sub-").replace("-hyrox", "")}-minute Hyrox</strong> for {cat.label}</a>, with a full plan, splits, and athlete profile. </>
+        {closestGoal ? (
+          <>The closest matching goal-time guide for this group is <a href={`/calculator/${closestGoal.slug}/`}><strong>{closestGoal.goalShort} Hyrox for {closestGoal.audienceLabel}</strong> ({closestGoal.goalLabel})</a>, with a full plan, splits, and athlete profile. </>
         ) : (
           <>For Doubles Mixed pacing, see the <a href="/blog/hyrox-doubles-strategy/">Doubles strategy guide</a>. </>
         )}

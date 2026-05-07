@@ -11,6 +11,8 @@
  * 100 reps. Runs: 8 x 1km between stations.
  */
 
+import { ALL_GOAL_TIME_CONFIGS } from "./calculator-goals";
+
 export type HyroxCategory =
   | "open-men"
   | "open-women"
@@ -466,13 +468,40 @@ export const AGE_GUIDANCE: Record<AgeGroup, AgeGuidance> = {
   },
 };
 
-/** Returns the calculator goal slug closest to the computed average finish for a (category, age). */
-export function findClosestGoalSlug(
+/**
+ * Returns the calculator goal closest to the computed average finish for
+ * a (category, age) combination, by looking up actual entries in
+ * ALL_GOAL_TIME_CONFIGS rather than guessing a slug pattern.
+ *
+ * Returns null if no matching audience exists in the calculator data
+ * (e.g. doubles-mixed has no per-time pages, only the main calculator).
+ *
+ * The slug-naming convention in calculator-goals.ts is audience-specific:
+ *   open-men     → "sub-XX-hyrox"
+ *   open-women   → "sub-XX-hyrox-women"
+ *   pro-men      → "sub-XX-pro-men"
+ *   pro-women    → "sub-XX-pro-women"
+ *   doubles-men  → "sub-XX-hyrox-doubles-men"
+ *   doubles-women→ "sub-XX-hyrox-doubles-women"
+ *   doubles-mixed→ (no entries)
+ *
+ * Picks the smallest goal whose time is >= the computed average so the goal
+ * page reads as an "achievable next target". If the average exceeds every
+ * available goal, returns the largest goal (still useful, even if the user
+ * is currently above that target finish time).
+ */
+export interface ClosestGoal {
+  slug: string;
+  goalLabel: string; // e.g. "1:25:00"
+  goalShort: string; // e.g. "Sub-85"
+  audienceLabel: string; // e.g. "Pro Women"
+}
+
+export function findClosestGoal(
   category: HyroxCategory,
   ageGroup: AgeGroup,
-): string | null {
-  const finish = computeExpectedFinish(category, ageGroup);
-  const audience: Record<HyroxCategory, string | null> = {
+): ClosestGoal | null {
+  const audienceMap: Record<HyroxCategory, string | null> = {
     "open-men": "open-men",
     "open-women": "open-women",
     "pro-men": "pro-men",
@@ -481,9 +510,24 @@ export function findClosestGoalSlug(
     "doubles-women": "doubles-women",
     "doubles-mixed": null,
   };
-  const aud = audience[category];
+  const aud = audienceMap[category];
   if (!aud) return null;
-  // Build the closest "sub-XX" slug rounded UP to the next 5-minute boundary.
-  const minutes = Math.ceil(finish.totalSeconds / 60 / 5) * 5;
-  return `sub-${minutes}-hyrox`;
+
+  const candidates = ALL_GOAL_TIME_CONFIGS
+    .filter((g) => g.audience === aud)
+    .sort((a, b) => a.goalSeconds - b.goalSeconds);
+  if (candidates.length === 0) return null;
+
+  const finish = computeExpectedFinish(category, ageGroup);
+  const target = finish.totalSeconds;
+
+  // Pick the smallest goal with goalSeconds >= target (the "achievable" next milestone).
+  const pick = candidates.find((g) => g.goalSeconds >= target) ?? candidates[candidates.length - 1];
+
+  return {
+    slug: pick.slug,
+    goalLabel: pick.goalLabel,
+    goalShort: pick.goalShort,
+    audienceLabel: pick.audienceLabel,
+  };
 }
