@@ -36,6 +36,31 @@ for (const { year, slug } of RETIRED_EVENT_EXPLAINERS) {
 }
 
 /**
+ * Permanent 301 redirects for non-event URLs that Google has indexed but that
+ * no longer resolve to a page. Each entry was sourced from a confirmed GSC
+ * "Hittades inte (404)" report.
+ *
+ * Categories:
+ *   - Retired blog post slugs that have been replaced by a renamed canonical
+ *     post (preserves any external backlinks).
+ *   - Removed individual gym detail pages (`/gyms/g/<slug>/`) that previously
+ *     existed under an older gym dataset. They redirect to the relevant city
+ *     hub so the user lands on a useful page rather than the global gyms
+ *     index.
+ *
+ * Maintenance: when a blog post is renamed, add the old slug here. When a gym
+ * detail page is removed from gyms.ts, add the slug here pointing at the
+ * city hub (or country hub if no city hub exists for that location).
+ */
+const retired404Redirects: Record<string, string> = {
+  "/blog/hyrox-race-day-pacing/": "/blog/best-hyrox-pacing-strategy/",
+  "/blog/hyrox-rowing-pacing/": "/blog/hyrox-rowing-technique/",
+  "/gyms/g/f45-toronto-yonge/": "/gyms/toronto/",
+  "/gyms/g/f45-dubai-marina/": "/gyms/dubai/",
+  "/gyms/g/pure-fitness-soho/": "/gyms/london/",
+};
+
+/**
  * Sitemap noindex allowlist.
  *
  * The sitemap should only include URLs that are indexable, canonical, and
@@ -161,7 +186,7 @@ export default defineConfig({
   site: "https://www.hyroxvault.com",
   output: "static",
   adapter: vercel(),
-  redirects: retiredEventRedirects,
+  redirects: { ...retiredEventRedirects, ...retired404Redirects },
   integrations: [
     react(),
     mdx(),
