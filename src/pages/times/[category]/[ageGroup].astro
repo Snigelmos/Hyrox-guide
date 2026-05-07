@@ -218,6 +218,7 @@ const datasetSchema = {
             <th>Station</th>
             <th>Target time</th>
             <th>Technique</th>
+            <th>Official weights</th>
           </tr>
         </thead>
         <tbody>
@@ -226,6 +227,7 @@ const datasetSchema = {
               <td>{s.station}</td>
               <td>{formatMinSec(s.adjusted)}</td>
               <td><a href={s.link}>Guide</a></td>
+              <td><a href={s.standardsLink}>Standards</a></td>
             </tr>
           ))}
         </tbody>

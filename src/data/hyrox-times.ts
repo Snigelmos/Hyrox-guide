@@ -117,17 +117,18 @@ export interface StationTime {
   slug: string;
   seconds: number;
   link: string;
+  standardsLink: string;
 }
 
 export const BASE_STATION_TIMES: StationTime[] = [
-  { station: "SkiErg 1,000m", slug: "skierg", seconds: 265, link: "/blog/hyrox-skierg-technique-pacing/" },
-  { station: "Sled Push 50m", slug: "sled-push", seconds: 180, link: "/blog/hyrox-sled-push-technique/" },
-  { station: "Sled Pull 50m", slug: "sled-pull", seconds: 200, link: "/blog/hyrox-sled-pull-technique/" },
-  { station: "Burpee Broad Jumps 80m", slug: "burpee-broad-jumps", seconds: 330, link: "/blog/hyrox-burpee-broad-jumps-strategy/" },
-  { station: "Row 1,000m", slug: "row", seconds: 245, link: "/blog/hyrox-rowing-technique/" },
-  { station: "Farmers Carry 200m", slug: "farmers-carry", seconds: 125, link: "/racing-guide/stations/" },
-  { station: "Sandbag Lunges 100m", slug: "sandbag-lunges", seconds: 250, link: "/racing-guide/stations/" },
-  { station: "Wall Balls (100 reps)", slug: "wall-balls", seconds: 320, link: "/racing-guide/stations/" },
+  { station: "SkiErg 1,000m", slug: "skierg", seconds: 265, link: "/blog/hyrox-skierg-technique-pacing/", standardsLink: "/stations/skierg/standards/" },
+  { station: "Sled Push 50m", slug: "sled-push", seconds: 180, link: "/blog/hyrox-sled-push-technique/", standardsLink: "/stations/sled-push/standards/" },
+  { station: "Sled Pull 50m", slug: "sled-pull", seconds: 200, link: "/blog/hyrox-sled-pull-technique/", standardsLink: "/stations/sled-pull/standards/" },
+  { station: "Burpee Broad Jumps 80m", slug: "burpee-broad-jumps", seconds: 330, link: "/blog/hyrox-burpee-broad-jumps-strategy/", standardsLink: "/stations/burpee-broad-jumps/standards/" },
+  { station: "Row 1,000m", slug: "row", seconds: 245, link: "/blog/hyrox-rowing-technique/", standardsLink: "/stations/rowing/standards/" },
+  { station: "Farmers Carry 200m", slug: "farmers-carry", seconds: 125, link: "/blog/hyrox-farmers-carry-sandbag-lunges/", standardsLink: "/stations/farmers-carry/standards/" },
+  { station: "Sandbag Lunges 100m", slug: "sandbag-lunges", seconds: 250, link: "/blog/hyrox-farmers-carry-sandbag-lunges/", standardsLink: "/stations/sandbag-lunges/standards/" },
+  { station: "Wall Balls (100 reps)", slug: "wall-balls", seconds: 320, link: "/blog/hyrox-wall-balls-technique/", standardsLink: "/stations/wall-balls/standards/" },
 ];
 
 // Base total run time for 8km at median Open Men pace, in seconds.
