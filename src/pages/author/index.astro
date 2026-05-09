@@ -2,66 +2,105 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { AUTHORS } from "../../data/authors";
 
-const title = "Meet the team";
+const team = AUTHORS[0];
+
+const title = "Editorial team";
 const description =
-  "The three people behind HyroxVault — who we are, what we race, and what each of us writes.";
+  "HyroxVault is run by an anonymous editorial team of three Hyrox racers. Why we publish anonymously, what each side of the site covers, and how to reach us.";
 ---
 
 <BaseLayout
   title={`${title} | Hyrox Vault`}
   description={description}
-  breadcrumbs={[{ name: "Team" }]}
+  breadcrumbs={[{ name: "Editorial team" }]}
 >
   <div class="container-main py-10 md:py-16">
     <header class="mb-10 pb-8 border-b border-border max-w-3xl">
       <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
-        Editorial team
+        Who writes HyroxVault
       </div>
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
         {title}
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed">
-        HyroxVault is run by three people. We race, we coach, we read the
-        literature, and we write what we wish had existed when we entered our
-        first Hyrox. Every guide on the site is owned by one of us by name.
+        HyroxVault is run by three Hyrox racers writing anonymously. We don't
+        put names or faces on the site — recommendations stand on the
+        research, the data, and our own race experience, not on personal
+        brand.
       </p>
     </header>
 
-    <div class="grid gap-5 md:grid-cols-3">
-      {AUTHORS.map((a) => (
-        <a
-          href={`/author/${a.slug}/`}
-          class="group flex flex-col bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-        >
-          <div class="flex items-center gap-4 mb-4">
-            <img
-              src={a.image}
-              alt=""
-              width="64"
-              height="64"
-              loading="lazy"
-              class="w-16 h-16 rounded-full object-cover bg-bg border border-border"
-            />
-            <div>
-              <div class="text-xs font-bold uppercase tracking-wider text-accent">
-                {a.jobTitle}
-              </div>
-              <div class="text-xl font-bold text-text-heading group-hover:text-accent transition-colors">
-                {a.name}
-              </div>
-            </div>
-          </div>
-          <p class="text-sm text-text-heading font-semibold mb-2">
-            {a.tagline}
-          </p>
-          <p class="text-sm text-text-muted leading-relaxed">{a.bio}</p>
-        </a>
-      ))}
-    </div>
+    <section class="max-w-3xl prose md:prose-lg">
+      <h2>Three racers, one byline</h2>
+      <p>
+        Between the three of us we cover strength and station technique,
+        distance running and pacing, and sports nutrition and racing. Every
+        guide on the site is reviewed by whichever of us owns the relevant
+        beat before it goes live, and bylined to the editorial team rather
+        than to an individual. When we've raced something, used a piece of
+        gear, or run a protocol ourselves we say so. When we haven't, we say
+        that too.
+      </p>
 
-    <p class="mt-10 text-sm text-text-muted max-w-3xl">
-      For editorial pitches or corrections, see the contact details on the
-      <a href="/about/" class="text-accent hover:underline">About</a> page.
-    </p>
+      <h2>Why anonymous</h2>
+      <p>
+        A lot of fitness content on the open web leans on personal brand:
+        photos, bios, performance claims, social profiles. We've chosen the
+        opposite path. The recommendations on this site should hold up
+        because the evidence behind them holds up — not because of who's
+        signing the byline. If a study citation is wrong or a station
+        weight is out of date, the fix is the same regardless of whose name
+        is at the top of the page.
+      </p>
+
+      <h2>How we work</h2>
+      <p>
+        Numbers come from the official <a href="https://hyrox.com/" rel="external">Hyrox rules</a> and
+        <a href="https://results.hyrox.com/" rel="external">results data</a>,
+        peer-reviewed research from sources like the ISSN, ACSM and IOC, or
+        our own logged training and racing. We don't republish manufacturer
+        copy, we don't manufacture testing protocols we haven't run, and we
+        disclose every affiliate relationship. Full standards on the
+        <a href="/methodology/">methodology page</a>.
+      </p>
+
+      <h2>Get in touch</h2>
+      <p>
+        Spotted a factual error, an out-of-date station weight, or a study
+        we should be citing? Contact details are on the
+        <a href="/about/">About page</a>. Real reader corrections have
+        improved this site multiple times.
+      </p>
+    </section>
+
+    <aside class="mt-12 max-w-3xl">
+      <a
+        href={`/author/${team.slug}/`}
+        class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+      >
+        <div class="flex items-center gap-5">
+          <img
+            src={team.image}
+            alt=""
+            width="64"
+            height="64"
+            loading="lazy"
+            class="w-16 h-16 rounded-2xl object-contain bg-bg border border-border p-1.5 flex-shrink-0"
+          />
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+              {team.jobTitle}
+            </div>
+            <div class="text-xl font-black text-text-heading mb-1">
+              {team.name}
+            </div>
+            <p class="text-sm text-text-muted leading-relaxed">
+              See every guide bylined to the team and our published editorial
+              standards →
+            </p>
+          </div>
+        </div>
+      </a>
+    </aside>
   </div>
 </BaseLayout>

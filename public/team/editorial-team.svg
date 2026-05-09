@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="HyroxVault editorial team">
+  <title>HyroxVault editorial team</title>
+  <rect width="128" height="128" rx="64" fill="#0f1418" />
+  <g fill="#84cc16">
+    <!-- Centre figure -->
+    <circle cx="64" cy="48" r="14" />
+    <path d="M40 102c0-13.255 10.745-24 24-24s24 10.745 24 24v6H40z" />
+    <!-- Left figure -->
+    <circle cx="32" cy="56" r="11" opacity="0.55" />
+    <path d="M12 102c0-11.046 8.954-20 20-20 4.5 0 8.65 1.488 12 4-3.747 4.225-6 9.787-6 16v6H12z" opacity="0.55" />
+    <!-- Right figure -->
+    <circle cx="96" cy="56" r="11" opacity="0.55" />
+    <path d="M116 102c0-11.046-8.954-20-20-20-4.5 0-8.65 1.488-12 4 3.747 4.225 6 9.787 6 16v6h26z" opacity="0.55" />
+  </g>
+</svg>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { AUTHORS } from "../../data/authors";
+import { AUTHORS, EDITORIAL_TEAM_NAME } from "../../data/authors";
 import { getAllPosts } from "../../data/blog";
 import PostCard from "../../components/PostCard.astro";
 
@@ -14,25 +14,35 @@ export async function getStaticPaths() {
 const { author } = Astro.props;
 
 const allPosts = await getAllPosts();
-const authorPosts = allPosts.filter(
-  (p) => (p.data.author ?? "").toLowerCase() === author.name.toLowerCase()
-);
+const teamPosts = allPosts.filter((p) => {
+  const a = (p.data.author ?? "").toLowerCase();
+  if (!a) return false;
+  return (
+    a === EDITORIAL_TEAM_NAME.toLowerCase() ||
+    a === "adam smith" ||
+    a === "james andersen" ||
+    a === "max jespersen" ||
+    a === "hyrox guide editorial team" ||
+    a === "hyroxguide editorial team"
+  );
+});
 
-const personSchema = {
+// Team profile is an anonymous editorial group, not a Person — emit Organization
+// schema. Avoids Google's entity reconciliation looking for a Person that
+// doesn't exist.
+const organizationLd = {
   "@context": "https://schema.org",
-  "@type": "Person",
+  "@type": "Organization",
   name: author.name,
   url: new URL(`/author/${author.slug}/`, Astro.site).toString(),
-  image: new URL(author.image, Astro.site).toString(),
-  jobTitle: author.jobTitle,
-  worksFor: {
+  logo: new URL(author.image, Astro.site).toString(),
+  description: author.bio,
+  knowsAbout: author.topics,
+  parentOrganization: {
     "@type": "Organization",
     name: "HyroxVault",
     url: Astro.site?.toString(),
   },
-  description: author.bio,
-  ...(author.sameAs && author.sameAs.length > 0 ? { sameAs: author.sameAs } : {}),
-  knowsAbout: author.topics,
 };
 ---
 
@@ -40,7 +50,7 @@ const personSchema = {
   title={`${author.name} | Hyrox Vault`}
   description={author.bio}
   breadcrumbs={[
-    { name: "Team", url: "/author/" },
+    { name: "Editorial team", url: "/author/" },
     { name: author.name },
   ]}
 >
@@ -50,7 +60,7 @@ const personSchema = {
         <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
         <li class="flex items-center gap-2">
           <span class="text-text-muted/40">/</span>
-          <a href="/author/" class="text-text-muted hover:text-accent transition-colors no-underline">Team</a>
+          <a href="/author/" class="text-text-muted hover:text-accent transition-colors no-underline">Editorial team</a>
         </li>
         <li class="flex items-center gap-2">
           <span class="text-text-muted/40">/</span>
@@ -63,11 +73,11 @@ const personSchema = {
       <div class="flex flex-col sm:flex-row sm:items-center gap-6">
         <img
           src={author.image}
-          alt={`Portrait of ${author.name}`}
-          width="128"
-          height="128"
+          alt=""
+          width="96"
+          height="96"
           loading="eager"
-          class="w-32 h-32 rounded-full object-cover bg-bg-card border border-border flex-shrink-0"
+          class="w-24 h-24 rounded-2xl object-contain bg-bg-card border border-border flex-shrink-0 p-2"
         />
         <div>
           <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
@@ -86,33 +96,47 @@ const personSchema = {
     <section class="prose md:prose-lg max-w-none">
       <p class="text-text-muted leading-relaxed">{author.longBio}</p>
 
-      <h2>What {author.firstName} writes about</h2>
+      <h2>What we cover</h2>
       <ul>
         {author.topics.map((t) => <li>{t}</li>)}
       </ul>
 
-      <h2>Credentials</h2>
+      <h2>Editorial standards</h2>
       <ul>
         {author.credentials.map((c) => <li>{c}</li>)}
       </ul>
 
-      <h2>Editorial approach</h2>
+      <h2>Why we publish anonymously</h2>
       <p>
-        Every guide on HyroxVault is signed by one of us by name. Numbers, splits, and pacing targets come from published race data, primary rules documents, or hands-on training — never from a guess. Read the <a href="/about/">full editorial policy and affiliate disclosure</a> for details.
+        Three real Hyrox racers run this site. We've chosen not to put names
+        or faces on the work because we want every recommendation to stand on
+        the evidence behind it, not on a personal brand. If you spot a number
+        that looks wrong or a claim that should be sourced, the contact
+        details on the <a href="/about/">About page</a> still reach a real
+        person.
+      </p>
+
+      <h2>How we work</h2>
+      <p>
+        Numbers, splits and pacing targets come from the official Hyrox rules
+        and results data, peer-reviewed research, or our own logged training
+        and racing. Where a specific product hasn't been used by us, we say
+        so or don't list it. The full editorial standards live on the
+        <a href="/methodology/">methodology page</a>.
       </p>
     </section>
 
-    {authorPosts.length > 0 && (
+    {teamPosts.length > 0 && (
       <section class="mt-16 pt-10 border-t border-border">
         <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">
           Articles by {author.firstName}
         </h2>
         <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {authorPosts.map((post) => <PostCard post={post} variant="default" />)}
+          {teamPosts.map((post) => <PostCard post={post} variant="default" />)}
         </div>
       </section>
     )}
   </div>
 
-  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} slot="head" />
+  <script type="application/ld+json" set:html={JSON.stringify(organizationLd)} slot="head" />
 </BaseLayout>

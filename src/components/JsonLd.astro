@@ -39,6 +39,10 @@ if (type === "WebSite") {
     description,
   };
 } else if (type === "Article") {
+  // HyroxVault publishes anonymously under a single editorial-team byline.
+  // Article author is therefore an Organization, not a Person — this matches
+  // the visible byline at /author/editorial-team/ and avoids Google's entity
+  // reconciliation looking for a Person profile that doesn't exist.
   schema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -46,8 +50,9 @@ if (type === "WebSite") {
     description,
     url: canonicalUrl,
     author: {
-      "@type": "Person",
-      name: author,
+      "@type": "Organization",
+      name: "HyroxVault Editorial Team",
+      url: new URL("/author/editorial-team/", Astro.site).toString(),
     },
     publisher: {
       "@type": "Organization",
