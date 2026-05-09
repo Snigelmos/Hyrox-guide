@@ -1,0 +1,298 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LiveAthleteFinder from "../components/LiveAthleteFinder";
+import {
+  buildResultsHyroxUrl,
+  getActiveEventsOn,
+  liveEventDayLabel,
+} from "../lib/hyrox-live";
+import { EVENTS, formatEventDate } from "../data/events";
+import { STATIONS } from "../data/stations";
+
+const now = new Date();
+const activeEvents = getActiveEventsOn(now);
+
+// Project HyroxEvents into the lightweight shape the React island needs.
+const finderEvents = activeEvents.map((event) => ({
+  slug: event.slug,
+  year: event.year,
+  city: event.city,
+  country: event.country,
+  searchUrl: buildResultsHyroxUrl(event),
+}));
+
+const breadcrumbs = [{ name: "Live Race Tracker" }];
+
+const title = activeEvents.length
+  ? `Hyrox Live Race Tracker — Follow ${activeEvents.map((e) => e.city).join(" + ")} Today | HyroxVault`
+  : "Hyrox Live Race Tracker — Follow Any Athlete Across the 8 Stations | HyroxVault";
+
+const description = activeEvents.length
+  ? `Follow any Hyrox athlete live across all 8 stations. ${activeEvents.map((e) => `Hyrox ${e.city}`).join(" and ")} are running right now — search by name or bib number and we'll deep-link you straight to the official results portal.`
+  : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, save a watchlist for race weekend, and jump straight to the official Hyrox live results.";
+
+const faqItems = [
+  {
+    question: "How does the Hyrox live tracker work?",
+    answer:
+      "Pick a race that's currently running, type the athlete's name or bib number, and we open the official Hyrox results portal in a new tab with your search query copied to the clipboard. Paste it into the search box and you'll see splits update station-by-station as the athlete moves through the course.",
+  },
+  {
+    question: "Where does the live data come from?",
+    answer:
+      "All splits are pulled from the official Hyrox results portal at results.hyrox.com, which is the timing system Hyrox uses on race day. Hyrox does not currently publish a public live-data API, so we link directly to that portal rather than relabel their data.",
+  },
+  {
+    question: "How fast do splits update during a race?",
+    answer:
+      "Splits appear within a few seconds of an athlete crossing each station's timing mat. Refresh the official results tab between stations to see the latest splits — the page is fast enough that a refresh every 30-60 seconds is enough.",
+  },
+  {
+    question: "How do I find my friend's bib (start) number?",
+    answer:
+      "If you can't remember the bib, search by last name instead. The portal lists matching athletes with their division and start number — pick the right one and you can switch to bib search after that.",
+  },
+  {
+    question: "Which Hyrox events can I track here?",
+    answer:
+      "Any Hyrox race that's currently in progress on our 2026 calendar shows up at the top of this page automatically on race day. Outside race weekends the tracker waits — we don't show fake live data for races that aren't actually running.",
+  },
+  {
+    question: "Does this work on mobile?",
+    answer:
+      "Yes. The watchlist saves locally on the device you're using, so a phone in the venue and a laptop at home each keep their own list. Pop-ups need to be allowed for the new-tab open to work.",
+  },
+];
+
+const lastUpdated = "May 9, 2026";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="website"
+  schemaType="FAQPage"
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li>
+          <a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-text-muted/40">/</span>
+          <span class="text-text">Live Race Tracker</span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10 pb-8 border-b border-border">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        {activeEvents.length > 0 ? (
+          <span class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {activeEvents.length === 1
+              ? `1 race live now`
+              : `${activeEvents.length} races live now`}
+          </span>
+        ) : (
+          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
+            No race running right now
+          </span>
+        )}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+        Hyrox Live Race Tracker
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        Follow any athlete across the 8 stations and 8 km of running on race
+        day. Search by name or bib, build a watchlist for the weekend, and we
+        deep-link you straight to the official Hyrox live results portal.
+      </p>
+    </header>
+
+    {activeEvents.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+          Live right now
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {activeEvents.map((event) => (
+            <article class="relative bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                  {liveEventDayLabel(event, now)}
+                </span>
+              </div>
+              <h3 class="text-xl font-black text-text-heading leading-tight">
+                Hyrox {event.city}
+              </h3>
+              <p class="mt-1 text-sm text-text-muted">
+                {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <a
+                  href={`/events/${event.year}/${event.slug}/`}
+                  class="text-xs font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-3 py-1 hover:border-accent/40 transition-colors no-underline"
+                >
+                  Event guide →
+                </a>
+                <a
+                  href={buildResultsHyroxUrl(event)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 hover:bg-emerald-500/20 transition-colors no-underline"
+                >
+                  Official results ↗
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-12">
+      <div class="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
+            Track an athlete
+          </h2>
+          <p class="text-text-muted mb-5 max-w-2xl">
+            {activeEvents.length > 0
+              ? "Pick the race, drop the athlete's name (last name is enough) or bib number, and hit Track. We'll copy your query and open the official live results so you can paste straight into the search box."
+              : "The tracker activates the moment a race goes live. While you wait, save searches to your watchlist — they'll be ready to fire when timing opens."}
+          </p>
+          <LiveAthleteFinder
+            client:load
+            events={finderEvents}
+          />
+        </div>
+
+        <aside class="bg-bg-card border border-border rounded-2xl p-5 md:p-6">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-accent mb-3">
+            How to read the splits
+          </h3>
+          <ul class="space-y-3 text-sm text-text leading-relaxed">
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">1</span>
+              <span>
+                <strong class="text-text-heading">Run splits</strong> are the 1
+                km between stations. A 5:15-5:45/km pace is a competitive
+                Open finish; 4:00-4:30/km is elite Pro.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">2</span>
+              <span>
+                <strong class="text-text-heading">Station splits</strong>
+                include transition time. The sleds are usually the slowest
+                station, wall balls the most variable.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">3</span>
+              <span>
+                <strong class="text-text-heading">Cumulative time</strong> is
+                the elapsed clock since the start gun for that wave — not the
+                clock on the venue scoreboard.
+              </span>
+            </li>
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">4</span>
+              <span>
+                <strong class="text-text-heading">Rank</strong> on the live
+                page is provisional — final rankings are confirmed once the
+                division closes.
+              </span>
+            </li>
+          </ul>
+          <p class="mt-4 text-xs text-text-muted leading-relaxed">
+            Use the <a href="/calculator/" class="text-accent hover:underline">time calculator</a> to predict where their final split lands based on the splits you've already seen.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
+        The 8 stations they'll race
+      </h2>
+      <p class="text-text-muted mb-6 max-w-2xl">
+        Every Hyrox runs the same 8 functional stations in the same order,
+        sandwiched between 1 km runs. Knowing the order lets you predict
+        exactly when an athlete will appear on the next split.
+      </p>
+      <ol class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {STATIONS.map((station) => (
+          <li class="bg-bg-card border border-border rounded-xl p-4 hover:border-accent/30 transition-colors">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-accent/10 border border-accent/25 text-accent text-xs font-black">
+                {station.position}
+              </span>
+              <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+                Station
+              </span>
+            </div>
+            <h3 class="text-base font-black text-text-heading leading-tight">
+              <a href={`/stations/${station.slug}/standards/`} class="hover:text-accent transition-colors no-underline">
+                {station.name}
+              </a>
+            </h3>
+            <p class="mt-1 text-xs text-text-muted">
+              {station.distance ?? station.reps ?? "Functional station"}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+        Frequently asked
+      </h2>
+      <div class="space-y-3">
+        {faqItems.map((item) => (
+          <details class="group bg-bg-card border border-border rounded-xl overflow-hidden">
+            <summary class="cursor-pointer flex items-center justify-between gap-4 px-5 py-4 hover:bg-bg-card-hover transition-colors">
+              <span class="text-sm md:text-base font-bold text-text-heading">{item.question}</span>
+              <svg class="w-4 h-4 text-text-muted transition-transform group-open:rotate-180 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-4 -mt-1 text-sm text-text-muted leading-relaxed">
+              {item.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="prose md:prose-lg max-w-none">
+      <h2>Spectating Hyrox: a one-page primer</h2>
+      <p>
+        Hyrox waves go off every 8-10 minutes through race day. A typical
+        Open finisher is on the floor for 1 hour 10 minutes to 1 hour 30
+        minutes, so if you're tracking from home you can usually catch the
+        whole race in one sitting. Pro and Elite waves run faster — sub-60
+        finishes are normal at the front.
+      </p>
+      <p>
+        The single best signal for "how is my athlete actually doing" is
+        their <strong>SkiErg + Run 1 + Sled Push</strong> total. If those
+        first three splits are on plan, the rest of the race almost always
+        is too. If they blow Sled Push, expect Burpee Broad Jumps and Wall
+        Balls to suffer the most.
+      </p>
+      <ul>
+        <li>Save a few athletes (yourself, training partners, pros) to the watchlist so you can flip between them between stations.</li>
+        <li>Use the <a href="/calculator/">time calculator</a> to project a finish from the splits you see.</li>
+        <li>Browse our <a href="/events/2026/">2026 events calendar</a> for what's coming up next.</li>
+      </ul>
+      <p class="text-sm text-text-muted">Last updated {lastUpdated}.</p>
+    </section>
+  </div>
+</BaseLayout>

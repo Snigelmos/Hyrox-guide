@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LiveAthleteFinder from "../../../components/LiveAthleteFinder";
 import {
   EVENTS,
   allEventPaths,
@@ -10,6 +11,11 @@ import {
   type HyroxEvent,
 } from "../../../data/events";
 import { getResults } from "../../../data/event-results";
+import {
+  buildResultsHyroxUrl,
+  isEventLiveNow,
+  liveEventDayLabel,
+} from "../../../lib/hyrox-live";
 
 export async function getStaticPaths() {
   const activePaths = allEventPaths().map(({ year, slug }) => ({
@@ -51,7 +57,23 @@ const event: HyroxEvent | null =
     ? EVENTS.find((e) => e.year === props.year && e.slug === props.slug) ?? null
     : null;
 const isPast = event ? isPastEvent(event) : false;
+const isLiveNow = event ? isEventLiveNow(event) : false;
 const raceResults = event ? getResults(event.year, event.slug) : null;
+
+// Lightweight projection passed to the React island so it doesn't import the
+// full HyroxEvent shape. Only used when the event is currently live.
+const finderEvents = event && isLiveNow
+  ? [
+      {
+        slug: event.slug,
+        year: event.year,
+        city: event.city,
+        country: event.country,
+        searchUrl: buildResultsHyroxUrl(event),
+      },
+    ]
+  : [];
+const liveDayLabel = event && isLiveNow ? liveEventDayLabel(event) : "";
 
 // Shared values for layout
 const year = props.year;
@@ -292,6 +314,16 @@ const explainerFaqItems = explainer
             </a>
           )}
         </div>
+      ) : isLiveNow ? (
+        <div class="mt-6 flex flex-wrap gap-3 items-center">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Race live now · {liveDayLabel}
+          </div>
+          <a href="#live-tracker" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent bg-accent/10 border border-accent/25 rounded-full px-4 py-1.5 hover:bg-accent/20 transition-colors no-underline uppercase tracking-wider">
+            Track an athlete ↓
+          </a>
+        </div>
       ) : event.confirmed ? (
         <div class="mt-6 inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -303,6 +335,30 @@ const explainerFaqItems = explainer
         </div>
       )}
     </header>
+
+    {isLiveNow && (
+      <section id="live-tracker" class="mb-10 pb-10 border-b border-border scroll-mt-24">
+        <div class="flex items-baseline justify-between flex-wrap gap-2 mb-3">
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading">
+            Track an athlete live
+          </h2>
+          <a href="/live/" class="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-accent transition-colors no-underline">
+            Open full tracker hub →
+          </a>
+        </div>
+        <p class="text-text-muted mb-5 max-w-2xl">
+          Hyrox {event.city} {year} is on the floor right now. Drop in a name
+          (last name is enough) or bib number and we'll deep-link you to the
+          official live results so you can watch splits land station-by-station.
+        </p>
+        <LiveAthleteFinder
+          client:load
+          events={finderEvents}
+          pinnedEventSlug={event.slug}
+          showWatchlist={false}
+        />
+      </section>
+    )}
 
     <section class="prose md:prose-lg max-w-none">
       <p>

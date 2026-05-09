@@ -14,7 +14,8 @@ export type NavIcon =
   | "map"
   | "gauge"
   | "post"
-  | "trophy";
+  | "trophy"
+  | "stopwatch";
 
 export interface NavItem {
   /** Short label used in the header and hero grid. */
@@ -48,6 +49,17 @@ export const primaryNav: NavItem[] = [
     cta: "Read the Guide",
     badge: "Start Here",
     badgeColor: "text-accent bg-accent/10 border-accent/20",
+  },
+  {
+    label: "Live",
+    href: "/live/",
+    icon: "stopwatch",
+    iconColor: "text-emerald-400",
+    description:
+      "Follow any athlete live across the 8 stations during an active Hyrox race weekend.",
+    cta: "Track an Athlete",
+    badge: "Race Day",
+    badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
   },
   {
     label: "Training",
