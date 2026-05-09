@@ -111,6 +111,73 @@ export interface WatchlistEntry {
   query: string;
   /** Epoch ms when the entry was added. */
   addedAt: number;
+  /**
+   * Mika timing's athlete ID. Present on entries created since the on-page
+   * dashboard shipped — older entries fall back to the deep-link launcher.
+   */
+  idp?: string;
+  /** Mika timing's event-and-division ID (e.g. HPRO_LR3MS4JI15A6). */
+  event?: string;
+  /** Friendly division label inferred from the event-id prefix. */
+  divisionLabel?: string;
+}
+
+/** A single match returned by `/api/live/search`. */
+export interface LiveMatch {
+  idp: string;
+  event: string;
+  name: string;
+  country: string | null;
+  ageGroup: string | null;
+  totalTime: string | null;
+  divisionLabel: string | null;
+  detailUrl: string;
+}
+
+/** One row in the splits table — either a 1 km run or a station. */
+export interface LiveSplit {
+  kind: "run" | "station";
+  index: number;
+  label: string;
+  time: string;
+  place: number | null;
+}
+
+/** Full snapshot returned by `/api/live/athlete`. */
+export interface LiveAthleteSnapshot {
+  athlete: {
+    name: string;
+    bib: string | null;
+    country: string | null;
+    ageGroup: string | null;
+    division: string | null;
+    race: string | null;
+  };
+  splits: LiveSplit[];
+  totalTime: string | null;
+  rankOverall: number | null;
+  rankAge: number | null;
+  isFinished: boolean;
+  fetchedAt: string;
+  source: string;
+}
+
+/** Convert "HH:MM:SS" → seconds. Returns 0 on bad input. */
+export function timeStringToSeconds(t: string | null | undefined): number {
+  if (!t) return 0;
+  const m = /^(\d{1,2}):(\d{2}):(\d{2})$/.exec(t.trim());
+  if (!m) return 0;
+  return parseInt(m[1], 10) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10);
+}
+
+/** Convert seconds → "H:MM:SS" or "MM:SS" depending on size. */
+export function secondsToTimeString(sec: number): string {
+  if (!isFinite(sec) || sec <= 0) return "—";
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
 export const WATCHLIST_STORAGE_KEY = "hyroxvault.live.watchlist";

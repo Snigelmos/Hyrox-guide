@@ -5,36 +5,41 @@ import {
   upsertWatchlist,
   removeFromWatchlist,
   type LiveSearchType,
+  type LiveMatch,
   type WatchlistEntry,
 } from "../lib/hyrox-live";
+import LiveAthleteDashboard from "./LiveAthleteDashboard";
 
-/**
- * Lightweight projection of HyroxEvent that the page passes in. We
- * intentionally do not import HyroxEvent itself so the component stays
- * decoupled from the events dataset shape.
- */
 export interface LiveEventOption {
   slug: string;
   year: number;
   city: string;
   country: string;
-  /** Pre-built results.hyrox.com deep link for this event's season. */
+  /** Pre-built results.hyrox.com search-page URL (fallback for legacy entries). */
   searchUrl: string;
 }
 
 interface Props {
-  /** Events the user can choose between. The first entry is the default. */
   events: LiveEventOption[];
-  /**
-   * If supplied, the picker is hidden and the form is pinned to this slug.
-   * Use this when the component is embedded on a single-event page.
-   */
   pinnedEventSlug?: string;
-  /** Show the saved-searches list under the form. Defaults to true. */
   showWatchlist?: boolean;
-  /** Optional Tailwind class merged into the outer container. */
   className?: string;
 }
+
+type ViewState =
+  | { kind: "form" }
+  | { kind: "loading"; query: string; type: LiveSearchType }
+  | { kind: "matches"; query: string; type: LiveSearchType; matches: LiveMatch[] }
+  | {
+      kind: "dashboard";
+      idp: string;
+      event: string;
+      name: string;
+      raceLabel?: string;
+      previousMatches?: LiveMatch[];
+      previousQuery?: string;
+      previousType?: LiveSearchType;
+    };
 
 const STATION_NAMES = [
   "SkiErg",
@@ -66,8 +71,9 @@ export default function LiveAthleteFinder({
   const [searchType, setSearchType] = useState<LiveSearchType>("name");
   const [query, setQuery] = useState("");
   const [watchlist, setWatchlist] = useState<WatchlistEntry[]>([]);
-  const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [view, setView] = useState<ViewState>({ kind: "form" });
 
   useEffect(() => {
     setSelectedSlug(initialSlug);
@@ -80,7 +86,7 @@ export default function LiveAthleteFinder({
       const parsed = JSON.parse(raw) as WatchlistEntry[];
       if (Array.isArray(parsed)) setWatchlist(parsed.slice(0, WATCHLIST_CAP));
     } catch {
-      // Ignore corrupted storage and start fresh.
+      /* ignore corrupt storage */
     }
   }, []);
 
@@ -89,7 +95,7 @@ export default function LiveAthleteFinder({
     try {
       window.localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(next));
     } catch {
-      // Quota exceeded or storage unavailable — UI still works for this session.
+      /* ignore quota errors */
     }
   }
 
@@ -100,61 +106,16 @@ export default function LiveAthleteFinder({
 
   const hasNoEvents = events.length === 0;
 
-  async function copyToClipboard(text: string): Promise<boolean> {
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-        return true;
-      }
-    } catch {
-      // Fall through to legacy fallback.
-    }
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-
-  async function openTracker(entry: WatchlistEntry, url: string) {
-    const copied = await copyToClipboard(entry.query);
-    const win = window.open(url, "_blank", "noopener,noreferrer");
-    if (!win) {
-      setError(
-        "Pop-up was blocked. Allow pop-ups for hyroxvault.com or open the link below manually.",
-      );
-      return;
-    }
-    setError(null);
-    setFeedback(
-      copied
-        ? `${entry.query} copied — paste with ${navigator?.platform?.toLowerCase().includes("mac") ? "Cmd+V" : "Ctrl+V"} into the search box.`
-        : `Search opened — type "${entry.query}" into the search box on the new tab.`,
-    );
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setFeedback(null);
 
-    if (!selectedEvent) {
-      setError("Pick an active event to start tracking.");
-      return;
-    }
     const trimmed = query.trim();
     if (!trimmed) {
       setError(
         searchType === "name"
-          ? "Enter the athlete's last name (or full name)."
+          ? "Enter the athlete's last name."
           : "Enter the bib (start) number.",
       );
       return;
@@ -164,164 +125,341 @@ export default function LiveAthleteFinder({
       return;
     }
 
+    setView({ kind: "loading", query: trimmed, type: searchType });
+    try {
+      const res = await fetch(
+        `/api/live/search?q=${encodeURIComponent(trimmed)}&type=${searchType}`,
+        { cache: "no-store" },
+      );
+      if (!res.ok) {
+        await fallbackToDeepLink(trimmed);
+        return;
+      }
+      const data = (await res.json()) as { matches: LiveMatch[] };
+      const matches = data.matches ?? [];
+      if (matches.length === 0) {
+        setError(
+          `No matches for "${trimmed}". Check spelling or try the surname only. The official portal opens with your query in the clipboard.`,
+        );
+        await fallbackToDeepLink(trimmed);
+        return;
+      }
+      if (matches.length === 1) {
+        const m = matches[0];
+        openDashboard(m, { matches, query: trimmed, type: searchType });
+        return;
+      }
+      setView({ kind: "matches", query: trimmed, type: searchType, matches });
+    } catch {
+      await fallbackToDeepLink(trimmed);
+    }
+  }
+
+  async function fallbackToDeepLink(q: string) {
+    setView({ kind: "form" });
+    if (!selectedEvent) {
+      setError("Pick an active event first.");
+      return;
+    }
+    let copied = false;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(q);
+        copied = true;
+      }
+    } catch {
+      /* ignore */
+    }
+    const win = window.open(selectedEvent.searchUrl, "_blank", "noopener,noreferrer");
+    if (!win) {
+      setError("Pop-up blocked. Allow pop-ups, or open results.hyrox.com directly.");
+    } else {
+      setFeedback(
+        copied
+          ? `Live tracker is offline — opened the official portal with "${q}" copied to clipboard.`
+          : `Live tracker is offline — opened the official portal. Search "${q}" there.`,
+      );
+    }
+  }
+
+  function openDashboard(
+    match: LiveMatch,
+    fromMatches?: { matches: LiveMatch[]; query: string; type: LiveSearchType },
+  ) {
+    if (!selectedEvent) return;
     const entry: WatchlistEntry = {
       eventSlug: selectedEvent.slug,
       year: selectedEvent.year,
       eventCity: selectedEvent.city,
-      type: searchType,
-      query: trimmed,
+      type: "name",
+      query: match.name,
       addedAt: Date.now(),
+      idp: match.idp,
+      event: match.event,
+      divisionLabel: match.divisionLabel ?? undefined,
     };
     persist(upsertWatchlist(watchlist, entry));
-    await openTracker(entry, selectedEvent.searchUrl);
+    setView({
+      kind: "dashboard",
+      idp: match.idp,
+      event: match.event,
+      name: match.name,
+      raceLabel: selectedEvent ? `Hyrox ${selectedEvent.city} ${selectedEvent.year}` : undefined,
+      previousMatches: fromMatches?.matches,
+      previousQuery: fromMatches?.query,
+      previousType: fromMatches?.type,
+    });
   }
 
   function handleReopen(entry: WatchlistEntry) {
-    const event = events.find((e) => e.slug === entry.eventSlug);
-    if (!event) {
-      setError(
-        `${entry.eventCity} is no longer in the active events list. Open the official portal directly.`,
-      );
+    if (entry.idp && entry.event) {
+      persist(upsertWatchlist(watchlist, { ...entry, addedAt: Date.now() }));
+      setView({
+        kind: "dashboard",
+        idp: entry.idp,
+        event: entry.event,
+        name: entry.query,
+        raceLabel: `Hyrox ${entry.eventCity} ${entry.year}`,
+      });
       return;
     }
-    const refreshed: WatchlistEntry = { ...entry, addedAt: Date.now() };
-    persist(upsertWatchlist(watchlist, refreshed));
-    void openTracker(refreshed, event.searchUrl);
+    // Legacy entry without idp/event — re-trigger the search to land on dashboard.
+    setQuery(entry.query);
+    setSearchType(entry.type);
+    setError(null);
+    setFeedback("Re-running the search to switch to the live dashboard…");
+    setTimeout(() => {
+      const formEl = document.querySelector("form[data-live-finder]") as HTMLFormElement | null;
+      formEl?.requestSubmit();
+    }, 50);
   }
 
   function handleRemove(entry: WatchlistEntry) {
     persist(removeFromWatchlist(watchlist, entry));
   }
 
+  function backToMatches() {
+    if (view.kind !== "dashboard" || !view.previousMatches) {
+      setView({ kind: "form" });
+      return;
+    }
+    setView({
+      kind: "matches",
+      matches: view.previousMatches,
+      query: view.previousQuery ?? "",
+      type: view.previousType ?? "name",
+    });
+  }
+
   return (
     <div className={`bg-bg-card border border-border rounded-2xl p-5 md:p-6 ${className}`}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {!pinnedEvent && events.length > 0 && (
-          <label className="block">
-            <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-              Active event
-            </span>
-            <select
-              value={selectedSlug}
-              onChange={(e) => setSelectedSlug(e.target.value)}
-              className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-text font-medium focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
-              aria-label="Choose the live event to track"
-            >
-              {events.map((e) => (
-                <option key={`${e.year}-${e.slug}`} value={e.slug}>
-                  Hyrox {e.city} {e.year}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        {pinnedEvent && (
-          <div className="flex items-center gap-2 text-xs text-text-muted">
-            <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Live now
-            </span>
-            <span>
-              Tracking <strong className="text-text">Hyrox {pinnedEvent.city} {pinnedEvent.year}</strong>
-            </span>
-          </div>
-        )}
-
-        <fieldset>
-          <legend className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-            Search by
-          </legend>
-          <div className="inline-flex bg-bg border border-border rounded-lg p-0.5" role="radiogroup">
+      {view.kind === "dashboard" ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="text-xs text-text-muted">
+              Tracking <strong className="text-text">{view.name}</strong>
+              {view.raceLabel && <> at {view.raceLabel}</>}
+            </div>
             <button
               type="button"
-              role="radio"
-              aria-checked={searchType === "name"}
-              onClick={() => setSearchType("name")}
-              className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
-                searchType === "name"
-                  ? "bg-accent text-bg"
-                  : "text-text-muted hover:text-text"
-              }`}
+              onClick={backToMatches}
+              className="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-accent border border-border hover:border-accent/40 rounded-full px-3 py-1.5"
             >
-              Name
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={searchType === "bib"}
-              onClick={() => setSearchType("bib")}
-              className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
-                searchType === "bib"
-                  ? "bg-accent text-bg"
-                  : "text-text-muted hover:text-text"
-              }`}
-            >
-              Bib number
+              ← {view.previousMatches ? "Back to results" : "New search"}
             </button>
           </div>
-        </fieldset>
+          <LiveAthleteDashboard
+            idp={view.idp}
+            event={view.event}
+            raceLabel={view.raceLabel}
+            onClose={backToMatches}
+          />
+        </div>
+      ) : (
+        <>
+          <form
+            data-live-finder
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
+            {!pinnedEvent && events.length > 0 && (
+              <label className="block">
+                <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
+                  Active event
+                </span>
+                <select
+                  value={selectedSlug}
+                  onChange={(e) => setSelectedSlug(e.target.value)}
+                  className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-text font-medium focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                  aria-label="Choose the live event to track"
+                >
+                  {events.map((e) => (
+                    <option key={`${e.year}-${e.slug}`} value={e.slug}>
+                      Hyrox {e.city} {e.year}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
-        <label className="block">
-          <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-            {searchType === "name" ? "Athlete name" : "Start (bib) number"}
-          </span>
-          <div className="flex gap-2">
-            <input
-              type={searchType === "bib" ? "text" : "text"}
-              inputMode={searchType === "bib" ? "numeric" : "text"}
-              pattern={searchType === "bib" ? "[0-9]*" : undefined}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={
-                searchType === "name"
-                  ? "e.g. Stahl, or Hunter McIntyre"
-                  : "e.g. 1234"
-              }
-              className="flex-1 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button
-              type="submit"
-              disabled={hasNoEvents}
-              className="inline-flex items-center gap-2 bg-accent text-bg font-bold px-5 py-2.5 rounded-lg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Track
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-          </div>
-        </label>
+            {pinnedEvent && (
+              <div className="flex items-center gap-2 text-xs text-text-muted">
+                <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live now
+                </span>
+                <span>
+                  Tracking <strong className="text-text">Hyrox {pinnedEvent.city} {pinnedEvent.year}</strong>
+                </span>
+              </div>
+            )}
 
-        {hasNoEvents && (
-          <p className="text-sm text-text-muted">
-            No Hyrox races are running right now. The tracker re-activates the moment an event goes live.
-          </p>
-        )}
+            <fieldset>
+              <legend className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
+                Search by
+              </legend>
+              <div className="inline-flex bg-bg border border-border rounded-lg p-0.5" role="radiogroup">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={searchType === "name"}
+                  onClick={() => setSearchType("name")}
+                  className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
+                    searchType === "name"
+                      ? "bg-accent text-bg"
+                      : "text-text-muted hover:text-text"
+                  }`}
+                >
+                  Name
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={searchType === "bib"}
+                  onClick={() => setSearchType("bib")}
+                  className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
+                    searchType === "bib"
+                      ? "bg-accent text-bg"
+                      : "text-text-muted hover:text-text"
+                  }`}
+                >
+                  Bib number
+                </button>
+              </div>
+            </fieldset>
 
-        {error && (
-          <div className="text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg px-3 py-2">
-            {error}
-          </div>
-        )}
+            <label className="block">
+              <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
+                {searchType === "name" ? "Athlete name (last name works)" : "Start (bib) number"}
+              </span>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  inputMode={searchType === "bib" ? "numeric" : "text"}
+                  pattern={searchType === "bib" ? "[0-9]*" : undefined}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={
+                    searchType === "name" ? "e.g. Emilsson" : "e.g. 124001"
+                  }
+                  className="flex-1 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <button
+                  type="submit"
+                  disabled={hasNoEvents || view.kind === "loading"}
+                  className="inline-flex items-center gap-2 bg-accent text-bg font-bold px-5 py-2.5 rounded-lg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  {view.kind === "loading" ? (
+                    <>
+                      <Spinner /> Searching
+                    </>
+                  ) : (
+                    <>
+                      Track
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </div>
+            </label>
 
-        {feedback && !error && (
-          <div className="text-sm bg-accent/10 border border-accent/30 text-accent rounded-lg px-3 py-2">
-            {feedback}
-          </div>
-        )}
+            {hasNoEvents && (
+              <p className="text-sm text-text-muted">
+                No Hyrox races are running right now. The tracker re-activates the moment an event goes live.
+              </p>
+            )}
 
-        <p className="text-xs text-text-muted leading-relaxed">
-          Splits land on the official Hyrox portal (results.hyrox.com). We open
-          the search page in a new tab and copy your query so you can paste
-          straight into Hyrox's search box. Refresh that tab between stations
-          to see new splits.
-        </p>
-      </form>
+            {error && (
+              <div className="text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
 
-      {showWatchlist && watchlist.length > 0 && (
+            {feedback && !error && (
+              <div className="text-sm bg-accent/10 border border-accent/30 text-accent rounded-lg px-3 py-2">
+                {feedback}
+              </div>
+            )}
+          </form>
+
+          {view.kind === "matches" && (
+            <div className="mt-5 pt-4 border-t border-border">
+              <div className="flex items-baseline justify-between mb-3">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-text-muted">
+                  {view.matches.length} match{view.matches.length === 1 ? "" : "es"} for "{view.query}"
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setView({ kind: "form" })}
+                  className="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-accent transition-colors"
+                >
+                  ← New search
+                </button>
+              </div>
+              <ul className="space-y-2">
+                {view.matches.map((m) => (
+                  <li key={`${m.idp}-${m.event}`}>
+                    <button
+                      type="button"
+                      onClick={() => openDashboard(m, view as { matches: LiveMatch[]; query: string; type: LiveSearchType })}
+                      className="w-full text-left bg-bg border border-border hover:border-accent/40 hover:bg-bg-card rounded-lg px-3 py-2.5 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <div className="font-bold text-text-heading truncate">
+                            {m.name}
+                          </div>
+                          <div className="text-xs text-text-muted">
+                            {[m.divisionLabel, m.country, m.ageGroup ? `AG ${m.ageGroup}` : null]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {m.totalTime && (
+                            <span className="text-xs font-mono font-bold text-text-muted bg-bg-card border border-border rounded-full px-2 py-0.5">
+                              {m.totalTime}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold uppercase tracking-wider text-accent">
+                            Watch live →
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+
+      {showWatchlist && watchlist.length > 0 && view.kind !== "dashboard" && (
         <div className="mt-6 pt-5 border-t border-border">
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-sm font-bold uppercase tracking-wider text-text-muted">
@@ -333,14 +471,10 @@ export default function LiveAthleteFinder({
           </div>
           <ul className="space-y-2">
             {watchlist.map((entry) => {
-              const event = events.find((e) => e.slug === entry.eventSlug);
-              const eventLabel = event
-                ? `Hyrox ${event.city} ${event.year}`
-                : `Hyrox ${entry.eventCity} ${entry.year}`;
-              const isLive = Boolean(event);
+              const isLiveable = Boolean(entry.idp && entry.event);
               return (
                 <li
-                  key={`${entry.eventSlug}-${entry.type}-${entry.query}`}
+                  key={`${entry.eventSlug}-${entry.type}-${entry.query}-${entry.addedAt}`}
                   className="flex items-center gap-3 bg-bg border border-border rounded-lg px-3 py-2.5"
                 >
                   <div className="min-w-0 flex-1">
@@ -348,29 +482,26 @@ export default function LiveAthleteFinder({
                       <span className="font-bold text-text-heading truncate">
                         {entry.query}
                       </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-1.5 py-0.5">
-                        {entry.type === "bib" ? "Bib" : "Name"}
-                      </span>
-                      {isLive && (
+                      {entry.divisionLabel && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-1.5 py-0.5">
+                          {entry.divisionLabel}
+                        </span>
+                      )}
+                      {isLiveable && (
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
-                          Live
+                          Live tracker
                         </span>
                       )}
                     </div>
                     <div className="text-xs text-text-muted truncate">
-                      {eventLabel} · added {formatRelative(entry.addedAt)}
+                      Hyrox {entry.eventCity} {entry.year} · added {formatRelative(entry.addedAt)}
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleReopen(entry)}
-                    disabled={!isLive}
-                    className="text-xs font-bold text-accent hover:bg-accent/10 disabled:opacity-30 disabled:cursor-not-allowed border border-accent/30 rounded-md px-2.5 py-1.5"
-                    title={
-                      isLive
-                        ? "Reopen the official tracker for this athlete"
-                        : "This event is no longer live"
-                    }
+                    className="text-xs font-bold text-accent hover:bg-accent/10 border border-accent/30 rounded-md px-2.5 py-1.5"
+                    title="Open the live dashboard for this athlete"
                   >
                     Open
                   </button>
@@ -391,10 +522,10 @@ export default function LiveAthleteFinder({
         </div>
       )}
 
-      {showWatchlist && (
+      {showWatchlist && view.kind !== "dashboard" && (
         <details className="mt-6 pt-4 border-t border-border group">
           <summary className="cursor-pointer text-xs font-bold uppercase tracking-wider text-text-muted hover:text-text">
-            What you'll see on Hyrox's tracker
+            What you'll see on the dashboard
           </summary>
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
             {STATION_NAMES.map((name, i) => (
@@ -407,13 +538,22 @@ export default function LiveAthleteFinder({
             ))}
           </div>
           <p className="mt-3 text-xs text-text-muted leading-relaxed">
-            Hyrox tracks each station as the athlete enters and leaves the box,
-            with a 1 km run between every station. Splits update on the
-            official portal within seconds of the timing mat being crossed.
+            We pull splits from the official Hyrox results portal every 30 seconds.
+            Cards fill in as the athlete completes each station, with their place
+            in the division if Hyrox has published it.
           </p>
         </details>
       )}
     </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+    </svg>
   );
 }
 
