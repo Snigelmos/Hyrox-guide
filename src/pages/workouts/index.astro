@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import WorkoutLibrary from "../../components/WorkoutLibrary.astro";
 import { WORKOUTS } from "../../data/workouts";
+import { LIBRARY_TOTAL_WORKOUTS } from "../../data/workout-library";
 
-const title = "Hyrox Benchmark Workouts and Race-Pace Tests";
-const description = "Named Hyrox benchmark workouts and simulations: Compromised Running, race-pace tests, and full-distance simulations. Each with scoring and how to use them in your prep.";
+const title = "Hyrox Workouts — Benchmarks, Simulations, and Session Library";
+const description = `Named Hyrox benchmarks plus a ${LIBRARY_TOTAL_WORKOUTS}-session training library: full simulations, race-pace intervals, station drills, strength, and conditioning. All levels.`;
 const breadcrumbs = [{ name: "Workouts" }];
 ---
 
@@ -34,42 +36,20 @@ const breadcrumbs = [{ name: "Workouts" }];
       </p>
     </header>
 
-    <a
-      href="/training/workouts/"
-      class="group block mb-10 bg-bg-card border-2 border-accent/20 rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-    >
-      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
-            New workout library
-          </div>
-          <h2 class="text-2xl font-black text-text-heading mb-2 group-hover:text-accent transition-colors">
-            23 Hyrox-Specific & General Training Sessions
-          </h2>
-          <p class="text-sm text-text-muted leading-relaxed max-w-2xl">
-            Browse full simulations, Norwegian 4×4 intervals, compromised running, station drills, and CrossFit-inspired conditioning workouts.
-          </p>
-        </div>
-        <div class="flex items-center gap-1 text-sm font-semibold text-accent flex-shrink-0">
-          Open Training Library
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </div>
-    </a>
-
-    <section class="grid gap-4 md:grid-cols-2">
+    <section aria-labelledby="benchmarks-heading" class="grid gap-4 md:grid-cols-2">
+      <h2 id="benchmarks-heading" class="sr-only">Named benchmark workouts</h2>
       {WORKOUTS.map((w) => (
         <a
           href={`/workouts/${w.slug}/`}
           class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
         >
           <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{w.durationLabel}</div>
-          <h2 class="text-xl font-black text-text-heading mb-2">{w.name}</h2>
+          <h3 class="text-xl font-black text-text-heading mb-2">{w.name}</h3>
           <p class="text-sm text-text-muted leading-relaxed">{w.shortDescription}</p>
         </a>
       ))}
     </section>
+
+    <WorkoutLibrary />
   </div>
 </BaseLayout>

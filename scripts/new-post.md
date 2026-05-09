@@ -95,7 +95,7 @@ Pick from these pages that actually exist. Link inline with descriptive anchor t
 - /training/advanced/                        — Advanced training
 - /training/running/                         — Running programming
 - /training/stations/                        — Station training
-- /training/workouts/                        — Workouts library
+- /workouts/                                 — Workouts library
 - /gear/shoes/                               — Shoe recommendations
 - /gear/clothing/                            — Apparel
 - /gear/accessories/                         — Gloves / grip aids

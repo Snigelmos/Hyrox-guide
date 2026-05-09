@@ -1,16 +1,54 @@
----
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import TrainingIcons from "../../components/icons/TrainingIcons.astro";
-import GuideCrossSell from "../../components/GuideCrossSell.astro";
+/**
+ * Workout library dataset.
+ *
+ * Used by /workouts/ to render the 23-session training library inline
+ * below the named benchmarks. Originally lived at /training/workouts/
+ * before the SEO consolidation pass moved it to a single canonical
+ * /workouts/ hub.
+ */
 
-const categories = [
+export type WorkoutCategoryId =
+  | "full-simulations"
+  | "running"
+  | "station-work"
+  | "strength-power";
+
+export type WorkoutType = "hyrox-specific" | "general";
+
+export interface WorkoutCategory {
+  id: WorkoutCategoryId;
+  label: string;
+  icon: string;
+  color: string;
+}
+
+export interface LibraryWorkout {
+  id: string;
+  category: WorkoutCategoryId;
+  categoryLabel: string;
+  workoutType: WorkoutType;
+  name: string;
+  time: string;
+  level: string;
+  equipment: string;
+  tagColor: string;
+  description: string;
+  warmup?: string;
+  bullets?: string[];
+  table?: { headers: string[]; rows: string[][] };
+  pacing?: { headers: string[]; rows: string[][] };
+  benchmarks?: { label: string; time: string; color: string }[];
+  notes?: string[];
+}
+
+export const LIBRARY_CATEGORIES: WorkoutCategory[] = [
   { id: "full-simulations", label: "Full Simulations", icon: "🏁", color: "text-sky-400 bg-sky-400/10 border-sky-400/20" },
   { id: "running",          label: "Running",          icon: "🏃", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
   { id: "station-work",     label: "Station Work",     icon: "🏋️", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" },
   { id: "strength-power",   label: "Strength & Power", icon: "💥", color: "text-red-400 bg-red-400/10 border-red-400/20" },
 ];
 
-const workoutTypeConfig = {
+export const WORKOUT_TYPE_CONFIG: Record<WorkoutType, { label: string; shortLabel: string; color: string }> = {
   "hyrox-specific": {
     label: "Hyrox specific",
     shortLabel: "Hyrox",
@@ -23,8 +61,7 @@ const workoutTypeConfig = {
   },
 };
 
-const workouts = [
-  // ─── FULL SIMULATIONS ────────────────────────────────────────────────────────
+export const LIBRARY_WORKOUTS: LibraryWorkout[] = [
   {
     id: "full-send",
     category: "full-simulations",
@@ -44,7 +81,7 @@ const workouts = [
         ["5","Treadmill Run","1 km"],["6","Sled Pull","50 m at race weight"],["7","Treadmill Run","1 km"],["8","Burpee Broad Jumps","80 m (or 30 reps)"],
         ["9","Treadmill Run","1 km"],["10","Rowing","1,000 m"],["11","Treadmill Run","1 km"],["12","Farmers Carry","200 m at race weight"],
         ["13","Treadmill Run","1 km"],["14","Sandbag Lunges","100 m"],["15","Treadmill Run","1 km"],["16","Wall Balls","100 reps men / 75 reps women"],
-      ]
+      ],
     },
     pacing: {
       headers: ["Station","Competitive","Average","Beginner"],
@@ -53,7 +90,7 @@ const workouts = [
         ["SkiErg","4:00","4:40","5:45"],["Sled Push","2:00","3:00","4:15"],["Sled Pull","2:00","3:00","4:15"],
         ["Burpee Broad Jumps","4:00","5:15","7:30"],["Rowing","3:45","4:20","5:20"],
         ["Farmers Carry","2:30","3:30","5:00"],["Sandbag Lunges","4:00","5:15","7:00"],["Wall Balls","4:00","5:15","7:00"],
-      ]
+      ],
     },
     notes: ["Women's Open: Add ~15–30 s per station and ~30–45 s per 1 km run.", "Beginners: Cut runs to 800 m, halve burpee distance, reduce wall balls to 50, use lighter weights."],
   },
@@ -74,7 +111,7 @@ const workouts = [
         ["1","Treadmill Run","1 km"],["2","SkiErg","1,000 m"],["3","Treadmill Run","1 km"],
         ["4","Sled Push","50 m"],["5","Treadmill Run","1 km"],["6","Sled Pull","50 m"],
         ["7","Treadmill Run","1 km"],["8","Burpee Broad Jumps","80 m or 30 reps"],
-      ]
+      ],
     },
     notes: ["Key focus: Aim for 75% effort on the first two stations.", "Scale: Reduce runs to 600 m, use light sled weight, do 20 burpee broad jumps."],
   },
@@ -95,12 +132,11 @@ const workouts = [
         ["1","Treadmill Run","1 km"],["2","Rowing","1,000 m"],["3","Treadmill Run","1 km"],
         ["4","Farmers Carry","200 m"],["5","Treadmill Run","1 km"],["6","Sandbag Lunges","100 m"],
         ["7","Treadmill Run","1 km"],["8","Wall Balls","100 reps men / 75 reps women"],
-      ]
+      ],
     },
     notes: ["Scale: Reduce runs to 600 m, carry lighter kettlebells, do 50 wall balls, lunge 50 m."],
   },
 
-  // ─── RUNNING ─────────────────────────────────────────────────────────────────
   {
     id: "cardio-killer",
     category: "running",
@@ -137,7 +173,7 @@ const workouts = [
         ["1–3","1 km","5K race pace","90 s"],
         ["4–6","1 km","5K race pace + 10 s/km","90 s"],
         ["7–8","1 km","Max sustainable effort","90 s"],
-      ]
+      ],
     },
     pacing: {
       headers: ["Goal Hyrox Time","Target 1 km Pace"],
@@ -146,7 +182,7 @@ const workouts = [
         ["75–90 min","4:45–5:00/km"],
         ["90–110 min","5:15–5:45/km"],
         ["First finisher","5:45–6:30/km"],
-      ]
+      ],
     },
     notes: ["Do this once a week at most — it's high intensity.", "Replace intervals 7–8 with easy 1 km if you're a beginner."],
   },
@@ -172,7 +208,7 @@ const workouts = [
         ["Burpee Broad Jumps","15 reps"],
         ["Treadmill Run","1 km at race pace"],
         ["Farmers Carry","100 m"],
-      ]
+      ],
     },
     notes: ["Rest 2–3 minutes between rounds. Do 2 rounds for beginners.", "Focus on the first 30 seconds of each station — don't let the run slow your station start."],
   },
@@ -194,7 +230,7 @@ const workouts = [
         ["Warm-up","10 min easy + 3 short pickups","Walk/jog 60 s"],
         ["Intervals","4 × 4 min at 90–95% HR max","3 min easy jog"],
         ["Cool-down","8–10 min easy","Keep it conversational"],
-      ]
+      ],
     },
     notes: ["Hard should feel controlled, not like an all-out sprint.", "If you are new to intervals, start with 3 rounds and build to 4."],
   },
@@ -233,7 +269,7 @@ const workouts = [
         ["Easy run","10–15 min","Conversational"],
         ["Tempo","20 min","7/10 effort, controlled breathing"],
         ["Easy run","10–15 min","Relaxed cool-down"],
-      ]
+      ],
     },
     notes: ["You should finish knowing you had one more 5-minute block available.", "Beginners can split the tempo into 2 × 10 min with 2 min easy jog."],
   },
@@ -256,12 +292,11 @@ const workouts = [
         ["3","100 m Farmers Carry","1 km at race pace"],
         ["4","15 Burpee Broad Jumps","1 km at race pace"],
         ["Optional 5–6","Repeat weakest primer","1 km controlled"],
-      ]
+      ],
     },
     notes: ["Rest 90 s after each run.", "Keep the station primer smooth; the goal is a quality run under fatigue."],
   },
 
-  // ─── STATION WORK ────────────────────────────────────────────────────────────
   {
     id: "push-grind",
     category: "station-work",
@@ -280,7 +315,7 @@ const workouts = [
         ["Sled Push","50 m","50 m","25 m","25 m"],
         ["Wall Balls","25 reps","20 reps","15 reps","10 reps"],
         ["SkiErg","500 m","400 m","300 m","200 m"],
-      ]
+      ],
     },
     notes: ["4 rounds, 90 seconds rest between rounds.", "Scale: Use 60–70% of race weight on sled. Beginners rest 2 minutes."],
   },
@@ -303,7 +338,7 @@ const workouts = [
         ["Farmers Carry","100 m at race weight"],
         ["Sandbag Lunges","50 m"],
         ["Dead Hang","Max time (aim 30–60 s)"],
-      ]
+      ],
     },
     notes: ["4 rounds, 2 minutes rest between rounds.", "Finisher: 3 sets of towel pull-ups (max reps) or plate pinch holds.", "Scale: Reduce sled to 25 m, carry to 50 m, lunges to 25 m."],
   },
@@ -340,13 +375,13 @@ const workouts = [
     description: "When you only have 20 minutes but want to feel like you just raced. 4 rounds for time — no warm-up needed beyond the first easy round.",
     table: {
       headers: ["Exercise","Reps / Distance"],
-      rows: [["SkiErg","250 m"],["Rowing","250 m"],["Wall Balls","10 reps"],["Burpee Broad Jumps","10 reps"],["Treadmill Run","400 m"]]
+      rows: [["SkiErg","250 m"],["Rowing","250 m"],["Wall Balls","10 reps"],["Burpee Broad Jumps","10 reps"],["Treadmill Run","400 m"]],
     },
     benchmarks: [
-      {label:"Elite",time:"under 16 min",color:"text-emerald-400"},
-      {label:"Competitive",time:"16–20 min",color:"text-sky-400"},
-      {label:"Average",time:"20–25 min",color:"text-amber-400"},
-      {label:"Beginner",time:"25–30 min",color:"text-red-400"},
+      { label: "Elite", time: "under 16 min", color: "text-emerald-400" },
+      { label: "Competitive", time: "16–20 min", color: "text-sky-400" },
+      { label: "Average", time: "20–25 min", color: "text-amber-400" },
+      { label: "Beginner", time: "25–30 min", color: "text-red-400" },
     ],
     notes: ["No SkiErg? Substitute 30 cal assault bike. No sled? Heavy dumbbell bear crawls (10 m)."],
   },
@@ -368,7 +403,7 @@ const workouts = [
         ["1–2","25 m at 70% race load","25 m at 70% race load","90 s"],
         ["3–5","25 m at race load","25 m at race load","2 min"],
         ["6","50 m smooth push","50 m smooth pull","Full recovery"],
-      ]
+      ],
     },
     notes: ["Keep steps short and constant on the push.", "If form breaks, reduce load before adding rest."],
   },
@@ -391,12 +426,11 @@ const workouts = [
         ["3","400 m run or 500 m row","25 reps"],
         ["4","400 m run or 500 m row","30 reps"],
         ["5","Easy walk 2 min","Max unbroken set"],
-      ]
+      ],
     },
     notes: ["Rest only as needed between rounds.", "Beginners can use 10–15–20–20 and skip the max set."],
   },
 
-  // ─── STRENGTH & POWER ────────────────────────────────────────────────────────
   {
     id: "posterior-chain",
     category: "strength-power",
@@ -418,7 +452,7 @@ const workouts = [
         ["Seated Cable Row (heavy)","4 × 8","90 s"],
         ["Farmers Carry","4 × 40 m heavy","90 s"],
         ["GHD Back Extensions / Good Mornings","3 × 12","60 s"],
-      ]
+      ],
     },
     notes: ["Heavy = 80%+ of your 1 rep max.", "Keep rep quality high — no rounding the lower back on deadlifts.", "Substitute trap bar if you're newer to conventional deadlifts."],
   },
@@ -443,7 +477,7 @@ const workouts = [
         ["Cable Tricep Pressdown","3 × 12","60 s"],
         ["Face Pulls (cable)","3 × 15","60 s"],
         ["Overhead Carry (plate or KB)","3 × 30 m","60 s"],
-      ]
+      ],
     },
     notes: ["Overhead Carry directly mimics the shoulder demand of wall balls.", "Pull-ups are the best single exercise for SkiErg. If you can't do them yet, lat pulldowns are the right sub."],
   },
@@ -468,7 +502,7 @@ const workouts = [
         ["Goblet Squat to Pause (3 s bottom)","3 × 12","60 s"],
         ["Wall Ball — light (6–8 kg)","3 × 25 reps","90 s"],
         ["Sandbag Carry + Lunge finisher","2 × 40 m lunge","2 min"],
-      ]
+      ],
     },
     notes: ["The pause goblet squat builds the bottom position strength for wall balls.", "Do sandbag carry + lunge last when you're already fatigued — that's race specificity.", "Scale: Remove load, focus on technique and range of motion."],
   },
@@ -491,7 +525,7 @@ const workouts = [
         ["3","12 KB Swings"],
         ["4","8 Burpees"],
         ["5","Rest or easy nasal breathing"],
-      ]
+      ],
     },
     notes: ["Repeat 6 times for 30 minutes.", "Scale reps so you never fail a minute in the first half."],
   },
@@ -512,13 +546,13 @@ const workouts = [
         ["5 reps","Pull-ups or ring rows"],
         ["10 reps","Push-ups"],
         ["15 reps","Air squats"],
-      ]
+      ],
     },
     benchmarks: [
-      {label:"Strong",time:"20+ rounds",color:"text-emerald-400"},
-      {label:"Solid",time:"15–19 rounds",color:"text-sky-400"},
-      {label:"Building",time:"10–14 rounds",color:"text-amber-400"},
-      {label:"Beginner",time:"under 10",color:"text-red-400"},
+      { label: "Strong", time: "20+ rounds", color: "text-emerald-400" },
+      { label: "Solid", time: "15–19 rounds", color: "text-sky-400" },
+      { label: "Building", time: "10–14 rounds", color: "text-amber-400" },
+      { label: "Beginner", time: "under 10", color: "text-red-400" },
     ],
     notes: ["Break push-ups early before they fail.", "Use ring rows and elevated push-ups to keep movement quality high."],
   },
@@ -542,7 +576,7 @@ const workouts = [
         ["4","30 Burpees"],
         ["5","20 DB Walking Lunges each leg"],
         ["6","1,000 m Row or SkiErg"],
-      ]
+      ],
     },
     notes: ["Cap at 45 minutes.", "Beginners can cut all reps and distances by 30–40%."],
   },
@@ -565,359 +599,29 @@ const workouts = [
         ["1–5","10 DB or KB push press"],
         ["1–5","8 renegade rows each side"],
         ["1–5","20 walking lunges"],
-      ]
+      ],
     },
     notes: ["Rest 60–90 seconds between rounds.", "Choose a load you can press cleanly for all 5 rounds."],
   },
 ];
 
-const typedWorkouts = workouts.map((workout) => ({
+export const TYPED_LIBRARY_WORKOUTS = LIBRARY_WORKOUTS.map((workout) => ({
   ...workout,
-  workoutTypeLabel: workoutTypeConfig[workout.workoutType].label,
-  workoutTypeShortLabel: workoutTypeConfig[workout.workoutType].shortLabel,
-  workoutTypeColor: workoutTypeConfig[workout.workoutType].color,
+  workoutTypeLabel: WORKOUT_TYPE_CONFIG[workout.workoutType].label,
+  workoutTypeShortLabel: WORKOUT_TYPE_CONFIG[workout.workoutType].shortLabel,
+  workoutTypeColor: WORKOUT_TYPE_CONFIG[workout.workoutType].color,
 }));
 
-const categoriesWithCounts = categories.map((category) => ({
+export const LIBRARY_CATEGORIES_WITH_COUNTS = LIBRARY_CATEGORIES.map((category) => ({
   ...category,
-  count: typedWorkouts.filter((workout) => workout.category === category.id).length,
+  count: TYPED_LIBRARY_WORKOUTS.filter((workout) => workout.category === category.id).length,
 }));
 
-const workoutTypeCounts = Object.fromEntries(
-  Object.keys(workoutTypeConfig).map((type) => [
+export const LIBRARY_WORKOUT_TYPE_COUNTS = Object.fromEntries(
+  Object.keys(WORKOUT_TYPE_CONFIG).map((type) => [
     type,
-    typedWorkouts.filter((workout) => workout.workoutType === type).length,
-  ])
+    TYPED_LIBRARY_WORKOUTS.filter((workout) => workout.workoutType === (type as WorkoutType)).length,
+  ]),
 );
 
-const totalWorkouts = typedWorkouts.length;
----
-
-<BaseLayout
-  title="Hyrox Workouts — 23 Hyrox-Specific & General Training Sessions (2026)"
-  description="23 ready-to-use Hyrox and general workouts across full simulations, running, station work, strength, and CrossFit-inspired conditioning. All levels, with pacing benchmarks."
-  schemaType="Article"
->
-  <article class="container-main py-16">
-
-    <!-- Breadcrumb -->
-    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center gap-2 flex-wrap">
-        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
-        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><a href="/training/" class="text-text-muted hover:text-accent transition-colors">Training</a></li>
-        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Sample Workouts</span></li>
-      </ol>
-    </nav>
-
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
-
-      <!-- Main content -->
-      <div class="min-w-0">
-
-        <!-- Header -->
-        <div class="flex items-start justify-between gap-6 mb-6">
-          <div>
-            <h1 class="text-4xl md:text-5xl font-black mb-4 text-text-heading">
-              Hyrox <span class="text-gradient-accent">Workout Library</span>
-            </h1>
-          </div>
-          <div class="hidden md:block text-accent/20 flex-shrink-0">
-            <TrainingIcons variant="intermediate" size={120} />
-          </div>
-        </div>
-
-        <!-- Intro -->
-        <div class="mb-8 space-y-3 max-w-2xl">
-          <p class="text-lg text-text-muted leading-relaxed">
-            {totalWorkouts} standalone sessions across 4 categories — from a 20-minute lunch break to a full race simulation, plus general running and CrossFit-inspired conditioning. Drop any of these into your training week.
-          </p>
-          <p class="text-base text-text-muted leading-relaxed">
-            Use <strong class="text-text">Full Simulations</strong> to gauge race readiness, <strong class="text-text">Running</strong> sessions to fix your 8 km, <strong class="text-text">Station Work</strong> to target your weak spots, and <strong class="text-text">Strength & Power</strong> for the gym days that build your station capacity from the ground up.
-          </p>
-          <p class="text-sm text-text-muted leading-relaxed">
-            Each workout is tagged as <strong class="text-text">Hyrox specific</strong> for race-transfer sessions or <strong class="text-text">General</strong> for base fitness, strength, and broader conditioning.
-          </p>
-        </div>
-
-        <!-- Category filter chips -->
-        <div class="flex flex-wrap gap-2 mb-10" id="filter-chips">
-          <button
-            data-filter="all"
-            class="filter-chip active inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-accent bg-accent/10 text-accent"
-          >
-            All ({totalWorkouts})
-          </button>
-          <button
-            data-filter="hyrox-specific"
-            class="filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent"
-          >
-            Hyrox specific ({workoutTypeCounts["hyrox-specific"]})
-          </button>
-          <button
-            data-filter="general"
-            class="filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent"
-          >
-            General ({workoutTypeCounts.general})
-          </button>
-          {categoriesWithCounts.map((cat) => (
-            <button
-              data-filter={cat.id}
-              class={`filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent`}
-            >
-              {cat.icon} {cat.label} ({cat.count})
-            </button>
-          ))}
-        </div>
-
-        <!-- Category sections -->
-        {categoriesWithCounts.map((cat) => {
-          const catWorkouts = typedWorkouts.filter(w => w.category === cat.id);
-          return (
-            <section class="category-section mb-12" id={cat.id} data-category={cat.id}>
-              <h2 class="flex items-center gap-3 text-xl font-black text-text-heading mb-5 pb-3 border-b border-border">
-                <span>{cat.icon}</span>
-                <span>{cat.label}</span>
-                <span class={`text-xs font-bold px-2 py-0.5 rounded-full border ${cat.color}`}>{cat.count} workouts</span>
-              </h2>
-              {catWorkouts.map(w => (
-                <details class="accordion workout-item" id={w.id} data-category={w.category} data-workout-type={w.workoutType}>
-                  <summary>
-                    <div class="flex items-center gap-3 min-w-0">
-                      <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
-                        {w.categoryLabel}
-                      </span>
-                      <span class={`hidden md:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.workoutTypeColor}`}>
-                        {w.workoutTypeShortLabel}
-                      </span>
-                      <span class="text-sm md:text-base leading-snug">{w.name}</span>
-                    </div>
-                    <div class="flex items-center gap-4 flex-shrink-0">
-                      <span class="hidden md:block text-xs text-text-muted">{w.time}</span>
-                      <svg class="accordion-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </summary>
-                  <div class="accordion-body">
-                    <!-- Meta row -->
-                    <div class="flex flex-wrap gap-4 py-4 text-xs text-text-muted border-b border-border mb-5">
-                      <span><strong class="text-text">Time:</strong> {w.time}</span>
-                      <span><strong class="text-text">Level:</strong> {w.level}</span>
-                      <span><strong class="text-text">Equipment:</strong> {w.equipment}</span>
-                      <span><strong class="text-text">Type:</strong> <span class={`font-bold ${w.workoutTypeColor.split(" ")[0]}`}>{w.workoutTypeLabel}</span></span>
-                    </div>
-
-                    <p class="text-text-muted text-sm leading-relaxed mb-5">{w.description}</p>
-
-                    {w.warmup && (
-                      <p class="text-sm mb-5"><strong class="text-text">Warm-up (5 min):</strong> <span class="text-text-muted">{w.warmup}</span></p>
-                    )}
-
-                    {w.bullets && (
-                      <ul class="space-y-2 mb-5">
-                        {w.bullets.map(b => (
-                          <li class="flex items-start gap-2 text-sm text-text-muted">
-                            <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
-                            {b}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {w.table && (
-                      <div class="overflow-x-auto -mx-4 sm:mx-0 mb-5">
-                        <table class="min-w-full text-sm border-collapse">
-                          <thead>
-                            <tr class="bg-bg-card-hover">
-                              {w.table.headers.map(h => (
-                                <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody class="divide-y divide-border/50">
-                            {w.table.rows.map(row => (
-                              <tr class="hover:bg-bg-card/50 transition-colors">
-                                {row.map((cell, ci) => (
-                                  <td class:list={["px-3 sm:px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-
-                    {w.pacing && (
-                      <div class="mb-5">
-                        <p class="text-xs font-bold text-accent uppercase tracking-wider mb-2">Target Pacing</p>
-                        <div class="overflow-x-auto -mx-4 sm:mx-0">
-                          <table class="min-w-full text-sm border-collapse">
-                            <thead>
-                              <tr class="bg-bg-card-hover">
-                                {w.pacing.headers.map(h => (
-                                  <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody class="divide-y divide-border/50">
-                              {w.pacing.rows.map(row => (
-                                <tr class="hover:bg-bg-card/50 transition-colors">
-                                  {row.map((cell, ci) => (
-                                    <td class:list={["px-3 sm:px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
-                                  ))}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-
-                    {w.benchmarks && (
-                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                        {w.benchmarks.map(({label,time,color}) => (
-                          <div class="bg-bg border border-border rounded-xl p-3 text-center">
-                            <div class:list={["text-sm font-bold", color]}>{label}</div>
-                            <div class="text-xs text-text-muted mt-0.5">{time}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {w.notes && w.notes.length > 0 && (
-                      <div class="space-y-1.5 pt-2 border-t border-border/50">
-                        {w.notes.map(note => (
-                          <p class="text-xs text-text-muted flex items-start gap-2">
-                            <span class="text-accent flex-shrink-0">•</span>
-                            {note}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </details>
-              ))}
-            </section>
-          );
-        })}
-
-        <!-- Weekly template -->
-        <div class="mt-4 bg-bg-card border border-border rounded-2xl p-6">
-          <h2 class="text-lg font-black text-text-heading mb-2">How to fit these into your week</h2>
-          <p class="text-sm text-text-muted mb-5">Build your week around 4–5 sessions. A balanced template:</p>
-          <div class="overflow-x-auto -mx-4 sm:mx-0">
-            <table class="min-w-full text-sm border-collapse">
-              <thead>
-                <tr class="bg-bg-card-hover">
-                  {["Day","Session","Example"].map(h => (
-                    <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border/50">
-                {[
-                  ["Monday","Strength & Power","Posterior Chain Power or Squat & Lunge Power"],
-                  ["Tuesday","Running","Race Pace Intervals, Norwegian 4×4, or easy 6–8 km"],
-                  ["Wednesday","Station Work","Push & Grind or Grip & Carry"],
-                  ["Thursday","Rest or mobility","Stretching, foam rolling"],
-                  ["Friday","Strength & Power","Upper Push-Pull or DB/KB Grinder"],
-                  ["Saturday","Simulation or conditioning","The Full Send (every 2–3 weeks), Chipper Conditioning, or Lunch Break"],
-                  ["Sunday","Easy run","5–8 km conversational pace"],
-                ].map(([d,s,e]) => (
-                  <tr class="hover:bg-bg-card/50 transition-colors">
-                    <td class="px-3 sm:px-4 py-2.5 text-text font-semibold">{d}</td>
-                    <td class="px-3 sm:px-4 py-2.5 text-text-muted">{s}</td>
-                    <td class="px-3 sm:px-4 py-2.5 text-text-muted text-xs">{e}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p class="text-xs text-text-muted mt-4">Want a full 8–12 week structured plan? → <a href="/training/beginner/" class="text-accent hover:underline">Beginner</a>, <a href="/training/intermediate/" class="text-accent hover:underline">Intermediate</a>, <a href="/training/advanced/" class="text-accent hover:underline">Advanced</a></p>
-        </div>
-
-        <div class="mt-8">
-          <GuideCrossSell context="training" />
-        </div>
-      </div>
-
-      <!-- Sidebar -->
-      <aside class="hidden lg:block">
-        <div class="sticky top-24 bg-bg-card border border-border rounded-2xl p-5 space-y-4">
-          <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Jump to</h3>
-            <nav>
-              {categoriesWithCounts.map((cat) => (
-                <a href={`#${cat.id}`} class={`flex items-center gap-2 text-xs font-bold py-1.5 border-b border-border/30 last:border-0 hover:underline transition-colors ${cat.color.split(" ")[0]}`}>
-                  <span>{cat.icon}</span>
-                  <span>{cat.label}</span>
-                  <span class="ml-auto text-text-muted font-normal">{cat.count}</span>
-                </a>
-              ))}
-            </nav>
-          </div>
-          <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">More Training</h3>
-            <nav>
-              {[
-                {href:"/training/beginner/",label:"Beginner Program"},
-                {href:"/training/intermediate/",label:"Intermediate Program"},
-                {href:"/training/advanced/",label:"Advanced Program"},
-                {href:"/calculator/",label:"Time Calculator"},
-                {href:"/supplements/protocol/",label:"Supplement Protocol"},
-              ].map(({href,label}) => (
-                <a href={href} class="flex items-center justify-between text-xs text-text-muted hover:text-accent transition-colors py-1.5 border-b border-border/30 last:border-0">
-                  {label}
-                  <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </aside>
-
-    </div>
-  </article>
-
-  <!-- Filter chip script -->
-  <script>
-    const chips = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
-    const sections = document.querySelectorAll<HTMLElement>('.category-section');
-
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        const filter = chip.dataset.filter!;
-
-        // Update active chip styles
-        chips.forEach(c => {
-          c.classList.remove('active', 'border-accent', 'bg-accent/10', 'text-accent');
-          c.classList.add('border-border', 'text-text-muted');
-        });
-        chip.classList.add('active', 'border-accent', 'bg-accent/10', 'text-accent');
-        chip.classList.remove('border-border', 'text-text-muted');
-
-        // Show/hide sections
-        sections.forEach(section => {
-          const items = section.querySelectorAll<HTMLElement>('.workout-item');
-          let visibleItems = 0;
-
-          items.forEach(item => {
-            const shouldShow =
-              filter === 'all' ||
-              item.dataset.category === filter ||
-              item.dataset.workoutType === filter;
-
-            item.style.display = shouldShow ? '' : 'none';
-            if (shouldShow) visibleItems += 1;
-          });
-
-          if (visibleItems > 0) {
-            section.style.display = '';
-          } else {
-            section.style.display = 'none';
-          }
-        });
-      });
-    });
-  </script>
-</BaseLayout>
+export const LIBRARY_TOTAL_WORKOUTS = TYPED_LIBRARY_WORKOUTS.length;
