@@ -16,8 +16,8 @@ const yearEvents = getEventsByYear(year);
 const upcoming = yearEvents.filter((e) => !isPastEvent(e));
 const past = yearEvents.filter((e) => isPastEvent(e));
 
-const title = `Hyrox ${year} Events Calendar — Full Race Schedule by City`;
-const description = `The official Hyrox ${year} events calendar. All Hyrox races in ${year} by city and date, with venue information and training resources for each event.`;
+const title = `Hyrox ${year} Events Calendar`;
+const description = `Every confirmed Hyrox ${year} race by city and date, with venue details, registration links, and training resources for each event.`;
 ---
 
 <BaseLayout

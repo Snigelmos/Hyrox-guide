@@ -3,8 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { GEAR_COMPARISONS } from "../../data/gear-comparisons";
 import { getCollection } from "astro:content";
 
-const title = "Hyrox Gear Guide — Shoes, Apparel, Accessories & Comparisons";
-const description = "Hyrox gear, fully tested: buying guides for shoes, clothing, accessories, and home gym setup, plus side-by-side brand comparisons for race day.";
+const title = "Hyrox Gear Guide — Shoes, Apparel & Accessories";
+const description = "Hyrox gear, tested by the editorial team: buying guides for shoes, apparel, accessories, and home-gym kit, plus side-by-side brand comparisons.";
 const breadcrumbs = [{ name: "Gear" }];
 
 const shoes = GEAR_COMPARISONS.filter((c) => c.category === "shoes");
