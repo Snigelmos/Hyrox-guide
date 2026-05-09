@@ -17,12 +17,12 @@ interface Props {
 
 const {
   type = "WebSite",
-  title = "Hyrox Guide",
+  title = "Hyrox Vault",
   description = "Your complete guide to Hyrox racing, training, and gear.",
   url,
   datePublished,
   dateModified,
-  author = "HyroxGuide Team",
+  author = "HyroxVault Editorial Team",
   faqs,
 } = Astro.props;
 
@@ -34,7 +34,7 @@ if (type === "WebSite") {
   schema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Hyrox Guide",
+    name: "Hyrox Vault",
     url: Astro.site?.toString(),
     description,
   };
@@ -51,7 +51,7 @@ if (type === "WebSite") {
     },
     publisher: {
       "@type": "Organization",
-      name: "HyroxGuide",
+      name: "HyroxVault",
       url: Astro.site?.toString(),
     },
     ...(datePublished && { datePublished }),
