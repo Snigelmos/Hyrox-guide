@@ -5,7 +5,7 @@ interface FAQ {
 }
 
 interface Props {
-  type?: "WebSite" | "Article" | "FAQPage";
+  type?: "WebSite" | "Article" | "FAQPage" | "CollectionPage";
   title?: string;
   description?: string;
   url?: string;
@@ -69,6 +69,20 @@ if (type === "WebSite") {
         text: faq.answer,
       },
     })),
+  };
+} else if (type === "CollectionPage") {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    description,
+    url: canonicalUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Hyrox Vault",
+      url: Astro.site?.toString(),
+    },
+    ...(dateModified && { dateModified }),
   };
 } else {
   schema = {
