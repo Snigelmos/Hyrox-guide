@@ -1,18 +1,18 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const lastUpdated = "May 3, 2026";
+const lastUpdated = "May 9, 2026";
 
 const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
 ---
 
 <BaseLayout
-  title="Methodology — How HyroxVault Tests, Sources, and Verifies"
-  description="How we test gear, source training data, and verify product picks at HyroxVault. Editorial standards, conflict-of-interest disclosure, and our correction policy."
+  title="Methodology — How HyroxVault Sources, Verifies, and Reviews"
+  description="How we source training and race-time data, evaluate gear and supplements, and verify factual claims at HyroxVault. Editorial standards, conflict-of-interest disclosure, and our correction policy."
   breadcrumbs={breadcrumbs}
   schemaType="Article"
   datePublished="2026-01-01"
-  dateModified="2026-05-03"
+  dateModified="2026-05-09"
 >
   <section class="container-main py-16">
     <div class="max-w-3xl mx-auto">
@@ -24,29 +24,16 @@ const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
 
       <div class="prose prose-lg prose-invert max-w-none">
         <p class="text-xl text-text-muted leading-relaxed">
-          This page documents how we test gear, where our training and race-time numbers come from, and the editorial standards every guide on the site follows. If you ever want to know why a specific recommendation made it onto a page, this is the source of truth.
+          This page documents how we source the training, race-time, and product data on the site, the editorial standards every guide follows, and how to flag a correction if something looks wrong. We've kept it short and concrete so it can be checked against any individual page.
         </p>
 
         <h2>Editorial principles</h2>
         <ol>
-          <li><strong>Race or test before recommending.</strong> Every product on a gear or supplement page has been used by at least one of the editorial team in actual training or in a Hyrox event. We do not republish manufacturer copy, and we do not run sponsored placements that aren't disclosed.</li>
-          <li><strong>Cite the precise source.</strong> Numerical claims (heart rate, percentage, wattage, cadence, dosage) must either link to an authoritative source or be hedged ("typically", "for many athletes around"). The source list we draw from is at the bottom of this page.</li>
-          <li><strong>Sign every guide.</strong> Each post lists the editorial-team author by name. The team page at <a href="/author/">/author/</a> documents who covers which beat.</li>
-          <li><strong>Update on a schedule, not just on demand.</strong> Cornerstone posts get a structured review every 90 days. Routine posts get a refresh review every 180 days. The <code>dateModified</code> at the top of every page reflects the most recent review.</li>
+          <li><strong>Anchor claims to evidence.</strong> Numerical claims (heart-rate ranges, station weights, percentages, supplement doses, race-pace targets) either link to an authoritative source, link to logged training and racing data, or are hedged ("typically", "for many athletes around"). The source list we draw from is at the bottom of this page.</li>
+          <li><strong>Be honest about what we've done and haven't done.</strong> When we've raced an event, used a piece of gear, or run a protocol ourselves, we say so. When we haven't, we either say that too or we don't list the product.</li>
+          <li><strong>Anonymous, not unaccountable.</strong> Three real Hyrox racers run the site, but we publish under a single editorial-team byline so recommendations stand on the evidence behind them rather than personal brand. Corrections go through the same person regardless of which side of the site is affected.</li>
+          <li><strong>Update on a schedule.</strong> Cornerstone posts get a structured review every 90 days. Routine posts get a refresh review every 180 days. The <code>dateModified</code> field at the top of every page reflects the most recent review.</li>
         </ol>
-
-        <h2>How we test gear</h2>
-        <p>
-          Hyrox-relevant gear gets a 3-tier evaluation before it makes it onto a page:
-        </p>
-        <ul>
-          <li><strong>Tier 1 — Featured pick.</strong> At least 60 km of running and 4+ Hyrox-style sessions including a full simulator, with at least one editorial-team member as the primary tester. Notes recorded after each session.</li>
-          <li><strong>Tier 2 — Honourable mention.</strong> 1-2 sessions of testing or substantive owner-experience by an editorial team member. Listed but not flagged as a top pick.</li>
-          <li><strong>Tier 3 — Reference only.</strong> Listed for awareness but not directly tested by us. Always labelled as such.</li>
-        </ul>
-        <p>
-          Race-day endurance products (gels, electrolytes, pre-workout) get tested across at least one full Hyrox simulator and one race in the same training block before they're recommended. We never recommend a fuelling product after a single training session.
-        </p>
 
         <h2>How our race-time numbers are derived</h2>
         <p>
@@ -58,25 +45,26 @@ const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
           <li><strong>Age-graded factors</strong> were validated against World Masters Athletics endurance aging factors and refined with Hyrox-specific masters data.</li>
         </ul>
         <p>
-          The methodology of the calculator engine itself, including what's strong and what's weak about the model, is documented on the <a href="/calculator/#methodology">calculator methodology section</a>.
+          The methodology of the calculator engine itself, including what it's good at and where the model is weak, is documented in the <a href="/calculator/#methodology">calculator methodology section</a>.
         </p>
 
-        <h2>How we test supplements</h2>
+        <h2>How we evaluate supplements and gear</h2>
         <p>
-          Supplements are evaluated against three criteria:
+          Our supplement and gear coverage is research-anchored, not lab-bench testing. We don't run a dedicated testing protocol with a fixed mileage threshold per product; for a small editorial team racing alongside day jobs, that would be a fiction. What we do is the following:
         </p>
-        <ol>
-          <li><strong>Evidence base.</strong> We look for at least 2-3 published peer-reviewed studies with effect sizes that matter at the dose we recommend. Sources we lean on: Examine.com, ISSN position papers, ACSM consensus, and Cochrane reviews.</li>
-          <li><strong>Quality assurance.</strong> Brands we feature must publish either Informed Sport, NSF Certified for Sport, or third-party heavy metals testing. We list the certificate where possible.</li>
-          <li><strong>Real-world dosing.</strong> The dosing protocol on each supplement page reflects what we use in our own training, not the marketing label. Where these diverge we flag it explicitly.</li>
-        </ol>
+        <ul>
+          <li><strong>Evidence base.</strong> For supplements we lean on peer-reviewed research and consensus statements (ISSN position stands, ACSM guidelines, IOC consensus papers, Cochrane reviews, Examine.com summaries). Where the evidence is contested, we say so.</li>
+          <li><strong>Quality assurance.</strong> Where a product category supports independent testing (NSF Certified for Sport, Informed Sport, third-party heavy-metals testing) we surface those certifications and prefer products that publish them.</li>
+          <li><strong>Real-world dosing and use.</strong> Recommended doses, fuelling protocols, and usage notes match published guidelines or accepted endurance-sport practice — not the marketing label. Where we've personally raced or trained with the category (creatine, gels, electrolytes, race shoes, watches), we draw on that. Where a specific product has not been used by us, we don't dress the recommendation up as first-hand testing.</li>
+          <li><strong>Editor's Pick / Best Value labels</strong> reflect our read of the available evidence and public reviews, not a certification or a sponsorship.</li>
+        </ul>
 
         <h2>Conflict-of-interest and affiliate disclosure</h2>
         <p>
-          Some links on the site are affiliate links. We earn a commission when readers buy through them, at no extra cost to the reader. This applies most often to gear, supplements, and apparel pages. Editorial decisions about what we recommend are made before any affiliate relationship exists; we do not promote a product solely because a brand has an affiliate program.
+          Some links on the site are affiliate links — currently all via the Amazon Associates program. We earn a commission when readers buy through them, at no extra cost to the reader. Editorial decisions about what we recommend are made before any affiliate relationship exists; we don't promote a product solely because Amazon happens to stock it.
         </p>
         <p>
-          We do not currently run sponsored content. If that changes, sponsored posts will be labelled at the top of the post, and the relationship will be disclosed in the byline area, not buried in the footer.
+          We do not currently run sponsored content. If that changes, sponsored placements will be labelled at the top of the affected page, and the relationship will be disclosed in the byline area, not buried in the footer. Affiliate links are marked with <code>rel="nofollow sponsored"</code> attributes.
         </p>
 
         <h2>How we handle corrections</h2>
@@ -84,29 +72,29 @@ const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
           When a factual error is reported (or we find one ourselves), we follow this process:
         </p>
         <ol>
-          <li>The error is corrected in place. We do not silently rewrite history.</li>
+          <li>The error is corrected in place. We don't silently rewrite history.</li>
           <li>If the error affected the post's core conclusions, we add a "Correction" note at the top of the post, dated, explaining what changed and why.</li>
           <li>The <code>dateModified</code> is bumped to the date of the correction.</li>
           <li>We re-ping IndexNow so the corrected version is recrawled.</li>
         </ol>
         <p>
-          To report an error, email the address on the <a href="/about/">About</a> page or open an issue against the public sources listed there.
+          To report an error, use the contact details on the <a href="/about/">About</a> page.
         </p>
 
         <h2>Sources we trust</h2>
         <p>
-          When citing numbers, these are the sources we consider authoritative:
+          When citing numbers, these are the sources we treat as authoritative:
         </p>
         <ul>
           <li><a href="https://hyrox.com/" rel="external">Hyrox.com</a> for official rules, weights, and event data.</li>
-          <li><a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a> for finish-time data.</li>
+          <li><a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a> for finish-time and station data.</li>
           <li><a href="https://www.concept2.com/" rel="external">Concept2</a> for SkiErg and rower output reference numbers.</li>
           <li><a href="https://examine.com/" rel="external">Examine.com</a> for supplement evidence summaries.</li>
-          <li><a href="https://www.acsm.org/" rel="external">ACSM</a> and <a href="https://jissn.biomedcentral.com/" rel="external">ISSN</a> for nutrition and exercise physiology consensus papers.</li>
-          <li><a href="https://www.iaaf.org/" rel="external">World Athletics</a> for running-specific reference numbers.</li>
+          <li><a href="https://www.acsm.org/" rel="external">ACSM</a> and <a href="https://jissn.biomedcentral.com/" rel="external">ISSN</a> for nutrition and exercise-physiology consensus papers.</li>
+          <li><a href="https://worldathletics.org/" rel="external">World Athletics</a> for running-specific reference numbers.</li>
         </ul>
         <p>
-          When a number on the site doesn't link to a source, it's either drawn from our own training and race data or hedged with language like "typically" or "for many athletes around".
+          When a number on the site doesn't link to a source, it's drawn either from one of the above, from the Hyrox results dataset, or from our own logged training and racing — and the language is hedged accordingly ("typically", "for many athletes around").
         </p>
 
         <h2>What's not on this site</h2>
@@ -114,15 +102,16 @@ const breadcrumbs = [{ name: "Methodology", url: "/methodology/" }];
           To set expectations:
         </p>
         <ul>
-          <li>We don't publish hyperbolic "best of" listicles. Every recommendation is concrete and tested.</li>
-          <li>We don't AI-generate posts and ship them unedited. Every post is reviewed by a named editorial team member before it goes live.</li>
-          <li>We don't recommend products we haven't tried at all.</li>
-          <li>We don't manufacture training protocols without a clear rationale and population data backing them up.</li>
+          <li>We don't fabricate first-hand testing, ratings, or reviewer credentials.</li>
+          <li>We don't put fake names, photos, or invented bios on bylines. We publish anonymously as a team.</li>
+          <li>We don't manufacture training protocols without published-evidence or population-data backing.</li>
+          <li>We don't run sponsored "best of" listicles.</li>
+          <li>We don't recommend products we don't believe in, irrespective of their commission rate.</li>
         </ul>
 
         <h2>Questions or feedback</h2>
         <p>
-          Spot a number that looks wrong? A study that should be cited but isn't? A product missing from a gear roundup? Reach out via the contact details on the <a href="/about/">About</a> page. Real reader corrections have improved this site multiple times already.
+          Spot a number that looks wrong? A study that should be cited but isn't? A product missing from a roundup? Reach out via the contact details on the <a href="/about/">About</a> page. Real reader corrections have improved this site multiple times already.
         </p>
       </div>
     </div>

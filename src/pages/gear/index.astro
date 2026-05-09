@@ -4,7 +4,7 @@ import { GEAR_COMPARISONS } from "../../data/gear-comparisons";
 import { getCollection } from "astro:content";
 
 const title = "Hyrox Gear Guide — Shoes, Apparel & Accessories";
-const description = "Hyrox gear, tested by the editorial team: buying guides for shoes, apparel, accessories, and home-gym kit, plus side-by-side brand comparisons.";
+const description = "Hyrox gear buying guides for shoes, apparel, accessories, and home-gym kit, plus side-by-side brand comparisons evaluated against race-specific demands.";
 const breadcrumbs = [{ name: "Gear" }];
 
 const shoes = GEAR_COMPARISONS.filter((c) => c.category === "shoes");
@@ -52,7 +52,7 @@ const guideIcons: Record<string, string> = {
         Buying guides and head-to-head comparisons for the gear you'll actually use in Hyrox: race shoes, apparel, accessories, and home-gym kit.
       </p>
       <p class="mt-3 text-sm text-text-muted/80">
-        Every recommendation is tested by the editorial team before it ships. See our <a href="/methodology/" class="text-accent hover:underline">methodology</a> for the 3-tier evaluation we run on every product.
+        Recommendations are evaluated against the published evidence on running shoes, gear durability, and race-specific demands, plus our own race-day use of category-equivalent products. See our <a href="/methodology/" class="text-accent hover:underline">methodology</a> for the full editorial standards.
       </p>
     </header>
 
