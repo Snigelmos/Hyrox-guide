@@ -6,14 +6,33 @@ import {
   getActiveEventsOn,
   liveEventDayLabel,
 } from "../lib/hyrox-live";
+import {
+  getRaceWeekEvents,
+  daysUntilRace,
+  raceWeekStatusLabel,
+} from "../lib/race-week";
 import { EVENTS, formatEventDate } from "../data/events";
 import { STATIONS } from "../data/stations";
 
 const now = new Date();
 const activeEvents = getActiveEventsOn(now);
 
+// Race-week events surface pre-race traffic (e.g. "hyrox helsinki 2026
+// schedule") here too so visitors land on the tracker — even if their
+// race isn't on the floor yet — and can save the athlete's name to the
+// watchlist for the moment timing opens.
+const raceWeekUpcoming = getRaceWeekEvents(EVENTS, now)
+  .filter((e) => !activeEvents.some((live) => live.slug === e.slug && live.year === e.year))
+  .filter((e) => daysUntilRace(e, now) >= 0)
+  .slice(0, 6);
+
 // Project HyroxEvents into the lightweight shape the React island needs.
-const finderEvents = activeEvents.map((event) => ({
+// During race-week (no live events yet) we still expose the upcoming events
+// so spectators can save a watchlist entry — the deep link goes to the
+// official results portal, which renders the start list as soon as Hyrox
+// publishes it.
+const finderSource = activeEvents.length > 0 ? activeEvents : raceWeekUpcoming;
+const finderEvents = finderSource.map((event) => ({
   slug: event.slug,
   year: event.year,
   city: event.city,
@@ -25,11 +44,15 @@ const breadcrumbs = [{ name: "Live Race Tracker" }];
 
 const title = activeEvents.length
   ? `Hyrox Live Race Tracker — Follow ${activeEvents.map((e) => e.city).join(" + ")} Today | HyroxVault`
-  : "Hyrox Live Race Tracker — Follow Any Athlete Across the 8 Stations | HyroxVault";
+  : raceWeekUpcoming.length
+    ? `Hyrox Live Race Tracker — ${raceWeekUpcoming.map((e) => e.city).join(" + ")} Race Week | HyroxVault`
+    : "Hyrox Live Race Tracker — Follow Any Athlete Across the 8 Stations | HyroxVault";
 
 const description = activeEvents.length
   ? `Follow any Hyrox athlete live across all 8 stations. ${activeEvents.map((e) => `Hyrox ${e.city}`).join(" and ")} are running right now — search by name or bib number and we'll deep-link you straight to the official results portal.`
-  : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, save a watchlist for race weekend, and jump straight to the official Hyrox live results.";
+  : raceWeekUpcoming.length
+    ? `${raceWeekUpcoming.map((e) => `Hyrox ${e.city} ${e.year}`).join(" and ")} race ${raceWeekUpcoming.length === 1 ? "weekend is" : "weekends are"} coming up — schedule, start list, and live tracker for every wave. Save athletes to your watchlist before timing opens.`
+    : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, save a watchlist for race weekend, and jump straight to the official Hyrox live results.";
 
 const faqItems = [
   {
@@ -113,6 +136,56 @@ const lastUpdated = "May 9, 2026";
       </p>
     </header>
 
+    {raceWeekUpcoming.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+          This race week — get ready to track
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {raceWeekUpcoming.map((event) => {
+            const days = daysUntilRace(event, now);
+            const label = raceWeekStatusLabel(event, now) ?? "";
+            return (
+              <article class="relative bg-bg-card border border-accent/30 rounded-2xl p-5">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="inline-flex items-center gap-1 bg-accent/10 border border-accent/30 text-accent rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                    {label}
+                  </span>
+                </div>
+                <h3 class="text-xl font-black text-text-heading leading-tight">
+                  Hyrox {event.city}
+                </h3>
+                <p class="mt-1 text-sm text-text-muted">
+                  {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+                </p>
+                <p class="mt-3 text-xs text-text-muted leading-relaxed">
+                  {days === 0
+                    ? "Race starts today — schedule, start list, and live tracker links inside the event guide."
+                    : `Schedule, start list, and spectator info live on the event guide. Save your athlete to the watchlist below — it'll be ready the moment timing opens.`}
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                  <a
+                    href={`/events/${event.year}/${event.slug}/#race-week`}
+                    class="text-xs font-bold uppercase tracking-wider text-accent bg-accent/10 border border-accent/30 rounded-full px-3 py-1 hover:bg-accent/20 transition-colors no-underline"
+                  >
+                    Race-week guide →
+                  </a>
+                  <a
+                    href={buildResultsHyroxUrl(event)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs font-bold uppercase tracking-wider text-text-muted bg-bg border border-border rounded-full px-3 py-1 hover:border-accent/40 hover:text-accent transition-colors no-underline"
+                  >
+                    Official portal ↗
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
     {activeEvents.length > 0 && (
       <section class="mb-10">
         <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
@@ -164,7 +237,9 @@ const lastUpdated = "May 9, 2026";
           <p class="text-text-muted mb-5 max-w-2xl">
             {activeEvents.length > 0
               ? "Pick the race, drop the athlete's name (last name is enough) or bib number, and hit Track. We'll copy your query and open the official live results so you can paste straight into the search box."
-              : "The tracker activates the moment a race goes live. While you wait, save searches to your watchlist — they'll be ready to fire when timing opens."}
+              : raceWeekUpcoming.length > 0
+                ? `${raceWeekUpcoming.map((e) => `Hyrox ${e.city}`).join(" and ")} ${raceWeekUpcoming.length === 1 ? "is" : "are"} coming up. Save the athlete to your watchlist now — the official start list goes live a few days before race day, and we deep-link you straight to it.`
+                : "The tracker activates the moment a race goes live. While you wait, save searches to your watchlist — they'll be ready to fire when timing opens."}
           </p>
           <LiveAthleteFinder
             client:load

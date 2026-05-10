@@ -1,0 +1,250 @@
+---
+/**
+ * Race-week capture block.
+ *
+ * Drop-in panel rendered on /events/[year]/[city].astro inside the 14-day
+ * window before race start through 2 days after race end. Captures the
+ * predictable race-week query cluster surfaced in GSC:
+ *
+ *   - "hyrox <city> <year> schedule" / local-language ("aikataulu", "Zeitplan", …)
+ *   - "hyrox <city> start list"
+ *   - "hyrox <city> live results" / "live tracker" / "live timing"
+ *   - "<city> events <date> weekend"
+ *   - "hyrox <country> <year>"
+ *
+ * Each query maps to a clearly-headed section so the page surfaces in
+ * matching SERPs and so visitors actually find what they came for. The
+ * "Track an athlete" CTA hands the visitor over to /live/ (HyroxVault's
+ * own live-tracker hub), so race-week traffic compounds with the live
+ * tooling instead of bouncing off.
+ */
+
+import type { HyroxEvent } from "../data/events";
+import {
+  isRaceWeek,
+  raceWeekStatusLabel,
+  daysUntilRace,
+  localRaceWeekTerms,
+  buildResultsHyroxStartListUrl,
+  buildResultsHyroxEventUrl,
+} from "../lib/race-week";
+import { isEventLiveNow, buildResultsHyroxUrl } from "../lib/hyrox-live";
+import { formatEventDate } from "../data/events";
+
+interface Props {
+  event: HyroxEvent;
+}
+
+const { event } = Astro.props as Props;
+const now = new Date();
+const inWindow = isRaceWeek(event, now);
+// Render nothing outside the capture window — the rest of the city page is
+// already a strong evergreen target for "hyrox <city> <year>" searches.
+if (!inWindow) return null;
+
+const live = isEventLiveNow(event, now);
+const status = raceWeekStatusLabel(event, now) ?? "";
+const days = daysUntilRace(event, now);
+const terms = localRaceWeekTerms(event);
+
+const startListUrl = buildResultsHyroxStartListUrl(event);
+const eventPortalUrl = buildResultsHyroxEventUrl(event);
+const trackerSearchUrl = buildResultsHyroxUrl(event);
+
+// Race-week heading uses the local-language schedule synonym in
+// parentheses when we have a verified translation. This catches queries
+// like "hyrox helsinki 2026 aikataulu" without keyword-stuffing the
+// English copy.
+const scheduleHeading = terms.isLocalised
+  ? `Hyrox ${event.city} ${event.year} schedule (${terms.schedule})`
+  : `Hyrox ${event.city} ${event.year} schedule`;
+
+const startListHeading = terms.isLocalised
+  ? `Start list (${terms.startList}) — Hyrox ${event.city} ${event.year}`
+  : `Start list — Hyrox ${event.city} ${event.year}`;
+
+const localCountryLine = terms.isLocalised
+  ? `Also indexed under "Hyrox ${event.country} ${event.year}" and "${terms.schedule} Hyrox ${event.city} ${event.year}".`
+  : `Also indexed under "Hyrox ${event.country} ${event.year}".`;
+---
+
+<section
+  id="race-week"
+  class="mb-10 pb-10 border-b border-border scroll-mt-24"
+  aria-labelledby="race-week-heading"
+>
+  <div class="bg-gradient-to-br from-accent/5 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 md:p-7">
+    <div class="flex items-center gap-2 flex-wrap mb-3">
+      <span class={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${live ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400" : "bg-accent/10 border border-accent/30 text-accent"}`}>
+        {live && <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+        {status}
+      </span>
+      <span class="text-xs text-text-muted">
+        {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+      </span>
+    </div>
+
+    <h2 id="race-week-heading" class="text-2xl md:text-3xl font-black text-text-heading leading-tight mb-2">
+      {live
+        ? `Hyrox ${event.city} ${event.year} is live now`
+        : days === 0
+          ? `Hyrox ${event.city} ${event.year} starts today`
+          : `Hyrox ${event.city} ${event.year} race weekend`}
+    </h2>
+    <p class="text-text-muted leading-relaxed max-w-2xl">
+      {live
+        ? `Splits are landing on the official portal in real time. Follow any athlete by name or bib through all 8 stations.`
+        : `Everything you need ahead of race weekend at ${event.venue}: race-day schedule, start list, live tracking, and spectator info.`}
+    </p>
+
+    <!-- Quick links: anchor jumps within this section -->
+    <div class="mt-5 flex flex-wrap gap-2">
+      <a href="#race-week-schedule" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-bg border border-border rounded-full px-3 py-1.5 hover:border-accent/40 hover:text-accent transition-colors no-underline text-text">
+        Schedule {terms.isLocalised && <span class="text-text-muted normal-case font-normal">/ {terms.schedule}</span>}
+      </a>
+      <a href="#race-week-start-list" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-bg border border-border rounded-full px-3 py-1.5 hover:border-accent/40 hover:text-accent transition-colors no-underline text-text">
+        Start list {terms.isLocalised && <span class="text-text-muted normal-case font-normal">/ {terms.startList}</span>}
+      </a>
+      <a href="/live/" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-accent text-bg rounded-full px-3 py-1.5 hover:bg-accent/90 transition-colors no-underline">
+        {live ? "Track athlete now →" : "Open live tracker →"}
+      </a>
+      <a href="#race-week-spectator" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-bg border border-border rounded-full px-3 py-1.5 hover:border-accent/40 hover:text-accent transition-colors no-underline text-text">
+        Spectator info
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Schedule ─────────────────────────────────────────────────── -->
+  <div id="race-week-schedule" class="mt-10 scroll-mt-24">
+    <h3 class="text-xl md:text-2xl font-black text-text-heading mb-3">
+      {scheduleHeading}
+    </h3>
+    <p class="text-text-muted leading-relaxed mb-4 max-w-3xl">
+      Hyrox publishes the official wave-by-wave schedule in the
+      {" "}<a href={event.officialUrl} rel="noopener noreferrer" class="text-accent hover:underline">Hyrox app</a>{" "}
+      and on the
+      {" "}<a href={eventPortalUrl} target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">official results portal</a>{" "}
+      typically 7-10 days before the race. {terms.isLocalised && <>Search "{terms.schedule}" inside the app — it's the {event.country.toLowerCase() === "finland" ? "Finnish" : "local"} term local racers use. </>}Below is the standard Hyrox race-day shape so you can plan around it before the wave-specific times land.
+    </p>
+    <ul class="bg-bg-card border border-border rounded-2xl divide-y divide-border/60 overflow-hidden">
+      <li class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Doors open</span>
+        <span class="text-sm sm:text-base text-text">~90 min before the first wave — typical for major Hyrox stops. Check the Hyrox app the night before for the venue-specific door time.</span>
+      </li>
+      <li class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">First wave</span>
+        <span class="text-sm sm:text-base text-text">Pro / Elite divisions usually go off first to clear the floor for higher-volume Open and Doubles waves.</span>
+      </li>
+      <li class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Wave cadence</span>
+        <span class="text-sm sm:text-base text-text">A new wave (~70 athletes) leaves every 8-10 minutes through the day. Each wave runs the full 8 km + 8 stations.</span>
+      </li>
+      <li class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Last wave</span>
+        <span class="text-sm sm:text-base text-text">{event.endDate && event.endDate !== event.startDate ? "Each race day" : "The day"} closes when the final Open wave clears Wall Balls — usually 9-11 hours after first gun.</span>
+      </li>
+      <li class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Awards</span>
+        <span class="text-sm sm:text-base text-text">Pro Men + Pro Women podium ceremonies run on the main floor late afternoon on each race day.</span>
+      </li>
+    </ul>
+    <p class="text-xs text-text-muted mt-3 leading-relaxed">
+      {localCountryLine} The exact wave times are published in the Hyrox app — we don't republish them here so the times you see are always the official ones.
+    </p>
+  </div>
+
+  <!-- ── Start list ──────────────────────────────────────────────── -->
+  <div id="race-week-start-list" class="mt-10 scroll-mt-24">
+    <h3 class="text-xl md:text-2xl font-black text-text-heading mb-3">
+      {startListHeading}
+    </h3>
+    <p class="text-text-muted leading-relaxed mb-4 max-w-3xl">
+      Looking for a specific athlete's wave or bib (start) number? Hyrox publishes the official start list on results.hyrox.com a few days before each race. The link below opens the season's event list — pick Hyrox {event.city} {event.year} and switch to the Start List tab.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <a
+        href={startListUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 bg-accent text-bg font-bold text-sm rounded-xl px-5 py-2.5 hover:bg-accent/90 transition-colors no-underline"
+      >
+        Open official start list
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+      </a>
+      <a
+        href="/live/"
+        class="inline-flex items-center gap-2 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline"
+      >
+        Save to my watchlist instead →
+      </a>
+    </div>
+    <p class="text-xs text-text-muted mt-3 leading-relaxed">
+      Tip: if the start list isn't live yet, save the athlete's name to your <a href="/live/" class="text-accent hover:underline">live-tracker watchlist</a> — it'll re-open the official portal in one tap once timing opens.
+    </p>
+  </div>
+
+  <!-- ── Live tracker handoff ────────────────────────────────────── -->
+  <div id="race-week-live" class="mt-10 scroll-mt-24">
+    <h3 class="text-xl md:text-2xl font-black text-text-heading mb-3">
+      Live results &amp; tracking — Hyrox {event.city} {event.year}
+    </h3>
+    <p class="text-text-muted leading-relaxed mb-4 max-w-3xl">
+      Splits land on the official Hyrox portal within seconds of each athlete crossing a station's timing mat. {live
+        ? "Hyrox " + event.city + " is on the floor right now — open the tracker, drop in a name or bib, and follow the splits station-by-station."
+        : "Once the first wave goes off you can follow any athlete in real time across the 8 stations and 8 km of running."}
+    </p>
+    <div class="grid gap-3 sm:grid-cols-2">
+      <a
+        href="/live/"
+        class="block bg-gradient-to-br from-accent/15 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 hover:border-accent/50 transition-colors no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Hyrox Vault tracker</div>
+        <div class="text-base font-black text-text-heading mb-1">Open the live tracker hub</div>
+        <p class="text-sm text-text-muted leading-relaxed mb-0">
+          Search by name or bib, save up to 20 athletes to a watchlist for the weekend, and we deep-link straight into the official portal.
+        </p>
+      </a>
+      <a
+        href={trackerSearchUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Official portal</div>
+        <div class="text-base font-black text-text-heading mb-1">results.hyrox.com ↗</div>
+        <p class="text-sm text-text-muted leading-relaxed mb-0">
+          Hyrox's own timing system. Refresh between stations to see new splits the moment they're posted.
+        </p>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Spectator info ──────────────────────────────────────────── -->
+  <div id="race-week-spectator" class="mt-10 scroll-mt-24">
+    <h3 class="text-xl md:text-2xl font-black text-text-heading mb-3">
+      Spectating Hyrox {event.city} — venue, transit, and timing
+    </h3>
+    <p class="text-text-muted leading-relaxed mb-4 max-w-3xl">
+      Hyrox runs as a stadium-style race weekend at <strong class="text-text">{event.venue}</strong> in {event.city}, {event.country}. Spectators can usually walk the floor to watch any station up close — there's no fixed grandstand, you follow your athlete around the course.
+    </p>
+    <ul class="space-y-2 text-sm text-text leading-relaxed pl-5 list-disc">
+      <li>
+        <strong>When to arrive:</strong> 30-45 minutes before your athlete's wave, then plan to stay 75-110 minutes for an Open finisher (60-80 minutes for a Pro).
+      </li>
+      <li>
+        <strong>Best vantage points:</strong> the SkiErg / Wall Balls corner sees every athlete twice (start and finish). Sled Push is the most theatrical to watch live.
+      </li>
+      <li>
+        <strong>Transit:</strong> public transport is almost always faster than driving on race weekend. Major Hyrox venues sit on transit nodes — plan the door-to-venue leg the night before.
+      </li>
+      <li>
+        <strong>Spectator tickets:</strong> some venues require a small spectator pass; the Hyrox event page on
+        {" "}<a href={event.officialUrl} rel="noopener noreferrer" class="text-accent hover:underline">hyrox.com</a>{" "}
+        is the source of truth.
+      </li>
+      <li>
+        <strong>Food &amp; queues:</strong> bring a water bottle. Venue food queues spike around 12:00-13:00 between heavy waves.
+      </li>
+    </ul>
+  </div>
+</section>
