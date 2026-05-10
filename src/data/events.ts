@@ -32,6 +32,32 @@ export interface HyroxEvent {
    * "Hyrox München 2026") can find the page.
    */
   localNames?: string[];
+  /**
+   * Verifiable street address of the venue. Surfaced on the event page so
+   * spectators can drop it straight into a maps app. Only populate when
+   * cross-checked against the venue's own site or hyrox.com — never guess.
+   */
+  venueAddress?: string;
+  /**
+   * Direct link to the official Hyrox venue PDF / course map. Hyrox
+   * publishes these per-venue (e.g.
+   * `hyrox.com/wp-content/uploads/<year>/<month>/HYROX<CITY>_VenueMap-<Month-Year>.pdf`)
+   * usually a few days before race weekend. Leave undefined until a
+   * specific URL has been verified — the event page falls back to the
+   * official event page link plus an "in the Hyrox app" note.
+   */
+  courseMapUrl?: string;
+  /**
+   * Optional one-liner characterising the venue's running loop — "fast",
+   * "neutral", or "tight" with a short note. Athletes use the venue map
+   * to assess this; we surface the editorial summary so first-timers
+   * can pace accordingly. Only populate when we've reviewed the loop
+   * via the published venue map or past results split data.
+   */
+  trackProfile?: {
+    speed: "fast" | "neutral" | "technical";
+    note: string;
+  };
 }
 
 /**
@@ -981,6 +1007,7 @@ export const EVENTS: HyroxEvent[] = [
     startDate: "2026-05-09",
     endDate: "2026-05-10",
     venue: "Messukeskus Helsinki",
+    venueAddress: "Messuaukio 1, 00520 Helsinki",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
