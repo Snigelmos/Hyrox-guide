@@ -206,7 +206,7 @@ export default function LiveAthleteFinder({
     if (!trimmed) {
       setError(
         searchType === "name"
-          ? "Enter the athlete's last name."
+          ? "Enter the athlete's surname (last name)."
           : "Enter the bib (start) number.",
       );
       return;
@@ -216,10 +216,17 @@ export default function LiveAthleteFinder({
       return;
     }
 
-    setView({ kind: "loading", query: trimmed, type: searchType });
+    // Hyrox stores names as "Lastname, Firstname" and only matches by
+    // surname. If the user typed "Annie Emilsson" extract "Emilsson" and
+    // search that; if they typed "Emilsson, Annie" extract "Emilsson".
+    const effectiveQuery =
+      searchType === "name" ? extractSurname(trimmed) : trimmed;
+    const didExtract = effectiveQuery !== trimmed;
+
+    setView({ kind: "loading", query: effectiveQuery, type: searchType });
     try {
       const res = await fetch(
-        `/api/live/search?q=${encodeURIComponent(trimmed)}&type=${searchType}`,
+        `/api/live/search?q=${encodeURIComponent(effectiveQuery)}&type=${searchType}`,
         { cache: "no-store" },
       );
       if (!res.ok) {
@@ -235,14 +242,17 @@ export default function LiveAthleteFinder({
         setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
         if (isFutureEvent) {
           setError(
-            `No startlist match for "${trimmed}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
+            `No startlist match for "${effectiveQuery}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
           );
           return;
         }
         setError(
-          `No matches for "${trimmed}". Check spelling or try the surname only.`,
+          `No matches for "${effectiveQuery}". Hyrox searches by surname — try the last name only (e.g. "Emilsson" not "Annie Emilsson").`,
         );
         return;
+      }
+      if (didExtract) {
+        setFeedback(`Showing results for surname "${effectiveQuery}".`);
       }
       if (matches.length === 1) {
         const m = matches[0];
@@ -449,7 +459,7 @@ export default function LiveAthleteFinder({
 
             <label className="block">
               <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-                {searchType === "name" ? "Athlete/team name (last name works)" : "Start (bib) number"}
+                  {searchType === "name" ? "Surname / last name (e.g. Emilsson)" : "Start (bib) number"}
               </span>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -459,7 +469,7 @@ export default function LiveAthleteFinder({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={
-                    searchType === "name" ? "e.g. Smith" : "e.g. 1234"
+                    searchType === "name" ? "e.g. Emilsson (surname only)" : "e.g. 1234"
                   }
                   className="flex-1 min-w-0 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
                   autoComplete="off"
@@ -679,6 +689,27 @@ export default function LiveAthleteFinder({
       )}
     </div>
   );
+}
+
+/**
+ * Hyrox stores names as "Lastname, Firstname" and only matches by surname.
+ * Accept common input patterns and extract just the surname so the search
+ * works regardless of how the user types the name.
+ *   "Annie Emilsson"    → "Emilsson"
+ *   "Emilsson Annie"    → "Emilsson"  (surname-first without comma)
+ *   "Emilsson, Annie"   → "Emilsson"
+ *   "Emilsson"          → "Emilsson"  (unchanged)
+ */
+function extractSurname(input: string): string {
+  const s = input.trim();
+  // "Lastname, Firstname" format
+  if (s.includes(",")) {
+    return s.split(",")[0].trim();
+  }
+  const parts = s.split(/\s+/);
+  if (parts.length === 1) return s;
+  // "Firstname Lastname" → take the last token as the surname
+  return parts[parts.length - 1];
 }
 
 function Spinner() {
