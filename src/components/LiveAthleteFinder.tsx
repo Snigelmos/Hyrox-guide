@@ -231,18 +231,17 @@ export default function LiveAthleteFinder({
       const data = (await res.json()) as { matches: LiveMatch[] };
       const matches = data.matches ?? [];
       if (matches.length === 0) {
+        setView({ kind: "form" });
+        setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
         if (isFutureEvent) {
           setError(
             `No startlist match for "${trimmed}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
           );
-          setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
-          setView({ kind: "form" });
           return;
         }
         setError(
           `No matches for "${trimmed}". Check spelling or try the surname only.`,
         );
-        setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
         return;
       }
       if (matches.length === 1) {

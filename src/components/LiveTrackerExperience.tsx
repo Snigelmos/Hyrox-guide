@@ -42,9 +42,18 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
     [events, now],
   );
 
-  const finderEvents: LiveEventOption[] = useMemo(
-    () =>
-      [...activeEvents, ...thisWeekEvents, ...upcomingEvents].map((event) => ({
+  // Include recently finished events so users can still search for results
+  // from races that ended in the past 14 days (e.g. Annie Emilsson at Helsinki).
+  const finderEvents: LiveEventOption[] = useMemo(() => {
+    const seen = new Set<string>();
+    return [...activeEvents, ...recentlyFinishedEvents, ...thisWeekEvents, ...upcomingEvents]
+      .filter((event) => {
+        const key = `${event.year}-${event.slug}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((event) => ({
         slug: event.slug,
         year: event.year,
         city: event.city,
@@ -52,9 +61,8 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
         searchUrl: `https://results.hyrox.com/${event.startDate < "2026-08-15" ? "season-9" : "season-10"}/?pid=search`,
         startDate: event.startDate,
         endDate: event.endDate ?? event.startDate,
-      })),
-    [activeEvents, thisWeekEvents, upcomingEvents],
-  );
+      }));
+  }, [activeEvents, recentlyFinishedEvents, thisWeekEvents, upcomingEvents]);
 
   return (
     <>
