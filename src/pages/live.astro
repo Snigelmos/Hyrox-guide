@@ -4,12 +4,15 @@ import LiveAthleteFinder from "../components/LiveAthleteFinder";
 import {
   buildResultsHyroxUrl,
   getActiveEventsOn,
+  getRecentlyFinishedEvents,
   getThisWeekEvents,
   getUpcomingEvents,
   liveEventDayLabel,
+  daysSinceEvent,
   daysUntilEvent,
 } from "../lib/hyrox-live";
 import { EVENTS, formatEventDate } from "../data/events";
+import { getResults } from "../data/event-results";
 import { STATIONS } from "../data/stations";
 
 const now = new Date();
@@ -18,6 +21,10 @@ const thisWeekEvents = getThisWeekEvents(now);
 const upcomingEvents = getUpcomingEvents(now, 60).filter(
   (e) => !thisWeekEvents.includes(e),
 );
+// Recently finished — past 14 days. Each card links to the on-site race
+// report when we have curated results, otherwise to the city event page
+// (which itself shows podium + race-report CTA when results are present).
+const recentlyFinishedEvents = getRecentlyFinishedEvents(now, 14);
 
 // Project HyroxEvents into the lightweight shape the React island needs.
 // We pass live + this-week + (capped) upcoming so users can produce a share
@@ -134,6 +141,13 @@ const lastUpdated = "May 10, 2026";
               : `${thisWeekEvents.length} races this week`}
           </span>
         )}
+        {recentlyFinishedEvents.length > 0 && (
+          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
+            {recentlyFinishedEvents.length === 1
+              ? `1 just finished`
+              : `${recentlyFinishedEvents.length} just finished`}
+          </span>
+        )}
         {upcomingEvents.length > 0 && (
           <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
             {upcomingEvents.length} more in next 60 days
@@ -157,37 +171,84 @@ const lastUpdated = "May 10, 2026";
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {activeEvents.map((event) => (
-            <article class="relative bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5">
+            <a
+              href={`/events/${event.year}/${event.slug}/#live-tracker`}
+              class="group relative block bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5 hover:border-emerald-400/60 hover:from-emerald-500/15 transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
+              aria-label={`Open the live tracker for Hyrox ${event.city} ${event.year}`}
+            >
               <div class="flex items-center gap-2 mb-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                   {liveEventDayLabel(event, now)}
                 </span>
               </div>
-              <h3 class="text-xl font-black text-text-heading leading-tight">
+              <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-emerald-300 transition-colors">
                 Hyrox {event.city}
               </h3>
               <p class="mt-1 text-sm text-text-muted">
                 {formatEventDate(event.startDate, event.endDate)} · {event.venue}
               </p>
-              <div class="mt-4 flex flex-wrap gap-2">
-                <a
-                  href={`/events/${event.year}/${event.slug}/`}
-                  class="text-xs font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-3 py-1 hover:border-accent/40 transition-colors no-underline"
-                >
-                  Event guide →
-                </a>
-                <a
-                  href={buildResultsHyroxUrl(event)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 hover:bg-emerald-500/20 transition-colors no-underline"
-                >
-                  Official results ↗
-                </a>
+              <div class="mt-4 flex items-center gap-2 text-emerald-300 font-bold text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+                <span>Open live tracker — splits, share link, dashboard</span>
               </div>
-            </article>
+            </a>
           ))}
+        </div>
+      </section>
+    )}
+
+    {recentlyFinishedEvents.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
+          Recently finished — see results
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {recentlyFinishedEvents.map((event) => {
+            const since = daysSinceEvent(event, now);
+            const sinceLabel = since === 0
+              ? "Just finished"
+              : since === 1
+                ? "Yesterday"
+                : `${since} days ago`;
+            const hasReport = Boolean(getResults(event.year, event.slug));
+            const href = hasReport
+              ? `/events/${event.year}/${event.slug}/results/`
+              : `/events/${event.year}/${event.slug}/#race-report`;
+            const ctaLabel = hasReport
+              ? "Read the race report — podium, splits, takeaways"
+              : "Race report being compiled — open event page";
+            return (
+              <a
+                href={href}
+                class="group relative block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/50 hover:bg-bg-card-hover transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+                aria-label={`Hyrox ${event.city} ${event.year} ${hasReport ? "race report" : "event page"}`}
+              >
+                <div class="flex items-center gap-2 mb-2">
+                  <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {sinceLabel}
+                  </span>
+                </div>
+                <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-accent transition-colors">
+                  Hyrox {event.city}
+                </h3>
+                <p class="mt-1 text-sm text-text-muted">
+                  {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+                </p>
+                <div class="mt-4 flex items-center gap-2 text-accent font-bold text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                  </svg>
+                  <span>{ctaLabel}</span>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </section>
     )}
@@ -200,36 +261,32 @@ const lastUpdated = "May 10, 2026";
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {thisWeekEvents.map((event) => {
             const days = daysUntilEvent(event, now);
-            const countdown = days === 0 ? "Tomorrow" : days === 1 ? "In 1 day" : `In ${days} days`;
+            const countdown = days === 0 ? "Today" : days === 1 ? "Tomorrow" : `In ${days} days`;
             return (
-              <article class="relative bg-gradient-to-br from-amber-500/10 via-bg-card to-bg-card border border-amber-500/30 rounded-2xl p-5">
+              <a
+                href={`/events/${event.year}/${event.slug}/`}
+                class="group relative block bg-gradient-to-br from-amber-500/10 via-bg-card to-bg-card border border-amber-500/30 rounded-2xl p-5 hover:border-amber-400/60 hover:from-amber-500/15 transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+                aria-label={`Open the Hyrox ${event.city} ${event.year} race-week guide`}
+              >
                 <div class="flex items-center gap-2 mb-2">
                   <span class="w-2 h-2 rounded-full bg-amber-400" />
                   <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">
                     {countdown}
                   </span>
                 </div>
-                <h3 class="text-xl font-black text-text-heading leading-tight">
+                <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-amber-200 transition-colors">
                   Hyrox {event.city}
                 </h3>
                 <p class="mt-1 text-sm text-text-muted">
                   {formatEventDate(event.startDate, event.endDate)} · {event.venue}
                 </p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  <a
-                    href={`/events/${event.year}/${event.slug}/`}
-                    class="text-xs font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-3 py-1 hover:border-accent/40 transition-colors no-underline"
-                  >
-                    Event guide →
-                  </a>
-                  <a
-                    href="#track-an-athlete"
-                    class="text-xs font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1 hover:bg-amber-500/20 transition-colors no-underline"
-                  >
-                    Pre-build a share link ↓
-                  </a>
+                <div class="mt-4 flex items-center gap-2 text-amber-200 font-bold text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                  </svg>
+                  <span>Race-week guide + pre-build a share link</span>
                 </div>
-              </article>
+              </a>
             );
           })}
         </div>

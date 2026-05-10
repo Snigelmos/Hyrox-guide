@@ -93,6 +93,49 @@ export function getThisWeekEvents(
   return getUpcomingEvents(date, 7, events);
 }
 
+/**
+ * Events whose race weekend ended within the last `days` days. Excludes
+ * events still active today. Sorted descending by end date so the most
+ * recently finished race is first — that's almost always what spectators
+ * are looking for ("how did Helsinki end?").
+ *
+ * Used on `/live/` to render a "Recently finished — see results" rail
+ * that keeps tracking traffic on-site after the gun, instead of bouncing
+ * to results.hyrox.com.
+ */
+export function getRecentlyFinishedEvents(
+  date: Date = new Date(),
+  days = 14,
+  events: HyroxEvent[] = EVENTS,
+): HyroxEvent[] {
+  const todayYmd = toYmd(date);
+  const cutoff = new Date(date.getTime());
+  cutoff.setDate(cutoff.getDate() - days);
+  const cutoffYmd = toYmd(cutoff);
+  return events
+    .filter((e) => {
+      const end = e.endDate ?? e.startDate;
+      return end < todayYmd && end >= cutoffYmd;
+    })
+    .sort((a, b) => {
+      const aEnd = a.endDate ?? a.startDate;
+      const bEnd = b.endDate ?? b.startDate;
+      return aEnd > bEnd ? -1 : 1;
+    });
+}
+
+/** Days from `event.endDate` (or startDate) to `date`. 0 means ended today. */
+export function daysSinceEvent(
+  event: HyroxEvent,
+  date: Date = new Date(),
+): number {
+  const end = parseYmd(event.endDate ?? event.startDate);
+  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.round(
+    (today.getTime() - end.getTime()) / (1000 * 60 * 60 * 24),
+  );
+}
+
 /** Days from `date` until `event.startDate`. Negative if already past. */
 export function daysUntilEvent(
   event: HyroxEvent,
