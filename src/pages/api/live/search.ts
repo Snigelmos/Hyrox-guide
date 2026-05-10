@@ -6,6 +6,7 @@ interface LiveMatch {
   idp: string;
   event: string;
   name: string;
+  bib: string | null;
   country: string | null;
   ageGroup: string | null;
   totalTime: string | null;
@@ -67,6 +68,15 @@ function parseMatches(html: string): LiveMatch[] {
     const country =
       block.match(/<span class="nation__abbr">([A-Z]+)<\/span>/)?.[1] ?? null;
 
+    let bib: string | null = null;
+    const bibBlock = block.match(
+      /type-start_no[^>]*>(?:<div[^>]*>[^<]*<\/div>)?\s*([^<][^<]*?)\s*<\/div>/,
+    );
+    if (bibBlock) {
+      const cleaned = bibBlock[1].replace(/\s+/g, " ").trim();
+      if (cleaned && cleaned !== "–") bib = cleaned;
+    }
+
     // The Mika template wraps the value in an outer field div with an
     // optional inner mobile-only label div. Capture the bare text *after*
     // the optional inner <div>.
@@ -94,6 +104,7 @@ function parseMatches(html: string): LiveMatch[] {
       idp,
       event,
       name,
+      bib,
       country,
       ageGroup,
       totalTime,

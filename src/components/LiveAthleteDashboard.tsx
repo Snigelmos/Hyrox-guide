@@ -5,6 +5,7 @@ import {
   type LiveAthleteSnapshot,
   type LiveSplit,
 } from "../lib/hyrox-live";
+import { analyzeRace, entryKindLabel, type RaceAnalysis } from "../lib/race-analysis";
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -151,6 +152,10 @@ export default function LiveAthleteDashboard({
   }, [runsByIndex, stationsByIndex]);
 
   const projection = useMemo(() => projectFinish(snapshot), [snapshot]);
+  const raceAnalysis = useMemo(
+    () => (snapshot ? analyzeRace(snapshot) : null),
+    [snapshot],
+  );
   const positionLabel = useMemo(() => describePosition(snapshot), [snapshot]);
   const status = useMemo(
     () =>
@@ -200,6 +205,7 @@ export default function LiveAthleteDashboard({
     }
   }
 
+  const entryLabel = raceAnalysis ? entryKindLabel(raceAnalysis.entryKind) : "Entry";
   const headerName = snapshot?.athlete.name || athleteHint || "Loading…";
   const headerRace = snapshot?.athlete.race || raceLabel || "Hyrox";
 
@@ -258,6 +264,11 @@ export default function LiveAthleteDashboard({
               {snapshot?.athlete.division && (
                 <span className="hidden sm:inline-flex items-center text-[10px] font-bold uppercase tracking-wider text-text-muted">
                   {snapshot.athlete.division}
+                </span>
+              )}
+              {raceAnalysis?.isTeamEntry && (
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-2 py-0.5">
+                  {entryLabel}
                 </span>
               )}
             </div>
@@ -520,6 +531,10 @@ export default function LiveAthleteDashboard({
           </ol>
         </section>
 
+        {raceAnalysis && (
+          <RaceAnalysisPanel analysis={raceAnalysis} />
+        )}
+
         {error && (
           <div className="text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg px-3 py-2">
             {error}
@@ -576,6 +591,87 @@ function Stat({
         </div>
       )}
     </div>
+  );
+}
+
+function RaceAnalysisPanel({ analysis }: { analysis: RaceAnalysis }) {
+  const maxGap = Math.max(1, ...analysis.opportunities.map((o) => Math.max(0, o.gapSec)));
+  return (
+    <section className="bg-bg border border-border rounded-2xl p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
+        <div>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-text-muted">
+            Biggest gaps & improvement opportunities
+          </h4>
+          <p className="mt-1 text-xs text-text-muted leading-relaxed">
+            Based on finished splits, benchmarked against the closest {analysis.level} peer profile.
+          </p>
+        </div>
+        <div className="text-right text-xs text-text-muted">
+          <div>Runs {secondsToTimeString(analysis.totalRunSec)}</div>
+          <div>Stations {secondsToTimeString(analysis.totalStationSec)}</div>
+        </div>
+      </div>
+
+      {analysis.benchmarkNote && (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200 leading-relaxed">
+          {analysis.benchmarkNote}
+        </div>
+      )}
+
+      {analysis.runFadeSec != null && analysis.runFadeSec > 10 && (
+        <div className="mb-4 rounded-xl border border-border bg-bg-card px-3 py-2 text-xs text-text-muted leading-relaxed">
+          <span className="font-bold text-text-heading">Run fade:</span>{" "}
+          final-half run pace averaged {secondsToTimeString(analysis.runFadeSec)} slower per km than the opening half.
+        </div>
+      )}
+
+      {analysis.opportunities.length === 0 ? (
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3 text-sm text-emerald-300">
+          No major leaks found against the selected benchmark. Protect your strengths and focus on race simulations.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {analysis.opportunities.map((item, idx) => {
+            const width = `${Math.max(8, Math.round((Math.max(0, item.gapSec) / maxGap) * 100))}%`;
+            return (
+              <article key={item.slug} className="rounded-xl border border-border bg-bg-card p-3">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-rose-300">
+                      {idx === 0 ? "Biggest leak" : `Opportunity #${idx + 1}`}
+                    </div>
+                    <div className="font-black text-text-heading">{item.label}</div>
+                    <div className="text-[10px] text-text-muted">
+                      you {item.actualLabel} · benchmark {item.benchmarkLabel}
+                    </div>
+                  </div>
+                  <div className="text-right font-mono font-black text-rose-300">
+                    {item.gapLabel}
+                  </div>
+                </div>
+                <div className="h-2 rounded-full bg-bg border border-border overflow-hidden mb-2">
+                  <div className="h-full rounded-full bg-rose-400/80" style={{ width }} />
+                </div>
+                {item.topFixHint && (
+                  <p className="text-xs text-text-muted leading-relaxed mb-2">
+                    <span className="font-bold text-accent">Top fix:</span> {item.topFixHint}
+                  </p>
+                )}
+                {item.playbookUrl && (
+                  <a
+                    href={item.playbookUrl}
+                    className="inline-flex text-xs font-bold text-accent hover:underline no-underline"
+                  >
+                    Open station playbook →
+                  </a>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </section>
   );
 }
 

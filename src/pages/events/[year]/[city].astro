@@ -252,7 +252,7 @@ const activeFaqItems = event
             },
             {
               question: `How do I follow Hyrox ${event.city} ${year} live?`,
-              answer: `Splits land on the official Hyrox results portal within seconds of each athlete crossing a station's timing mat. Use the live tracker on /live/ to search by name or bib — it deep-links you straight to the official portal and copies your query so you can paste it into Hyrox's search box with one keystroke. Typical Open finishers are on the floor for 75-110 minutes, so you can usually catch a full race in one sitting.`,
+              answer: `Splits land on the official Hyrox timing system within seconds of each athlete or team crossing a station timing mat. Use the live tracker on /live/ to search by name, team name, or bib — HyroxVault renders the dashboard locally on the page, including run splits, station splits, and share links. Typical Open finishers are on the floor for 75-110 minutes, so you can usually catch a full race in one sitting.`,
             },
             ...(raceWeekTerms?.isLocalised
               ? [
@@ -389,7 +389,7 @@ const explainerFaqItems = explainer
             Race live now · {liveDayLabel}
           </div>
           <a href="#live-tracker" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent bg-accent/10 border border-accent/25 rounded-full px-4 py-1.5 hover:bg-accent/20 transition-colors no-underline uppercase tracking-wider">
-            Track an athlete ↓
+            Track an athlete/team ↓
           </a>
         </div>
       ) : event.confirmed ? (
@@ -415,16 +415,16 @@ const explainerFaqItems = explainer
       <section id="live-tracker" class="mb-10 pb-10 border-b border-border scroll-mt-24">
         <div class="flex items-baseline justify-between flex-wrap gap-2 mb-3">
           <h2 class="text-2xl md:text-3xl font-black text-text-heading">
-            Track an athlete live
+            Track an athlete or team live
           </h2>
           <a href="/live/" class="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-accent transition-colors no-underline">
             Open full tracker hub →
           </a>
         </div>
         <p class="text-text-muted mb-5 max-w-2xl">
-          Hyrox {event.city} {year} is on the floor right now. Drop in a name
-          (last name is enough) or bib number and we'll deep-link you to the
-          official live results so you can watch splits land station-by-station.
+          Hyrox {event.city} {year} is on the floor right now. Search by athlete
+          name, team name, or bib number and the local dashboard will render
+          splits station-by-station on this page.
         </p>
         <LiveAthleteFinder
           client:load

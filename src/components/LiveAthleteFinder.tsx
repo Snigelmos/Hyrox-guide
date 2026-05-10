@@ -82,6 +82,7 @@ export default function LiveAthleteFinder({
   const [watchlist, setWatchlist] = useState<WatchlistEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [officialFallbackUrl, setOfficialFallbackUrl] = useState<string | null>(null);
   const [view, setView] = useState<ViewState>({ kind: "form" });
 
   useEffect(() => {
@@ -199,6 +200,7 @@ export default function LiveAthleteFinder({
     e.preventDefault();
     setError(null);
     setFeedback(null);
+    setOfficialFallbackUrl(null);
 
     const trimmed = query.trim();
     if (!trimmed) {
@@ -221,7 +223,9 @@ export default function LiveAthleteFinder({
         { cache: "no-store" },
       );
       if (!res.ok) {
-        await fallbackToDeepLink(trimmed);
+        offerManualFallback(
+          `Tracker search is temporarily unavailable. Stay here and retry in a moment — no Hyrox tab was opened.`,
+        );
         return;
       }
       const data = (await res.json()) as { matches: LiveMatch[] };
@@ -231,13 +235,14 @@ export default function LiveAthleteFinder({
           setError(
             `No startlist match for "${trimmed}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
           );
+          setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
           setView({ kind: "form" });
           return;
         }
         setError(
           `No matches for "${trimmed}". Check spelling or try the surname only.`,
         );
-        await fallbackToDeepLink(trimmed);
+        setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
         return;
       }
       if (matches.length === 1) {
@@ -247,35 +252,16 @@ export default function LiveAthleteFinder({
       }
       setView({ kind: "matches", query: trimmed, type: searchType, matches });
     } catch {
-      await fallbackToDeepLink(trimmed);
+      offerManualFallback(
+        "Couldn't reach the local tracker search. Stay here and retry in a moment — no Hyrox tab was opened.",
+      );
     }
   }
 
-  async function fallbackToDeepLink(q: string) {
+  function offerManualFallback(message: string) {
     setView({ kind: "form" });
-    if (!selectedEvent) {
-      setError("Pick an active event first.");
-      return;
-    }
-    let copied = false;
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(q);
-        copied = true;
-      }
-    } catch {
-      /* ignore */
-    }
-    const win = window.open(selectedEvent.searchUrl, "_blank", "noopener,noreferrer");
-    if (!win) {
-      setError("Pop-up blocked. Allow pop-ups, or open results.hyrox.com directly.");
-    } else {
-      setFeedback(
-        copied
-          ? `Live tracker is offline — opened the official portal with "${q}" copied to clipboard.`
-          : `Live tracker is offline — opened the official portal. Search "${q}" there.`,
-      );
-    }
+    setError(message);
+    setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
   }
 
   function openDashboard(
@@ -360,7 +346,7 @@ export default function LiveAthleteFinder({
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="text-xs text-text-muted min-w-0">
-              Tracking <strong className="text-text">{view.name || "athlete"}</strong>
+              Tracking <strong className="text-text">{view.name || "athlete/team"}</strong>
               {view.raceLabel && <> at {view.raceLabel}</>}
             </div>
             <button
@@ -464,7 +450,7 @@ export default function LiveAthleteFinder({
 
             <label className="block">
               <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-                {searchType === "name" ? "Athlete name (last name works)" : "Start (bib) number"}
+                {searchType === "name" ? "Athlete/team name (last name works)" : "Start (bib) number"}
               </span>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -518,6 +504,21 @@ export default function LiveAthleteFinder({
                 {feedback}
               </div>
             )}
+
+            {officialFallbackUrl && (
+              <div className="text-xs text-text-muted leading-relaxed bg-bg border border-border rounded-lg px-3 py-2">
+                Optional manual fallback:{" "}
+                <a
+                  href={officialFallbackUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent hover:underline"
+                >
+                  open the official Hyrox results portal
+                </a>
+                . This link only opens if you choose it.
+              </div>
+            )}
           </form>
 
           {view.kind === "matches" && (
@@ -551,7 +552,7 @@ export default function LiveAthleteFinder({
                             {m.name}
                           </div>
                           <div className="text-xs text-text-muted">
-                            {[m.divisionLabel, m.country, m.ageGroup ? `AG ${m.ageGroup}` : null]
+                            {[m.divisionLabel, m.bib ? `Bib ${m.bib}` : null, m.country, m.ageGroup ? `AG ${m.ageGroup}` : null]
                               .filter(Boolean)
                               .join(" · ")}
                           </div>

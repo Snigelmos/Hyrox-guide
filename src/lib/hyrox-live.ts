@@ -209,6 +209,7 @@ export interface LiveMatch {
   idp: string;
   event: string;
   name: string;
+  bib: string | null;
   country: string | null;
   ageGroup: string | null;
   totalTime: string | null;

@@ -1,57 +1,29 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import LiveAthleteFinder from "../components/LiveAthleteFinder";
-import {
-  buildResultsHyroxUrl,
-  getActiveEventsOn,
-  getRecentlyFinishedEvents,
-  getThisWeekEvents,
-  getUpcomingEvents,
-  liveEventDayLabel,
-  daysSinceEvent,
-  daysUntilEvent,
-} from "../lib/hyrox-live";
-import { EVENTS, formatEventDate } from "../data/events";
+import LiveTrackerExperience from "../components/LiveTrackerExperience";
+import { EVENTS } from "../data/events";
 import { getResults } from "../data/event-results";
 import { STATIONS } from "../data/stations";
 
 const now = new Date();
-const activeEvents = getActiveEventsOn(now);
-const thisWeekEvents = getThisWeekEvents(now);
-const upcomingEvents = getUpcomingEvents(now, 60).filter(
-  (e) => !thisWeekEvents.includes(e),
-);
-// Recently finished — past 14 days. Each card links to the on-site race
-// report when we have curated results, otherwise to the city event page
-// (which itself shows podium + race-report CTA when results are present).
-const recentlyFinishedEvents = getRecentlyFinishedEvents(now, 14);
-
-// Project HyroxEvents into the lightweight shape the React island needs.
-// We pass live + this-week + (capped) upcoming so users can produce a share
-// link days before the gun goes off.
-const finderEvents = [...activeEvents, ...thisWeekEvents, ...upcomingEvents].map(
-  (event) => ({
-    slug: event.slug,
-    year: event.year,
-    city: event.city,
-    country: event.country,
-    searchUrl: buildResultsHyroxUrl(event),
-    startDate: event.startDate,
-    endDate: event.endDate ?? event.startDate,
-  }),
-);
+const initialDateYmd = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+const liveEvents = EVENTS.map((event) => ({
+  slug: event.slug,
+  city: event.city,
+  country: event.country,
+  year: event.year,
+  startDate: event.startDate,
+  endDate: event.endDate,
+  venue: event.venue,
+  populationDescriptor: event.populationDescriptor,
+  hasReport: Boolean(getResults(event.year, event.slug)),
+}));
 
 const breadcrumbs = [{ name: "Live Race Tracker" }];
 
-const title = activeEvents.length
-  ? `Hyrox Live Race Tracker — Follow ${activeEvents.map((e) => e.city).join(" + ")} Today | HyroxVault`
-  : "Hyrox Live Race Tracker — Follow Any Athlete Across the 8 Stations | HyroxVault";
+const title = "Hyrox Live Race Tracker — Follow Athletes, Teams, and Results | HyroxVault";
 
-const description = activeEvents.length
-  ? `Follow any Hyrox athlete live across all 8 stations. ${activeEvents.map((e) => `Hyrox ${e.city}`).join(" and ")} are running right now — search by name or bib, share a tracker link with family, and watch every split as it happens.`
-  : thisWeekEvents.length
-    ? `Hyrox ${thisWeekEvents.map((e) => e.city).join(" + ")} race${thisWeekEvents.length === 1 ? "s" : ""} this week. Find your athlete now, share a tracker link with friends and family, and the dashboard goes live the moment the start gun fires.`
-    : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, share a tracker link with family before race day, and watch every split as it happens.";
+const description = "Follow Hyrox athletes, doubles teams, mixed doubles, and relay entries live across all 8 stations. Search by name or bib, share a tracker link, and review post-race improvement opportunities.";
 
 const faqItems = [
   {
@@ -121,274 +93,17 @@ const lastUpdated = "May 10, 2026";
     </nav>
 
     <header class="mb-10 pb-8 border-b border-border">
-      <div class="flex items-center gap-2 mb-3 flex-wrap">
-        {activeEvents.length > 0 ? (
-          <span class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            {activeEvents.length === 1
-              ? `1 race live now`
-              : `${activeEvents.length} races live now`}
-          </span>
-        ) : (
-          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
-            No race live right now
-          </span>
-        )}
-        {thisWeekEvents.length > 0 && (
-          <span class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
-            {thisWeekEvents.length === 1
-              ? `1 race this week`
-              : `${thisWeekEvents.length} races this week`}
-          </span>
-        )}
-        {recentlyFinishedEvents.length > 0 && (
-          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
-            {recentlyFinishedEvents.length === 1
-              ? `1 just finished`
-              : `${recentlyFinishedEvents.length} just finished`}
-          </span>
-        )}
-        {upcomingEvents.length > 0 && (
-          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
-            {upcomingEvents.length} more in next 60 days
-          </span>
-        )}
-      </div>
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
         Hyrox Live Race Tracker
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        Follow any athlete across the 8 stations and 8 km of running on race
-        day. Search by name or bib, copy a share link to send family, and the
-        dashboard goes live the moment the start gun fires.
+        Follow athletes, doubles teams, mixed doubles, and relay entries across
+        the 8 stations and 8 km of running. Search by name or bib, copy a share
+        link to send family, and review post-race improvement opportunities.
       </p>
     </header>
 
-    {activeEvents.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
-          Live right now
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {activeEvents.map((event) => (
-            <a
-              href={`/events/${event.year}/${event.slug}/#live-tracker`}
-              class="group relative block bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5 hover:border-emerald-400/60 hover:from-emerald-500/15 transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
-              aria-label={`Open the live tracker for Hyrox ${event.city} ${event.year}`}
-            >
-              <div class="flex items-center gap-2 mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                  {liveEventDayLabel(event, now)}
-                </span>
-              </div>
-              <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-emerald-300 transition-colors">
-                Hyrox {event.city}
-              </h3>
-              <p class="mt-1 text-sm text-text-muted">
-                {formatEventDate(event.startDate, event.endDate)} · {event.venue}
-              </p>
-              <div class="mt-4 flex items-center gap-2 text-emerald-300 font-bold text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                </svg>
-                <span>Open live tracker — splits, share link, dashboard</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {recentlyFinishedEvents.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-accent mb-3">
-          Recently finished — see results
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {recentlyFinishedEvents.map((event) => {
-            const since = daysSinceEvent(event, now);
-            const sinceLabel = since === 0
-              ? "Just finished"
-              : since === 1
-                ? "Yesterday"
-                : `${since} days ago`;
-            const hasReport = Boolean(getResults(event.year, event.slug));
-            const href = hasReport
-              ? `/events/${event.year}/${event.slug}/results/`
-              : `/events/${event.year}/${event.slug}/#race-report`;
-            const ctaLabel = hasReport
-              ? "Read the race report — podium, splits, takeaways"
-              : "Race report being compiled — open event page";
-            return (
-              <a
-                href={href}
-                class="group relative block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/50 hover:bg-bg-card-hover transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-                aria-label={`Hyrox ${event.city} ${event.year} ${hasReport ? "race report" : "event page"}`}
-              >
-                <div class="flex items-center gap-2 mb-2">
-                  <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    {sinceLabel}
-                  </span>
-                </div>
-                <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-accent transition-colors">
-                  Hyrox {event.city}
-                </h3>
-                <p class="mt-1 text-sm text-text-muted">
-                  {formatEventDate(event.startDate, event.endDate)} · {event.venue}
-                </p>
-                <div class="mt-4 flex items-center gap-2 text-accent font-bold text-sm">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                  </svg>
-                  <span>{ctaLabel}</span>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-    )}
-
-    {thisWeekEvents.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-3">
-          This week
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {thisWeekEvents.map((event) => {
-            const days = daysUntilEvent(event, now);
-            const countdown = days === 0 ? "Today" : days === 1 ? "Tomorrow" : `In ${days} days`;
-            return (
-              <a
-                href={`/events/${event.year}/${event.slug}/`}
-                class="group relative block bg-gradient-to-br from-amber-500/10 via-bg-card to-bg-card border border-amber-500/30 rounded-2xl p-5 hover:border-amber-400/60 hover:from-amber-500/15 transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
-                aria-label={`Open the Hyrox ${event.city} ${event.year} race-week guide`}
-              >
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="w-2 h-2 rounded-full bg-amber-400" />
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                    {countdown}
-                  </span>
-                </div>
-                <h3 class="text-xl font-black text-text-heading leading-tight group-hover:text-amber-200 transition-colors">
-                  Hyrox {event.city}
-                </h3>
-                <p class="mt-1 text-sm text-text-muted">
-                  {formatEventDate(event.startDate, event.endDate)} · {event.venue}
-                </p>
-                <div class="mt-4 flex items-center gap-2 text-amber-200 font-bold text-sm">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                  </svg>
-                  <span>Race-week guide + pre-build a share link</span>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-    )}
-
-    {upcomingEvents.length > 0 && (
-      <section class="mb-10">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">
-          Coming up — next 60 days
-        </h2>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {upcomingEvents.map((event) => {
-            const days = daysUntilEvent(event, now);
-            return (
-              <li>
-                <a
-                  href={`/events/${event.year}/${event.slug}/`}
-                  class="block bg-bg-card border border-border hover:border-accent/40 rounded-xl px-4 py-3 transition-colors no-underline"
-                >
-                  <div class="flex items-baseline justify-between gap-2">
-                    <span class="font-bold text-text-heading truncate">
-                      Hyrox {event.city}
-                    </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">
-                      {days < 14 ? `In ${days}d` : formatEventDate(event.startDate, event.endDate)}
-                    </span>
-                  </div>
-                  <span class="text-xs text-text-muted">
-                    {event.country}
-                  </span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    )}
-
-    <section id="track-an-athlete" class="mb-12 scroll-mt-24">
-      <div class="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
-        <div>
-          <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
-            Track an athlete
-          </h2>
-          <p class="text-text-muted mb-5 max-w-2xl">
-            {activeEvents.length > 0
-              ? "Pick the race, drop the athlete's name (last name is enough) or bib number, and hit Track. The 8-station dashboard updates every 30 seconds and you can copy a share link to send to family."
-              : thisWeekEvents.length > 0
-                ? "Race weekend is coming up. Find your athlete now and copy a share link to send family — the dashboard goes live the moment the start gun fires."
-                : "Pick a race, find your athlete, and the dashboard streams every split as it happens. Outside race weekends you can still build share links from upcoming startlists."}
-          </p>
-          <LiveAthleteFinder
-            client:load
-            events={finderEvents}
-          />
-        </div>
-
-        <aside class="bg-bg-card border border-border rounded-2xl p-5 md:p-6">
-          <h3 class="text-sm font-bold uppercase tracking-wider text-accent mb-3">
-            How to read the splits
-          </h3>
-          <ul class="space-y-3 text-sm text-text leading-relaxed">
-            <li class="flex gap-3">
-              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">1</span>
-              <span>
-                <strong class="text-text-heading">Run splits</strong> are the 1
-                km between stations. A 5:15-5:45/km pace is a competitive
-                Open finish; 4:00-4:30/km is elite Pro.
-              </span>
-            </li>
-            <li class="flex gap-3">
-              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">2</span>
-              <span>
-                <strong class="text-text-heading">Station splits</strong>
-                include transition time. The sleds are usually the slowest
-                station, wall balls the most variable.
-              </span>
-            </li>
-            <li class="flex gap-3">
-              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">3</span>
-              <span>
-                <strong class="text-text-heading">Cumulative time</strong> is
-                the elapsed clock since the start gun for that wave — not the
-                clock on the venue scoreboard.
-              </span>
-            </li>
-            <li class="flex gap-3">
-              <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-black flex items-center justify-center">4</span>
-              <span>
-                <strong class="text-text-heading">Rank</strong> on the live
-                page is provisional — final rankings are confirmed once the
-                division closes.
-              </span>
-            </li>
-          </ul>
-          <p class="mt-4 text-xs text-text-muted leading-relaxed">
-            Use the <a href="/calculator/" class="text-accent hover:underline">time calculator</a> to predict where their final split lands based on the splits you've already seen.
-          </p>
-        </aside>
-      </div>
-    </section>
+    <LiveTrackerExperience client:load events={liveEvents} initialDateYmd={initialDateYmd} />
 
     <section class="mb-12">
       <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">

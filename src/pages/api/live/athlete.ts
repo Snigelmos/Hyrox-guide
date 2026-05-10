@@ -121,7 +121,10 @@ function parseSplits(html: string): LiveSplit[] {
 }
 
 function parseSnapshot(html: string, source: string): LiveAthleteSnapshot | null {
-  const name = extractCellValue(html, "Name");
+  const name =
+    extractCellValue(html, "Name") ??
+    extractCellValue(html, "Team Name") ??
+    extractCellValue(html, "Team");
   if (!name) return null;
   const bib = extractCellValue(html, "Bib Number");
   const ageGroup = extractCellValue(html, "Age Group");
