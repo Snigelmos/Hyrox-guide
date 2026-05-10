@@ -1,0 +1,178 @@
+---
+/**
+ * Event-page course / track section.
+ *
+ * Hyrox is a standardised format (8 stations + 8 km running) but each
+ * venue lays the running loop differently — that's the difference between
+ * a "fast" track (long straight loops, few corners) and a "technical"
+ * track (tight corners, narrow lanes). Hyrox publishes a per-venue PDF
+ * map a few days before race weekend; the link goes here when we have it.
+ *
+ * The section is rendered for every active event, race-week or not — it's
+ * evergreen content that helps a first-time racer or visiting spectator
+ * understand what they're walking into.
+ */
+
+import HyroxCourseRibbon from "./HyroxCourseRibbon.astro";
+import { getCityEvergreen } from "../data/city-evergreens";
+import type { HyroxEvent } from "../data/events";
+import { STATIONS } from "../data/stations";
+
+interface Props {
+  event: HyroxEvent;
+}
+
+const { event } = Astro.props as Props;
+
+// City-evergreen carries the curated venue notes (Hall, AC, flooring,
+// transit) for cities we've covered. Only show this block when we
+// actually have data — never invent venue characteristics.
+const evergreen = getCityEvergreen(event.slug);
+
+const trackSpeedLabel = event.trackProfile
+  ? event.trackProfile.speed === "fast"
+    ? "Fast track"
+    : event.trackProfile.speed === "technical"
+      ? "Technical track"
+      : "Neutral track"
+  : null;
+---
+
+<section id="course" class="mb-10 pb-10 border-b border-border scroll-mt-24" aria-labelledby="course-heading">
+  <div class="flex items-baseline justify-between flex-wrap gap-2 mb-3">
+    <h2 id="course-heading" class="text-2xl md:text-3xl font-black text-text-heading">
+      The Hyrox {event.city} track
+    </h2>
+    {trackSpeedLabel && (
+      <span class={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${event.trackProfile?.speed === "fast" ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400" : event.trackProfile?.speed === "technical" ? "bg-amber-500/10 border border-amber-500/30 text-amber-400" : "bg-bg-card border border-border text-text-muted"}`}>
+        {trackSpeedLabel}
+      </span>
+    )}
+  </div>
+  <p class="text-text-muted leading-relaxed mb-5 max-w-3xl">
+    Every Hyrox runs the same 8 stations in the same order, separated by 8 × 1 km of running inside the venue. What changes city to city is the <strong class="text-text">running loop</strong> — the number of laps you do per kilometre, how tight the corners are, and how long the straightaways are. Hyrox publishes the {event.city} venue map in the athlete guide a few days before race weekend.
+  </p>
+
+  <!-- ── Course flow visual ──────────────────────────────────────── -->
+  <div class="bg-bg-card border border-border rounded-2xl p-5 md:p-6 mb-6">
+    <HyroxCourseRibbon class="mb-5" />
+    <ol class="grid grid-cols-2 sm:grid-cols-4 gap-2 not-prose">
+      {STATIONS.map((station) => (
+        <li class="flex items-center gap-2 bg-bg border border-border rounded-lg px-3 py-2">
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 border border-accent/25 text-accent text-xs font-black flex-shrink-0">
+            {station.position}
+          </span>
+          <a href={`/stations/${station.slug}/standards/`} class="text-xs sm:text-sm font-bold text-text-heading hover:text-accent transition-colors no-underline truncate">
+            {station.name}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <!-- ── Track map link ──────────────────────────────────────────── -->
+  <div class="grid gap-3 md:grid-cols-2 mb-6">
+    {event.courseMapUrl ? (
+      <a
+        href={event.courseMapUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block bg-gradient-to-br from-accent/10 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 hover:border-accent/50 transition-colors no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
+        <div class="text-base font-black text-text-heading mb-1">Hyrox {event.city} {event.year} course PDF ↗</div>
+        <p class="text-sm text-text-muted leading-relaxed mb-0">
+          The official venue layout — running loop, station positions, Roxzone, water stations, and bag drop. Bring it up on race morning to walk the loop in your warm-up.
+        </p>
+      </a>
+    ) : (
+      <a
+        href={event.officialUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors no-underline"
+      >
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Official course map</div>
+        <div class="text-base font-black text-text-heading mb-1">Published in the Hyrox athlete guide</div>
+        <p class="text-sm text-text-muted leading-relaxed mb-0">
+          Hyrox releases the venue PDF (running loop, stations, Roxzone, bag drop) a few days before race weekend on the official event page and inside the Hyrox app. Walk the loop in your warm-up so the corners aren't a surprise.
+        </p>
+      </a>
+    )}
+
+    <a
+      href="/blog/best-hyrox-pacing-strategy/"
+      class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors no-underline"
+    >
+      <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">How to read a Hyrox track</div>
+      <div class="text-base font-black text-text-heading mb-1">Fast vs. technical loops →</div>
+      <p class="text-sm text-text-muted leading-relaxed mb-0">
+        Loops with long straightaways favour open-stride runners; tight corners favour Hyrox-specific repeat-acceleration training. We break down how loop layout affects your splits.
+      </p>
+    </a>
+  </div>
+
+  <!-- ── Track-profile editorial ─────────────────────────────────── -->
+  {event.trackProfile && (
+    <div class="bg-accent/5 border border-accent/20 rounded-xl p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Track profile</div>
+      <p class="text-sm md:text-base text-text leading-relaxed mb-0">
+        {event.trackProfile.note}
+      </p>
+    </div>
+  )}
+
+  <!-- ── Venue notes from city-evergreen ─────────────────────────── -->
+  {evergreen?.cityNotes && evergreen.cityNotes.length > 0 && (
+    <div>
+      <h3 class="text-lg md:text-xl font-black text-text-heading mb-3">
+        {event.venue}: venue, transit, and field
+      </h3>
+      <dl class="bg-bg-card border border-border rounded-2xl divide-y divide-border/60 overflow-hidden">
+        {event.venueAddress && (
+          <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+            <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Address</dt>
+            <dd class="text-sm sm:text-base text-text">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.venue} ${event.venueAddress}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-accent transition-colors"
+              >
+                {event.venueAddress} ↗
+              </a>
+            </dd>
+          </div>
+        )}
+        {evergreen.cityNotes.map((note) => (
+          <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+            <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">{note.title}</dt>
+            <dd class="text-sm sm:text-base text-text leading-relaxed">{note.detail}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="text-xs text-text-muted mt-3">
+        Curated venue notes — see the full <a href={`/hyrox/${evergreen.slug}/`} class="text-accent hover:underline">Hyrox {evergreen.city} city guide</a> for race history, Hyrox-affiliated local gyms, and pacing notes that don't change between years.
+      </p>
+    </div>
+  )}
+
+  <!-- ── Address-only fallback when no evergreen exists ───────────── -->
+  {!evergreen && event.venueAddress && (
+    <dl class="bg-bg-card border border-border rounded-2xl divide-y divide-border/60 overflow-hidden">
+      <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
+        <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Address</dt>
+        <dd class="text-sm sm:text-base text-text">
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.venue} ${event.venueAddress}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-accent transition-colors"
+          >
+            {event.venueAddress} ↗
+          </a>
+        </dd>
+      </div>
+    </dl>
+  )}
+</section>

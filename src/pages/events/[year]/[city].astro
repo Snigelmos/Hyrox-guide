@@ -2,6 +2,7 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LiveAthleteFinder from "../../../components/LiveAthleteFinder";
 import RaceWeekPanel from "../../../components/RaceWeekPanel.astro";
+import EventCourseSection from "../../../components/EventCourseSection.astro";
 import {
   EVENTS,
   allEventPaths,
@@ -12,6 +13,8 @@ import {
   type HyroxEvent,
 } from "../../../data/events";
 import { getResults } from "../../../data/event-results";
+import { getCityEvergreen } from "../../../data/city-evergreens";
+import { getGymsByCity, hasIndexablePage } from "../../../data/gym-finder";
 import {
   buildResultsHyroxUrl,
   isEventLiveNow,
@@ -73,6 +76,16 @@ const raceResults = event ? getResults(event.year, event.slug) : null;
 const inRaceWeek = event ? isRaceWeek(event) : false;
 const raceWeekTerms = event ? localRaceWeekTerms(event) : null;
 const raceWeekStatus = event ? raceWeekStatusLabel(event) : null;
+
+// Cross-link material — evergreen city guide + local gyms. Both are
+// optional: only render the section when we actually have content, so
+// we never advertise empty pages.
+const cityEvergreen = event ? getCityEvergreen(event.slug) : null;
+const localGyms = event
+  ? getGymsByCity(cityEvergreen?.citySlug ?? event.slug)
+      .filter(hasIndexablePage)
+      .slice(0, 6)
+  : [];
 
 // Lightweight projection passed to the React island so it doesn't import the
 // full HyroxEvent shape. Only used when the event is currently live.
@@ -427,6 +440,11 @@ const explainerFaqItems = explainer
         stays out of the way for evergreen pre-race traffic. */}
     {!isPast && <RaceWeekPanel event={event} />}
 
+    {/* Course / track section — the standardised flow + venue-specific
+        notes pulled from city-evergreens. Renders for every active
+        event so the page has visual interest year-round. */}
+    {!isPast && <EventCourseSection event={event} />}
+
     <section class="prose md:prose-lg max-w-none">
       <p>
         <strong>{sponsorPrefix}Hyrox {event.city} {year}</strong>{localNamesList && <> (also <strong>Hyrox {localNamesList} {year}</strong>)</>} runs <strong>{formatEventDate(event.startDate, event.endDate)}</strong> at {event.venue}. {event.populationDescriptor ?? `It's the ${event.country} round of the global Hyrox series — 8 km of running paired with 8 functional stations, identical to every other Hyrox in the world.`}
@@ -546,6 +564,60 @@ const explainerFaqItems = explainer
         </>
       )}
     </section>
+
+    {/* Local Hyrox-affiliated training gyms + evergreen city-guide
+        cross-link. Only renders for cities where we have curated gyms
+        or an evergreen page — never advertises empty content. */}
+    {(localGyms.length > 0 || cityEvergreen) && (
+      <section class="mt-16 pt-10 border-t border-border">
+        <h2 class="text-2xl font-black text-text-heading mb-2">
+          Train for Hyrox {event.city} locally
+        </h2>
+        <p class="text-text-muted mb-6 max-w-3xl">
+          {localGyms.length > 0
+            ? `Hyrox-affiliated training clubs near ${event.venue} — most run dedicated Hyrox classes through the build-up to race weekend.`
+            : `Use the ${event.city} city guide for the local training-club ecosystem, race history, and pacing notes that don't change between years.`}
+        </p>
+        {localGyms.length > 0 && (
+          <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-6 not-prose">
+            {localGyms.map((gym) => (
+              <a
+                href={`/gyms/g/${gym.slug}/`}
+                class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+              >
+                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                  {gym.neighbourhood ?? gym.city}
+                </div>
+                <div class="text-base text-text-heading font-bold mb-1 leading-tight">
+                  {gym.name}
+                </div>
+                <div class="text-xs text-text-muted">
+                  {gym.affiliationType === "official-training-club"
+                    ? "Official Hyrox training club"
+                    : gym.affiliationType === "chain-partner"
+                      ? "Hyrox chain partner"
+                      : gym.affiliationType === "crossfit-box"
+                        ? "CrossFit box"
+                        : "Boutique studio"}
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+        <div class="flex flex-wrap gap-3">
+          {cityEvergreen && (
+            <a href={`/hyrox/${cityEvergreen.slug}/`} class="inline-flex items-center gap-1.5 bg-accent text-bg font-bold text-sm rounded-xl px-5 py-2.5 hover:bg-accent/90 transition-colors no-underline">
+              Hyrox {event.city} city guide →
+            </a>
+          )}
+          {localGyms.length > 0 && (
+            <a href={`/gyms/${cityEvergreen?.citySlug ?? event.slug}/`} class="inline-flex items-center gap-1.5 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
+              All {event.city} Hyrox gyms →
+            </a>
+          )}
+        </div>
+      </section>
+    )}
 
     <aside class="mt-16 pt-10 border-t border-border">
       <h2 class="text-2xl font-black text-text-heading mb-4">Other Hyrox races in {year}</h2>
