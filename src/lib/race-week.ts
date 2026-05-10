@@ -59,6 +59,8 @@ const LOCAL_TERMS: Record<string, { schedule: string; startList: string }> = {
   IT: { schedule: "programma", startList: "lista di partenza" },
   ES: { schedule: "horario", startList: "lista de salida" },
   PT: { schedule: "horário", startList: "lista de partida" },
+  // Latin America (Spanish-speaking — race-week search behaviour mirrors ES)
+  MX: { schedule: "horario", startList: "lista de salida" },
   // Benelux
   NL: { schedule: "tijdschema", startList: "startlijst" },
   BE: { schedule: "tijdschema", startList: "startlijst" },
@@ -68,6 +70,7 @@ const LOCAL_TERMS: Record<string, { schedule: string; startList: string }> = {
   HU: { schedule: "menetrend", startList: "rajtlista" },
   // Asia
   JP: { schedule: "スケジュール", startList: "スタートリスト" },
+  CN: { schedule: "赛程", startList: "出发名单" },
   KR: { schedule: "일정", startList: "출발 명단" },
   // ME
   AE: { schedule: "جدول السباق", startList: "قائمة المتسابقين" },
