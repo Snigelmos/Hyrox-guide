@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LiveAthleteFinder from "../../../components/LiveAthleteFinder";
+import RaceWeekPanel from "../../../components/RaceWeekPanel.astro";
 import {
   EVENTS,
   allEventPaths,
@@ -16,6 +17,11 @@ import {
   isEventLiveNow,
   liveEventDayLabel,
 } from "../../../lib/hyrox-live";
+import {
+  isRaceWeek,
+  localRaceWeekTerms,
+  raceWeekStatusLabel,
+} from "../../../lib/race-week";
 
 export async function getStaticPaths() {
   const activePaths = allEventPaths().map(({ year, slug }) => ({
@@ -60,6 +66,14 @@ const isPast = event ? isPastEvent(event) : false;
 const isLiveNow = event ? isEventLiveNow(event) : false;
 const raceResults = event ? getResults(event.year, event.slug) : null;
 
+// Race-week capture state. We expand the title, description, and FAQ
+// when the event is within the GSC-validated 14-days-out window so the
+// page surfaces for queries like `hyrox helsinki 2026 schedule` and
+// `hyrox helsinki 2026 aikataulu` without spinning up duplicate URLs.
+const inRaceWeek = event ? isRaceWeek(event) : false;
+const raceWeekTerms = event ? localRaceWeekTerms(event) : null;
+const raceWeekStatus = event ? raceWeekStatusLabel(event) : null;
+
 // Lightweight projection passed to the React island so it doesn't import the
 // full HyroxEvent shape. Only used when the event is currently live.
 const finderEvents = event && isLiveNow
@@ -92,14 +106,22 @@ const cityWithLocalNames = event
     : event.city
   : "";
 const activeTitle = event
-  ? `Hyrox ${cityWithLocalNames} ${year} — ${formatEventDate(event.startDate, event.endDate)}`
+  ? inRaceWeek && !isPast
+    ? // Race-week title — captures schedule/start-list/live queries (incl.
+      // local-language synonyms via the H2/FAQ inside the page).
+      isLiveNow
+      ? `Hyrox ${event.city} ${year} Live — Track Athletes, Schedule, Start List`
+      : `Hyrox ${event.city} ${year} — Schedule, Start List & Live Tracker (${formatEventDate(event.startDate, event.endDate)})`
+    : `Hyrox ${cityWithLocalNames} ${year} — ${formatEventDate(event.startDate, event.endDate)}`
   : "";
 const activeDescription = event
   ? isPast
     ? `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} race report — ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "Thousands of"} athletes competed. Full podium, results, and key takeaways.` : "Full results and recap."}`
-    : event.confirmed
-      ? `${sponsorPrefix}Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
-      : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} expected ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Indicative date pending official confirmation. Get prep guidance and pacing strategy.`
+    : inRaceWeek
+      ? `Hyrox ${event.city} ${year} race weekend at ${event.venue}, ${formatEventDate(event.startDate, event.endDate)}. Race-day schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, start list, live tracker for every wave, and spectator info — everything you need ahead of Hyrox ${event.country} ${year}.`
+      : event.confirmed
+        ? `${sponsorPrefix}Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
+        : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} expected ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Indicative date pending official confirmation. Get prep guidance and pacing strategy.`
   : "";
 
 const activeBreadcrumbs = event
@@ -198,6 +220,37 @@ const activeFaqItems = event
         answer:
           "Follow an 8–12 week structured plan that covers running, sled work, and high-rep wall balls. Most first-timers underestimate how much running matters — 8 km of running under fatigue is the single biggest time variable.",
       },
+      // Race-week FAQ block — only added inside the 14-day capture window so
+      // the schema matches what's actually rendered on the page (Schema.org
+      // FAQPage requires every Q&A to be visible).
+      ...(inRaceWeek && !isPast
+        ? [
+            {
+              question: raceWeekTerms?.isLocalised
+                ? `What's the schedule (${raceWeekTerms.schedule}) for Hyrox ${event.city} ${year}?`
+                : `What's the schedule for Hyrox ${event.city} ${year}?`,
+              answer: `Hyrox publishes the official wave-by-wave race-day schedule in the Hyrox app and on results.hyrox.com about 7-10 days before race weekend. The standard race-day shape is: doors open ~90 minutes before the first wave, Pro/Elite waves go off first, and a new ~70-athlete wave leaves every 8-10 minutes through the day until the final Open wave clears Wall Balls. Awards typically run late afternoon at ${event.venue}.`,
+            },
+            {
+              question: raceWeekTerms?.isLocalised
+                ? `Where can I find the Hyrox ${event.city} ${year} start list (${raceWeekTerms.startList})?`
+                : `Where can I find the Hyrox ${event.city} ${year} start list?`,
+              answer: `The official start list goes live on results.hyrox.com a few days before the race. Open the season's event list, pick Hyrox ${event.city} ${year}, then switch to the Start List tab to see every athlete's bib number and wave assignment. If the list isn't published yet, save the athlete's name to your live-tracker watchlist on /live/ so it's ready the moment timing opens.`,
+            },
+            {
+              question: `How do I follow Hyrox ${event.city} ${year} live?`,
+              answer: `Splits land on the official Hyrox results portal within seconds of each athlete crossing a station's timing mat. Use the live tracker on /live/ to search by name or bib — it deep-links you straight to the official portal and copies your query so you can paste it into Hyrox's search box with one keystroke. Typical Open finishers are on the floor for 75-110 minutes, so you can usually catch a full race in one sitting.`,
+            },
+            ...(raceWeekTerms?.isLocalised
+              ? [
+                  {
+                    question: `Is Hyrox ${event.country} ${year} the same as Hyrox ${event.city} ${year}?`,
+                    answer: `Yes — Hyrox ${event.city} ${year} is the only Hyrox stop on the ${year} calendar in ${event.country}, so any "Hyrox ${event.country} ${year}" search refers to the ${formatEventDate(event.startDate, event.endDate)} race at ${event.venue}.`,
+                  },
+                ]
+              : []),
+          ]
+        : []),
     ]
   : [];
 
@@ -327,9 +380,16 @@ const explainerFaqItems = explainer
           </a>
         </div>
       ) : event.confirmed ? (
-        <div class="mt-6 inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          Confirmed on official {year} calendar
+        <div class="mt-6 flex flex-wrap gap-3 items-center">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            Confirmed on official {year} calendar
+          </div>
+          {inRaceWeek && raceWeekStatus && (
+            <a href="#race-week" class="inline-flex items-center gap-1.5 bg-accent/10 border border-accent/30 text-accent rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-accent/20 transition-colors no-underline">
+              {raceWeekStatus} · Schedule &amp; start list ↓
+            </a>
+          )}
         </div>
       ) : (
         <div class="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
@@ -361,6 +421,11 @@ const explainerFaqItems = explainer
         />
       </section>
     )}
+
+    {/* Race-week capture block — schedule / start list / live results /
+        spectator info. Self-renders only inside the 14-day window so it
+        stays out of the way for evergreen pre-race traffic. */}
+    {!isPast && <RaceWeekPanel event={event} />}
 
     <section class="prose md:prose-lg max-w-none">
       <p>
