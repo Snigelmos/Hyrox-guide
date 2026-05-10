@@ -5,12 +5,9 @@
  * Hyrox is a standardised format (8 stations + 8 km running) but each
  * venue lays the running loop differently — that's the difference between
  * a "fast" track (long straight loops, few corners) and a "technical"
- * track (tight corners, narrow lanes). Hyrox publishes a per-venue PDF
- * map a few days before race weekend; the link goes here when we have it.
- *
- * The section is rendered for every active event, race-week or not — it's
- * evergreen content that helps a first-time racer or visiting spectator
- * understand what they're walking into.
+ * track (tight corners, narrow lanes). When we have the official venue
+ * map URL on `event.courseMapUrl` we render it inline as an image; when
+ * we don't, we fall back to a link out to the official event page.
  */
 
 import HyroxCourseRibbon from "./HyroxCourseRibbon.astro";
@@ -36,6 +33,12 @@ const trackSpeedLabel = event.trackProfile
       ? "Technical track"
       : "Neutral track"
   : null;
+
+// Decide whether the official course map can be rendered as an inline
+// image (Hyrox publishes JPEG/PNG/WebP venue maps) or whether we need
+// to surface it as a "open file" link (PDF fallback).
+const mapUrl = event.courseMapUrl ?? "";
+const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
 ---
 
 <section id="course" class="mb-10 pb-10 border-b border-border scroll-mt-24" aria-labelledby="course-heading">
@@ -49,12 +52,55 @@ const trackSpeedLabel = event.trackProfile
       </span>
     )}
   </div>
-  <p class="text-text-muted leading-relaxed mb-5 max-w-3xl">
-    Every Hyrox runs the same 8 stations in the same order, separated by 8 × 1 km of running inside the venue. What changes city to city is the <strong class="text-text">running loop</strong> — the number of laps you do per kilometre, how tight the corners are, and how long the straightaways are. Hyrox publishes the {event.city} venue map in the athlete guide a few days before race weekend.
-  </p>
 
-  <!-- ── Course flow visual ──────────────────────────────────────── -->
+  <!-- ── Official venue map (image when we have one) ────────────── -->
+  {isInlineMap ? (
+    <figure class="mb-6">
+      <a
+        href={mapUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block bg-bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/40 transition-colors no-underline group"
+      >
+        <img
+          src={mapUrl}
+          alt={`Official Hyrox ${event.city} ${event.year} venue map at ${event.venue} — running loop, 8 stations, Roxzone, water stations, and bag drop.`}
+          loading="lazy"
+          decoding="async"
+          class="w-full h-auto bg-black"
+        />
+        <figcaption class="flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
+          <span>Official Hyrox {event.city} {event.year} venue map · {event.venue}</span>
+          <span class="text-accent font-bold uppercase tracking-wider group-hover:underline">Open full size ↗</span>
+        </figcaption>
+      </a>
+    </figure>
+  ) : event.courseMapUrl ? (
+    <a
+      href={event.courseMapUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block bg-gradient-to-br from-accent/10 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 mb-6 hover:border-accent/50 transition-colors no-underline"
+    >
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
+      <div class="text-base font-black text-text-heading">Hyrox {event.city} {event.year} course PDF ↗</div>
+    </a>
+  ) : (
+    <div class="bg-bg-card border border-border rounded-2xl p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Official venue map</div>
+      <div class="text-base font-black text-text-heading mb-2">Published in the Hyrox athlete guide</div>
+      <p class="text-sm text-text-muted leading-relaxed mb-3">
+        Hyrox releases the venue PDF (running loop, stations, Roxzone, bag drop) a few days before race weekend on the official event page and inside the Hyrox app.
+      </p>
+      <a href={event.officialUrl} target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-accent hover:underline no-underline">
+        hyrox.com event page ↗
+      </a>
+    </div>
+  )}
+
+  <!-- ── Course flow visual + station chips ───────────────────────── -->
   <div class="bg-bg-card border border-border rounded-2xl p-5 md:p-6 mb-6">
+    <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Standard race flow</div>
     <HyroxCourseRibbon class="mb-5" />
     <ol class="grid grid-cols-2 sm:grid-cols-4 gap-2 not-prose">
       {STATIONS.map((station) => (
@@ -68,48 +114,6 @@ const trackSpeedLabel = event.trackProfile
         </li>
       ))}
     </ol>
-  </div>
-
-  <!-- ── Track map link ──────────────────────────────────────────── -->
-  <div class="grid gap-3 md:grid-cols-2 mb-6">
-    {event.courseMapUrl ? (
-      <a
-        href={event.courseMapUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="block bg-gradient-to-br from-accent/10 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 hover:border-accent/50 transition-colors no-underline"
-      >
-        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
-        <div class="text-base font-black text-text-heading mb-1">Hyrox {event.city} {event.year} course PDF ↗</div>
-        <p class="text-sm text-text-muted leading-relaxed mb-0">
-          The official venue layout — running loop, station positions, Roxzone, water stations, and bag drop. Bring it up on race morning to walk the loop in your warm-up.
-        </p>
-      </a>
-    ) : (
-      <a
-        href={event.officialUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors no-underline"
-      >
-        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">Official course map</div>
-        <div class="text-base font-black text-text-heading mb-1">Published in the Hyrox athlete guide</div>
-        <p class="text-sm text-text-muted leading-relaxed mb-0">
-          Hyrox releases the venue PDF (running loop, stations, Roxzone, bag drop) a few days before race weekend on the official event page and inside the Hyrox app. Walk the loop in your warm-up so the corners aren't a surprise.
-        </p>
-      </a>
-    )}
-
-    <a
-      href="/blog/best-hyrox-pacing-strategy/"
-      class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors no-underline"
-    >
-      <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">How to read a Hyrox track</div>
-      <div class="text-base font-black text-text-heading mb-1">Fast vs. technical loops →</div>
-      <p class="text-sm text-text-muted leading-relaxed mb-0">
-        Loops with long straightaways favour open-stride runners; tight corners favour Hyrox-specific repeat-acceleration training. We break down how loop layout affects your splits.
-      </p>
-    </a>
   </div>
 
   <!-- ── Track-profile editorial ─────────────────────────────────── -->
@@ -152,7 +156,7 @@ const trackSpeedLabel = event.trackProfile
         ))}
       </dl>
       <p class="text-xs text-text-muted mt-3">
-        Curated venue notes — see the full <a href={`/hyrox/${evergreen.slug}/`} class="text-accent hover:underline">Hyrox {evergreen.city} city guide</a> for race history, Hyrox-affiliated local gyms, and pacing notes that don't change between years.
+        See the full <a href={`/hyrox/${evergreen.slug}/`} class="text-accent hover:underline">Hyrox {evergreen.city} city guide</a> for race history, Hyrox-affiliated local gyms, and pacing notes.
       </p>
     </div>
   )}

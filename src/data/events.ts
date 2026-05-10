@@ -1008,6 +1008,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-05-10",
     venue: "Messukeskus Helsinki",
     venueAddress: "Messuaukio 1, 00520 Helsinki",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/05/HYROX_Helsinki_VenueMap_PRINT_2215x1864mm.jpg-scaled-1.jpeg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",

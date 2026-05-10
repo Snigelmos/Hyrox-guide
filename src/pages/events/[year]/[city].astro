@@ -486,29 +486,58 @@ const explainerFaqItems = explainer
 
       {!isPast && (
         <>
-          <h2>How to register for Hyrox {event.city} {year}</h2>
-          <p>
-            Registration is on the <a href={event.officialUrl} rel="noopener noreferrer">official Hyrox site</a>. Larger stops like Berlin, London, and New York sell out 4–8 weeks before race day. Early-bird pricing typically saves €20–€30 vs late entry. Doubles and Relay slots usually sell out before Singles.
-          </p>
+          <h2 class="!mb-5">Plan your race</h2>
+          <div class="not-prose grid gap-4 md:grid-cols-3 mb-10">
+            <!-- Register -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">1 · Register</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                Get a slot before it sells out
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Larger stops like Berlin, London and New York sell out 4–8 weeks out. Early-bird pricing saves €20–€30. Doubles and Relay sell out before Singles.
+              </p>
+              <a href={event.officialUrl} rel="noopener noreferrer" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                Register on hyrox.com ↗
+              </a>
+            </div>
 
-          <h2>How to prepare for Hyrox {event.city}</h2>
-          <p>
-            Depending on your current fitness, plan 8–16 weeks of specific preparation. The biggest contributors to finish time are:
-          </p>
-          <ul>
-            <li>Your <a href="/training/running/">running base and intervals</a> — running is 50% of race time.</li>
-            <li>Station-specific strength, especially <a href="/blog/hyrox-sled-push-technique/">sled push</a> and <a href="/blog/hyrox-sled-pull-technique/">sled pull</a>.</li>
-            <li>Grip endurance for <a href="/racing-guide/stations/">farmers carry</a>, sled pull, and wall balls.</li>
-            <li>A dialled <a href="/supplements/protocol/">race-day fuelling protocol</a>.</li>
-          </ul>
-          <p>
-            If this is your first Hyrox, read our <a href="/blog/first-hyrox-race-guide/">first Hyrox race guide</a> and the <a href="/blog/hyrox-race-week-protocol/">race-week taper protocol</a>.
-          </p>
+            <!-- Prepare -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">2 · Train</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                8–16 weeks of specific prep
+              </h3>
+              <ul class="text-sm text-text-muted leading-relaxed space-y-1.5 mb-4 list-disc pl-4 flex-grow">
+                <li><a href="/training/running/" class="text-text hover:text-accent">Running</a> — 50% of race time</li>
+                <li><a href="/blog/hyrox-sled-push-technique/" class="text-text hover:text-accent">Sled push</a> + <a href="/blog/hyrox-sled-pull-technique/" class="text-text hover:text-accent">pull</a></li>
+                <li>Grip for <a href="/racing-guide/stations/" class="text-text hover:text-accent">farmers carry</a></li>
+                <li><a href="/supplements/protocol/" class="text-text hover:text-accent">Fuelling protocol</a></li>
+              </ul>
+              <a href="/blog/first-hyrox-race-guide/" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                First-Hyrox race guide →
+              </a>
+            </div>
 
-          <h2>Predicted finish time at Hyrox {event.city}</h2>
-          <p>
-            Use the <a href="/calculator/">Hyrox time calculator</a> or browse our <a href="/times/">time standards by division and age group</a> to set a realistic target before you line up. Hyrox times are globally comparable — your {event.city} time will line up directly against athletes who race in Berlin, London, or New York.
-          </p>
+            <!-- Predict -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">3 · Predict</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                Set a realistic target
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Hyrox times are globally comparable — your {event.city} time will line up directly against athletes racing in Berlin, London or New York.
+              </p>
+              <div class="flex flex-col gap-1.5 mt-auto">
+                <a href="/calculator/" class="text-sm font-bold text-accent hover:underline no-underline">
+                  Hyrox time calculator →
+                </a>
+                <a href="/times/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
+                  Browse time standards →
+                </a>
+              </div>
+            </div>
+          </div>
         </>
       )}
 
