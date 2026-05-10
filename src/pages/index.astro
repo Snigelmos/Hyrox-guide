@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
+import HomeRaceBanner from "../components/HomeRaceBanner.astro";
 import GeoAffiliateButton from "../components/GeoAffiliateButton";
 import ModuleIcons from "../components/icons/ModuleIcons.astro";
 import { primaryNav, type NavIcon } from "../config/nav";
@@ -29,6 +30,12 @@ const supplementStrip: { icon: SupplementIcon; name: string; productKey: string;
 >
   <!-- HERO — Vault branding, primary nav quick-links, stats -->
   <Hero />
+
+  <!-- RACE BANNER — surfaces any live or near-future race so race-week
+       traffic (e.g. "hyrox helsinki aikataulu") lands on a high-intent
+       CTA the moment a visitor arrives on the homepage. Self-renders
+       only when there's a race in the next 14 days. -->
+  <HomeRaceBanner />
 
   <!-- WHAT IS HYROX — brief explainer -->
   <section class="border-b border-border bg-bg-card/30">
