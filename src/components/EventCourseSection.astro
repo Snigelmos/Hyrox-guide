@@ -34,11 +34,20 @@ const trackSpeedLabel = event.trackProfile
       : "Neutral track"
   : null;
 
-// Decide whether the official course map can be rendered as an inline
-// image (Hyrox publishes JPEG/PNG/WebP venue maps) or whether we need
-// to surface it as a "open file" link (PDF fallback).
+// Decide how to render `event.courseMapUrl`:
+//
+//   - Image URL (jpg / jpeg / png / webp / avif) → render inline as an
+//     <img>, click-through opens the full-resolution file.
+//   - PDF URL → render a card link labelled as a PDF.
+//   - Facebook post URL → render a card link labelled as the official
+//     Hyrox community post (Hyrox sometimes publishes the venue map
+//     only inside the official community group, where the image CDN
+//     URL has expiring tokens and can't be embedded directly).
+//   - Anything else → generic "Open official venue map" card link.
 const mapUrl = event.courseMapUrl ?? "";
 const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
+const isPdfMap = /\.pdf(\?|$)/i.test(mapUrl);
+const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
 ---
 
 <section id="course" class="mb-10 pb-10 border-b border-border scroll-mt-24" aria-labelledby="course-heading">
@@ -75,7 +84,26 @@ const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
         </figcaption>
       </a>
     </figure>
-  ) : event.courseMapUrl ? (
+  ) : isFacebookMap ? (
+    <a
+      href={event.courseMapUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block bg-gradient-to-br from-accent/10 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 mb-6 hover:border-accent/50 transition-colors no-underline"
+    >
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
+      <div class="text-base font-black text-text-heading mb-2">Hyrox {event.city} {event.year} course map ↗</div>
+      <p class="text-sm text-text-muted leading-relaxed mb-2">
+        Hyrox published the official {event.city} venue map in the Hyrox
+        Official Community group on Facebook (the Hyrox CDN doesn't host
+        it under a public URL yet). Tap through to view the full layout —
+        running loop, station positions, Roxzone, and bag drop.
+      </p>
+      <span class="inline-flex items-center gap-1.5 text-xs font-bold text-accent">
+        Open on Facebook → Hyrox Official Community
+      </span>
+    </a>
+  ) : isPdfMap ? (
     <a
       href={event.courseMapUrl}
       target="_blank"
@@ -84,6 +112,16 @@ const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
     >
       <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
       <div class="text-base font-black text-text-heading">Hyrox {event.city} {event.year} course PDF ↗</div>
+    </a>
+  ) : event.courseMapUrl ? (
+    <a
+      href={event.courseMapUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block bg-gradient-to-br from-accent/10 via-bg-card to-bg-card border border-accent/30 rounded-2xl p-5 mb-6 hover:border-accent/50 transition-colors no-underline"
+    >
+      <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
+      <div class="text-base font-black text-text-heading">Open Hyrox {event.city} {event.year} venue map ↗</div>
     </a>
   ) : (
     <div class="bg-bg-card border border-border rounded-2xl p-5 mb-6">

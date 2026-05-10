@@ -1023,8 +1023,16 @@ export const EVENTS: HyroxEvent[] = [
     year: 2026,
     startDate: "2026-05-14",
     endDate: "2026-05-17",
-    venue: "EY Centre Ottawa",
+    venue: "Cohere Centre Ottawa",
     venueAddress: "4899 Uplands Drive, Ottawa, ON K1V 2N6",
+    // Hyrox published the official Ottawa course map in the Hyrox Official
+    // Community Facebook group on 2026-05-09. Hyrox's own CDN does not host
+    // the file under a guessable URL (we probed 15+ pattern variations and
+    // got 404 on all of them). FB's image CDN signs URLs with expiring
+    // tokens, so we link to the post itself rather than the bare image.
+    // Swap to a hyrox.com canonical URL if Hyrox ever publishes one.
+    courseMapUrl:
+      "https://www.facebook.com/groups/1950388345199390/posts/4530409480530584/",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "GoodLife",
