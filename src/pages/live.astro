@@ -4,22 +4,35 @@ import LiveAthleteFinder from "../components/LiveAthleteFinder";
 import {
   buildResultsHyroxUrl,
   getActiveEventsOn,
+  getThisWeekEvents,
+  getUpcomingEvents,
   liveEventDayLabel,
+  daysUntilEvent,
 } from "../lib/hyrox-live";
 import { EVENTS, formatEventDate } from "../data/events";
 import { STATIONS } from "../data/stations";
 
 const now = new Date();
 const activeEvents = getActiveEventsOn(now);
+const thisWeekEvents = getThisWeekEvents(now);
+const upcomingEvents = getUpcomingEvents(now, 60).filter(
+  (e) => !thisWeekEvents.includes(e),
+);
 
 // Project HyroxEvents into the lightweight shape the React island needs.
-const finderEvents = activeEvents.map((event) => ({
-  slug: event.slug,
-  year: event.year,
-  city: event.city,
-  country: event.country,
-  searchUrl: buildResultsHyroxUrl(event),
-}));
+// We pass live + this-week + (capped) upcoming so users can produce a share
+// link days before the gun goes off.
+const finderEvents = [...activeEvents, ...thisWeekEvents, ...upcomingEvents].map(
+  (event) => ({
+    slug: event.slug,
+    year: event.year,
+    city: event.city,
+    country: event.country,
+    searchUrl: buildResultsHyroxUrl(event),
+    startDate: event.startDate,
+    endDate: event.endDate ?? event.startDate,
+  }),
+);
 
 const breadcrumbs = [{ name: "Live Race Tracker" }];
 
@@ -28,43 +41,55 @@ const title = activeEvents.length
   : "Hyrox Live Race Tracker — Follow Any Athlete Across the 8 Stations | HyroxVault";
 
 const description = activeEvents.length
-  ? `Follow any Hyrox athlete live across all 8 stations. ${activeEvents.map((e) => `Hyrox ${e.city}`).join(" and ")} are running right now — search by name or bib number and we'll deep-link you straight to the official results portal.`
-  : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, save a watchlist for race weekend, and jump straight to the official Hyrox live results.";
+  ? `Follow any Hyrox athlete live across all 8 stations. ${activeEvents.map((e) => `Hyrox ${e.city}`).join(" and ")} are running right now — search by name or bib, share a tracker link with family, and watch every split as it happens.`
+  : thisWeekEvents.length
+    ? `Hyrox ${thisWeekEvents.map((e) => e.city).join(" + ")} race${thisWeekEvents.length === 1 ? "s" : ""} this week. Find your athlete now, share a tracker link with friends and family, and the dashboard goes live the moment the start gun fires.`
+    : "Follow any Hyrox athlete live across all 8 stations and 8 km of running. Search by name or bib, share a tracker link with family before race day, and watch every split as it happens.";
 
 const faqItems = [
   {
     question: "How does the Hyrox live tracker work?",
     answer:
-      "Pick a race that's currently running, type the athlete's name or bib number, and we open the official Hyrox results portal in a new tab with your search query copied to the clipboard. Paste it into the search box and you'll see splits update station-by-station as the athlete moves through the course.",
+      "Pick a race, type the athlete's last name or bib number, and we render an 8-station live dashboard right here on the page. Run splits, station times, place per station, projected finish — all auto-refresh every 30 seconds. No separate tab, no app install.",
+  },
+  {
+    question: "Can I share the live tracker with friends and family?",
+    answer:
+      "Yes. Once you've selected an athlete, hit Copy share link on the dashboard. The link encodes the athlete and event, so anyone who opens it lands directly on the live dashboard with no setup. Works on iMessage, WhatsApp, Slack — preview shows the athlete's name.",
+  },
+  {
+    question: "Can I create a share link before the race starts?",
+    answer:
+      "Yes, as soon as the official Hyrox startlist is published (usually a few days before race weekend). Search for your athlete now, copy the share link, and send it to family. The dashboard shows a 'Race starts on X' bookmark state until the gun fires, then automatically switches to live splits.",
   },
   {
     question: "Where does the live data come from?",
     answer:
-      "All splits are pulled from the official Hyrox results portal at results.hyrox.com, which is the timing system Hyrox uses on race day. Hyrox does not currently publish a public live-data API, so we link directly to that portal rather than relabel their data.",
+      "All splits are pulled from the official Hyrox results portal at results.hyrox.com, which is the timing system Hyrox uses on race day. We refresh roughly every 20 seconds via an edge cache so spectator load doesn't hit Hyrox's servers directly.",
   },
   {
     question: "How fast do splits update during a race?",
     answer:
-      "Splits appear within a few seconds of an athlete crossing each station's timing mat. Refresh the official results tab between stations to see the latest splits — the page is fast enough that a refresh every 30-60 seconds is enough.",
+      "Splits appear within a few seconds of an athlete crossing each timing mat. The dashboard polls every 30 seconds and stops automatically the moment the athlete crosses the finish line.",
   },
   {
     question: "How do I find my friend's bib (start) number?",
     answer:
-      "If you can't remember the bib, search by last name instead. The portal lists matching athletes with their division and start number — pick the right one and you can switch to bib search after that.",
+      "You don't need it. Search by last name and pick from the matches — division, age group, country, and bib are shown to help you confirm the right athlete. Common surnames just give you a longer pick list.",
   },
   {
     question: "Which Hyrox events can I track here?",
     answer:
-      "Any Hyrox race that's currently in progress on our 2026 calendar shows up at the top of this page automatically on race day. Outside race weekends the tracker waits — we don't show fake live data for races that aren't actually running.",
+      "Any Hyrox race in our 2026 calendar that has a published startlist on results.hyrox.com — that covers everything live this weekend, plus most upcoming races within the next 60 days.",
   },
   {
     question: "Does this work on mobile?",
     answer:
-      "Yes. The watchlist saves locally on the device you're using, so a phone in the venue and a laptop at home each keep their own list. Pop-ups need to be allowed for the new-tab open to work.",
+      "Yes. The dashboard is fully responsive and the watchlist saves locally on each device. A phone in the venue and a laptop at home each keep their own list.",
   },
 ];
 
-const lastUpdated = "May 9, 2026";
+const lastUpdated = "May 10, 2026";
 ---
 
 <BaseLayout
@@ -99,7 +124,19 @@ const lastUpdated = "May 9, 2026";
           </span>
         ) : (
           <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
-            No race running right now
+            No race live right now
+          </span>
+        )}
+        {thisWeekEvents.length > 0 && (
+          <span class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
+            {thisWeekEvents.length === 1
+              ? `1 race this week`
+              : `${thisWeekEvents.length} races this week`}
+          </span>
+        )}
+        {upcomingEvents.length > 0 && (
+          <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-text-muted">
+            {upcomingEvents.length} more in next 60 days
           </span>
         )}
       </div>
@@ -108,8 +145,8 @@ const lastUpdated = "May 9, 2026";
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
         Follow any athlete across the 8 stations and 8 km of running on race
-        day. Search by name or bib, build a watchlist for the weekend, and we
-        deep-link you straight to the official Hyrox live results portal.
+        day. Search by name or bib, copy a share link to send family, and the
+        dashboard goes live the moment the start gun fires.
       </p>
     </header>
 
@@ -155,7 +192,84 @@ const lastUpdated = "May 9, 2026";
       </section>
     )}
 
-    <section class="mb-12">
+    {thisWeekEvents.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-3">
+          This week
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {thisWeekEvents.map((event) => {
+            const days = daysUntilEvent(event, now);
+            const countdown = days === 0 ? "Tomorrow" : days === 1 ? "In 1 day" : `In ${days} days`;
+            return (
+              <article class="relative bg-gradient-to-br from-amber-500/10 via-bg-card to-bg-card border border-amber-500/30 rounded-2xl p-5">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-amber-400" />
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                    {countdown}
+                  </span>
+                </div>
+                <h3 class="text-xl font-black text-text-heading leading-tight">
+                  Hyrox {event.city}
+                </h3>
+                <p class="mt-1 text-sm text-text-muted">
+                  {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                  <a
+                    href={`/events/${event.year}/${event.slug}/`}
+                    class="text-xs font-bold uppercase tracking-wider text-text-muted bg-bg-card border border-border rounded-full px-3 py-1 hover:border-accent/40 transition-colors no-underline"
+                  >
+                    Event guide →
+                  </a>
+                  <a
+                    href="#track-an-athlete"
+                    class="text-xs font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1 hover:bg-amber-500/20 transition-colors no-underline"
+                  >
+                    Pre-build a share link ↓
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    {upcomingEvents.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">
+          Coming up — next 60 days
+        </h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {upcomingEvents.map((event) => {
+            const days = daysUntilEvent(event, now);
+            return (
+              <li>
+                <a
+                  href={`/events/${event.year}/${event.slug}/`}
+                  class="block bg-bg-card border border-border hover:border-accent/40 rounded-xl px-4 py-3 transition-colors no-underline"
+                >
+                  <div class="flex items-baseline justify-between gap-2">
+                    <span class="font-bold text-text-heading truncate">
+                      Hyrox {event.city}
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted whitespace-nowrap">
+                      {days < 14 ? `In ${days}d` : formatEventDate(event.startDate, event.endDate)}
+                    </span>
+                  </div>
+                  <span class="text-xs text-text-muted">
+                    {event.country}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
+
+    <section id="track-an-athlete" class="mb-12 scroll-mt-24">
       <div class="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
         <div>
           <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
@@ -163,8 +277,10 @@ const lastUpdated = "May 9, 2026";
           </h2>
           <p class="text-text-muted mb-5 max-w-2xl">
             {activeEvents.length > 0
-              ? "Pick the race, drop the athlete's name (last name is enough) or bib number, and hit Track. We'll copy your query and open the official live results so you can paste straight into the search box."
-              : "The tracker activates the moment a race goes live. While you wait, save searches to your watchlist — they'll be ready to fire when timing opens."}
+              ? "Pick the race, drop the athlete's name (last name is enough) or bib number, and hit Track. The 8-station dashboard updates every 30 seconds and you can copy a share link to send to family."
+              : thisWeekEvents.length > 0
+                ? "Race weekend is coming up. Find your athlete now and copy a share link to send family — the dashboard goes live the moment the start gun fires."
+                : "Pick a race, find your athlete, and the dashboard streams every split as it happens. Outside race weekends you can still build share links from upcoming startlists."}
           </p>
           <LiveAthleteFinder
             client:load

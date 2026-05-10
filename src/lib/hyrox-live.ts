@@ -67,6 +67,45 @@ export function isEventLiveNow(
 }
 
 /**
+ * Events that start within the next `days` days, excluding any that are
+ * already live now (those belong in `getActiveEventsOn`). Sorted ascending
+ * by start date so the soonest race is first.
+ */
+export function getUpcomingEvents(
+  date: Date = new Date(),
+  days = 60,
+  events: HyroxEvent[] = EVENTS,
+): HyroxEvent[] {
+  const todayYmd = toYmd(date);
+  const horizon = new Date(date.getTime());
+  horizon.setDate(horizon.getDate() + days);
+  const horizonYmd = toYmd(horizon);
+  return events
+    .filter((e) => e.startDate > todayYmd && e.startDate <= horizonYmd)
+    .sort((a, b) => (a.startDate < b.startDate ? -1 : 1));
+}
+
+/** Events that start within the next 7 days (exclusive of today). */
+export function getThisWeekEvents(
+  date: Date = new Date(),
+  events: HyroxEvent[] = EVENTS,
+): HyroxEvent[] {
+  return getUpcomingEvents(date, 7, events);
+}
+
+/** Days from `date` until `event.startDate`. Negative if already past. */
+export function daysUntilEvent(
+  event: HyroxEvent,
+  date: Date = new Date(),
+): number {
+  const start = parseYmd(event.startDate);
+  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.round(
+    (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
+}
+
+/**
  * Build the deep-link URL into results.hyrox.com.
  *
  * We can't reliably prefill the JS-rendered search box via URL parameters,

@@ -70,6 +70,8 @@ const finderEvents = event && isLiveNow
         city: event.city,
         country: event.country,
         searchUrl: buildResultsHyroxUrl(event),
+        startDate: event.startDate,
+        endDate: event.endDate ?? event.startDate,
       },
     ]
   : [];

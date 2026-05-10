@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   WATCHLIST_STORAGE_KEY,
   WATCHLIST_CAP,
@@ -17,6 +17,10 @@ export interface LiveEventOption {
   country: string;
   /** Pre-built results.hyrox.com search-page URL (fallback for legacy entries). */
   searchUrl: string;
+  /** ISO YYYY-MM-DD start date. Optional for backwards compatibility. */
+  startDate?: string;
+  /** ISO YYYY-MM-DD end date. Optional. */
+  endDate?: string;
 }
 
 interface Props {
@@ -51,6 +55,11 @@ const STATION_NAMES = [
   "Sandbag Lunges",
   "Wall Balls",
 ];
+
+const SHARE_PARAM_IDP = "idp";
+const SHARE_PARAM_EVENT = "event";
+const SHARE_PARAM_NAME = "name";
+const SHARE_PARAM_RACE = "race";
 
 export default function LiveAthleteFinder({
   events,
@@ -90,6 +99,25 @@ export default function LiveAthleteFinder({
     }
   }, []);
 
+  // If the URL already carries ?idp&event, jump straight into the dashboard.
+  // This is how share links land users on a tracker without searching.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const idp = params.get(SHARE_PARAM_IDP);
+    const event = params.get(SHARE_PARAM_EVENT);
+    if (!idp || !event) return;
+    const name = params.get(SHARE_PARAM_NAME) ?? "";
+    const race = params.get(SHARE_PARAM_RACE) ?? undefined;
+    setView({
+      kind: "dashboard",
+      idp,
+      event,
+      name,
+      raceLabel: race,
+    });
+  }, []);
+
   function persist(next: WatchlistEntry[]) {
     setWatchlist(next);
     try {
@@ -105,6 +133,67 @@ export default function LiveAthleteFinder({
   );
 
   const hasNoEvents = events.length === 0;
+
+  const isFutureEvent = useMemo(() => {
+    if (!selectedEvent?.startDate) return false;
+    const today = new Date();
+    const ymd = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    return selectedEvent.startDate > ymd;
+  }, [selectedEvent]);
+
+  const buildShareLink = useCallback(
+    (match: { idp: string; event: string; name: string }) => {
+      const params = new URLSearchParams();
+      params.set(SHARE_PARAM_IDP, match.idp);
+      params.set(SHARE_PARAM_EVENT, match.event);
+      if (match.name) params.set(SHARE_PARAM_NAME, match.name);
+      if (selectedEvent) {
+        params.set(
+          SHARE_PARAM_RACE,
+          `Hyrox ${selectedEvent.city} ${selectedEvent.year}`,
+        );
+      }
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      return `${origin}/live/?${params.toString()}`;
+    },
+    [selectedEvent],
+  );
+
+  async function copyShareLink(match: LiveMatch) {
+    const url = buildShareLink(match);
+    let copied = false;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        copied = true;
+      }
+    } catch {
+      /* fall through */
+    }
+    if (!copied) {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = url;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        copied = document.execCommand("copy");
+        document.body.removeChild(ta);
+      } catch {
+        /* nothing more we can do */
+      }
+    }
+    if (copied) {
+      setError(null);
+      setFeedback(`Share link copied — paste into iMessage / WhatsApp / Slack.`);
+    } else {
+      setError(
+        `Couldn't copy automatically. Long-press to copy: ${url}`,
+      );
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -138,8 +227,15 @@ export default function LiveAthleteFinder({
       const data = (await res.json()) as { matches: LiveMatch[] };
       const matches = data.matches ?? [];
       if (matches.length === 0) {
+        if (isFutureEvent) {
+          setError(
+            `No startlist match for "${trimmed}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
+          );
+          setView({ kind: "form" });
+          return;
+        }
         setError(
-          `No matches for "${trimmed}". Check spelling or try the surname only. The official portal opens with your query in the clipboard.`,
+          `No matches for "${trimmed}". Check spelling or try the surname only.`,
         );
         await fallbackToDeepLink(trimmed);
         return;
@@ -223,7 +319,6 @@ export default function LiveAthleteFinder({
       });
       return;
     }
-    // Legacy entry without idp/event — re-trigger the search to land on dashboard.
     setQuery(entry.query);
     setSearchType(entry.type);
     setError(null);
@@ -240,6 +335,14 @@ export default function LiveAthleteFinder({
 
   function backToMatches() {
     if (view.kind !== "dashboard" || !view.previousMatches) {
+      // Strip any share-link query params so the form view shows cleanly.
+      if (typeof window !== "undefined" && window.location.search) {
+        const url = new URL(window.location.href);
+        [SHARE_PARAM_IDP, SHARE_PARAM_EVENT, SHARE_PARAM_NAME, SHARE_PARAM_RACE].forEach(
+          (k) => url.searchParams.delete(k),
+        );
+        window.history.replaceState({}, "", url.toString());
+      }
       setView({ kind: "form" });
       return;
     }
@@ -252,12 +355,12 @@ export default function LiveAthleteFinder({
   }
 
   return (
-    <div className={`bg-bg-card border border-border rounded-2xl p-5 md:p-6 ${className}`}>
+    <div className={`bg-bg-card border border-border rounded-2xl p-4 sm:p-5 md:p-6 ${className}`}>
       {view.kind === "dashboard" ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="text-xs text-text-muted">
-              Tracking <strong className="text-text">{view.name}</strong>
+            <div className="text-xs text-text-muted min-w-0">
+              Tracking <strong className="text-text">{view.name || "athlete"}</strong>
               {view.raceLabel && <> at {view.raceLabel}</>}
             </div>
             <button
@@ -271,7 +374,9 @@ export default function LiveAthleteFinder({
           <LiveAthleteDashboard
             idp={view.idp}
             event={view.event}
+            athleteHint={view.name}
             raceLabel={view.raceLabel}
+            shareUrl={buildShareLink({ idp: view.idp, event: view.event, name: view.name })}
             onClose={backToMatches}
           />
         </div>
@@ -285,13 +390,13 @@ export default function LiveAthleteFinder({
             {!pinnedEvent && events.length > 0 && (
               <label className="block">
                 <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-                  Active event
+                  Race
                 </span>
                 <select
                   value={selectedSlug}
                   onChange={(e) => setSelectedSlug(e.target.value)}
                   className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-text font-medium focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
-                  aria-label="Choose the live event to track"
+                  aria-label="Choose the event to track"
                 >
                   {events.map((e) => (
                     <option key={`${e.year}-${e.slug}`} value={e.slug}>
@@ -303,7 +408,7 @@ export default function LiveAthleteFinder({
             )}
 
             {pinnedEvent && (
-              <div className="flex items-center gap-2 text-xs text-text-muted">
+              <div className="flex items-center gap-2 text-xs text-text-muted flex-wrap">
                 <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Live now
@@ -311,6 +416,15 @@ export default function LiveAthleteFinder({
                 <span>
                   Tracking <strong className="text-text">Hyrox {pinnedEvent.city} {pinnedEvent.year}</strong>
                 </span>
+              </div>
+            )}
+
+            {isFutureEvent && selectedEvent && (
+              <div className="text-xs bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-lg px-3 py-2">
+                Hyrox {selectedEvent.city} {selectedEvent.year} hasn't started yet.
+                If the official startlist is published you can still search and
+                copy a share link to send your family — the dashboard activates
+                the moment the gun goes off.
               </div>
             )}
 
@@ -324,7 +438,7 @@ export default function LiveAthleteFinder({
                   role="radio"
                   aria-checked={searchType === "name"}
                   onClick={() => setSearchType("name")}
-                  className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
+                  className={`px-3 sm:px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
                     searchType === "name"
                       ? "bg-accent text-bg"
                       : "text-text-muted hover:text-text"
@@ -337,7 +451,7 @@ export default function LiveAthleteFinder({
                   role="radio"
                   aria-checked={searchType === "bib"}
                   onClick={() => setSearchType("bib")}
-                  className={`px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
+                  className={`px-3 sm:px-4 py-1.5 text-sm font-bold rounded-md transition-colors ${
                     searchType === "bib"
                       ? "bg-accent text-bg"
                       : "text-text-muted hover:text-text"
@@ -352,7 +466,7 @@ export default function LiveAthleteFinder({
               <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
                 {searchType === "name" ? "Athlete name (last name works)" : "Start (bib) number"}
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   inputMode={searchType === "bib" ? "numeric" : "text"}
@@ -360,16 +474,16 @@ export default function LiveAthleteFinder({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={
-                    searchType === "name" ? "e.g. Emilsson" : "e.g. 124001"
+                    searchType === "name" ? "e.g. Smith" : "e.g. 1234"
                   }
-                  className="flex-1 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
+                  className="flex-1 min-w-0 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
                   autoComplete="off"
                   spellCheck={false}
                 />
                 <button
                   type="submit"
                   disabled={hasNoEvents || view.kind === "loading"}
-                  className="inline-flex items-center gap-2 bg-accent text-bg font-bold px-5 py-2.5 rounded-lg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center justify-center gap-2 bg-accent text-bg font-bold px-5 py-2.5 rounded-lg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {view.kind === "loading" ? (
                     <>
@@ -408,7 +522,7 @@ export default function LiveAthleteFinder({
 
           {view.kind === "matches" && (
             <div className="mt-5 pt-4 border-t border-border">
-              <div className="flex items-baseline justify-between mb-3">
+              <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
                 <h4 className="text-sm font-bold uppercase tracking-wider text-text-muted">
                   {view.matches.length} match{view.matches.length === 1 ? "" : "es"} for "{view.query}"
                 </h4>
@@ -422,11 +536,14 @@ export default function LiveAthleteFinder({
               </div>
               <ul className="space-y-2">
                 {view.matches.map((m) => (
-                  <li key={`${m.idp}-${m.event}`}>
+                  <li
+                    key={`${m.idp}-${m.event}`}
+                    className="bg-bg border border-border rounded-lg overflow-hidden"
+                  >
                     <button
                       type="button"
                       onClick={() => openDashboard(m, view as { matches: LiveMatch[]; query: string; type: LiveSearchType })}
-                      className="w-full text-left bg-bg border border-border hover:border-accent/40 hover:bg-bg-card rounded-lg px-3 py-2.5 transition-colors"
+                      className="w-full text-left hover:bg-bg-card px-3 py-2.5 transition-colors"
                     >
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="min-w-0">
@@ -451,6 +568,22 @@ export default function LiveAthleteFinder({
                         </div>
                       </div>
                     </button>
+                    <div className="flex items-center gap-2 px-3 py-2 border-t border-border bg-bg-card/50">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void copyShareLink(m);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-text-muted hover:text-accent border border-border hover:border-accent/40 rounded-full px-2.5 py-1"
+                        title="Copy a share link to this athlete's tracker"
+                      >
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        Copy share link
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -475,11 +608,11 @@ export default function LiveAthleteFinder({
               return (
                 <li
                   key={`${entry.eventSlug}-${entry.type}-${entry.query}-${entry.addedAt}`}
-                  className="flex items-center gap-3 bg-bg border border-border rounded-lg px-3 py-2.5"
+                  className="flex items-center gap-2 bg-bg border border-border rounded-lg px-3 py-2.5"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-text-heading truncate">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-bold text-text-heading truncate max-w-full">
                         {entry.query}
                       </span>
                       {entry.divisionLabel && (
@@ -489,7 +622,7 @@ export default function LiveAthleteFinder({
                       )}
                       {isLiveable && (
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-1.5 py-0.5">
-                          Live tracker
+                          Live
                         </span>
                       )}
                     </div>
@@ -500,7 +633,7 @@ export default function LiveAthleteFinder({
                   <button
                     type="button"
                     onClick={() => handleReopen(entry)}
-                    className="text-xs font-bold text-accent hover:bg-accent/10 border border-accent/30 rounded-md px-2.5 py-1.5"
+                    className="text-xs font-bold text-accent hover:bg-accent/10 border border-accent/30 rounded-md px-2.5 py-1.5 whitespace-nowrap"
                     title="Open the live dashboard for this athlete"
                   >
                     Open
