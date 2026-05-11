@@ -18,9 +18,13 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
 <BaseLayout
   title="Hyrox Training Plans — Beginner, Intermediate & Advanced Programs"
   description="Structured Hyrox training programs for every level — beginner to advanced. Get race-ready with our proven plans."
+  dateModified="2026-05-09"
 >
   <section class="container-main py-16">
     <div class="max-w-3xl mb-10">
+      <p class="text-sm text-text-muted mb-3">
+        Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a> · See our <a href="/methodology/" class="text-accent hover:underline">methodology</a>
+      </p>
       <h1 class="text-4xl md:text-6xl font-black mb-6">
         <span class="text-gradient-accent">Training Programs</span>
       </h1>
@@ -35,7 +39,7 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
     {/* Sample Workouts — featured at the top */}
     <div class="mb-12">
       <a
-        href="/training/workouts/"
+        href="/workouts/"
         class="group block bg-bg-card border-2 border-accent/20 rounded-2xl p-8 hover:border-accent/40 hover:bg-bg-card-hover transition-all duration-300 hover:-translate-y-1"
       >
         <div class="md:flex md:items-center md:gap-8">
@@ -179,7 +183,7 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
     {/* Topic guides — hub-and-spoke into the deep blog content */}
     <h2 class="text-sm font-bold uppercase tracking-wider text-accent mt-16 mb-2">Train each station</h2>
     <p class="text-text-muted text-sm mb-6 max-w-2xl">
-      Adam's technique deep-dives. Each one covers the movement pattern, the common mistakes, and the drills we actually program for athletes. For per-station playbooks with sets, reps, and progression, see the <a href="/training/stations/" class="text-accent hover:underline">station playbooks hub</a>; for official weights and no-rep rules, see the <a href="/stations/" class="text-accent hover:underline">stations standards page</a>.
+      Per-station technique deep-dives. Each one covers the movement pattern, the common mistakes, and the drills we actually program for athletes. For per-station playbooks with sets, reps, and progression, see the <a href="/training/stations/" class="text-accent hover:underline">station playbooks hub</a>; for official weights and no-rep rules, see the <a href="/stations/" class="text-accent hover:underline">stations standards page</a>.
     </p>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {[

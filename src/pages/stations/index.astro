@@ -3,18 +3,22 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { STATIONS } from "../../data/stations";
 
 const title = "Hyrox Stations — Weights, Standards, and Technique";
-const description = "Every Hyrox station explained: official weights by division, common no-reps, and proven technique for SkiErg, sled push, sled pull, burpee broad jumps, row, farmers carry, sandbag lunges, and wall balls.";
+const description = "Every Hyrox station explained: official weights by division, common no-reps, and proven technique for all 8 stations.";
 ---
 
 <BaseLayout
-  title={`${title} | Hyrox Guide`}
+  title={`${title} | Hyrox Vault`}
   description={description}
-  ogType="article"
-  schemaType="Article"
+  ogType="website"
+  schemaType="CollectionPage"
+  dateModified="2026-05-09"
   breadcrumbs={[{ name: "Stations" }]}
 >
   <div class="container-main py-10 md:py-16">
     <header class="mb-10 pb-8 border-b border-border">
+      <p class="text-sm text-text-muted mb-3">
+        Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a>
+      </p>
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
         {title}
       </h1>

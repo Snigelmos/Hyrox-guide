@@ -4,7 +4,7 @@ import { getAllPosts, BLOG_CATEGORY_META } from "../data/blog";
 export async function GET(context) {
   const posts = await getAllPosts();
   return rss({
-    title: "Hyrox Guide — Blog",
+    title: "Hyrox Vault — Blog",
     description:
       "Hyrox training, race strategy, station technique, nutrition, and gear. New articles every week.",
     site: context.site,

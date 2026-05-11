@@ -1,0 +1,225 @@
+---
+/**
+ * Inline workout library — 23 sessions across 4 categories with filter
+ * chips and accordion bodies. Renders below the named-benchmarks grid
+ * on /workouts/.
+ */
+import {
+  TYPED_LIBRARY_WORKOUTS,
+  LIBRARY_CATEGORIES_WITH_COUNTS,
+  LIBRARY_WORKOUT_TYPE_COUNTS,
+  LIBRARY_TOTAL_WORKOUTS,
+} from "../data/workout-library";
+---
+
+<section class="mt-16 pt-12 border-t border-border" id="workout-library">
+  <header class="mb-8">
+    <h2 class="text-3xl md:text-4xl font-black mb-3 text-text-heading">
+      Workout Library — <span class="text-gradient-accent">{LIBRARY_TOTAL_WORKOUTS} Sessions</span>
+    </h2>
+    <p class="text-base text-text-muted leading-relaxed max-w-2xl">
+      Standalone training sessions across full simulations, running, station work, strength, and CrossFit-inspired conditioning. Drop any of these into your training week alongside the named benchmarks above.
+    </p>
+    <p class="text-sm text-text-muted leading-relaxed mt-2">
+      Each workout is tagged as <strong class="text-text">Hyrox specific</strong> for race-transfer sessions or <strong class="text-text">General</strong> for base fitness, strength, and broader conditioning.
+    </p>
+  </header>
+
+  <div class="flex flex-wrap gap-2 mb-8" id="filter-chips">
+    <button
+      data-filter="all"
+      class="filter-chip active inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-accent bg-accent/10 text-accent"
+    >
+      All ({LIBRARY_TOTAL_WORKOUTS})
+    </button>
+    <button
+      data-filter="hyrox-specific"
+      class="filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent"
+    >
+      Hyrox specific ({LIBRARY_WORKOUT_TYPE_COUNTS["hyrox-specific"]})
+    </button>
+    <button
+      data-filter="general"
+      class="filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent"
+    >
+      General ({LIBRARY_WORKOUT_TYPE_COUNTS.general})
+    </button>
+    {LIBRARY_CATEGORIES_WITH_COUNTS.map((cat) => (
+      <button
+        data-filter={cat.id}
+        class={`filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent`}
+      >
+        {cat.icon} {cat.label} ({cat.count})
+      </button>
+    ))}
+  </div>
+
+  {LIBRARY_CATEGORIES_WITH_COUNTS.map((cat) => {
+    const catWorkouts = TYPED_LIBRARY_WORKOUTS.filter((w) => w.category === cat.id);
+    return (
+      <section class="category-section mb-12" id={cat.id} data-category={cat.id}>
+        <h3 class="flex items-center gap-3 text-xl font-black text-text-heading mb-5 pb-3 border-b border-border">
+          <span>{cat.icon}</span>
+          <span>{cat.label}</span>
+          <span class={`text-xs font-bold px-2 py-0.5 rounded-full border ${cat.color}`}>{cat.count} workouts</span>
+        </h3>
+        {catWorkouts.map((w) => (
+          <details class="accordion workout-item" id={w.id} data-category={w.category} data-workout-type={w.workoutType}>
+            <summary>
+              <div class="flex items-center gap-3 min-w-0">
+                <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
+                  {w.categoryLabel}
+                </span>
+                <span class={`hidden md:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.workoutTypeColor}`}>
+                  {w.workoutTypeShortLabel}
+                </span>
+                <span class="text-sm md:text-base leading-snug">{w.name}</span>
+              </div>
+              <div class="flex items-center gap-4 flex-shrink-0">
+                <span class="hidden md:block text-xs text-text-muted">{w.time}</span>
+                <svg class="accordion-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </summary>
+            <div class="accordion-body">
+              <div class="flex flex-wrap gap-4 py-4 text-xs text-text-muted border-b border-border mb-5">
+                <span><strong class="text-text">Time:</strong> {w.time}</span>
+                <span><strong class="text-text">Level:</strong> {w.level}</span>
+                <span><strong class="text-text">Equipment:</strong> {w.equipment}</span>
+                <span><strong class="text-text">Type:</strong> <span class={`font-bold ${w.workoutTypeColor.split(" ")[0]}`}>{w.workoutTypeLabel}</span></span>
+              </div>
+
+              <p class="text-text-muted text-sm leading-relaxed mb-5">{w.description}</p>
+
+              {w.warmup && (
+                <p class="text-sm mb-5"><strong class="text-text">Warm-up (5 min):</strong> <span class="text-text-muted">{w.warmup}</span></p>
+              )}
+
+              {w.bullets && (
+                <ul class="space-y-2 mb-5">
+                  {w.bullets.map((b) => (
+                    <li class="flex items-start gap-2 text-sm text-text-muted">
+                      <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {w.table && (
+                <div class="overflow-x-auto -mx-4 sm:mx-0 mb-5">
+                  <table class="min-w-full text-sm border-collapse">
+                    <thead>
+                      <tr class="bg-bg-card-hover">
+                        {w.table.headers.map((h) => (
+                          <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/50">
+                      {w.table.rows.map((row) => (
+                        <tr class="hover:bg-bg-card/50 transition-colors">
+                          {row.map((cell, ci) => (
+                            <td class:list={["px-3 sm:px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {w.pacing && (
+                <div class="mb-5">
+                  <p class="text-xs font-bold text-accent uppercase tracking-wider mb-2">Target Pacing</p>
+                  <div class="overflow-x-auto -mx-4 sm:mx-0">
+                    <table class="min-w-full text-sm border-collapse">
+                      <thead>
+                        <tr class="bg-bg-card-hover">
+                          {w.pacing.headers.map((h) => (
+                            <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-border/50">
+                        {w.pacing.rows.map((row) => (
+                          <tr class="hover:bg-bg-card/50 transition-colors">
+                            {row.map((cell, ci) => (
+                              <td class:list={["px-3 sm:px-4 py-2.5 text-sm", ci === 0 ? "text-text font-semibold" : "text-text-muted"]}>{cell}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {w.benchmarks && (
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                  {w.benchmarks.map(({ label, time, color }) => (
+                    <div class="bg-bg border border-border rounded-xl p-3 text-center">
+                      <div class:list={["text-sm font-bold", color]}>{label}</div>
+                      <div class="text-xs text-text-muted mt-0.5">{time}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {w.notes && w.notes.length > 0 && (
+                <div class="space-y-1.5 pt-2 border-t border-border/50">
+                  {w.notes.map((note) => (
+                    <p class="text-xs text-text-muted flex items-start gap-2">
+                      <span class="text-accent flex-shrink-0">•</span>
+                      {note}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </details>
+        ))}
+      </section>
+    );
+  })}
+</section>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>(".filter-chip");
+  const sections = document.querySelectorAll<HTMLElement>(".category-section");
+
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const filter = chip.dataset.filter!;
+
+      chips.forEach((c) => {
+        c.classList.remove("active", "border-accent", "bg-accent/10", "text-accent");
+        c.classList.add("border-border", "text-text-muted");
+      });
+      chip.classList.add("active", "border-accent", "bg-accent/10", "text-accent");
+      chip.classList.remove("border-border", "text-text-muted");
+
+      sections.forEach((section) => {
+        const items = section.querySelectorAll<HTMLElement>(".workout-item");
+        let visibleItems = 0;
+
+        items.forEach((item) => {
+          const shouldShow =
+            filter === "all" ||
+            item.dataset.category === filter ||
+            item.dataset.workoutType === filter;
+
+          item.style.display = shouldShow ? "" : "none";
+          if (shouldShow) visibleItems += 1;
+        });
+
+        if (visibleItems > 0) {
+          section.style.display = "";
+        } else {
+          section.style.display = "none";
+        }
+      });
+    });
+  });
+</script>

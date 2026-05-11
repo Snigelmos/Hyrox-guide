@@ -51,7 +51,7 @@ const skierg: StationPlaybook = {
     "Cardio + posterior chain. The opener that decides whether your first run is fast or survival.",
   metaTitle: "Hyrox SkiErg Training — Cut 30 Seconds Off Station 1",
   metaDescription:
-    "How to train Hyrox SkiErg — drills, key sessions, peer benchmarks, and the training plans that fix slow ski splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox SkiErg — drills, key sessions, peer benchmarks, and the training plans that fix slow ski splits. Free playbook from Hyrox Vault.",
   topFixHint: "Drive from the hips, not the arms — ski volume builds the engine.",
   topLimiters: [
     {
@@ -99,7 +99,7 @@ const sledPush: StationPlaybook = {
     "The race-stopper. Heavy, long, and placed early enough you cannot afford to blow up.",
   metaTitle: "Hyrox Sled Push Training — Fix the Race-Stopper",
   metaDescription:
-    "How to train Hyrox sled push — drills, key sessions, peer benchmarks, and the plans that drop sled-push splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox sled push — drills, key sessions, peer benchmarks, and the plans that drop sled-push splits. Free playbook from Hyrox Vault.",
   topFixHint: "Heavy sled volume at race weight is non-negotiable. Lighter doesn't transfer.",
   topLimiters: [
     {
@@ -151,7 +151,7 @@ const sledPull: StationPlaybook = {
     "The race's grip-killer. Done wrong, it destroys forearms for everything that follows.",
   metaTitle: "Hyrox Sled Pull Training — Save Your Grip and Your Time",
   metaDescription:
-    "How to train Hyrox sled pull — hand-over-hand drills, key sessions, peer benchmarks, and the plans that drop sled-pull splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox sled pull — hand-over-hand drills, key sessions, peer benchmarks, and the plans that drop sled-pull splits. Free playbook from Hyrox Vault.",
   topFixHint:
     "Hand-over-hand rhythm with a wide stance — never start from bent elbows.",
   topLimiters: [
@@ -200,7 +200,7 @@ const burpees: StationPlaybook = {
     "The race-maker. Steady metronome pace beats hero sprints every time.",
   metaTitle: "Hyrox Burpee Broad Jumps Training — Build the Metronome",
   metaDescription:
-    "How to train Hyrox burpee broad jumps — pacing drills, key sessions, peer benchmarks, and the plans that fix slow burpee splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox burpee broad jumps — pacing drills, key sessions, peer benchmarks, and the plans that fix slow burpee splits. Free playbook from Hyrox Vault.",
   topFixHint:
     "One burpee every 3–4 seconds, never breaking. Volume builds the rhythm.",
   topLimiters: [
@@ -249,7 +249,7 @@ const rowing: StationPlaybook = {
     "Active recovery if you pace it right. Heart-rate killer if you don't.",
   metaTitle: "Hyrox Rowing Training — Recover While You Move",
   metaDescription:
-    "How to train Hyrox rowing — pacing drills, key sessions, peer benchmarks, and the plans that drop row splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox rowing — pacing drills, key sessions, peer benchmarks, and the plans that drop row splits. Free playbook from Hyrox Vault.",
   topFixHint: "1:2 drive-to-recovery ratio. Lower stroke rate, stronger drive.",
   topLimiters: [
     {
@@ -297,7 +297,7 @@ const farmersCarry: StationPlaybook = {
     "Grip management under race-load cardiovascular stress. Walk fast, breathe calm.",
   metaTitle: "Hyrox Farmers Carry Training — Bulletproof Your Grip",
   metaDescription:
-    "How to train Hyrox farmers carry — grip drills, key sessions, peer benchmarks, and the plans that drop carry splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox farmers carry — grip drills, key sessions, peer benchmarks, and the plans that drop carry splits. Free playbook from Hyrox Vault.",
   topFixHint: "Heavy carries weekly + walk, don't jog, on race day.",
   topLimiters: [
     {
@@ -345,7 +345,7 @@ const lunges: StationPlaybook = {
     "Quad-burner with grip and core demands. The station that decides whether wall balls are possible.",
   metaTitle: "Hyrox Sandbag Lunges Training — Save Your Legs for Wall Balls",
   metaDescription:
-    "How to train Hyrox sandbag lunges — technique drills, key sessions, peer benchmarks, and the plans that drop lunge splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox sandbag lunges — technique drills, key sessions, peer benchmarks, and the plans that drop lunge splits. Free playbook from Hyrox Vault.",
   topFixHint: "Sandbag high on traps, short strides, drive through the front heel.",
   topLimiters: [
     {
@@ -397,7 +397,7 @@ const wallBalls: StationPlaybook = {
     "The final boss. Grip is shot, legs are gone, and accuracy becomes the limiter.",
   metaTitle: "Hyrox Wall Balls Training — Conquer the Final Boss",
   metaDescription:
-    "How to train Hyrox wall balls — pacing drills, key sessions, peer benchmarks, and the plans that drop wall ball splits. Free playbook from Hyrox Guide.",
+    "How to train Hyrox wall balls — pacing drills, key sessions, peer benchmarks, and the plans that drop wall ball splits. Free playbook from Hyrox Vault.",
   topFixHint:
     "Plan sets of 15–20 from rep 1 — never go for unbroken, no-reps cost more than micro-rests.",
   topLimiters: [
@@ -450,7 +450,7 @@ const running: StationPlaybook = {
     "8 km is half the race. Every 30 s/km of speed = 4 minutes off your finish.",
   metaTitle: "Hyrox Running Training — The Engine That Drops Your Finish Time",
   metaDescription:
-    "How to train Hyrox running — compromised running drills, key sessions, peer benchmarks, and the plans that build the engine. Free playbook from Hyrox Guide.",
+    "How to train Hyrox running — compromised running drills, key sessions, peer benchmarks, and the plans that build the engine. Free playbook from Hyrox Vault.",
   topFixHint:
     "Race pace ≠ 5K pace. Train compromised running — running fast on tired legs.",
   topLimiters: [

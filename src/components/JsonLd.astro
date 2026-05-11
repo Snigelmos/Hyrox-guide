@@ -5,7 +5,7 @@ interface FAQ {
 }
 
 interface Props {
-  type?: "WebSite" | "Article" | "FAQPage";
+  type?: "WebSite" | "Article" | "FAQPage" | "CollectionPage";
   title?: string;
   description?: string;
   url?: string;
@@ -17,12 +17,12 @@ interface Props {
 
 const {
   type = "WebSite",
-  title = "Hyrox Guide",
+  title = "Hyrox Vault",
   description = "Your complete guide to Hyrox racing, training, and gear.",
   url,
   datePublished,
   dateModified,
-  author = "HyroxGuide Team",
+  author = "HyroxVault Editorial Team",
   faqs,
 } = Astro.props;
 
@@ -34,11 +34,15 @@ if (type === "WebSite") {
   schema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Hyrox Guide",
+    name: "Hyrox Vault",
     url: Astro.site?.toString(),
     description,
   };
 } else if (type === "Article") {
+  // HyroxVault publishes anonymously under a single editorial-team byline.
+  // Article author is therefore an Organization, not a Person — this matches
+  // the visible byline at /author/editorial-team/ and avoids Google's entity
+  // reconciliation looking for a Person profile that doesn't exist.
   schema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -46,12 +50,13 @@ if (type === "WebSite") {
     description,
     url: canonicalUrl,
     author: {
-      "@type": "Person",
-      name: author,
+      "@type": "Organization",
+      name: "HyroxVault Editorial Team",
+      url: new URL("/author/editorial-team/", Astro.site).toString(),
     },
     publisher: {
       "@type": "Organization",
-      name: "HyroxGuide",
+      name: "HyroxVault",
       url: Astro.site?.toString(),
     },
     ...(datePublished && { datePublished }),
@@ -69,6 +74,20 @@ if (type === "WebSite") {
         text: faq.answer,
       },
     })),
+  };
+} else if (type === "CollectionPage") {
+  schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    description,
+    url: canonicalUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Hyrox Vault",
+      url: Astro.site?.toString(),
+    },
+    ...(dateModified && { dateModified }),
   };
 } else {
   schema = {

@@ -65,7 +65,7 @@ const STATIC_PAGES = [
   "/times/",
   "/training/",
   "/training/stations/",
-  "/training/workouts/",
+  "/workouts/",
   "/training-plans/",
   "/workouts/",
   "/methodology/",

@@ -58,6 +58,16 @@ const retired404Redirects: Record<string, string> = {
   "/gyms/g/f45-toronto-yonge/": "/gyms/toronto/",
   "/gyms/g/f45-dubai-marina/": "/gyms/dubai/",
   "/gyms/g/pure-fitness-soho/": "/gyms/london/",
+  // Consolidated /training/workouts/ session library into /workouts/ to
+  // resolve cannibalization between the two hubs (May 2026 SEO pass).
+  "/training/workouts/": "/workouts/",
+  // Collapsed three named author personas into a single anonymous editorial
+  // team profile (May 2026 anonymisation pass). Old slugs were /author/john/
+  // (Adam Smith), /author/niklas/ (James Andersen), /author/jesper/ (Max
+  // Jespersen) — each redirects to the canonical team profile.
+  "/author/john/": "/author/editorial-team/",
+  "/author/niklas/": "/author/editorial-team/",
+  "/author/jesper/": "/author/editorial-team/",
 };
 
 /**

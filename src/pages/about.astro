@@ -3,7 +3,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE_SOCIALS } from "../data/socials";
 import { AUTHORS } from "../data/authors";
 
-const lastUpdated = "May 3, 2026";
+const lastUpdated = "May 9, 2026";
+const team = AUTHORS[0];
 
 const organizationLd: Record<string, unknown> = {
   "@context": "https://schema.org",
@@ -12,11 +13,10 @@ const organizationLd: Record<string, unknown> = {
   url: "https://www.hyroxvault.com",
   logo: "https://www.hyroxvault.com/og-default.png",
   description:
-    "Independent editorial site covering Hyrox racing, training, gear and supplements.",
+    "Independent editorial site covering Hyrox racing, training, gear and supplements. Written anonymously by an editorial team of three Hyrox racers.",
   foundingDate: "2026",
-  publishingPrinciples: "https://www.hyroxvault.com/about/",
-  ethicsPolicy: "https://www.hyroxvault.com/about/",
-  diversityPolicy: "https://www.hyroxvault.com/about/",
+  publishingPrinciples: "https://www.hyroxvault.com/methodology/",
+  ethicsPolicy: "https://www.hyroxvault.com/methodology/",
 };
 
 if (SITE_SOCIALS.length > 0) {
@@ -25,8 +25,8 @@ if (SITE_SOCIALS.length > 0) {
 ---
 
 <BaseLayout
-  title="About HyroxVault | The Team, Review Process & Disclosure"
-  description="Who writes HyroxVault, how we test products, our editorial and correction policies, and full affiliate disclosure."
+  title="About HyroxVault | Editorial Team, Standards & Disclosure"
+  description="Who writes HyroxVault, why we publish anonymously, our editorial standards, affiliate disclosure, and how to reach us with corrections."
   breadcrumbs={[{ name: "About", url: "/about/" }]}
 >
   <section class="container-main py-16">
@@ -40,49 +40,59 @@ if (SITE_SOCIALS.length > 0) {
       <div class="prose prose-lg prose-invert max-w-none">
         <p class="text-xl text-text-muted leading-relaxed">
           HyroxVault is an independent, editorially-driven resource for Hyrox
-          athletes. Three of us run it — Adam, James, and Max. We race, we
-          coach, and we read the literature. Every guide is signed by one of us
-          by name, and built from real training, testing, and competition data,
-          not press releases.
+          athletes. It's written by three Hyrox racers publishing anonymously
+          under a single editorial-team byline. We don't put names or faces on
+          the work because we want every recommendation to stand on the
+          evidence behind it, not on personal brand.
         </p>
 
         <h2 id="team">The team</h2>
         <p>
-          Three of us, all racing Hyrox on the European circuit. Each of us
-          writes the side we actually train:
+          Three of us, racing on the European Hyrox circuit. Between us we
+          cover the full breadth of the sport:
+        </p>
+        <ul>
+          <li><strong>Strength &amp; stations</strong> — sled push, sled pull, wall balls, sandbag lunges, burpee broad jumps, farmers carry, technique deep-dives, and gym-based programming.</li>
+          <li><strong>Running</strong> — pacing, Zone 2, VO2max, heart-rate zones, watch and HRM setup, and every guide written for runners crossing into Hyrox.</li>
+          <li><strong>Racing &amp; nutrition</strong> — race-day execution, race-week protocol, sub-X blueprints, doubles, the Roxzone, fuelling, hydration, and supplement coverage.</li>
+        </ul>
+
+        <h2 id="why-anonymous">Why we publish anonymously</h2>
+        <p>
+          A lot of fitness content on the open web leans on personal brand:
+          photos, bios, performance claims, social profiles. We've chosen the
+          opposite path. The recommendations on this site should hold up
+          because the evidence behind them holds up — not because of who's
+          signing the byline. Anonymous, but not unaccountable: corrections go
+          through the same person regardless of which side of the site is
+          affected.
         </p>
 
-        <div class="not-prose grid gap-4 md:grid-cols-3 my-8">
-          {AUTHORS.map((a) => (
-            <a
-              href={`/author/${a.slug}/`}
-              class="group flex flex-col bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-            >
-              <div class="flex items-center gap-3 mb-3">
-                <img
-                  src={a.image}
-                  alt=""
-                  width="48"
-                  height="48"
-                  loading="lazy"
-                  class="w-12 h-12 rounded-full object-cover bg-bg border border-border"
-                />
-                <div>
-                  <div class="text-base font-bold text-text-heading group-hover:text-accent transition-colors">
-                    {a.name}
-                  </div>
-                  <div class="text-xs text-text-muted">{a.jobTitle}</div>
+        <div class="not-prose my-8">
+          <a
+            href={`/author/${team.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="flex items-center gap-4">
+              <img
+                src={team.image}
+                alt=""
+                width="56"
+                height="56"
+                loading="lazy"
+                class="w-14 h-14 rounded-2xl object-contain bg-bg border border-border p-1.5 flex-shrink-0"
+              />
+              <div>
+                <div class="text-base font-bold text-text-heading mb-0.5">
+                  {team.name}
+                </div>
+                <div class="text-sm text-text-muted">
+                  See every guide bylined to the team and our published editorial standards →
                 </div>
               </div>
-              <p class="text-xs text-text-muted leading-relaxed">{a.tagline}</p>
-            </a>
-          ))}
+            </div>
+          </a>
         </div>
-
-        <p>
-          Read the full bios on the <a href="/author/">team page</a>, or jump
-          to <a href="/author/john/">Adam</a>, <a href="/author/niklas/">James</a>, or <a href="/author/jesper/">Max</a>.
-        </p>
 
         <h2>Independent, not affiliated with Hyrox GmbH</h2>
         <p>
@@ -97,8 +107,8 @@ if (SITE_SOCIALS.length > 0) {
         <h2>How we pick products</h2>
         <p>
           We cover four product categories: <strong>supplements, running
-          shoes, training gear, and race-day accessories</strong>. Max owns
-          this section. The evaluation criteria are:
+          shoes, training gear, and race-day accessories</strong>. The
+          evaluation criteria are:
         </p>
         <ul>
           <li>
@@ -112,9 +122,10 @@ if (SITE_SOCIALS.length > 0) {
             testing.
           </li>
           <li>
-            <strong>Hands-on testing.</strong> Shoes, watches, HRMs, race bags
-            and similar gear go through a fixed evaluation checklist before
-            getting a recommendation.
+            <strong>Specifications versus race demands.</strong> Shoes,
+            watches, HRMs, race bags and similar gear are evaluated against
+            the published evidence on running mechanics, indoor traction,
+            durability, and the specific load profile of a Hyrox race.
           </li>
           <li>
             <strong>Community consensus.</strong> What experienced age-group
@@ -129,8 +140,9 @@ if (SITE_SOCIALS.length > 0) {
         <p>
           Where we call something an "Editor's Pick" or "Best Value", that
           reflects our read of the available evidence and public reviews — not
-          a certification, and not a promise of outcome for any individual
-          athlete.
+          a certification, a sponsorship, or a fabricated lab-test result. The
+          full editorial standards are documented on the
+          <a href="/methodology/">methodology page</a>.
         </p>
 
         <h2>How we use sources</h2>
@@ -143,8 +155,6 @@ if (SITE_SOCIALS.length > 0) {
           a peer-reviewed paper or position stand from the ISSN, ACSM, or
           IOC, or our own logged training and racing. If a number cannot be
           tied to one of those, we either remove it or hedge the language.
-          Adam is the final editor on station and strength claims; James on
-          running and pacing; Max on supplements and racing.
         </p>
 
         <h2>Editorial independence</h2>
@@ -173,8 +183,7 @@ if (SITE_SOCIALS.length > 0) {
           specs, commission rates, supplement dosages — is checked against
           primary sources before publishing. Material corrections are logged
           at the bottom of the affected article with a date and a one-line
-          description. We do not yet run a public contact mailbox or form;
-          one will be added here once it is live.
+          description.
         </p>
 
         <h2>Medical disclaimer</h2>
@@ -189,15 +198,24 @@ if (SITE_SOCIALS.length > 0) {
 
         <h2>What we cover</h2>
         <ul>
-          <li><strong>Strength &amp; stations</strong> — sled push, sled pull, wall balls, sandbag lunges, burpee broad jumps, farmers carry, technique deep-dives, and gym-based programming. Owned by Adam.</li>
-          <li><strong>Running</strong> — pacing, Zone 2, VO2max, heart-rate zones, watch and HRM setup, and every guide written for runners crossing into Hyrox. Owned by James.</li>
-          <li><strong>Racing &amp; format</strong> — race-day execution, race-week protocol, sub-X blueprints, doubles, the Roxzone, population-specific guides, and pacing strategy. Owned by Max.</li>
-          <li><strong>Nutrition &amp; supplements</strong> — creatine, protein, gels, pre-workout, electrolytes, carb loading, hydration, and post-race recovery. Owned by Max.</li>
-          <li><strong>Gear reviews</strong> — shoes, clothing, compression, belts, bags, watches, and home-gym equipment. Strength-side gear (heavy-athlete shoes, belts, grip aids) sits with Adam; running watches and HRMs with James; everything else with Max.</li>
-          <li><strong>Training plans</strong> — beginner, intermediate, advanced and doubles programmes with week-by-week structure. Running progression by James, strength sessions by Adam.</li>
+          <li><strong>Strength &amp; stations</strong> — sled push, sled pull, wall balls, sandbag lunges, burpee broad jumps, farmers carry, technique deep-dives, and gym-based programming.</li>
+          <li><strong>Running</strong> — pacing, Zone 2, VO2max, heart-rate zones, watch and HRM setup, and every guide written for runners crossing into Hyrox.</li>
+          <li><strong>Racing &amp; format</strong> — race-day execution, race-week protocol, sub-X blueprints, doubles, the Roxzone, population-specific guides, and pacing strategy.</li>
+          <li><strong>Nutrition &amp; supplements</strong> — creatine, protein, gels, pre-workout, electrolytes, carb loading, hydration, and post-race recovery.</li>
+          <li><strong>Gear reviews</strong> — shoes, clothing, compression, belts, bags, watches, and home-gym equipment.</li>
+          <li><strong>Training plans</strong> — beginner, intermediate, advanced and doubles programmes with week-by-week structure.</li>
           <li><strong>Competitions</strong> — upcoming races, sign-up links, and city guides.</li>
           <li><strong>Blog</strong> — race recaps, training notes, deep-dives on technique and strategy.</li>
         </ul>
+
+        <h2>Get in touch</h2>
+        <p>
+          Spotted a factual error, an out-of-date station weight, or a study
+          we should be citing? We'll be adding a public contact mailbox here
+          once it's live. In the meantime, see our full editorial standards
+          and correction policy on the
+          <a href="/methodology/">methodology page</a>.
+        </p>
 
       </div>
     </div>
