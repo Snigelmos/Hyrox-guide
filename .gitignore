@@ -17,3 +17,8 @@ docs/gsc-action-plan.md
 docs/reddit-prompts.md
 docs/link-graph-audit.md
 docs/image-audit.md
+docs/hyrox-benchmark-feasibility.md
+
+# Editor tooling — not site content
+.vscode/
+.cursorindexingignore
