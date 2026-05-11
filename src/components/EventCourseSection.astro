@@ -83,6 +83,19 @@ const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
           <span class="text-accent font-bold uppercase tracking-wider group-hover:underline">Open full size ↗</span>
         </figcaption>
       </a>
+      {event.courseMapSourceUrl && (
+        <p class="mt-2 text-xs text-text-muted">
+          Source:{" "}
+          <a
+            href={event.courseMapSourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-accent hover:underline"
+          >
+            Hyrox Official Community post
+          </a>
+        </p>
+      )}
     </figure>
   ) : isFacebookMap ? (
     <a
