@@ -68,6 +68,14 @@ const retired404Redirects: Record<string, string> = {
   "/author/john/": "/author/editorial-team/",
   "/author/niklas/": "/author/editorial-team/",
   "/author/jesper/": "/author/editorial-team/",
+  // Gym city slug consolidation (May 2026 data cleanup).
+  // /gyms/alexandri/ was a typo for /gyms/alexandria/ (one gym).
+  // /gyms/ca/ was a bare state abbreviation; the gym is in San Diego.
+  // Washington had three slugs; all normalised to /gyms/washington-dc/.
+  "/gyms/alexandri/": "/gyms/alexandria/",
+  "/gyms/ca/": "/gyms/san-diego/",
+  "/gyms/washington/": "/gyms/washington-dc/",
+  "/gyms/washington-d-c/": "/gyms/washington-dc/",
 };
 
 /**
