@@ -4,22 +4,22 @@ import { RECORDS, RECORDS_LAST_REVIEWED } from "../../data/records";
 
 const title = "Hyrox World Records — Open, Pro, Doubles, Relay";
 const metaTitle = "Hyrox World Records 2026 — Fastest Times by Division";
-const description = "The fastest confirmed Hyrox finish times worldwide. Open, Pro, Doubles, Relay, and notable age-group records — verified against results.hyrox.com.";
+const description = "The fastest confirmed Hyrox finish times worldwide. Open, Pro, Doubles, and Relay records — cross-checked against public Hyrox results and ranking databases.";
 
 const breadcrumbs = [{ name: "Records" }];
 
 const faqItems = [
   {
     question: "What is the Hyrox world record?",
-    answer: "The fastest confirmed Hyrox Open Men time is around 54 minutes 42 seconds, held by Hunter McIntyre. The fastest Open Women time is around 1:00:50, held by Lauren Weeks. Pro division records sit at roughly 55:45 (men) and 1:03:09 (women) due to heavier station weights.",
+    answer: "The fastest confirmed Hyrox Pro Men time is 51:59, set by Alexander Roncevic at Warsaw 2026. The fastest Pro Women time is 54:25, set by Joanna Wietrzyk at Warsaw 2026. In Open, Alexander Roncevic holds the men's record at 50:38 and Lauren Weeks holds the women's record at 55:38.",
   },
   {
     question: "Where do these Hyrox records come from?",
-    answer: "Every record on this page is cross-referenced against results.hyrox.com, the official results portal. We update the table after each Hyrox World Championship and major regional event. If an entry cannot be verified, we leave it out rather than approximate.",
+    answer: "Every record on this page is cross-referenced against public Hyrox results and ranking databases such as HYRESULT and TrainRox. We update the table after each Hyrox World Championship and major regional event. If an entry cannot be verified, we leave it out rather than approximate.",
   },
   {
-    question: "What's the fastest age-group Hyrox time?",
-    answer: "Sub-60 finishes in the 40-44 age group are the rarest masters performances; only a handful of athletes per season clock under 60 in that bracket. Sub-65 is more common in 35-39 men. We list selected age-group ceilings further down the page.",
+    question: "Why is the Open record faster than the Pro record?",
+    answer: "Open uses lighter station weights than Pro, so the fastest Open times can be quicker than Pro world records. Pro remains the heavier and more competitive format, especially in Elite 15 fields.",
   },
 ];
 ---
@@ -51,7 +51,7 @@ const faqItems = [
         {title}
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed">
-        Fastest confirmed Hyrox finish times by division. Cross-referenced against <a href="https://results.hyrox.com/" rel="external" class="text-accent hover:underline">results.hyrox.com</a> after each major event.
+        Fastest confirmed Hyrox finish times by division. Cross-referenced against public Hyrox results and ranking databases after each major event.
       </p>
     </header>
 
@@ -60,7 +60,7 @@ const faqItems = [
         Hyrox records turn over fast. The sport is young, the global field is growing, and major venues regularly produce a new ceiling time. We refresh this page after every Hyrox World Championship and the largest regional events.
       </p>
       <p>
-        The records below cover Open Singles, Pro Singles, Doubles, and Relay across men, women, and mixed where applicable. Pro is not directly comparable to Open: heavier sleds, heavier sandbag, and a higher wall-ball target add roughly 5-10 minutes for the same athlete.
+        The records below cover Open Singles, Pro Singles, Pro Doubles, Open Doubles, and Relay across men, women, and mixed where applicable. Pro is not directly comparable to Open: heavier sleds, heavier sandbag, and a higher wall-ball target add meaningful station load for the same athlete.
       </p>
     </section>
 
@@ -94,7 +94,7 @@ const faqItems = [
                     <div class="text-xs">{r.date}</div>
                     {r.sourceUrl && (
                       <a href={r.sourceUrl} rel="external" class="text-xs text-accent hover:underline">
-                        results.hyrox.com →
+                        Source →
                       </a>
                     )}
                   </td>
@@ -122,7 +122,7 @@ const faqItems = [
     <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
       <h2>How we verify a record</h2>
       <p>
-        Every record on this page must have a public, verifiable source — typically a result on <a href="https://results.hyrox.com/" rel="external">results.hyrox.com</a>, an official Hyrox event press release, or a video timestamp from the official Hyrox stream. If we cannot verify, we omit. Approximate or rumour-based records would destroy the trust this page is built to earn.
+        Every record on this page must have a public, verifiable source — typically a public Hyrox results page, an all-time ranking database, an official Hyrox event press release, or a video timestamp from the official Hyrox stream. If we cannot verify, we omit. Approximate or rumour-based records would destroy the trust this page is built to earn.
       </p>
       <h2>What counts as a "world record"</h2>
       <p>
