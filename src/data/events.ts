@@ -65,6 +65,17 @@ export interface HyroxEvent {
     speed: "fast" | "neutral" | "technical";
     note: string;
   };
+  /**
+   * Per-event venue notes that override the city-evergreen `cityNotes`
+   * on the event page. Use this when an event runs at a venue that is
+   * NOT the city's regular Hyrox host — e.g. the 2026 World Championship
+   * runs at Strawberry Arena in Solna while the regular Stockholm regional
+   * stop runs at Stockholmsmässan in Älvsjö. EventCourseSection.astro
+   * prefers `venueNotes` over the city-evergreen `cityNotes` when present
+   * so the venue copy on the page matches the venue header. The
+   * /hyrox/[city]/ evergreen guide is unaffected.
+   */
+  venueNotes?: { title: string; detail: string }[];
 }
 
 /**
@@ -1263,13 +1274,39 @@ export const EVENTS: HyroxEvent[] = [
     startDate: "2026-06-18",
     endDate: "2026-06-21",
     venue: "Strawberry Arena",
+    venueAddress: "Råsta Strandväg 1, 169 79 Solna",
+    // courseMapUrl: TBC — Hyrox publishes the official venue map ~7-10
+    // days before race weekend. Watch hyrox.com/event/hyrox-world-championships/
+    // and the Hyrox Official Community Facebook group; if Hyrox uses a
+    // signed Facebook CDN URL, mirror locally to /public/images/events/
+    // (same pattern as Ottawa). Until then, EventCourseSection renders
+    // the generic "published in the Hyrox athlete guide" fallback.
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Puma",
     region: "EU",
-    populationDescriptor: "the 2026 Hyrox World Championships — the season's premier event for the top 0.5% of qualifiers.",
+    // Swedish + global head-term variants. Surface as "Hyrox VM 2026" /
+    // "Hyrox Worlds 2026" / "Hyrox World Champs 2026" in the page title,
+    // H1 subtitle, and FAQ — captures non-English and abbreviated head
+    // queries that don't include "Stockholm".
+    localNames: ["Hyrox VM", "Hyrox Worlds", "Hyrox World Champs"],
+    populationDescriptor: "It hosts the 2026 Hyrox World Championships — the season's premier event, contested only by qualified athletes and the Elite 15 finals fields.",
     divisions: ["World Championship Singles", "World Championship Doubles", "Age-group", "Adaptive"],
-    notes: "World Championship.",
+    // notes === "World Championship" triggers the World-Championship-aware
+    // branch in src/pages/events/[year]/[city].astro (title, H1, intro,
+    // plan-your-race grid, qualifying-paths section, spectator section,
+    // FAQ, and schema offer omission).
+    notes: "World Championship",
+    trackProfile: {
+      speed: "fast",
+      note: "Strawberry Arena is a 50,000-seat football stadium — the largest indoor floor on the 2026 Hyrox calendar. Expect long, straight running lanes (fewer corners than a typical convention-centre layout), generous Roxzone space, and the smoothest sled lanes of the season. The Worlds running loop is purpose-built for record-class times.",
+    },
+    venueNotes: [
+      { title: "Venue", detail: "Strawberry Arena (formerly Friends Arena) in Solna — Sweden's national football stadium and the largest venue ever to host a Hyrox event. Retractable roof, climate-controlled, with the entire pitch converted into the Hyrox floor. Expect a wider course and more spectator seating than any regional Hyrox stop." },
+      { title: "Travel", detail: "Solna pendeltåg (commuter rail) station is a 5-minute walk from the arena and 6 minutes from Stockholm Central. Tunnelbana option: blue line to Solna Centrum, then a 10-minute walk. Stay near T-Centralen, Vasastan, or Solna for the shortest race-morning transit." },
+      { title: "Pacing", detail: "The arena floor is large enough to lay out the running loop with minimal cornering — this is the fastest course profile of the season for most athletes. Climate-control keeps the temperature consistent across all four days, so warm-up routines transfer cleanly from earlier qualifying races." },
+      { title: "Field", detail: "Qualified athletes only — there is no Open division at the Hyrox World Championships. Every wave is filled with age-group winners, Pro qualifiers, and the Elite 15. The Singles and Doubles fields run alongside the Age-group World Championship and Adaptive divisions across the four-day weekend." },
+    ],
   },
   {
     slug: "jakarta",

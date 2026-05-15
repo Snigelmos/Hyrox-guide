@@ -69,6 +69,16 @@ const isPast = event ? isPastEvent(event) : false;
 const isLiveNow = event ? isEventLiveNow(event) : false;
 const raceResults = event ? getResults(event.year, event.slug) : null;
 
+// World Championship branch — flips the page from a generic Hyrox stop into a
+// Worlds-aware experience. Triggered by `event.notes === "World Championship"`
+// (set on the 2026 Stockholm entry; future Worlds editions inherit the same
+// treatment by setting the same flag). When true, we lead with the head-term
+// "Hyrox World Championships {year}" instead of "Hyrox {city} {year}", swap
+// the plan-your-race grid for a qualified-athlete/spectator-aware version,
+// add qualifying-paths and watch/follow sections, override the FAQ, and drop
+// the fabricated `offers` schema block (Worlds is invitation-only).
+const isWorldChampionship = event?.notes === "World Championship";
+
 // Race-week capture state. We expand the title, description, and FAQ
 // when the event is within the GSC-validated 14-days-out window so the
 // page surfaces for queries like `hyrox helsinki 2026 schedule` and
@@ -123,17 +133,32 @@ const activeTitle = event
     ? // Race-week title — captures schedule/start-list/live queries (incl.
       // local-language synonyms via the H2/FAQ inside the page).
       isLiveNow
-      ? `Hyrox ${event.city} ${year} Live — Track Athletes, Schedule, Start List`
-      : `Hyrox ${event.city} ${year} — Schedule, Start List & Live Tracker (${formatEventDate(event.startDate, event.endDate)})`
-    : `Hyrox ${cityWithLocalNames} ${year} — ${formatEventDate(event.startDate, event.endDate)}`
+      ? isWorldChampionship
+        ? `Hyrox World Championships ${year} Live — ${event.city} Track Athletes & Start List`
+        : `Hyrox ${event.city} ${year} Live — Track Athletes, Schedule, Start List`
+      : isWorldChampionship
+        ? `Hyrox World Championships ${year} — Schedule, Start List & Live Tracker (${event.city}, ${formatEventDate(event.startDate, event.endDate)})`
+        : `Hyrox ${event.city} ${year} — Schedule, Start List & Live Tracker (${formatEventDate(event.startDate, event.endDate)})`
+    : isWorldChampionship
+      ? // Lead with the head term so we rank for "Hyrox World Championships
+        // 2026" / "Hyrox Worlds 2026" before the city qualifier. The ${year}
+        // page still owns "Hyrox Stockholm 2026" via the H1, body, and FAQ.
+        `Hyrox World Championships ${year} — ${event.city} Schedule, Divisions & Qualifying (${formatEventDate(event.startDate, event.endDate)})`
+      : `Hyrox ${cityWithLocalNames} ${year} — ${formatEventDate(event.startDate, event.endDate)}`
   : "";
 const activeDescription = event
   ? isPast
-    ? `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} race report — ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "Thousands of"} athletes competed. Full podium, results, and key takeaways.` : "Full results and recap."}`
+    ? isWorldChampionship
+      ? `The ${year} Hyrox World Championships at ${event.venue}, ${event.city} — race report, ${formatEventDate(event.startDate, event.endDate)}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "The qualified"} athletes contested the season's premier event. Elite 15 finals, age-group worlds, full podium and takeaways.` : "Elite 15 finals, age-group worlds, and full podium recap."}`
+      : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} race report — ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "Thousands of"} athletes competed. Full podium, results, and key takeaways.` : "Full results and recap."}`
     : inRaceWeek
-      ? `Hyrox ${event.city} ${year} race weekend at ${event.venue}, ${formatEventDate(event.startDate, event.endDate)}. Race-day schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, start list, live tracker for every wave, and spectator info — everything you need ahead of Hyrox ${event.country} ${year}.`
+      ? isWorldChampionship
+        ? `The ${year} Hyrox World Championships at ${event.venue}, ${event.city}, ${formatEventDate(event.startDate, event.endDate)}. Schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, Elite 15 finals start list, live tracker, and spectator info for the season's premier event.`
+        : `Hyrox ${event.city} ${year} race weekend at ${event.venue}, ${formatEventDate(event.startDate, event.endDate)}. Race-day schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, start list, live tracker for every wave, and spectator info — everything you need ahead of Hyrox ${event.country} ${year}.`
       : event.confirmed
-        ? `${sponsorPrefix}Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
+        ? isWorldChampionship
+          ? `The ${year} Hyrox World Championships run ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}, ${event.city}. Qualified-only field, Elite 15 finals, age-group worlds, divisions, schedule, and how to follow live.`
+          : `${sponsorPrefix}Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
         : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} expected ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Indicative date pending official confirmation. Get prep guidance and pacing strategy.`
   : "";
 
@@ -187,20 +212,85 @@ const eventSchema = event
             },
           }
         : {}),
-      offers: {
-        "@type": "Offer",
-        url: event.registrationUrl ?? event.officialUrl,
-        priceCurrency: "EUR",
-        price: "139",
-        availability: "https://schema.org/LimitedAvailability",
-        validFrom: "2025-09-01",
-        validThrough: validUntilIso,
-      },
+      // Skip the `offers` block for World Championships — registration is
+      // invitation-only post-qualifying, so a public price/availability
+      // offer would be fabricated commercial schema (a quality-signal
+      // violation per Google's structured-data guidelines).
+      ...(isWorldChampionship
+        ? {}
+        : {
+            offers: {
+              "@type": "Offer",
+              url: event.registrationUrl ?? event.officialUrl,
+              priceCurrency: "EUR",
+              price: "139",
+              availability: "https://schema.org/LimitedAvailability",
+              validFrom: "2025-09-01",
+              validThrough: validUntilIso,
+            },
+          }),
     }
   : null;
 
 const activeFaqItems = event
-  ? [
+  ? isWorldChampionship
+    ? [
+        // World Championship FAQ — replaces the generic event FAQ. The
+        // schema serialiser only emits questions that are visibly rendered,
+        // which is why we branch the dataset rather than mixing both.
+        {
+          question: isPast
+            ? `When and where was the Hyrox World Championship ${year}?`
+            : `When and where is the Hyrox World Championship ${year}?`,
+          answer: isPast
+            ? `The ${year} Hyrox World Championships took place ${formatEventDate(event.startDate, event.endDate)} at ${event.venue} in ${event.city}, ${event.country} — also searched for as Hyrox VM ${year}, Hyrox Worlds ${year}, and Hyrox World Champs ${year}.`
+            : `The ${year} Hyrox World Championships run ${formatEventDate(event.startDate, event.endDate)} at ${event.venue} in ${event.city}, ${event.country} — also searched for as Hyrox VM ${year}, Hyrox Worlds ${year}, and Hyrox World Champs ${year}.`,
+        },
+        {
+          question: `Who races at the Hyrox World Championship?`,
+          answer: `Only qualified athletes — there is no Open division at the Hyrox World Championships. The field is made up of age-group winners from regional Open events, athletes who hit the published Pro qualifying time for their age group, and the Elite 15 (the top 15 Pro athletes per division on the season ranking points board). Age-group, Pro Singles, Pro Doubles, and Adaptive divisions all race across the four-day weekend.`,
+        },
+        {
+          question: `Can I still enter Hyrox ${event.city} ${year}?`,
+          answer: `No — Hyrox World Championship entry is invitation-only. You qualify by either winning your age group at a regional Hyrox Open event, hitting the Pro qualifying time, or earning a top-15 spot in your Pro division on season ranking points. Once you qualify, Hyrox emails an invitation with a registration link. There are no general-public entries on sale.`,
+        },
+        {
+          question: `What is the Hyrox Elite 15?`,
+          answer: `The Elite 15 is the championship-division finals at the Hyrox World Championship. The top 15 athletes per Pro division (Pro Men, Pro Women, Pro Doubles Men, Pro Doubles Women) qualify based on season-ranking points and race in a head-to-head finals format. Typical Pro Men podium times are sub-55, Pro Women sub-65.`,
+        },
+        {
+          question: `How do I qualify for the next Hyrox World Championship?`,
+          answer: `Three paths: (1) win your age group at a regional Hyrox Open Singles event, (2) hit the published Pro qualifying time for your age group at any Open event, or (3) finish in the top 15 of your Pro division on the season ranking points board. Full thresholds and event-by-event detail are on our qualifiers hub.`,
+        },
+        {
+          question: `Where can I watch the Hyrox World Championship ${year}?`,
+          answer: `Hyrox typically streams the World Championship finals on hyrox.com/live and the official Hyrox YouTube channel. The full broadcast schedule is published a few days before race weekend. Spectator tickets to ${event.venue} are sold separately via the official event page when available — race-day tickets often sell out.`,
+        },
+        {
+          question: `Why is the Hyrox World Championship in ${event.city}?`,
+          answer: `Hyrox rotates the World Championship between flagship cities each season. Stockholm hosts the ${year} edition at ${event.venue} (formerly Friends Arena), a 50,000-seat football stadium that becomes the largest indoor floor on the entire Hyrox calendar. The previous and next host cities are confirmed on the official Hyrox season calendar.`,
+        },
+        // Race-week additions for Worlds — same shape as the standard
+        // event variant, so the FAQPage schema stays accurate when these
+        // questions are rendered.
+        ...(inRaceWeek && !isPast
+          ? [
+              {
+                question: `What's the schedule for Hyrox World Championships ${year}?`,
+                answer: `Hyrox publishes the official wave-by-wave Worlds schedule in the Hyrox app and on results.hyrox.com about 7-10 days before race weekend. ${event.city} runs across four days: age-group and Pro Singles fill the front of the weekend, Doubles and Adaptive land mid-weekend, with the Elite 15 head-to-head finals typically anchoring the final day at ${event.venue}.`,
+              },
+              {
+                question: `Where can I find the Hyrox World Championships ${year} start list?`,
+                answer: `The official start list goes live on results.hyrox.com a few days before race weekend. Open the season's event list, pick Hyrox World Championships ${year}, then switch to the Start List tab to see every qualified athlete's bib number, division, and wave. If the list isn't published yet, save names to your live-tracker watchlist on /live/ so they're ready the moment timing opens.`,
+              },
+              {
+                question: `How do I follow the Hyrox World Championships ${year} live?`,
+                answer: `Splits land on the official Hyrox timing system within seconds of each athlete crossing a station timing mat. Use the live tracker on /live/ to search by name, team, or bib — HyroxVault renders splits, station times, and share links locally on the page. Hyrox typically broadcasts the Elite 15 finals separately on hyrox.com/live and YouTube; the broadcast schedule lands a few days out.`,
+              },
+            ]
+          : []),
+      ]
+    : [
       {
         question: isPast
           ? `When was Hyrox ${event.city} ${year}?`
@@ -354,10 +444,20 @@ const explainerFaqItems = explainer
     </nav>
 
     <header class="mb-10 pb-8 border-b border-border">
+      {isWorldChampionship && (
+        <div class="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-300 mb-4">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15a3 3 0 100-6 3 3 0 000 6z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.5 12a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0zM8 21l1.5-4.5M16 21l-1.5-4.5" /></svg>
+          World Championship · {event.city} {year}
+        </div>
+      )}
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        Hyrox {event.city} {year}
+        {isWorldChampionship ? `Hyrox World Championships ${year}` : `Hyrox ${event.city} ${year}`}
       </h1>
-      {localNamesList && (
+      {isWorldChampionship ? (
+        <p class="mt-2 text-base text-text-muted/80 leading-relaxed">
+          Also: Hyrox VM {year} · Hyrox Worlds {year} · Hyrox World Champs {year}
+        </p>
+      ) : localNamesList && (
         <p class="mt-2 text-base text-text-muted/80 leading-relaxed">
           Also known locally as Hyrox {localNamesList} {year}
         </p>
@@ -446,11 +546,17 @@ const explainerFaqItems = explainer
     {!isPast && <EventCourseSection event={event} />}
 
     <section class="prose md:prose-lg max-w-none">
-      <p>
-        <strong>{sponsorPrefix}Hyrox {event.city} {year}</strong>{localNamesList && <> (also <strong>Hyrox {localNamesList} {year}</strong>)</>} runs <strong>{formatEventDate(event.startDate, event.endDate)}</strong> at {event.venue}. {event.populationDescriptor ?? `It's the ${event.country} round of the global Hyrox series — 8 km of running paired with 8 functional stations, identical to every other Hyrox in the world.`}
-      </p>
+      {isWorldChampionship ? (
+        <p>
+          The <strong>{year} Hyrox World Championships</strong> (also <strong>Hyrox VM {year}</strong> / <strong>Hyrox Worlds {year}</strong>) run <strong>{formatEventDate(event.startDate, event.endDate)}</strong> at <strong>{event.venue}</strong> in {event.city}, {event.country}. {event.populationDescriptor ?? `It's the season's premier event for the top tier of qualified Hyrox athletes.`} Unlike a regional Hyrox stop, there is no Open division — every athlete on the floor has earned their spot via age-group qualifying, the published Pro qualifying time, or the Elite 15 season-points board. The Elite 15 head-to-head finals, age-group world titles, Pro Doubles, and Adaptive divisions all race across four days at the largest indoor venue on the entire Hyrox calendar.
+        </p>
+      ) : (
+        <p>
+          <strong>{sponsorPrefix}Hyrox {event.city} {year}</strong>{localNamesList && <> (also <strong>Hyrox {localNamesList} {year}</strong>)</>} runs <strong>{formatEventDate(event.startDate, event.endDate)}</strong> at {event.venue}. {event.populationDescriptor ?? `It's the ${event.country} round of the global Hyrox series — 8 km of running paired with 8 functional stations, identical to every other Hyrox in the world.`}
+        </p>
+      )}
 
-      <h2>Hyrox {event.city} {year} key details</h2>
+      <h2>{isWorldChampionship ? `Hyrox World Championships ${year} key details` : `Hyrox ${event.city} ${year} key details`}</h2>
       <dl class="not-prose my-6 bg-bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border/60">
         <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
           <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Date</dt>
@@ -480,11 +586,70 @@ const explainerFaqItems = explainer
         </div>
         <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
           <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Official site</dt>
-          <dd class="text-sm sm:text-base"><a href={event.officialUrl} rel="noopener noreferrer" class="text-accent hover:underline break-words">Hyrox {event.city} registration</a></dd>
+          <dd class="text-sm sm:text-base"><a href={event.officialUrl} rel="noopener noreferrer" class="text-accent hover:underline break-words">{isWorldChampionship ? `Hyrox World Championships ${year} on hyrox.com` : `Hyrox ${event.city} registration`}</a></dd>
         </div>
       </dl>
 
-      {!isPast && (
+      {!isPast && isWorldChampionship && (
+        <>
+          <h2 class="!mb-5">Heading to {event.city}?</h2>
+          <div class="not-prose grid gap-4 md:grid-cols-3 mb-10">
+            <!-- Qualified -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">1 · Qualified athletes</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                Already in? Lock in your prep
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Worlds is invitation-only. If you've earned your spot, the final 6–8 weeks should be a peaking block: race-pace running, sled work, and one full simulator 14 days out.
+              </p>
+              <div class="flex flex-col gap-1.5 mt-auto">
+                <a href="/calculator/" class="text-sm font-bold text-accent hover:underline no-underline">
+                  Set a peak target time →
+                </a>
+                <a href="/blog/hyrox-race-week-protocol/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
+                  Race-week taper protocol →
+                </a>
+              </div>
+            </div>
+
+            <!-- Spectate -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">2 · Spectate in {event.city}</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                Watch live at {event.venue}
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Spectator tickets are sold separately on the official Hyrox event page when available. {event.venue} seats more than any prior Worlds venue, so finals-day tickets should be the easiest seat in Hyrox history to claim — until they aren't.
+              </p>
+              <a href={event.officialUrl} rel="noopener noreferrer" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                Tickets on hyrox.com ↗
+              </a>
+            </div>
+
+            <!-- Watch live -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 transition-colors flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">3 · Watch live (anywhere)</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                Track every athlete in real time
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Hyrox typically broadcasts the Elite 15 finals on hyrox.com/live and YouTube. For age-group and Pro waves, our live tracker pulls splits station-by-station the moment timing opens.
+              </p>
+              <div class="flex flex-col gap-1.5 mt-auto">
+                <a href="/live/" class="text-sm font-bold text-accent hover:underline no-underline">
+                  Open live tracker →
+                </a>
+                <a href="/qualifiers/elite-15/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
+                  How Elite 15 works →
+                </a>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {!isPast && !isWorldChampionship && (
         <>
           <h2 class="!mb-5">Plan your race</h2>
           <div class="not-prose grid gap-4 md:grid-cols-3 mb-10">
@@ -535,6 +700,75 @@ const explainerFaqItems = explainer
                 <a href="/times/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
                   Browse time standards →
                 </a>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* World-Championship-only sections — qualifying paths + watch live.
+          Renders only when isWorldChampionship && !isPast so it doesn't
+          intrude on the post-race recap or any non-Worlds event page. */}
+      {!isPast && isWorldChampionship && (
+        <>
+          <h2 id="how-qualified" class="!mb-3 scroll-mt-24">How athletes qualified for {event.city}</h2>
+          <p>
+            There are three paths into the {year} Hyrox World Championships. Every athlete on the floor at {event.venue} earned their spot through one of them — there is no Open or general-public entry.
+          </p>
+          <div class="not-prose grid gap-4 md:grid-cols-3 mb-8">
+            <a href="/qualifiers/age-group-world-championship/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Path 1 · Age-group winners</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Win your age group at a regional Open</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3 flex-grow">
+                Take the Open Singles age-group podium at any regional Hyrox event during the season — the 1st place finisher in each age group earns a Worlds invitation.
+              </p>
+              <span class="text-sm font-bold text-accent mt-auto">Age-group qualifying explained →</span>
+            </a>
+            <a href="/qualifiers/world-championship/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Path 2 · Pro qualifying time</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Hit the Pro time for your age</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3 flex-grow">
+                Hit the published Pro qualifying time in your age group at any Open event (1:03 for Men 25-34, 1:16 for Women 25-34, scaling by age group).
+              </p>
+              <span class="text-sm font-bold text-accent mt-auto">All qualifying paths →</span>
+            </a>
+            <a href="/qualifiers/elite-15/" class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Path 3 · Elite 15</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Top 15 on the season points board</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3 flex-grow">
+                The top 15 Pro athletes per division on the season-ranking points board earn the head-to-head Elite 15 finals — typically sub-55 men, sub-65 women.
+              </p>
+              <span class="text-sm font-bold text-accent mt-auto">How Elite 15 works →</span>
+            </a>
+          </div>
+          <p class="text-sm text-text-muted">
+            Season points come from finish placement across every event you race, with Major events (Regional Championships) carrying the highest multipliers — see <a href="/qualifiers/season-ranking-points/">how Hyrox season ranking points work</a> for the scoring rules. Most of the European field rolled into Stockholm via the spring qualifying season; <a href={`/events/${year}/helsinki/`}>Hyrox Helsinki {year}</a> in May was the most recent Scandinavian qualifier.
+          </p>
+
+          <h2 id="watch-follow" class="!mt-12 !mb-3 scroll-mt-24">Watch and follow Hyrox World Championships {year}</h2>
+          <p>
+            {event.venue} is the largest venue in Hyrox history — a {event.city} football stadium converted into the championship floor. Spectators can attend in-person or follow remotely; the live tracker on this site picks up splits the moment timing opens.
+          </p>
+          <div class="not-prose grid gap-4 md:grid-cols-2 mb-8">
+            <div class="bg-bg-card border border-border rounded-2xl p-5">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">In person</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Spectator tickets at {event.venue}</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3">
+                Hyrox sells spectator passes via the official event page. {event.venue} (formerly Friends Arena) seats 50,000+, so finals-day capacity is far higher than any prior Worlds — but the Elite 15 finals session is the one that historically sells out fastest.
+              </p>
+              <a href={event.officialUrl} rel="noopener noreferrer" class="text-sm font-bold text-accent hover:underline no-underline">
+                Tickets on hyrox.com ↗
+              </a>
+            </div>
+            <div class="bg-bg-card border border-border rounded-2xl p-5">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Remote</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Livestream + live tracker</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-3">
+                Hyrox typically broadcasts the Elite 15 finals on hyrox.com/live and the official Hyrox YouTube channel — the broadcast schedule is published in the days before race weekend. For age-group, Pro Singles, and Doubles waves, our local tracker pulls station-by-station splits in real time.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <a href="/live/" class="text-sm font-bold text-accent hover:underline no-underline">Open live tracker →</a>
+                <a href={event.officialUrl} rel="noopener noreferrer" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">Hyrox livestream ↗</a>
               </div>
             </div>
           </div>

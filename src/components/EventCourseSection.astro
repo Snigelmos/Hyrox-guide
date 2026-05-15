@@ -26,6 +26,15 @@ const { event } = Astro.props as Props;
 // actually have data — never invent venue characteristics.
 const evergreen = getCityEvergreen(event.slug);
 
+// Per-event venue notes win over the city-evergreen ones when an event
+// runs at a venue that isn't the city's regular host (e.g. the 2026
+// Hyrox World Championship at Strawberry Arena vs the regular Stockholm
+// regional stop at Stockholmsmässan). Falls back to the city-evergreen
+// notes whenever event.venueNotes isn't defined, so all existing events
+// continue to render unchanged.
+const venueNotes = event.venueNotes ?? evergreen?.cityNotes ?? [];
+const hasVenueNotes = venueNotes.length > 0;
+
 const trackSpeedLabel = event.trackProfile
   ? event.trackProfile.speed === "fast"
     ? "Fast track"
@@ -191,8 +200,8 @@ const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
     </div>
   )}
 
-  <!-- ── Venue notes from city-evergreen ─────────────────────────── -->
-  {evergreen?.cityNotes && evergreen.cityNotes.length > 0 && (
+  <!-- ── Venue notes (per-event override > city-evergreen) ───────── -->
+  {hasVenueNotes && (
     <div>
       <h3 class="text-lg md:text-xl font-black text-text-heading mb-3">
         {event.venue}: venue, transit, and field
@@ -213,21 +222,23 @@ const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
             </dd>
           </div>
         )}
-        {evergreen.cityNotes.map((note) => (
+        {venueNotes.map((note) => (
           <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
             <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">{note.title}</dt>
             <dd class="text-sm sm:text-base text-text leading-relaxed">{note.detail}</dd>
           </div>
         ))}
       </dl>
-      <p class="text-xs text-text-muted mt-3">
-        See the full <a href={`/hyrox/${evergreen.slug}/`} class="text-accent hover:underline">Hyrox {evergreen.city} city guide</a> for race history, Hyrox-affiliated local gyms, and pacing notes.
-      </p>
+      {evergreen && (
+        <p class="text-xs text-text-muted mt-3">
+          See the full <a href={`/hyrox/${evergreen.slug}/`} class="text-accent hover:underline">Hyrox {evergreen.city} city guide</a> for race history, Hyrox-affiliated local gyms, and pacing notes.
+        </p>
+      )}
     </div>
   )}
 
-  <!-- ── Address-only fallback when no evergreen exists ───────────── -->
-  {!evergreen && event.venueAddress && (
+  <!-- ── Address-only fallback when no notes block exists ────────── -->
+  {!hasVenueNotes && event.venueAddress && (
     <dl class="bg-bg-card border border-border rounded-2xl divide-y divide-border/60 overflow-hidden">
       <div class="grid grid-cols-[7rem_1fr] sm:grid-cols-[10rem_1fr] gap-3 sm:gap-4 px-4 sm:px-5 py-3">
         <dt class="text-xs sm:text-sm font-bold uppercase tracking-wider text-accent">Address</dt>
