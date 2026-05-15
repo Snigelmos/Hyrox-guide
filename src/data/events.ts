@@ -1033,11 +1033,11 @@ export const EVENTS: HyroxEvent[] = [
     venue: "Cohere Centre Ottawa",
     venueAddress: "4899 Uplands Drive, Ottawa, ON K1V 2N6",
     // Hyrox published the official Ottawa course map in the Hyrox Official
-    // Community Facebook group on 2026-05-09. Facebook exposes the image via
-    // a signed CDN URL; keep the post URL as the durable source citation.
-    // Swap both fields to a hyrox.com canonical URL if Hyrox publishes one.
+    // Community Facebook group on 2026-05-09. Facebook image CDN URLs are
+    // signed and expire, so link to the durable post instead of embedding the
+    // temporary image URL.
     courseMapUrl:
-      "https://scontent.frix7-1.fna.fbcdn.net/v/t39.30808-6/691744104_2515324498914064_608486349297916522_n.jpg?stp=cp6_dst-jpg_s960x960_tt6&_nc_cat=109&ccb=1-7&_nc_sid=e06c5d&_nc_ohc=Z260So6u1KgQ7kNvwG4I1JT&_nc_oc=AdpuaGvj8L7ZRBfAQFC46qA9rcsrGr2PWLi6CTaXrwO-kbHL9406_HTgueVkNiSEgmQ&_nc_zt=23&_nc_ht=scontent.frix7-1.fna&_nc_gid=wnJy03XSiiamYHlGSDVsrQ&_nc_ss=79289&oh=00_Af4aPsTZhqxuSCwuotak6L0bbjiHxm-L-zXjZzHf6qvPTg&oe=6A0670E3",
+      "https://www.facebook.com/groups/1950388345199390/posts/4530409480530584/",
     courseMapSourceUrl:
       "https://www.facebook.com/groups/1950388345199390/posts/4530409480530584/",
     officialUrl: HYROX_OFFICIAL,
