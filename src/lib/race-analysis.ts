@@ -103,7 +103,7 @@ export function analyzeRace(snapshot: LiveAthleteSnapshot): RaceAnalysis | null 
     .slice(0, 4);
 
   const benchmarkNote = isTeamEntry
-    ? "Team/doubles benchmarks are approximate right now. We compare your split pattern against the closest singles benchmark so you can still see where time is leaking without pretending the target is exact."
+    ? "Team/doubles benchmarks are approximate right now. We compare the split pattern against the closest singles benchmark so the biggest time leaks are still visible without pretending the target is exact."
     : null;
 
   return {

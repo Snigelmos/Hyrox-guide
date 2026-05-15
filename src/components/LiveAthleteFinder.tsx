@@ -237,6 +237,11 @@ export default function LiveAthleteFinder({
       }
       const data = (await res.json()) as { matches: LiveMatch[] };
       const matches = data.matches ?? [];
+      const fullNameMatches =
+        searchType === "name" && hasMultipleNameParts(trimmed)
+          ? matches.filter((match) => nameMatchesQuery(match.name, trimmed))
+          : matches;
+      const displayMatches = fullNameMatches.length > 0 ? fullNameMatches : matches;
       if (matches.length === 0) {
         setView({ kind: "form" });
         setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
@@ -251,15 +256,20 @@ export default function LiveAthleteFinder({
         );
         return;
       }
-      if (didExtract) {
+      if (didExtract && fullNameMatches.length > 0) {
         setFeedback(`Showing results for surname "${effectiveQuery}".`);
       }
-      if (matches.length === 1) {
-        const m = matches[0];
-        openDashboard(m, { matches, query: trimmed, type: searchType });
+      if (displayMatches.length === 1 && (fullNameMatches.length > 0 || !hasMultipleNameParts(trimmed))) {
+        const m = displayMatches[0];
+        openDashboard(m, { matches: displayMatches, query: trimmed, type: searchType });
         return;
       }
-      setView({ kind: "matches", query: trimmed, type: searchType, matches });
+      if (hasMultipleNameParts(trimmed) && fullNameMatches.length === 0) {
+        setFeedback(
+          `No exact match for "${trimmed}". Showing surname matches for "${effectiveQuery}" — choose manually only if it is the right athlete.`,
+        );
+      }
+      setView({ kind: "matches", query: trimmed, type: searchType, matches: displayMatches });
     } catch {
       offerManualFallback(
         "Couldn't reach the local tracker search. Stay here and retry in a moment — no Hyrox tab was opened.",
@@ -696,7 +706,6 @@ export default function LiveAthleteFinder({
  * Accept common input patterns and extract just the surname so the search
  * works regardless of how the user types the name.
  *   "Annie Emilsson"    → "Emilsson"
- *   "Emilsson Annie"    → "Emilsson"  (surname-first without comma)
  *   "Emilsson, Annie"   → "Emilsson"
  *   "Emilsson"          → "Emilsson"  (unchanged)
  */
@@ -710,6 +719,31 @@ function extractSurname(input: string): string {
   if (parts.length === 1) return s;
   // "Firstname Lastname" → take the last token as the surname
   return parts[parts.length - 1];
+}
+
+function hasMultipleNameParts(input: string): boolean {
+  return input
+    .replace(",", " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length > 1;
+}
+
+function nameMatchesQuery(resultName: string, query: string): boolean {
+  const result = normalizeName(resultName);
+  const tokens = normalizeName(query)
+    .split(" ")
+    .filter((token) => token.length > 1);
+  return tokens.length > 0 && tokens.every((token) => result.includes(token));
+}
+
+function normalizeName(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .toLowerCase();
 }
 
 function Spinner() {

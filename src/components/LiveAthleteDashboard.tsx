@@ -628,7 +628,7 @@ function RaceAnalysisPanel({ analysis }: { analysis: RaceAnalysis }) {
 
       {analysis.opportunities.length === 0 ? (
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3 text-sm text-emerald-300">
-          No major leaks found against the selected benchmark. Protect your strengths and focus on race simulations.
+          No major leaks found against the selected benchmark. Protect the strengths and focus on race simulations.
         </div>
       ) : (
         <div className="space-y-3">
@@ -643,7 +643,7 @@ function RaceAnalysisPanel({ analysis }: { analysis: RaceAnalysis }) {
                     </div>
                     <div className="font-black text-text-heading">{item.label}</div>
                     <div className="text-[10px] text-text-muted">
-                      you {item.actualLabel} · benchmark {item.benchmarkLabel}
+                      result {item.actualLabel} · benchmark {item.benchmarkLabel}
                     </div>
                   </div>
                   <div className="text-right font-mono font-black text-rose-300">
