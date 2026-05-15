@@ -1,0 +1,53 @@
+name: IndexNow ping
+
+# Notifies Bing / Yandex / Seznam (via the IndexNow API) every time the live
+# sitemap can change, so new and updated URLs get crawled in hours instead of
+# days. Google does not support IndexNow but already picks new URLs up from
+# the sitemap on its own.
+#
+# Triggers:
+#   - push to main on any path that can affect what's in the sitemap
+#   - completion of the "Scheduled publish" workflow (every other day —
+#     it promotes scheduled blog posts into the indexable set via a Vercel
+#     rebuild)
+#   - manual run from the Actions UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "astro.config.ts"
+      - "public/**"
+      - "package.json"
+
+  workflow_run:
+    workflows: ["Scheduled publish"]
+    types: [completed]
+
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    # Skip if the upstream Scheduled publish workflow failed — no new content
+    # was promoted, so there is nothing fresh to tell IndexNow about.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Wait for Vercel deployment to land
+        # Astro builds on Vercel typically finish in 60–120s. 180s is a
+        # comfortable buffer so the live sitemap reflects the new URL set
+        # before we ping IndexNow. IndexNow itself is idempotent and retries
+        # 404s, so a slight overshoot is harmless.
+        run: sleep 180
+
+      - name: Ping IndexNow with live sitemap URLs
+        run: node scripts/index-now.mjs

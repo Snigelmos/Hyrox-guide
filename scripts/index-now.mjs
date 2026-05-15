@@ -4,61 +4,104 @@
  *
  * Pings IndexNow (used by Bing, Yandex, Seznam) with a list of URLs so they
  * get crawled immediately after publishing instead of waiting for the usual
- * sitemap pull.
+ * sitemap pull. Google does not support IndexNow but picks up new URLs from
+ * the sitemap within ~24h anyway.
  *
- * Usage:
- *   node scripts/index-now.mjs https://hyroxvault.com/blog/my-new-post/ \
- *                              https://hyroxvault.com/blog/
+ * Default behaviour (no args):
+ *   - Fetches https://www.hyroxvault.com/sitemap-index.xml, walks every
+ *     child sitemap, and submits every <loc> URL. This is the canonical
+ *     indexable URL set after isIndexableSitemapUrl() filters in
+ *     astro.config.ts, so it covers blog posts, hubs, events, gyms,
+ *     calculators, methodology — everything that should be in search.
  *
- * Or with no args, it pings every blog post URL derived from src/content/blog.
+ * Override:
+ *   node scripts/index-now.mjs <url> [...<url>]
+ *     Submits exactly the listed URLs instead of reading the sitemap.
+ *
+ * IndexNow accepts up to 10,000 URLs per request; we chunk if needed.
  */
-
-import { readdir } from "node:fs/promises";
-import path from "node:path";
 
 const HOST = "www.hyroxvault.com";
 const KEY = "66ba454ee442174bc368efc9f6bc6c19";
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 const ENDPOINT = "https://api.indexnow.org/IndexNow";
+const SITEMAP_INDEX_URL = `https://${HOST}/sitemap-index.xml`;
+const SITEMAP_FALLBACK_URL = `https://${HOST}/sitemap-0.xml`;
+const MAX_PER_REQUEST = 10_000;
+const USER_AGENT = "hyroxvault-indexnow/1.0 (+https://www.hyroxvault.com)";
 
-async function collectBlogUrls() {
-  const dir = path.resolve("src/content/blog");
-  const files = await readdir(dir);
-  return files
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => `https://${HOST}/blog/${f.replace(/\.mdx$/, "")}/`);
+async function fetchLocs(url) {
+  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
+  if (!res.ok) {
+    if (res.status === 404) return [];
+    throw new Error(`Failed to fetch ${url} (${res.status} ${res.statusText})`);
+  }
+  const xml = await res.text();
+  const matches = xml.match(/<loc>([^<]+)<\/loc>/g) ?? [];
+  return matches.map((m) => m.slice(5, -6).trim()).filter(Boolean);
 }
 
-async function main() {
-  const argv = process.argv.slice(2);
-  const urlList = argv.length > 0 ? argv : await collectBlogUrls();
-
-  if (urlList.length === 0) {
-    console.log("No URLs to submit.");
-    return;
+async function collectSitemapUrls() {
+  const childSitemaps = await fetchLocs(SITEMAP_INDEX_URL);
+  if (childSitemaps.length === 0) {
+    // Older single-file sitemap layout — fall back to sitemap-0.xml.
+    return await fetchLocs(SITEMAP_FALLBACK_URL);
   }
+  const urls = new Set();
+  for (const child of childSitemaps) {
+    const childUrls = await fetchLocs(child);
+    for (const u of childUrls) urls.add(u);
+  }
+  return [...urls];
+}
 
+async function submitChunk(urlList) {
   const body = {
     host: HOST,
     key: KEY,
     keyLocation: KEY_LOCATION,
     urlList,
   };
-
-  console.log(`Pinging IndexNow with ${urlList.length} URL(s)...`);
   const res = await fetch(ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "User-Agent": USER_AGENT,
+    },
     body: JSON.stringify(body),
   });
-
-  if (res.status >= 200 && res.status < 300) {
-    console.log(`OK (${res.status}) — URLs submitted.`);
-  } else {
+  if (res.status < 200 || res.status >= 300) {
     const text = await res.text().catch(() => "");
-    console.error(`FAILED (${res.status}): ${text}`);
-    process.exitCode = 1;
+    throw new Error(`IndexNow returned ${res.status}: ${text}`);
   }
+  return res.status;
+}
+
+async function main() {
+  const argv = process.argv.slice(2);
+  let urlList;
+  if (argv.length > 0) {
+    urlList = argv;
+    console.log(`Submitting ${urlList.length} URL(s) from CLI args...`);
+  } else {
+    console.log(`Fetching sitemap index: ${SITEMAP_INDEX_URL}`);
+    urlList = await collectSitemapUrls();
+    console.log(`Found ${urlList.length} URL(s) across sitemap(s).`);
+  }
+
+  if (urlList.length === 0) {
+    console.log("No URLs to submit.");
+    return;
+  }
+
+  for (let i = 0; i < urlList.length; i += MAX_PER_REQUEST) {
+    const chunk = urlList.slice(i, i + MAX_PER_REQUEST);
+    console.log(`Pinging IndexNow with chunk of ${chunk.length}...`);
+    const status = await submitChunk(chunk);
+    console.log(`  OK (${status})`);
+  }
+
+  console.log(`Done. Submitted ${urlList.length} URL(s).`);
 }
 
 main().catch((err) => {

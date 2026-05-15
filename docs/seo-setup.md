@@ -49,22 +49,23 @@ Bing, Yandex, and Seznam support **IndexNow**, a tiny API that tells them "this 
 
 Setup (already done in this repo):
 
-- `public/66ba454ee442174bc368efc9f6bc6c19.txt` — the key file Bing will fetch to prove ownership
-- `scripts/index-now.mjs` — the script that pings the API
+- `public/66ba454ee442174bc368efc9f6bc6c19.txt` — the key file Bing fetches to prove ownership
+- `scripts/index-now.mjs` — reads the live `sitemap-index.xml` and pings the IndexNow API with every canonical, indexable URL (blog posts, hubs, events, gyms, calculators, etc.)
+- `.github/workflows/indexnow.yml` — runs the script automatically after every `push` to `main` (waits 3 minutes for Vercel to deploy first) and after the `Scheduled publish` workflow promotes new posts. So you do not normally need to touch this.
 
-Each time you publish a new post, run:
-
-```bash
-npm run indexnow -- https://hyroxvault.com/blog/your-new-post/
-```
-
-Or, for convenience after a deploy, run with no arguments to submit every blog URL at once:
+Manual runs (rare — only if you want to force a re-ping):
 
 ```bash
+# Submit one or more specific URLs
+npm run indexnow -- https://www.hyroxvault.com/blog/your-new-post/
+
+# Submit every URL in the live sitemap
 npm run indexnow
 ```
 
-Google does **not** support IndexNow but they'll pick the post up from the sitemap + RSS feed within ~24h anyway.
+You can also trigger the GitHub Action manually from the Actions tab → **IndexNow ping** → **Run workflow**.
+
+Google does **not** support IndexNow but they pick the post up from the sitemap + RSS feed within ~24h anyway.
 
 ---
 
