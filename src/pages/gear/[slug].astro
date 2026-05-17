@@ -133,6 +133,41 @@ const otherGuides =
             </tbody>
           </table>
 
+          {comp.hyroxBreakdown && comp.hyroxBreakdown.length > 0 && (
+            <>
+              <h2>Hyrox station-by-station verdict</h2>
+              <p>
+                Each row picks the shoe that gives you a measurable advantage on
+                that part of the Hyrox course, with the rationale. Ties mean the
+                shoe choice is irrelevant for that station.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hyrox segment</th>
+                    <th>Winner</th>
+                    <th>Why</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comp.hyroxBreakdown.map((row) => (
+                    <tr>
+                      <th>{row.station}</th>
+                      <td>
+                        {row.winner === "productA"
+                          ? comp.productALabel
+                          : row.winner === "productB"
+                            ? comp.productBLabel
+                            : "Tie"}
+                      </td>
+                      <td>{row.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
           <h2>Who should pick {comp.productALabel}</h2>
           <ul>
             {comp.bestFor.productA.map((b) => (

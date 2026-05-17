@@ -25,6 +25,16 @@ export interface GearComparison {
   bestFor: { productA: string[]; productB: string[] };
   faqs: { question: string; answer: string }[];
   internalLinks: { href: string; label: string }[];
+  /**
+   * Optional Hyrox station-by-station verdict. Rendered as a table after the
+   * spec rows on shoe comparisons. Each row picks a winner ("productA",
+   * "productB", or "tie") for one station with a one-sentence rationale.
+   */
+  hyroxBreakdown?: {
+    station: string;
+    winner: "productA" | "productB" | "tie";
+    reason: string;
+  }[];
 }
 
 export const GEAR_COMPARISONS: GearComparison[] = [
@@ -150,13 +160,13 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     productALabel: "Reebok Nano X4",
     productBLabel: "Nike Metcon 9",
     category: "shoes",
-    title: "Reebok Nano X4 vs Nike Metcon 9: CrossFit and Hyrox Trainer Comparison (2026)",
+    title: "Reebok Nano X4 vs Nike Metcon 9 for Hyrox — Verdict by Station (2026)",
     metaDescription:
-      "Reebok Nano X4 vs Nike Metcon 9 for CrossFit and Hyrox: running, sled push, wall balls, durability, and which is the better hybrid functional fitness trainer in 2026.",
+      "Verdict: Metcon 9 wins sled push, sled pull, wall balls and lunges; Nano X4 wins the 8 km of running and is the safer all-rounder for sub-90 finishers. Full station-by-station Hyrox breakdown plus the CrossFit answer underneath.",
     intro:
-      "Reebok Nano X4 and Nike Metcon 9 are the two classic functional fitness shoes. Both were built for CrossFit and both are now adopted heavily by Hyrox racers, so the comparison covers the same shoes whether you're pushing a sled at a Hyrox or grinding through Murph in your CrossFit box. They've evolved closer to each other over the years: the X4 is now more comfortable for running, and the Metcon 9 is firmer underfoot for stations than previous generations.",
+      "If you're choosing between the Reebok Nano X4 and Nike Metcon 9 for a Hyrox, the verdict is short: the Metcon 9 is the better station shoe, the Nano X4 is the better running shoe, and the Hyrox-specific decision turns on whether your finish time is above or below 80 minutes. The CrossFit answer is similar but flipped slightly — most CrossFitters end up in the Metcon for lift-heavy WODs and reach for the Nano on running-dominant metcons. This page gives you the station-by-station verdict, the spec table, the buy criteria, and the FAQs that come up most often.",
     bottomLine:
-      "Pick the Reebok Nano X4 if you run more than you lift and want a softer ride. Pick the Nike Metcon 9 if your training is heavier on lifting, sled work, and wall balls and you want a stiffer platform. The same logic applies whether you're optimising for CrossFit metcons or Hyrox intervals.",
+      "For Hyrox: pick the Nike Metcon 9 if you finish in 80+ minutes and stations dominate your race — the firmer platform saves you 30-60 seconds across sled push, wall balls and lunges. Pick the Reebok Nano X4 if you finish under 80 minutes and the 8 km of running decides your race — the softer midsole and 7 mm drop transfer that running gain. For CrossFit, the same logic flips slightly: lift-heavy boxes default to Metcon, running-and-engine-heavy boxes default to Nano.",
     rows: [
       { attribute: "Running comfort", productA: "Better — softer midsole", productB: "Stiffer — feels harder underfoot" },
       { attribute: "Sled push", productA: "Very good", productB: "Excellent" },
@@ -169,23 +179,53 @@ export const GEAR_COMPARISONS: GearComparison[] = [
       { attribute: "Price (RRP)", productA: "€140-160", productB: "€140-160" },
     ],
     bestFor: {
-      productA: ["Athletes who run 30+ km per week", "Athletes with sensitive feet", "First-time Hyrox racers", "CrossFitters who do high-volume metcons with running"],
-      productB: ["Sled push and station-heavy training", "Athletes prioritising stability", "Heavy athletes (over 90 kg)", "CrossFitters who lift heavy and value a stiff platform"],
+      productA: [
+        "Sub-80-minute Hyrox racers — the 8 km of running decides your race",
+        "Athletes who run 30+ km per week in training",
+        "Hyrox racers wanting one shoe for training and racing",
+        "First-time Hyrox racers (the softer ride forgives technique errors)",
+        "Athletes with sensitive feet or knees",
+        "CrossFitters whose box does long, running-and-engine-heavy metcons",
+      ],
+      productB: [
+        "Sub-100-minute Hyrox racers where stations dominate the race",
+        "Heavy athletes (90 kg+) who push the sled with body weight",
+        "Athletes with weak lower-leg stability on sled and lunges",
+        "Anyone chasing a sub-3:50 sled push or sub-4:00 lunge split",
+        "CrossFitters who lift heavy and value a stiff platform",
+      ],
     },
+    hyroxBreakdown: [
+      { station: "1 km running (×8)", winner: "productA", reason: "Softer midsole + 7 mm drop saves 20-40 seconds across the full 8 km vs Metcon's 4 mm drop and firmer ride." },
+      { station: "SkiErg (1,000 m)", winner: "tie", reason: "Both shoes anchor the heel cleanly during the drive — the surface contact for SkiErg is the heel cup, not the outsole, so the difference is negligible." },
+      { station: "Sled push (50 m)", winner: "productB", reason: "Metcon's firmer outsole and lower 4 mm drop drives force into the sled more efficiently; Nano's softer foam compresses 1-2 mm under 102 kg / 152 kg loads." },
+      { station: "Sled pull (50 m)", winner: "productB", reason: "Metcon's stiffer base anchors body weight on the lean-back better than the Nano's softer midsole." },
+      { station: "Burpee broad jumps (80 m)", winner: "tie", reason: "Both shoes are adequate. Nano feels slightly springier on push-off; Metcon feels slightly more stable on landing. Net difference: zero seconds." },
+      { station: "Rowing (1,000 m)", winner: "tie", reason: "Foot stretchers do the work — shoe choice is irrelevant for the row station." },
+      { station: "Farmers carry (200 m)", winner: "productB", reason: "Metcon's stiffer heel cup transfers carry weight to the ground more cleanly; Nano's softer midsole compresses under bilateral DB load." },
+      { station: "Sandbag lunges (100 m)", winner: "productB", reason: "Metcon's firmer platform and stiffer heel cup save 5-10 seconds across 100 m of weighted reverse lunges. Nano is adequate but the toe-box flexes." },
+      { station: "Wall balls (75/100 reps)", winner: "productB", reason: "Stiffer flat sole gives more force return on each squat. Nano's softer midsole absorbs 1-2% of each rep — small per rep, meaningful across 75-100 reps." },
+    ],
     faqs: [
-      { question: "Which is better for CrossFit, Reebok Nano X4 or Nike Metcon 9?", answer: "It depends on what your CrossFit programming looks like. The Metcon 9 is the better all-round CrossFit shoe for athletes who lift heavy and do shorter, lift-dominant WODs. The Nano X4 is the better pick if your box does more running, double-unders, and longer engine pieces, where the softer midsole pays off." },
-      { question: "Is Reebok Nano X4 good for Hyrox?", answer: "Yes. Nano X4 is one of the most versatile Hyrox training shoes. The 7 mm drop and softer midsole make 8 km of running more comfortable than the Metcon line, and the platform is firm enough for sled and wall balls." },
-      { question: "Are Nano X4 and Metcon 9 essentially the same shoe?", answer: "They've converged but they're not identical. The Metcon 9 still has a lower 4 mm drop and a firmer overall ride, which makes it more lift-friendly. The Nano X4 has a higher 7 mm drop and a softer midsole, which makes it more run-friendly. On stations both feel stable, on running the Nano feels noticeably softer." },
-      { question: "Which is better for sled push?", answer: "Nike Metcon 9 has a slight edge for sled push due to its firmer outsole and lower drop. The Nano X4 is fully capable for most athletes; the difference only matters at the sub-75 Hyrox or competitive CrossFit level where every second on the platform counts." },
-      { question: "Can I race Hyrox in Nano X4?", answer: "Yes. Many Hyrox racers train and race in the Nano X4 for sub-90 finishes. Faster racers (sub-75) sometimes switch to a dedicated running shoe for race day." },
+      { question: "Which is better for Hyrox: Reebok Nano X4 or Nike Metcon 9?", answer: "It depends on your finish time. Sub-80-minute racers benefit more from the Nano X4's softer midsole and 7 mm drop on the 8 km of running. Sub-100-minute racers benefit more from the Metcon 9's firmer platform on sled, lunges, and wall balls — where stations dominate the time. The break-even is roughly 80-85 minutes." },
+      { question: "Which is better for CrossFit, Reebok Nano X4 or Nike Metcon 9?", answer: "Metcon 9 is the better all-round CrossFit shoe for athletes who lift heavy and do shorter, lift-dominant WODs. The Nano X4 is the better pick if your box does more running, double-unders, and longer engine pieces, where the softer midsole pays off." },
+      { question: "Is Reebok Nano X4 good for Hyrox?", answer: "Yes. Nano X4 is one of the most versatile Hyrox training shoes — and one of the most-worn shoes on race day for sub-90 finishers. The 7 mm drop and softer midsole make 8 km of running more comfortable than the Metcon line, and the platform is firm enough for sled push and wall balls. Faster racers (sub-75) sometimes switch to a dedicated running shoe like the Puma Deviate Nitro 3 for race day." },
+      { question: "Are Nano X4 and Metcon 9 essentially the same shoe?", answer: "They've converged but they're not identical. The Metcon 9 has a lower 4 mm drop and a firmer overall ride, which makes it more lift-friendly and station-friendly. The Nano X4 has a higher 7 mm drop and a softer midsole, which makes it more run-friendly. On most Hyrox stations both feel stable; on the 8 km of running the Nano feels noticeably softer." },
+      { question: "Which is better for sled push?", answer: "Nike Metcon 9 has a clear edge for sled push due to its firmer outsole and lower drop. The Nano X4 is fully capable for most athletes; the difference only matters at the sub-75 Hyrox or competitive CrossFit level where every second on the platform counts. Heavy athletes (90 kg+) will feel the Nano's foam compression more." },
+      { question: "Can I race Hyrox in Nano X4?", answer: "Yes. Many Hyrox racers train and race in the Nano X4 for sub-90 finishes — it's one of the most common race-day shoes in the Open category. Faster racers (sub-75) sometimes switch to a dedicated running shoe for race day to capture the running-foam advantage." },
+      { question: "Are Nike Metcons too stiff for the 8 km of Hyrox running?", answer: "For most athletes, no. The 4 mm drop and firm midsole are perfectly tolerable across 1 km running intervals — the running is broken up by stations, so you're never running continuously for more than a few minutes. Sub-80 racers who run faster splits sometimes find the Metcon harsh; sub-100 racers rarely notice." },
       { question: "Which lasts longer in heavy CrossFit and Hyrox use?", answer: "Both are built for the abuse of functional training. Most users report 9-12 months of heavy daily use before the outsole starts to show wear. The Metcon 9 tends to wear faster on the medial forefoot from rope climbs; the Nano X4 wears faster on the outsole heel." },
+      { question: "Should I own both Nano X4 and Metcon 9?", answer: "Only if you race Hyrox more than 2-3 times per year and have two distinct shoe needs (a running-day shoe and a station-day shoe). For most athletes, owning one is enough — pick the shoe that matches your finish-time bucket and your training week's mix." },
     ],
     internalLinks: [
       { href: "/gear/nike-metcon-9-vs-nobull-trainer/", label: "Nike Metcon 9 vs NoBull Trainer+" },
       { href: "/gear/puma-fast-r-vs-nike-metcon/", label: "Puma Fast-R vs Nike Metcon 9" },
       { href: "/gear/puma-deviate-nitro-vs-nike-pegasus/", label: "Puma Deviate Nitro 3 vs Nike Pegasus 41" },
       { href: "/blog/hyrox-shoe-rules/", label: "Hyrox shoe rules" },
+      { href: "/blog/best-hyrox-shoes-for-heavy-athletes/", label: "Best Hyrox shoes for heavy athletes" },
+      { href: "/blog/best-hyrox-shoes-for-wide-feet/", label: "Best Hyrox shoes for wide feet" },
       { href: "/blog/best-hyrox-pacing-strategy/", label: "Hyrox pacing strategy" },
+      { href: "/blog/hyrox-sled-push-technique/", label: "Hyrox sled push technique" },
     ],
   },
   {
