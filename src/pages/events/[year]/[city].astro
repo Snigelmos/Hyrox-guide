@@ -344,14 +344,29 @@ const activeFaqItems = event
               question: `How do I follow Hyrox ${event.city} ${year} live?`,
               answer: `Splits land on the official Hyrox timing system within seconds of each athlete or team crossing a station timing mat. Use the live tracker on /live/ to search by name, team name, or bib — HyroxVault renders the dashboard locally on the page, including run splits, station splits, and share links. Typical Open finishers are on the floor for 75-110 minutes, so you can usually catch a full race in one sitting.`,
             },
-            ...(raceWeekTerms?.isLocalised
-              ? [
-                  {
-                    question: `Is Hyrox ${event.country} ${year} the same as Hyrox ${event.city} ${year}?`,
-                    answer: `Yes — Hyrox ${event.city} ${year} is the only Hyrox stop on the ${year} calendar in ${event.country}, so any "Hyrox ${event.country} ${year}" search refers to the ${formatEventDate(event.startDate, event.endDate)} race at ${event.venue}.`,
-                  },
-                ]
-              : []),
+          ]
+        : []),
+      // Year-round localised FAQ — added for non-English markets regardless
+      // of race-week status. Captures evergreen queries like
+      // `hyrox finland tulokset`, `hyrox madrid inscripción`, `hyrox 인천 결과`.
+      // These three questions are stable evergreen content, so we render
+      // them every day of the year (the schema stays accurate because the
+      // text below renders too).
+      ...(raceWeekTerms?.isLocalised
+        ? [
+            {
+              question: `Is Hyrox ${event.country} ${year} the same as Hyrox ${event.city} ${year}?`,
+              answer: `Yes — Hyrox ${event.city} ${year} is the ${year} Hyrox stop in ${event.country}, so any "Hyrox ${event.country} ${year}" search refers to the ${formatEventDate(event.startDate, event.endDate)} race at ${event.venue}.${localNamesList ? ` Locally the race is also called Hyrox ${localNamesList} ${year}.` : ""}`,
+            },
+            isPast
+              ? {
+                  question: `Where can I find the Hyrox ${event.city} ${year} results (${raceWeekTerms.results})?`,
+                  answer: `Official Hyrox ${event.city} ${year} results (${raceWeekTerms.results}) are published on results.hyrox.com under the season event list. Open the ${year} season, pick Hyrox ${event.city}, then filter by division (Open, Pro, Doubles, Mixed, Relay) and age group. Our /events/${year}/${event.slug}/results/ page mirrors the podium and key takeaways so you can compare splits without leaving the site.`,
+                }
+              : {
+                  question: `How do I register (${raceWeekTerms.register}) for Hyrox ${event.city} ${year}?`,
+                  answer: `Registration (${raceWeekTerms.register}) for Hyrox ${event.city} ${year} is on the official Hyrox website (hyrox.com). Most stops sell out 4-8 weeks before race day, and early-bird pricing typically saves €20-30 vs late entry. Doubles and Relay categories sell out earliest; Open Singles last. The race is at ${event.venue} on ${formatEventDate(event.startDate, event.endDate)}.`,
+                },
           ]
         : []),
     ]
@@ -678,6 +693,7 @@ const explainerFaqItems = explainer
                 <li><a href="/blog/hyrox-sled-push-technique/" class="text-text hover:text-accent">Sled push</a> + <a href="/blog/hyrox-sled-pull-technique/" class="text-text hover:text-accent">pull</a></li>
                 <li>Grip for <a href="/racing-guide/stations/" class="text-text hover:text-accent">farmers carry</a></li>
                 <li><a href="/supplements/protocol/" class="text-text hover:text-accent">Fuelling protocol</a></li>
+                <li><a href="/gyms/map/" class="text-text hover:text-accent">Find a Hyrox gym</a></li>
               </ul>
               <a href="/blog/first-hyrox-race-guide/" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
                 First-Hyrox race guide →
@@ -701,6 +717,28 @@ const explainerFaqItems = explainer
                   Browse time standards →
                 </a>
               </div>
+            </div>
+          </div>
+
+          <div class="not-prose mb-10">
+            <div class="text-xs font-bold uppercase tracking-wider text-text-muted/70 mb-3">Useful planning resources</div>
+            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <a href="/blog/how-much-does-hyrox-cost/" class="block bg-bg-card border border-border rounded-xl p-3 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+                <div class="text-xs font-bold uppercase tracking-wider text-accent">Budget</div>
+                <div class="text-sm text-text-heading font-semibold mt-0.5">What Hyrox actually costs</div>
+              </a>
+              <a href="/blog/best-hyrox-shoes-for-heavy-athletes/" class="block bg-bg-card border border-border rounded-xl p-3 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+                <div class="text-xs font-bold uppercase tracking-wider text-accent">Shoes</div>
+                <div class="text-sm text-text-heading font-semibold mt-0.5">Best Hyrox shoes for heavy athletes</div>
+              </a>
+              <a href="/blog/best-hyrox-shoes-for-wide-feet/" class="block bg-bg-card border border-border rounded-xl p-3 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+                <div class="text-xs font-bold uppercase tracking-wider text-accent">Shoes</div>
+                <div class="text-sm text-text-heading font-semibold mt-0.5">Best Hyrox shoes for wide feet</div>
+              </a>
+              <a href="/blog/best-heart-rate-monitor-for-hyrox/" class="block bg-bg-card border border-border rounded-xl p-3 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline">
+                <div class="text-xs font-bold uppercase tracking-wider text-accent">Wearables</div>
+                <div class="text-sm text-text-heading font-semibold mt-0.5">Best heart-rate monitor</div>
+              </a>
             </div>
           </div>
         </>

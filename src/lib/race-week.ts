@@ -34,58 +34,70 @@ const RACE_WEEK_LEAD_DAYS = 14;
 const RACE_WEEK_TRAIL_DAYS = 2;
 
 /**
- * Local-language synonyms for the two highest-volume race-week query
- * fragments: "schedule" and "start list". Keyed by ISO country code.
+ * Local-language synonyms for the highest-volume Hyrox query fragments:
  *
- * Values are lowercase except where the language conventionally uses
- * capitalised nouns (German). Each entry is the term native searchers use,
- * cross-checked against Hyrox-related searches and athlete venue posts.
+ *   - `schedule` and `startList` — race-week spike terms.
+ *   - `results` — year-round, peaks for the 6-12 weeks after a race.
+ *   - `register` — year-round, peaks 4-8 weeks before the early-bird deadline.
+ *
+ * Keyed by ISO country code. Values are lowercase except where the language
+ * conventionally uses capitalised nouns (German). Each entry is the term
+ * native searchers use, cross-checked against Hyrox-related Search Console
+ * data and athlete venue posts.
  *
  * MAINTENANCE: only add a country once we have evidence that the local-
  * language term sees real search volume. Do not invent translations.
  */
-const LOCAL_TERMS: Record<string, { schedule: string; startList: string }> = {
+const LOCAL_TERMS: Record<
+  string,
+  { schedule: string; startList: string; results: string; register: string }
+> = {
   // Nordics
-  FI: { schedule: "aikataulu", startList: "lähtölista" },
-  SE: { schedule: "schema", startList: "startlista" },
-  NO: { schedule: "tidsplan", startList: "startliste" },
-  DK: { schedule: "tidsplan", startList: "startliste" },
+  FI: { schedule: "aikataulu", startList: "lähtölista", results: "tulokset", register: "ilmoittautuminen" },
+  SE: { schedule: "schema", startList: "startlista", results: "resultat", register: "anmälan" },
+  NO: { schedule: "tidsplan", startList: "startliste", results: "resultater", register: "påmelding" },
+  DK: { schedule: "tidsplan", startList: "startliste", results: "resultater", register: "tilmelding" },
   // German-speaking
-  DE: { schedule: "Zeitplan", startList: "Startliste" },
-  AT: { schedule: "Zeitplan", startList: "Startliste" },
-  CH: { schedule: "Zeitplan", startList: "Startliste" },
+  DE: { schedule: "Zeitplan", startList: "Startliste", results: "Ergebnisse", register: "Anmeldung" },
+  AT: { schedule: "Zeitplan", startList: "Startliste", results: "Ergebnisse", register: "Anmeldung" },
+  CH: { schedule: "Zeitplan", startList: "Startliste", results: "Ergebnisse", register: "Anmeldung" },
   // Romance languages
-  FR: { schedule: "horaires", startList: "liste de départ" },
-  IT: { schedule: "programma", startList: "lista di partenza" },
-  ES: { schedule: "horario", startList: "lista de salida" },
-  PT: { schedule: "horário", startList: "lista de partida" },
+  FR: { schedule: "horaires", startList: "liste de départ", results: "résultats", register: "inscription" },
+  IT: { schedule: "programma", startList: "lista di partenza", results: "risultati", register: "iscrizione" },
+  ES: { schedule: "horario", startList: "lista de salida", results: "resultados", register: "inscripción" },
+  PT: { schedule: "horário", startList: "lista de partida", results: "resultados", register: "inscrição" },
   // Latin America (Spanish-speaking — race-week search behaviour mirrors ES)
-  MX: { schedule: "horario", startList: "lista de salida" },
+  MX: { schedule: "horario", startList: "lista de salida", results: "resultados", register: "inscripción" },
+  AR: { schedule: "horario", startList: "lista de salida", results: "resultados", register: "inscripción" },
   // Benelux
-  NL: { schedule: "tijdschema", startList: "startlijst" },
-  BE: { schedule: "tijdschema", startList: "startlijst" },
+  NL: { schedule: "tijdschema", startList: "startlijst", results: "uitslagen", register: "inschrijving" },
+  BE: { schedule: "tijdschema", startList: "startlijst", results: "uitslagen", register: "inschrijving" },
   // Central / Eastern Europe
-  PL: { schedule: "harmonogram", startList: "lista startowa" },
-  CZ: { schedule: "rozpis", startList: "startovní listina" },
-  HU: { schedule: "menetrend", startList: "rajtlista" },
+  PL: { schedule: "harmonogram", startList: "lista startowa", results: "wyniki", register: "rejestracja" },
+  CZ: { schedule: "rozpis", startList: "startovní listina", results: "výsledky", register: "registrace" },
+  HU: { schedule: "menetrend", startList: "rajtlista", results: "eredmények", register: "regisztráció" },
   // Asia
-  JP: { schedule: "スケジュール", startList: "スタートリスト" },
-  CN: { schedule: "赛程", startList: "出发名单" },
-  KR: { schedule: "일정", startList: "출발 명단" },
+  JP: { schedule: "スケジュール", startList: "スタートリスト", results: "結果", register: "申し込み" },
+  CN: { schedule: "赛程", startList: "出发名单", results: "结果", register: "报名" },
+  HK: { schedule: "賽程", startList: "出發名單", results: "結果", register: "報名" },
+  KR: { schedule: "일정", startList: "출발 명단", results: "결과", register: "등록" },
   // ME
-  AE: { schedule: "جدول السباق", startList: "قائمة المتسابقين" },
+  AE: { schedule: "جدول السباق", startList: "قائمة المتسابقين", results: "نتائج", register: "التسجيل" },
 };
 
 export interface LocalRaceWeekTerms {
   schedule: string;
   startList: string;
+  results: string;
+  register: string;
   /** Whether the local terms differ from the English defaults. */
   isLocalised: boolean;
 }
 
 /**
- * Return the local-language schedule + start-list synonym for an event,
- * falling back to English when we don't have data for that country.
+ * Return the local-language schedule + start-list + results + register
+ * synonyms for an event, falling back to English when we don't have data
+ * for that country.
  *
  * The English defaults are returned with `isLocalised: false` so callers
  * know not to render bilingual headings ("Schedule (Schedule)" looks silly).
@@ -93,7 +105,13 @@ export interface LocalRaceWeekTerms {
 export function localRaceWeekTerms(event: HyroxEvent): LocalRaceWeekTerms {
   const entry = LOCAL_TERMS[event.countryCode];
   if (!entry) {
-    return { schedule: "schedule", startList: "start list", isLocalised: false };
+    return {
+      schedule: "schedule",
+      startList: "start list",
+      results: "results",
+      register: "register",
+      isLocalised: false,
+    };
   }
   return { ...entry, isLocalised: true };
 }
