@@ -608,7 +608,7 @@ export const EVENTS: HyroxEvent[] = [
     resultsUrl: `${HYROX_RESULTS_BASE}copenhagen`,
     confirmed: true,
     region: "EU",
-    populationDescriptor: "Denmark's only 2026 stop — a Swedish women's Pro record (1:00:07) was set here.",
+    populationDescriptor: "Denmark's only 2026 stop — Annie Emilsson set a Swedish women's Pro record (1:00:07) here.",
     divisions: DEFAULT_DIVISIONS,
     localNames: ["København", "Kopenhagen"],
   },

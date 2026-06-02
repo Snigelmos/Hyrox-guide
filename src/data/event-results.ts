@@ -665,6 +665,7 @@ export const RACE_RESULTS: RaceResult[] = [
     recapPublished: "2026-03-17",
     notableStories: [
       "Gustav Cordua (Denmark) won the Pro Men in 55:29 — a Danish record.",
+      "Annie Emilsson (Sweden) won the Pro Women in 1:00:07 — a Swedish record on her second Pro race ever, missing sub-60 by seven seconds.",
       "Sebastian Ifversen finished second in Pro Men just 6 seconds behind Cordua.",
     ],
     divisions: [
@@ -676,9 +677,18 @@ export const RACE_RESULTS: RaceResult[] = [
           { rank: 3, athlete: "Erik Oscar Bøe", time: "0:56:05", country: "NO" },
         ],
       },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Annie Emilsson", time: "1:00:07", country: "SE" },
+          { rank: 2, athlete: "Jana Lebenstedt", time: "1:00:38", country: "DE" },
+          { rank: 3, athlete: "Chloe Cook", time: "1:00:48", country: "GB" },
+        ],
+      },
     ],
     takeaways: [
-      "A Danish men's national record fell in Copenhagen — Scandinavia's depth at the Pro level continues to surprise.",
+      "Both men's and women's national records fell in Copenhagen — Scandinavia's depth at the Pro level continues to surprise.",
+      "Annie Emilsson's run splits had only 8 seconds variance from runs 3-8 — textbook pacing for a sub-60 attempt.",
     ],
   },
 
