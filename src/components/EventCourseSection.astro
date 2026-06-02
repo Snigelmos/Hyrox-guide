@@ -137,13 +137,33 @@ const pdfEmbedUrl =
         <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">Official venue map</div>
         <div class="text-sm text-text-muted">Hyrox {event.city} {event.year} course map · PDF preview</div>
       </div>
+      {/* Desktop: inline PDF embed. Hidden on mobile because iOS Safari /
+          Android Chrome won't render a cross-origin PDF in an iframe — it
+          paints blank, leaving just the black background. */}
       <iframe
         src={pdfEmbedUrl}
         title={`Official Hyrox ${event.city} ${event.year} course map PDF`}
         loading="lazy"
-        class="w-full h-[65vh] min-h-[420px] max-h-[760px] bg-black"
+        class="hidden md:block w-full h-[65vh] min-h-[420px] max-h-[760px] bg-black"
       ></iframe>
-      <figcaption class="flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
+      {/* Mobile: tappable card instead of a broken embed. */}
+      <a
+        href={event.courseMapUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="md:hidden flex items-center gap-3 px-4 py-6 no-underline hover:bg-bg-card-hover transition-colors"
+      >
+        <span class="flex-shrink-0 w-11 h-11 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V18a2 2 0 01-2 2z" />
+          </svg>
+        </span>
+        <span class="min-w-0">
+          <span class="block text-sm font-black text-text-heading">Open Hyrox {event.city} {event.year} venue map (PDF) ↗</span>
+          <span class="block text-xs text-text-muted mt-0.5">Tap to view the full layout — running loop, 8 stations, Roxzone, and bag drop.</span>
+        </span>
+      </a>
+      <figcaption class="hidden md:flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
         <span>Official Hyrox {event.city} {event.year} venue map · {event.venue}</span>
         <a
           href={event.courseMapUrl}

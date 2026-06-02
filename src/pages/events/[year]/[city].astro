@@ -631,6 +631,39 @@ const explainerFaqItems = explainer
       </section>
     )}
 
+    {/* Pre-race promise: tell upcoming-event visitors this same page becomes
+        the live tracker on race day, so they bookmark and return here. Only
+        for events that haven't happened and aren't live right now. */}
+    {!isPast && !isLiveNow && (
+      <section class="mb-10 pb-10 border-b border-border scroll-mt-24">
+        <div class="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card p-6 md:p-7">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            Live tracking
+          </div>
+          <h2 class="text-xl md:text-2xl font-black text-text-heading mb-2">
+            Follow Hyrox {event.city} {year} live — right here
+          </h2>
+          <p class="text-sm md:text-base text-text-muted leading-relaxed max-w-2xl mb-5">
+            When Hyrox {event.city} goes live on {formatEventDate(event.startDate, event.endDate)},
+            this page turns into a live tracker. Search any athlete or team by name or
+            bib number and watch their splits update station-by-station, right on the
+            page — no app needed. Bookmark it now so you're ready to cheer them on come
+            race day.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a
+              href="/live/"
+              class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-bg font-bold rounded-xl hover:bg-accent-dim transition-colors no-underline text-sm"
+            >
+              Open the live tracker hub
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+
     {/* Race-week capture block — schedule / start list / live results /
         spectator info. Self-renders only inside the 14-day window so it
         stays out of the way for evergreen pre-race traffic. */}
