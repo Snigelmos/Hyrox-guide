@@ -1,0 +1,42 @@
+name: Build check
+
+# Production-parity build gate. Runs the SAME install + build that Vercel runs
+# on every push and PR to main. If this is red, the site will not build on
+# Vercel either — so a broken commit is caught here instead of surfacing only
+# as a Vercel "deployment failed" email after it has already hit production.
+#
+# This exists because the primary dev machine (Windows + OneDrive) cannot
+# reliably run `npm run build` locally: Node child processes intermittently
+# fail with "AssignProcessToJobObject: the handle is invalid" and OneDrive
+# file locks break esbuild/sharp installs. CI is the reliable build check.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel an in-progress run if a newer commit is pushed to the same ref.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site (astro build)
+        run: npm run build

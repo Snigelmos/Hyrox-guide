@@ -22,3 +22,12 @@ docs/hyrox-benchmark-feasibility.md
 # Editor tooling — not site content
 .vscode/
 .cursorindexingignore
+
+# Local-only working folders — NOT site source. Keep out of the repo so the
+# working tree stays a single source of truth and these never reach Vercel.
+hyrox-guide-live-iteration/
+Content for driving traffic/
+Performance data/
+
+# Throwaway audit/diagnostic dumps written at the repo root during debugging
+__*.txt

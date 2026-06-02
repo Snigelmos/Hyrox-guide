@@ -1,0 +1,46 @@
+---
+description: How to verify builds and avoid broken Vercel deploys on this Windows/OneDrive machine
+alwaysApply: true
+---
+
+# Deploy Safety
+
+`main` auto-deploys to Vercel. A commit that fails `astro build` becomes a
+failed Vercel deployment (and an email). Never push code to `main` without a
+green build.
+
+## This machine cannot be trusted to build locally
+
+The repo lives on OneDrive on Windows. Two known, recurring failures:
+
+- Node child processes spawned from the embedded Cursor terminal die with
+  `AssignProcessToJobObject: (6) The handle is invalid.` — so `astro build`,
+  `npm ci`, and `esbuild`'s postinstall intermittently fail before the site
+  even compiles. This is an environment bug, NOT a code bug. Do not interpret
+  it as a build error.
+- OneDrive file locks cause `EBUSY` / `EPERM` during `npm ci`.
+- Large `git diff` / `git diff --stat` output is sometimes dropped or garbled
+  by the embedded terminal. Do NOT diagnose build/syntax errors from a single
+  `git diff` here — confirm by reading the actual file (and `git show HEAD:<path>`
+  into a file, then read it) before claiming a file is broken.
+
+## How to actually verify a build
+
+1. Preferred: rely on the GitHub Actions **Build check** workflow
+   (`.github/workflows/build.yml`), which runs `npm ci && npm run build` on
+   every push and PR to `main`. If it is red, the Vercel deploy will also fail.
+2. Or run `npm ci && npm run build` in a standalone Windows Terminal /
+   PowerShell (outside Cursor), where Node runs reliably.
+
+Never imply a deploy will succeed based only on lint or a local Cursor-shell
+build attempt.
+
+## Keep the working tree a single source of truth
+
+- Do not commit local-only folders: `hyrox-guide-live-iteration/` (a full
+  duplicate of this project), `Content for driving traffic/`, `Performance data/`.
+  They are gitignored.
+- Line endings are normalised to LF via `.gitattributes`. If many files show
+  as "modified" with only CRLF→LF differences, that is line-ending churn, not
+  real edits — clear it with `git restore <files>` / `git add --renormalize .`,
+  do not treat it as content to review or commit.
