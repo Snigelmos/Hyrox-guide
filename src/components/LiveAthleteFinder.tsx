@@ -217,8 +217,8 @@ export default function LiveAthleteFinder({
     }
 
     // Hyrox stores names as "Lastname, Firstname" and only matches by
-    // surname. If the user typed "Annie Emilsson" extract "Emilsson" and
-    // search that; if they typed "Emilsson, Annie" extract "Emilsson".
+    // surname. If the user typed "John Smith" extract "Smith" and
+    // search that; if they typed "Smith, John" extract "Smith".
     const effectiveQuery =
       searchType === "name" ? extractSurname(trimmed) : trimmed;
     const didExtract = effectiveQuery !== trimmed;
@@ -252,7 +252,7 @@ export default function LiveAthleteFinder({
           return;
         }
         setError(
-          `No matches for "${effectiveQuery}". Hyrox searches by surname — try the last name only (e.g. "Emilsson" not "Annie Emilsson").`,
+          `No matches for "${effectiveQuery}". Hyrox searches by surname — try the last name only (e.g. "Smith", not "John Smith").`,
         );
         return;
       }
@@ -469,7 +469,7 @@ export default function LiveAthleteFinder({
 
             <label className="block">
               <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-                  {searchType === "name" ? "Surname / last name (e.g. Emilsson)" : "Start (bib) number"}
+                  {searchType === "name" ? "Surname / last name (e.g. Smith)" : "Start (bib) number"}
               </span>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -479,7 +479,7 @@ export default function LiveAthleteFinder({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={
-                    searchType === "name" ? "e.g. Emilsson (surname only)" : "e.g. 1234"
+                    searchType === "name" ? "e.g. Smith (surname only)" : "e.g. 1234"
                   }
                   className="flex-1 min-w-0 bg-bg border border-border rounded-lg px-3 py-2.5 text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
                   autoComplete="off"
@@ -705,9 +705,9 @@ export default function LiveAthleteFinder({
  * Hyrox stores names as "Lastname, Firstname" and only matches by surname.
  * Accept common input patterns and extract just the surname so the search
  * works regardless of how the user types the name.
- *   "Annie Emilsson"    → "Emilsson"
- *   "Emilsson, Annie"   → "Emilsson"
- *   "Emilsson"          → "Emilsson"  (unchanged)
+ *   "John Smith"    → "Smith"
+ *   "Smith, John"   → "Smith"
+ *   "Smith"         → "Smith"  (unchanged)
  */
 function extractSurname(input: string): string {
   const s = input.trim();

@@ -43,7 +43,7 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
   );
 
   // Include recently finished events so users can still search for results
-  // from races that ended in the past 14 days (e.g. Annie Emilsson at Helsinki).
+  // from races that ended in the past 14 days.
   const finderEvents: LiveEventOption[] = useMemo(() => {
     const seen = new Set<string>();
     return [...activeEvents, ...recentlyFinishedEvents, ...thisWeekEvents, ...upcomingEvents]
