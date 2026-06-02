@@ -15,11 +15,13 @@ import heroImage from "../assets/heroes/home-hero.png";
     fetchpriority="high"
     decoding="async"
     aria-hidden="true"
-    class="absolute inset-0 -z-30 h-full w-full object-cover object-[78%_center] opacity-90"
+    class="absolute inset-0 -z-30 h-full w-full object-cover object-[82%_center] opacity-85 sm:object-[78%_center] sm:opacity-90"
   />
-  <!-- Readability overlays: darken the text side, let the athlete + blue rim glow show on the right -->
-  <div class="absolute inset-0 -z-20 bg-gradient-to-r from-bg from-15% via-bg/85 to-bg/20"></div>
-  <div class="absolute inset-0 -z-20 bg-gradient-to-t from-bg via-bg/55 to-bg/10"></div>
+  <!-- Readability overlays. On mobile the headline + nav stack vertically over the
+       photo, so darken more evenly; on sm+ restore the left-to-dark treatment that
+       keeps the athlete and blue rim glow visible on the right. -->
+  <div class="absolute inset-0 -z-20 bg-gradient-to-r from-bg from-10% via-bg/82 to-bg/45 sm:from-15% sm:via-bg/85 sm:to-bg/20"></div>
+  <div class="absolute inset-0 -z-20 bg-gradient-to-t from-bg via-bg/65 to-bg/25 sm:via-bg/55 sm:to-bg/10"></div>
   <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.12),transparent)]"></div>
 
   <svg
