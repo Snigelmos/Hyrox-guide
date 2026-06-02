@@ -28,6 +28,9 @@ docs/hyrox-benchmark-feasibility.md
 hyrox-guide-live-iteration/
 Content for driving traffic/
 Performance data/
+# Staging area for raw images dropped in for review before they're optimised
+# into src/assets/. The committed copies live under src/assets/heroes/.
+Images/
 
 # Throwaway audit/diagnostic dumps written at the repo root during debugging
 __*.txt

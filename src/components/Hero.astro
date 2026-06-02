@@ -1,12 +1,26 @@
 ---
+import { Image } from "astro:assets";
 import HyroxCourseRibbon from "./HyroxCourseRibbon.astro";
 import ModuleIcons from "./icons/ModuleIcons.astro";
 import { primaryNav } from "../config/nav";
+import heroImage from "../assets/heroes/home-hero.png";
 ---
 
 <section class="relative overflow-hidden border-b border-border isolate">
-  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-sky-500/10 via-bg-card/20 to-bg"></div>
-  <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.10),transparent)]"></div>
+  <!-- Hero background photo (athlete on the right; deep negative space on the left for the headline) -->
+  <Image
+    src={heroImage}
+    alt=""
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+    aria-hidden="true"
+    class="absolute inset-0 -z-30 h-full w-full object-cover object-[78%_center] opacity-90"
+  />
+  <!-- Readability overlays: darken the text side, let the athlete + blue rim glow show on the right -->
+  <div class="absolute inset-0 -z-20 bg-gradient-to-r from-bg from-15% via-bg/85 to-bg/20"></div>
+  <div class="absolute inset-0 -z-20 bg-gradient-to-t from-bg via-bg/55 to-bg/10"></div>
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(56,189,248,0.12),transparent)]"></div>
 
   <svg
     class="absolute inset-x-0 top-0 -z-10 h-full w-full opacity-[0.10] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
