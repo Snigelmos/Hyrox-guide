@@ -15,6 +15,14 @@ import {
 } from "./src/data/events";
 import { getResults } from "./src/data/event-results";
 
+// IMPORTANT — trailing-slash caveat. The Astro Vercel adapter emits these
+// redirects as strict no-slash regexes (^/path$), so they only fire on the
+// slash-less form. The site is trailing-slash canonical, so the URLs Google
+// actually crawls (with a trailing slash) would 404. The trailing-slash form
+// of every retired URL below is therefore mirrored in `vercel.json`, which
+// runs at the edge and matches the canonical slash form. When you add an entry
+// here, add the matching slash-form redirect to `vercel.json` in the same commit.
+//
 // Permanent 301 redirects for events that used to have a live page but have
 // been retired (no longer on the calendar, replaced by another city, etc.).
 // Source of truth: RETIRED_EVENT_SLUGS in src/data/events.ts. Each retired

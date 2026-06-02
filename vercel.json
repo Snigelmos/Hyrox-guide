@@ -7,8 +7,37 @@
       "destination": "https://www.hyroxvault.com/:path*",
       "permanent": true
     },
-    { "source": "/training/workouts", "destination": "/workouts/", "permanent": true },
-    { "source": "/blog/hyrox-race-day-pacing", "destination": "/blog/best-hyrox-pacing-strategy/", "permanent": true },
-    { "source": "/events/2026/los-angeles", "destination": "/events/2026/anaheim/", "permanent": true }
+
+    { "source": "/blog/hyrox-race-day-pacing/", "destination": "/blog/best-hyrox-pacing-strategy/", "permanent": true },
+    { "source": "/blog/hyrox-rowing-pacing/", "destination": "/blog/hyrox-rowing-technique/", "permanent": true },
+    { "source": "/training/workouts/", "destination": "/workouts/", "permanent": true },
+    { "source": "/training/workouts/:path*", "destination": "/workouts/", "permanent": true },
+
+    { "source": "/author/john/", "destination": "/author/editorial-team/", "permanent": true },
+    { "source": "/author/niklas/", "destination": "/author/editorial-team/", "permanent": true },
+    { "source": "/author/jesper/", "destination": "/author/editorial-team/", "permanent": true },
+
+    { "source": "/gyms/g/f45-toronto-yonge/", "destination": "/gyms/toronto/", "permanent": true },
+    { "source": "/gyms/g/f45-dubai-marina/", "destination": "/gyms/dubai/", "permanent": true },
+    { "source": "/gyms/g/pure-fitness-soho/", "destination": "/gyms/london/", "permanent": true },
+    { "source": "/gyms/g/migros-fitness-zurich-sihlcity/", "destination": "/gyms/zurich/", "permanent": true },
+    { "source": "/gyms/alexandri/", "destination": "/gyms/alexandria/", "permanent": true },
+    { "source": "/gyms/ca/", "destination": "/gyms/san-diego/", "permanent": true },
+    { "source": "/gyms/washington/", "destination": "/gyms/washington-dc/", "permanent": true },
+    { "source": "/gyms/washington-d-c/", "destination": "/gyms/washington-dc/", "permanent": true },
+
+    { "source": "/events/2026/gothenburg/", "destination": "/events/2026/", "permanent": true },
+    { "source": "/events/2026/gothenburg/results/", "destination": "/events/2026/", "permanent": true },
+    { "source": "/events/2026/los-angeles/", "destination": "/events/2026/anaheim/", "permanent": true },
+    { "source": "/events/2026/los-angeles/results/", "destination": "/events/2026/anaheim/", "permanent": true },
+    { "source": "/events/2026/melbourne/", "destination": "/events/2026/sydney/", "permanent": true },
+    { "source": "/events/2026/melbourne/results/", "destination": "/events/2026/sydney/", "permanent": true },
+
+    { "source": "/events/2026/munich/results/", "destination": "/events/2026/munich/", "permanent": true },
+    { "source": "/events/2026/zurich/results/", "destination": "/events/2026/zurich/", "permanent": true },
+    { "source": "/events/2026/madrid/results/", "destination": "/events/2026/madrid/", "permanent": true },
+    { "source": "/events/2026/prague/results/", "destination": "/events/2026/prague/", "permanent": true },
+    { "source": "/events/2026/chicago/results/", "destination": "/events/2026/chicago/", "permanent": true },
+    { "source": "/events/2026/dubai/results/", "destination": "/events/2026/dubai/", "permanent": true }
   ]
 }
