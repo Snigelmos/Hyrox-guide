@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
+import blogHero from "../../assets/heroes/blog-hero.png";
 import {
   getAllPosts,
   getAllSeries,
@@ -30,13 +32,16 @@ const categoryCounts = BLOG_CATEGORIES.map((cat) => ({
   description="Hyrox blog — race recaps, training tips, strategy guides, station masterclasses, and the latest Hyrox news."
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-12">
-      <h1 class="text-4xl md:text-6xl font-black mb-6">
-        <span class="text-gradient-accent">Blog</span>
-      </h1>
-      <p class="text-xl text-text-muted leading-relaxed">
-        Training tips, race strategies, station guides, nutrition, and everything Hyrox.
-      </p>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-12">
+      <HeroBackground image={blogHero} position="object-center" textSide="left" priority />
+      <div class="relative z-10 max-w-3xl p-8 md:p-14">
+        <h1 class="text-4xl md:text-6xl font-black mb-6">
+          <span class="text-gradient-accent">Blog</span>
+        </h1>
+        <p class="text-xl text-text-muted leading-relaxed">
+          Training tips, race strategies, station guides, nutrition, and everything Hyrox.
+        </p>
+      </div>
     </div>
 
     {categoryCounts.length > 0 && (

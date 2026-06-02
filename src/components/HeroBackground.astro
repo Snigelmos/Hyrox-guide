@@ -22,6 +22,8 @@ interface Props {
   position?: string;
   textSide?: "left" | "center" | "right";
   priority?: boolean;
+  /** Adds an extra flat scrim for very bright/busy photos so text stays legible. */
+  dim?: boolean;
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   position = "object-center",
   textSide = "left",
   priority = false,
+  dim = false,
 } = Astro.props;
 
 const horizontal =
@@ -50,4 +53,5 @@ const horizontal =
 />
 <div class:list={["absolute inset-0 -z-20", horizontal]}></div>
 <div class="absolute inset-0 -z-20 bg-gradient-to-t from-bg via-bg/55 to-bg/20 sm:via-bg/45 sm:to-bg/10"></div>
+{dim && <div class="absolute inset-0 -z-20 bg-bg/35"></div>}
 <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(56,189,248,0.10),transparent)]"></div>

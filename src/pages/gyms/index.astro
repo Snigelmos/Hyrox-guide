@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
+import gymsHero from "../../assets/heroes/gyms-hero.png";
 import { CITY_GYMS } from "../../data/gyms";
 import { GYMS, listCountries } from "../../data/gym-finder";
 
@@ -68,14 +70,17 @@ const byRegion = {
       </ol>
     </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
-      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        Hyrox Gym Finder
-      </h1>
-      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        Find a Hyrox gym near you. A curated directory of Hyrox-affiliated training clubs, partner chains, and notable boxes that run Hyrox-specific programming. Use the interactive map to find a Hyrox gym near you, or browse by country and city.
-      </p>
-    </header>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-10">
+      <HeroBackground image={gymsHero} position="object-center" textSide="left" priority dim />
+      <div class="relative z-10 p-8 md:p-14">
+        <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+          Hyrox Gym Finder
+        </h1>
+        <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+          Find a Hyrox gym near you. A curated directory of Hyrox-affiliated training clubs, partner chains, and notable boxes that run Hyrox-specific programming. Use the interactive map to find a Hyrox gym near you, or browse by country and city.
+        </p>
+      </div>
+    </div>
 
     <section class="mb-12">
       <a

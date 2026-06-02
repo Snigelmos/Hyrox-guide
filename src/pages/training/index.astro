@@ -2,6 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import TrainingIcons from "../../components/icons/TrainingIcons.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
+import trainingHero from "../../assets/heroes/training-hero.png";
 import { iconName } from "../../lib/content-icons";
 import { getCollection } from "astro:content";
 
@@ -22,19 +24,22 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
   dateModified="2026-05-09"
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-10">
-      <p class="text-sm text-text-muted mb-3">
-        Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a> · See our <a href="/methodology/" class="text-accent hover:underline">methodology</a>
-      </p>
-      <h1 class="text-4xl md:text-6xl font-black mb-6">
-        <span class="text-gradient-accent">Training Programs</span>
-      </h1>
-      <p class="text-xl text-text-muted leading-relaxed mb-5">
-        Structured plans to get you race-ready, no matter where you're starting from. Pick your level and start training today.
-      </p>
-      <p class="text-base text-text-muted leading-relaxed">
-        Hyrox rewards athletes who train specifically for it — you can't wing a sled push after 8km of running if you've never practised it. Our programs combine running fitness with station-specific strength so you're genuinely prepared for race day, not just fit enough to survive it. If you're not ready to commit to a full program, scroll down to our Sample Workouts — pick one session and train like a Hyrox athlete today.
-      </p>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-12">
+      <HeroBackground image={trainingHero} position="object-center" textSide="left" priority />
+      <div class="relative z-10 max-w-3xl p-8 md:p-14">
+        <p class="text-sm text-text-muted mb-3">
+          Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a> · See our <a href="/methodology/" class="text-accent hover:underline">methodology</a>
+        </p>
+        <h1 class="text-4xl md:text-6xl font-black mb-6">
+          <span class="text-gradient-accent">Training Programs</span>
+        </h1>
+        <p class="text-xl text-text-muted leading-relaxed mb-5">
+          Structured plans to get you race-ready, no matter where you're starting from. Pick your level and start training today.
+        </p>
+        <p class="text-base text-text-muted leading-relaxed">
+          Hyrox rewards athletes who train specifically for it — you can't wing a sled push after 8km of running if you've never practised it. Our programs combine running fitness with station-specific strength so you're genuinely prepared for race day, not just fit enough to survive it. If you're not ready to commit to a full program, scroll down to our Sample Workouts — pick one session and train like a Hyrox athlete today.
+        </p>
+      </div>
     </div>
 
     {/* Sample Workouts — featured at the top */}

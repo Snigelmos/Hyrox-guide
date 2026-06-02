@@ -2,6 +2,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HyroxCalculator from "../components/HyroxCalculator";
 import ContentIcons from "../components/icons/ContentIcons.astro";
+import HeroBackground from "../components/HeroBackground.astro";
+import calculatorHero from "../assets/heroes/calculator-hero.png";
 import {
   GOAL_TIME_CONFIGS,
   PRO_GOAL_TIME_CONFIGS,
@@ -30,22 +32,25 @@ const doublesWomenGoals = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience ===
   <section class="container-main py-12">
 
     <!-- Compact header -->
-    <div class="mb-8">
-      <nav class="mb-4 text-sm" aria-label="Breadcrumb">
-        <ol class="flex items-center gap-2 flex-wrap">
-          <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
-          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Race Time Predictor</span></li>
-        </ol>
-      </nav>
-      <p class="text-sm text-text-muted mb-2">
-        Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a>
-      </p>
-      <h1 class="text-3xl md:text-5xl font-black">
-        <span class="text-gradient-accent">Hyrox Race Time Predictor</span>
-      </h1>
-      <p class="text-base text-text-muted mt-2 max-w-xl">
-        Enter your 5 km time, max bench press, and max deadlift — get a predicted Hyrox finish time with full station splits for Open or Pro division.
-      </p>
+    <nav class="mb-4 text-sm" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2 flex-wrap">
+        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Race Time Predictor</span></li>
+      </ol>
+    </nav>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-8">
+      <HeroBackground image={calculatorHero} position="object-center" textSide="left" priority />
+      <div class="relative z-10 p-8 md:p-12">
+        <p class="text-sm text-text-muted mb-2">
+          Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a>
+        </p>
+        <h1 class="text-3xl md:text-5xl font-black">
+          <span class="text-gradient-accent">Hyrox Race Time Predictor</span>
+        </h1>
+        <p class="text-base text-text-muted mt-2 max-w-xl">
+          Enter your 5 km time, max bench press, and max deadlift — get a predicted Hyrox finish time with full station splits for Open or Pro division.
+        </p>
+      </div>
     </div>
 
     <!-- Calculator first, immediately visible -->

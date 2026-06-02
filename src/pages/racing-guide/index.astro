@@ -3,6 +3,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import StationIcons from "../../components/icons/StationIcons.astro";
 import ContentIcons from "../../components/icons/ContentIcons.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
+import racingHero from "../../assets/heroes/racing-guide-hero.png";
 import { iconName } from "../../lib/content-icons";
 import { getCollection } from "astro:content";
 
@@ -24,19 +26,22 @@ const guideIllustrations: Record<string, string> = {
   description="Your complete Hyrox racing guide — understand the format, master the stations, pick your category, and prepare for race day."
 >
   <section class="container-main py-16">
-    <div class="max-w-3xl mb-16">
-      <h1 class="text-4xl md:text-6xl font-black mb-6">
-        <span class="text-gradient-accent">Racing Guide</span>
-      </h1>
-      <p class="text-xl text-text-muted leading-relaxed mb-6">
-        Everything you need to know about the Hyrox race format — from understanding the basics to executing a smart race-day strategy.
-      </p>
-      <p class="text-base text-text-muted leading-relaxed mb-6">
-        A Hyrox race consists of 8 rounds of 1km running, each followed by one functional workout station. The stations are always in the same order and use standardised weights, so you can train specifically for what's coming. Whether you're running your first race or chasing a personal best, the guides below cover everything: what each station demands, how to pace your effort, which category to enter, and a complete step-by-step race day plan.
-      </p>
-      <p class="text-sm text-text-muted leading-relaxed">
-        <strong class="text-text">New here?</strong> Start with "What is Hyrox?" and work your way through. Returning racer? Jump straight to the Race Day Guide or Station benchmarks.
-      </p>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-12">
+      <HeroBackground image={racingHero} position="object-center" textSide="left" priority />
+      <div class="relative z-10 max-w-3xl p-8 md:p-14">
+        <h1 class="text-4xl md:text-6xl font-black mb-6">
+          <span class="text-gradient-accent">Racing Guide</span>
+        </h1>
+        <p class="text-xl text-text-muted leading-relaxed mb-6">
+          Everything you need to know about the Hyrox race format — from understanding the basics to executing a smart race-day strategy.
+        </p>
+        <p class="text-base text-text-muted leading-relaxed mb-6">
+          A Hyrox race consists of 8 rounds of 1km running, each followed by one functional workout station. The stations are always in the same order and use standardised weights, so you can train specifically for what's coming. Whether you're running your first race or chasing a personal best, the guides below cover everything: what each station demands, how to pace your effort, which category to enter, and a complete step-by-step race day plan.
+        </p>
+        <p class="text-sm text-text-muted leading-relaxed">
+          <strong class="text-text">New here?</strong> Start with "What is Hyrox?" and work your way through. Returning racer? Jump straight to the Race Day Guide or Station benchmarks.
+        </p>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">

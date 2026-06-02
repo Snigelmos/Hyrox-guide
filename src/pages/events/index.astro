@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
+import eventsHero from "../../assets/heroes/events-hero.png";
 import { EVENTS, getEventsByYear, formatEventDate, isPastEvent } from "../../data/events";
 import { getResults } from "../../data/event-results";
 
@@ -17,14 +19,17 @@ const description = "Every upcoming Hyrox race by city and year, with venue, dat
   breadcrumbs={[{ name: "Events" }]}
 >
   <div class="container-main py-10 md:py-16">
-    <header class="mb-10 pb-8 border-b border-border">
-      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        {title}
-      </h1>
-      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        {description}
-      </p>
-    </header>
+    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-10">
+      <HeroBackground image={eventsHero} position="object-center" textSide="left" priority dim />
+      <div class="relative z-10 p-8 md:p-14">
+        <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+          {title}
+        </h1>
+        <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+          {description}
+        </p>
+      </div>
+    </div>
 
     {years.map((year) => {
       const yearEvents = getEventsByYear(year);
