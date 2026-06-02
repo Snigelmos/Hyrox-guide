@@ -19,6 +19,11 @@ const { year, slug } = Astro.props;
 const event: HyroxEvent = EVENTS.find((e) => e.year === year && e.slug === slug)!;
 const results = getResults(year, slug);
 
+// Only link to a next-year edition if it actually exists. Linking blindly to
+// /events/<year+1>/<slug>/ generated hundreds of 404s for events that have no
+// confirmed next-year date yet.
+const nextYearEvent = EVENTS.find((e) => e.year === year + 1 && e.slug === slug);
+
 const eventDate = new Date(event.endDate ?? event.startDate);
 const today = new Date();
 const isPast = today > eventDate;
@@ -388,7 +393,11 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
         <section class="prose md:prose-lg max-w-none">
           <h2>Want to race here next year?</h2>
           <ul>
-            <li>Read our <a href={`/events/${year + 1}/${event.slug}/`}>Hyrox {event.city} {year + 1} preview</a> (when available).</li>
+            {nextYearEvent ? (
+              <li>Read our <a href={`/events/${year + 1}/${event.slug}/`}>Hyrox {event.city} {year + 1} preview</a>.</li>
+            ) : (
+              <li>Browse <a href="/events/">all upcoming Hyrox events</a> to find next season's date.</li>
+            )}
             <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a target based on this year's median finish.</li>
             <li>Browse <a href="/training/">training programs</a> matched to your goal.</li>
           </ul>
