@@ -282,7 +282,7 @@ export const CATEGORY_GUIDANCE: Record<HyroxCategory, CategoryGuidance> = {
   },
   "pro-women": {
     divisionContext:
-      "Pro Women is the heavier women's division and the smallest field at most events. Pro Women's weights are 152 kg sled push (50 kg heavier than Open), 103 kg sled pull (25 kg heavier), 24 kg farmers carry (8 kg heavier), 15 kg sandbag (5 kg heavier), and 6 kg wall balls (2 kg heavier). The qualifying threshold is typically a sub-1:15 Open Women finish. The field is small enough that a sub-85 Pro Women finish often places top-30 globally.",
+      "Pro Women is the heavier women's division and the smallest field at most events. Pro Women's weights are 152 kg sled push (50 kg heavier than Open), 103 kg sled pull (25 kg heavier), 24 kg farmers carry (8 kg heavier), 20 kg sandbag (10 kg heavier), and 6 kg wall balls (2 kg heavier). The qualifying threshold is typically a sub-1:15 Open Women finish. The field is small enough that a sub-85 Pro Women finish often places top-30 globally.",
     trainingReality:
       "Pro Women race the same sled push weight as Open Men, which is the structural reality of the division. Athletes under 65 kg bodyweight find this station extremely difficult unless squat strength is well above bodyweight. The 6 kg wall ball is the second-biggest limiter: shoulder fatigue at rep 60+ becomes meaningful and doubles rep times vs Open. Pro Women athletes typically come from a strength background (CrossFit, weightlifting) rather than pure running, because the 152 kg sled rewards pure horizontal force production over aerobic capacity.",
     raceStrategy:

@@ -193,15 +193,15 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     slug: "open-vs-pro",
     term: "Open vs Pro",
     shortDefinition: "The two main Hyrox divisions. Open is open-entry with standard weights; Pro is qualification-only with heavier weights and faster expected times.",
-    longDefinition: "Hyrox offers two main competitive divisions. Open is the entry-level division with no qualifying time required, using standard weights (sled push 152 kg, sled pull 103 kg, sandbag 20 kg, wall ball 6 kg for men). Pro requires hitting a published qualifying time at an Open event and uses heavier weights (sled push 192 kg, sled pull 153 kg, sandbag 30 kg, wall ball 9 kg for men). Pro athletes also race for Elite 15 and World Championship qualifying spots.",
+    longDefinition: "Hyrox offers two main competitive divisions. Open is the entry-level division with no qualifying time required, using standard weights (sled push 152 kg, sled pull 103 kg, sandbag 20 kg, wall ball 6 kg for men). Pro requires hitting a published qualifying time at an Open event and uses heavier weights (sled push 202 kg, sled pull 153 kg, sandbag 30 kg, wall ball 9 kg for men). Pro athletes also race for Elite 15 and World Championship qualifying spots.",
     context: "Division structure. See our /qualifiers/ guides for full Pro qualifying times and how to upgrade.",
     examples: [
       "Open Men 25-34 Pro qualifying time (2026): 1:03:00",
-      "Pro sled push: 192 kg (vs Open: 152 kg).",
+      "Pro sled push: 202 kg (vs Open: 152 kg).",
     ],
     related: ["wave-start", "doubles", "elite-15"],
     faqs: [
-      { question: "What's the difference between Hyrox Open and Pro?", answer: "Pro uses heavier weights on the sled push (+40 kg), sled pull (+50 kg), sandbag (+10 kg), and wall ball (+3 kg). Pro also requires hitting a qualifying time. Most athletes who race the same year in both report Pro is 5-10 minutes slower." },
+      { question: "What's the difference between Hyrox Open and Pro?", answer: "Pro uses heavier weights on the sled push (+50 kg), sled pull (+50 kg), sandbag (+10 kg), and wall ball (+3 kg). Pro also requires hitting a qualifying time. Most athletes who race the same year in both report Pro is 5-10 minutes slower." },
       { question: "Should I race Open or Pro?", answer: "Open if it's your first race or you haven't yet hit Pro qualifying time. Pro if you've already raced Open faster than your age group's Pro threshold and want a heavier test." },
     ],
     deepDive: [
@@ -213,7 +213,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       {
         heading: "What changes most in Pro",
         body:
-          "The sled push delta (+40 kg for men) is the single biggest change. The sandbag lunge weight increase (+10 kg) is the second. Wall ball weight only matters if your shoulder strength was already at a ceiling in Open. Most Pro upgraders lose 80% of their added time on those three stations.",
+          "The sled push delta (+50 kg for men) is the single biggest change. The sandbag lunge weight increase (+10 kg) is the second. Wall ball weight only matters if your shoulder strength was already at a ceiling in Open. Most Pro upgraders lose 80% of their added time on those three stations.",
       },
       {
         heading: "Training-week change going Pro",

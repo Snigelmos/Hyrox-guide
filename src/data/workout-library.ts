@@ -80,7 +80,7 @@ export const LIBRARY_WORKOUTS: LibraryWorkout[] = [
         ["1","Treadmill Run","1 km"],["2","SkiErg","1,000 m"],["3","Treadmill Run","1 km"],["4","Sled Push","50 m at race weight"],
         ["5","Treadmill Run","1 km"],["6","Sled Pull","50 m at race weight"],["7","Treadmill Run","1 km"],["8","Burpee Broad Jumps","80 m (or 30 reps)"],
         ["9","Treadmill Run","1 km"],["10","Rowing","1,000 m"],["11","Treadmill Run","1 km"],["12","Farmers Carry","200 m at race weight"],
-        ["13","Treadmill Run","1 km"],["14","Sandbag Lunges","100 m"],["15","Treadmill Run","1 km"],["16","Wall Balls","100 reps men / 75 reps women"],
+        ["13","Treadmill Run","1 km"],["14","Sandbag Lunges","100 m"],["15","Treadmill Run","1 km"],["16","Wall Balls","100 reps (all divisions)"],
       ],
     },
     pacing: {
@@ -131,7 +131,7 @@ export const LIBRARY_WORKOUTS: LibraryWorkout[] = [
       rows: [
         ["1","Treadmill Run","1 km"],["2","Rowing","1,000 m"],["3","Treadmill Run","1 km"],
         ["4","Farmers Carry","200 m"],["5","Treadmill Run","1 km"],["6","Sandbag Lunges","100 m"],
-        ["7","Treadmill Run","1 km"],["8","Wall Balls","100 reps men / 75 reps women"],
+        ["7","Treadmill Run","1 km"],["8","Wall Balls","100 reps (all divisions)"],
       ],
     },
     notes: ["Scale: Reduce runs to 600 m, carry lighter kettlebells, do 50 wall balls, lunge 50 m."],

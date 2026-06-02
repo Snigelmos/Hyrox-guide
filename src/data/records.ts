@@ -70,7 +70,7 @@ export const RECORDS: RecordSection[] = [
   {
     heading: "Pro Singles — fastest finish times",
     blurb:
-      "Pro division uses heavier sleds, heavier sandbag, and a higher wall-ball target. Times here are not directly comparable to Open.",
+      "Pro division uses heavier sleds, a heavier sandbag, and a heavier wall ball. Times here are not directly comparable to Open.",
     records: [
       {
         category: "Pro Men",

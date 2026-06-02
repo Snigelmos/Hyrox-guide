@@ -276,18 +276,19 @@ export const COMPARISONS: Comparison[] = [
     metaDescription:
       "Hyrox Open vs Pro: weight differences, qualifying times, and how to know when you're ready to step up to the Pro division.",
     intro:
-      "Open and Pro are the same race format — same 8 km, same 8 stations — but Pro uses heavier weights on three stations: sled push (192 kg vs 152 kg for men), sled pull (153 kg vs 103 kg), sandbag lunges (30 kg vs 20 kg), and a higher wall-ball target. Pro is also a qualifying-only division.",
+      "Open and Pro are the same race format — same 8 km, same 8 stations — but Pro uses heavier weights: sled push (202 kg vs 152 kg for men), sled pull (153 kg vs 103 kg), sandbag lunges (30 kg vs 20 kg), and a heavier wall ball (9 kg vs 6 kg for men). The wall-ball target height and rep count (100) are the same in both divisions. Pro is also a qualifying-only division.",
     bottomLine:
       "Race Open until you can comfortably hit the Pro qualifying time for your age group at race pace. Pro is harder by 5-10 minutes for most athletes who upgrade.",
     rows: [
-      { attribute: "Sled push (men)", hyrox: "152 kg", other: "192 kg" },
+      { attribute: "Sled push (men)", hyrox: "152 kg", other: "202 kg" },
       { attribute: "Sled push (women)", hyrox: "102 kg", other: "152 kg" },
       { attribute: "Sled pull (men)", hyrox: "103 kg", other: "153 kg" },
       { attribute: "Sled pull (women)", hyrox: "78 kg", other: "103 kg" },
       { attribute: "Sandbag lunges (men)", hyrox: "20 kg, 100m", other: "30 kg, 100m" },
       { attribute: "Sandbag lunges (women)", hyrox: "10 kg, 100m", other: "20 kg, 100m" },
       { attribute: "Wall ball weight", hyrox: "6 kg / 4 kg", other: "9 kg / 6 kg" },
-      { attribute: "Wall ball target height", hyrox: "10 ft / 9 ft", other: "10 ft / 9 ft" },
+      { attribute: "Wall ball reps", hyrox: "100", other: "100" },
+      { attribute: "Wall ball target height", hyrox: "3.0 m / 2.7 m", other: "3.0 m / 2.7 m" },
       { attribute: "Qualifying required", hyrox: "No — open entry", other: "Yes — must hit qualifying time" },
       { attribute: "Typical finish time gap (same athlete)", hyrox: "Baseline", other: "+5 to +10 min slower" },
     ],
@@ -298,7 +299,7 @@ export const COMPARISONS: Comparison[] = [
     faqs: [
       { question: "Should I race Hyrox Open or Pro?", answer: "Open if it's your first race or you haven't yet hit Pro qualifying time. Pro if you've already raced Open faster than your age group's Pro threshold and want a heavier test. Don't enter Pro just because you can — under-prepared Pro racers often DNF or finish dramatically slower than they would have in Open." },
       { question: "What's the Hyrox Pro qualifying time?", answer: "Open Men 25-34: 1:03:00. Open Women 25-34: 1:16:00. Times scale per age group — see our /qualifiers/pro-qualifying-times/ page for the full 2026 table." },
-      { question: "How much harder is Pro than Open?", answer: "Most athletes who race the same year in both divisions report Pro is 5-10 minutes slower. Sled push is the biggest difference (192 kg vs 152 kg for men). Wall balls and sandbag lunges also bleed time. Plan an extra 8-12 weeks of strength work before stepping up." },
+      { question: "How much harder is Pro than Open?", answer: "Most athletes who race the same year in both divisions report Pro is 5-10 minutes slower. Sled push is the biggest difference (202 kg vs 152 kg for men). Wall balls and sandbag lunges also bleed time. Plan an extra 8-12 weeks of strength work before stepping up." },
     ],
     internalLinks: [
       { href: "/qualifiers/pro-qualifying-times/", label: "Hyrox Pro qualifying times" },
@@ -333,7 +334,7 @@ export const COMPARISONS: Comparison[] = [
     },
     faqs: [
       { question: "Is Hyrox Relay easier than Singles?", answer: "Yes for the individual — you run 2 km vs 8 km and complete 2 stations vs 8. But the work intensity per leg is higher because you sprint knowing you'll rest. Relay is best for first-timers and team events." },
-      { question: "How is the Hyrox Relay split between 4 athletes?", answer: "Athlete 1 runs 1 km then does Station 1 (Ski Erg). Athlete 2 runs 1 km then does Station 2 (Sled Push). And so on. Each athlete does 2 legs total — running + station, twice." },
+      { question: "How is the Hyrox Relay split between 4 athletes?", answer: "Each athlete completes 2 full rounds (run + station) back-to-back before tagging the next teammate. Athlete 1 does runs 1-2 plus SkiErg and Sled Push; athlete 2 does runs 3-4 plus Sled Pull and Burpee Broad Jumps; athlete 3 does runs 5-6 plus Rowing and Farmers Carry; athlete 4 does runs 7-8 plus Sandbag Lunges and Wall Balls. So every athlete runs 2 km and completes 2 stations." },
       { question: "Can a relay team have mixed-gender athletes?", answer: "Yes. Mixed Relay (2 men + 2 women) is a popular division at most events. There are also all-men, all-women, and corporate relay categories." },
     ],
     internalLinks: [
