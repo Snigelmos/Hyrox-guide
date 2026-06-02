@@ -96,7 +96,6 @@ const STATIC_NOINDEX_PATHS = new Set<string>([
 
 const NOINDEX_PREFIXES: string[] = [
   "/blog/tag/",
-  "/blog/category/",
 ];
 
 const nonIndexableGymPaths = new Set<string>(
@@ -193,6 +192,7 @@ function isIndexableSitemapUrl(pageUrl: string): boolean {
   }
   if (STATIC_NOINDEX_PATHS.has(path)) return false;
   if (NOINDEX_PREFIXES.some((p) => path.startsWith(p))) return false;
+  if (/^\/blog\/category\/[^/]+\/\d+\/$/.test(path)) return false;
   if (nonIndexableGymPaths.has(path)) return false;
   if (unpublishedResultsPaths.has(path)) return false;
   if (scheduledBlogPaths.has(path)) return false;

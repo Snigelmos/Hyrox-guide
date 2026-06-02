@@ -1645,6 +1645,7 @@ export const EVENTS: HyroxEvent[] = [
       { title: "Travel", detail: "Cape Town railway station is a 10-minute walk from CTICC. MyCiTi bus T01 stops at 'Civic Centre' directly outside. From Cape Town International Airport (CPT), the MyCiTi A01 Airport Bus reaches Civic Centre in 30-40 minutes; Uber is 25 minutes. Stay in De Waterkant, V&A Waterfront, City Bowl, Sea Point, or near CTICC for the shortest race-morning commute." },
       { title: "Pacing", detail: "Mid-August Cape Town is the local winter — cool and often wet outside (10-17°C, southeasterly winds), but the venue is heated and climate-controlled. Indoor pacing applies. Two-day weekend keeps the wave spread tight. Sea-level venue means no altitude adjustment needed — splits transfer cleanly from European or Asian PBs." },
       { title: "Field", detail: "Virgin Active-sponsored Cape Town summer stop — two days of racing covering Open, Pro, Doubles, Doubles Mixed and Relay. Strong South African field led by Cape Town, Joburg and Durban gyms, plus visiting athletes from across sub-Saharan Africa and the UK drawn by the V&A Waterfront and Table Mountain race-weekend combo." },
+    ],
   },
   {
     slug: "shenzhen",
