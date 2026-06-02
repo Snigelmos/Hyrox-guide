@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import LiveTrackerExperience from "../components/LiveTrackerExperience";
+import HeroBackground from "../components/HeroBackground.astro";
+import liveHero from "../assets/heroes/events-hero.png";
 import { EVENTS } from "../data/events";
 import { getResults } from "../data/event-results";
 import { STATIONS } from "../data/stations";
@@ -79,30 +81,34 @@ const lastUpdated = "May 10, 2026";
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
 >
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={liveHero} position="object-[70%_center]" textSide="left" priority />
+    <div class="container-main py-12 md:py-20 relative z-10">
+      <nav class="mb-6 text-sm" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 flex-wrap">
+          <li>
+            <a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-text-muted/40">/</span>
+            <span class="text-text">Live Race Tracker</span>
+          </li>
+        </ol>
+      </nav>
+      <div class="max-w-2xl">
+        <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
+          Hyrox Live Race Tracker
+        </h1>
+        <p class="mt-4 text-lg text-text-muted leading-relaxed">
+          Follow athletes, doubles teams, mixed doubles, and relay entries across
+          the 8 stations and 8 km of running. Search by name or bib, copy a share
+          link to send family, and review post-race improvement opportunities.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <div class="container-main py-10 md:py-16">
-    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center gap-2 flex-wrap">
-        <li>
-          <a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a>
-        </li>
-        <li class="flex items-center gap-2">
-          <span class="text-text-muted/40">/</span>
-          <span class="text-text">Live Race Tracker</span>
-        </li>
-      </ol>
-    </nav>
-
-    <header class="mb-10 pb-8 border-b border-border">
-      <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        Hyrox Live Race Tracker
-      </h1>
-      <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
-        Follow athletes, doubles teams, mixed doubles, and relay entries across
-        the 8 stations and 8 km of running. Search by name or bib, copy a share
-        link to send family, and review post-race improvement opportunities.
-      </p>
-    </header>
-
     <LiveTrackerExperience client:load events={liveEvents} initialDateYmd={initialDateYmd} />
 
     <section class="mb-12">
