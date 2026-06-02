@@ -57,6 +57,12 @@ const mapUrl = event.courseMapUrl ?? "";
 const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
 const isPdfMap = /\.pdf(\?|$)/i.test(mapUrl);
 const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
+
+// Hyrox venue maps are large landscape print posters. Hint the browser PDF
+// viewer to fit the page to the iframe width so it lands readable instead of
+// zoomed-in and needing horizontal scroll. Skip if the URL already has a hash.
+const pdfEmbedUrl =
+  isPdfMap && !mapUrl.includes("#") ? `${mapUrl}#view=FitH` : mapUrl;
 ---
 
 <section id="course" class="mb-10 pb-10 border-b border-border scroll-mt-24" aria-labelledby="course-heading">
@@ -85,7 +91,7 @@ const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
           alt={`Official Hyrox ${event.city} ${event.year} venue map at ${event.venue} — running loop, 8 stations, Roxzone, water stations, and bag drop.`}
           loading="lazy"
           decoding="async"
-          class="w-full h-auto bg-black"
+          class="mx-auto block h-auto w-auto max-w-full max-h-[80vh] object-contain bg-black"
         />
         <figcaption class="flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
           <span>Official Hyrox {event.city} {event.year} venue map · {event.venue}</span>
@@ -132,10 +138,10 @@ const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
         <div class="text-sm text-text-muted">Hyrox {event.city} {event.year} course map · PDF preview</div>
       </div>
       <iframe
-        src={event.courseMapUrl}
+        src={pdfEmbedUrl}
         title={`Official Hyrox ${event.city} ${event.year} course map PDF`}
         loading="lazy"
-        class="w-full h-[70vh] min-h-[520px] bg-black"
+        class="w-full h-[65vh] min-h-[420px] max-h-[760px] bg-black"
       ></iframe>
       <figcaption class="flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
         <span>Official Hyrox {event.city} {event.year} venue map · {event.venue}</span>

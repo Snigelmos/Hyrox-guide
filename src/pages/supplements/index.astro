@@ -242,28 +242,27 @@ const raceDayEssentials = supplementGuides
 
   <!-- Priority Stack with Geo Buy Buttons -->
   <section class="container-main py-16">
-    <div class="max-w-3xl mx-auto">
-      <div class="text-center mb-4">
-        <h2 class="text-3xl md:text-4xl font-black text-text-heading">
-          The Hyrox Supplement Stack
-        </h2>
-        <p class="text-text-muted mt-3">
-          Ranked by evidence and impact. Start at #1 and work your way down.
-        </p>
-      </div>
+    <div class="text-center mb-4 max-w-3xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-black text-text-heading">
+        The Hyrox Supplement Stack
+      </h2>
+      <p class="text-text-muted mt-3">
+        Ranked by evidence and impact. Start at #1 and work your way down.
+      </p>
+    </div>
 
-      <!-- Affiliate notice -->
-      <div class="flex items-center gap-2 text-xs text-text-muted bg-bg-card border border-border rounded-xl px-4 py-2.5 mb-8 justify-center text-center">
-        <svg class="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        All buy links go to Amazon. We may earn a small commission at no extra cost to you.
-      </div>
+    <!-- Affiliate notice -->
+    <div class="flex items-center gap-2 text-xs text-text-muted bg-bg-card border border-border rounded-xl px-4 py-2.5 mb-8 justify-center text-center max-w-3xl mx-auto">
+      <svg class="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      All buy links go to Amazon. We may earn a small commission at no extra cost to you.
+    </div>
 
-      <ol class="space-y-4">
-        {
-          supplementGuides.map((guide, i) => (
-            <li class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/30 transition-all">
+    <ol class="grid sm:grid-cols-2 gap-4">
+      {
+        supplementGuides.map((guide, i) => (
+          <li class="bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/30 transition-all">
               <div class="flex items-start gap-4">
                 <span class="flex-shrink-0 w-10 h-10 bg-accent/10 text-accent font-black rounded-xl flex items-center justify-center text-lg">
                   {i + 1}
@@ -305,8 +304,7 @@ const raceDayEssentials = supplementGuides
             </li>
           ))
         }
-      </ol>
-    </div>
+    </ol>
   </section>
 
   <!-- Browse by Category -->
