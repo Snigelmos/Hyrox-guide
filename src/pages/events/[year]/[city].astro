@@ -3,6 +3,8 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LiveAthleteFinder from "../../../components/LiveAthleteFinder";
 import RaceWeekPanel from "../../../components/RaceWeekPanel.astro";
 import EventCourseSection from "../../../components/EventCourseSection.astro";
+import HeroBackground from "../../../components/HeroBackground.astro";
+import eventsHero from "../../../assets/heroes/events-hero.png";
 import {
   EVENTS,
   allEventPaths,
@@ -513,7 +515,9 @@ const explainerFaqItems = explainer
   breadcrumbs={activeBreadcrumbs}
   faqItems={activeFaqItems}
 >
-  <div class="container-main py-10 md:py-16">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={eventsHero} position="object-center" textSide="left" priority dim />
+    <div class="container-main py-10 md:py-16 relative z-10">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
       <ol class="flex items-center gap-2 flex-wrap">
         <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
@@ -532,7 +536,7 @@ const explainerFaqItems = explainer
       </ol>
     </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
+    <header class="max-w-3xl">
       {isWorldChampionship && (
         <div class="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-amber-300 mb-4">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15a3 3 0 100-6 3 3 0 000 6z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.5 12a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0zM8 21l1.5-4.5M16 21l-1.5-4.5" /></svg>
@@ -599,7 +603,10 @@ const explainerFaqItems = explainer
         </div>
       )}
     </header>
+    </div>
+  </section>
 
+  <div class="container-main py-10 md:py-16">
     {isLiveNow && (
       <section id="live-tracker" class="mb-10 pb-10 border-b border-border scroll-mt-24">
         <div class="flex items-baseline justify-between flex-wrap gap-2 mb-3">
@@ -1104,7 +1111,9 @@ const explainerFaqItems = explainer
   breadcrumbs={explainerBreadcrumbs}
   faqItems={explainerFaqItems}
 >
-  <div class="container-main py-10 md:py-16">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={eventsHero} position="object-center" textSide="left" priority dim />
+    <div class="container-main py-10 md:py-16 relative z-10">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
       <ol class="flex items-center gap-2 flex-wrap">
         <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
@@ -1123,7 +1132,7 @@ const explainerFaqItems = explainer
       </ol>
     </nav>
 
-    <header class="mb-10 pb-8 border-b border-border">
+    <header class="max-w-3xl">
       <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-400 mb-4">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M5.636 5.636L18.364 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         Not on the {year} calendar
@@ -1135,7 +1144,10 @@ const explainerFaqItems = explainer
         Hyrox {explainer.localCity ?? explainer.city} {year} is not on the official Hyrox calendar. Below: closest substitute races, training options, and where to follow if Hyrox returns to {explainer.city}.
       </p>
     </header>
+    </div>
+  </section>
 
+  <div class="container-main py-10 md:py-16">
     <section class="prose md:prose-lg max-w-none mb-10">
       {explainer.intro.map((p) => <p>{p}</p>)}
     </section>

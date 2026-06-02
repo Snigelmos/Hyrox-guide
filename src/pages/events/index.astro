@@ -18,18 +18,21 @@ const description = "Every upcoming Hyrox race by city and year, with venue, dat
   schemaType="Article"
   breadcrumbs={[{ name: "Events" }]}
 >
-  <div class="container-main py-10 md:py-16">
-    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-10">
-      <HeroBackground image={eventsHero} position="object-center" textSide="left" priority dim />
-      <div class="relative z-10 p-8 md:p-14">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={eventsHero} position="object-center" textSide="left" priority dim />
+    <div class="container-main py-16 md:py-20 relative z-10">
+      <div class="max-w-2xl">
         <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
           {title}
         </h1>
-        <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        <p class="mt-4 text-lg text-text-muted leading-relaxed">
           {description}
         </p>
       </div>
     </div>
+  </section>
+
+  <div class="container-main py-10 md:py-16">
 
     {years.map((year) => {
       const yearEvents = getEventsByYear(year);

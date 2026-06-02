@@ -29,18 +29,16 @@ const doublesWomenGoals = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience ===
   description="Free Hyrox race time predictor. Enter your 5K pace, bench, and deadlift to get a predicted finish with full station splits — Open, Pro, or Doubles."
   dateModified="2026-05-09"
 >
-  <section class="container-main py-12">
-
-    <!-- Compact header -->
-    <nav class="mb-4 text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center gap-2 flex-wrap">
-        <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
-        <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Race Time Predictor</span></li>
-      </ol>
-    </nav>
-    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-8">
-      <HeroBackground image={calculatorHero} position="object-center" textSide="left" priority />
-      <div class="relative z-10 p-8 md:p-12">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={calculatorHero} position="object-center" textSide="left" priority />
+    <div class="container-main py-12 md:py-16 relative z-10">
+      <nav class="mb-4 text-sm" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 flex-wrap">
+          <li><a href="/" class="text-text-muted hover:text-accent transition-colors">Home</a></li>
+          <li class="flex items-center gap-2"><span class="text-text-muted/40">/</span><span class="text-text">Race Time Predictor</span></li>
+        </ol>
+      </nav>
+      <div class="max-w-2xl">
         <p class="text-sm text-text-muted mb-2">
           Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a>
         </p>
@@ -52,6 +50,9 @@ const doublesWomenGoals = DOUBLES_GOAL_TIME_CONFIGS.filter((g) => g.audience ===
         </p>
       </div>
     </div>
+  </section>
+
+  <section class="container-main py-12">
 
     <!-- Calculator first, immediately visible -->
     <HyroxCalculator client:only="react" />

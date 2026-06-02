@@ -18,28 +18,30 @@ const breadcrumbs = [{ name: "Workouts" }];
   schemaType="CollectionPage"
   breadcrumbs={breadcrumbs}
 >
-  <div class="container-main py-10 md:py-16">
-    <nav class="mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="flex items-center gap-2 flex-wrap">
-        <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
-        <li class="flex items-center gap-2">
-          <span class="text-text-muted/40">/</span>
-          <span class="text-text">Workouts</span>
-        </li>
-      </ol>
-    </nav>
-
-    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-10">
-      <HeroBackground image={workoutsHero} position="object-center" textSide="left" priority />
-      <div class="relative z-10 p-8 md:p-14">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={workoutsHero} position="object-center" textSide="left" priority />
+    <div class="container-main py-12 md:py-20 relative z-10">
+      <nav class="mb-6 text-sm" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-2 flex-wrap">
+          <li><a href="/" class="text-text-muted hover:text-accent transition-colors no-underline">Home</a></li>
+          <li class="flex items-center gap-2">
+            <span class="text-text-muted/40">/</span>
+            <span class="text-text">Workouts</span>
+          </li>
+        </ol>
+      </nav>
+      <div class="max-w-2xl">
         <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
           Hyrox Benchmark Workouts
         </h1>
-        <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
+        <p class="mt-4 text-lg text-text-muted leading-relaxed">
           Named Hyrox simulation tests, benchmark workouts, and key training sessions — all with scoring, benchmarks, and how to use them in your prep.
         </p>
       </div>
     </div>
+  </section>
+
+  <div class="container-main py-10 md:py-16">
 
     <section aria-labelledby="benchmarks-heading" class="grid gap-4 md:grid-cols-2">
       <h2 id="benchmarks-heading" class="sr-only">Named benchmark workouts</h2>

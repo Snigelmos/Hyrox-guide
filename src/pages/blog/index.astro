@@ -31,10 +31,10 @@ const categoryCounts = BLOG_CATEGORIES.map((cat) => ({
   title="Hyrox Blog — Training Tips, Race Strategy & News"
   description="Hyrox blog — race recaps, training tips, strategy guides, station masterclasses, and the latest Hyrox news."
 >
-  <section class="container-main py-16">
-    <div class="relative overflow-hidden isolate rounded-3xl border border-border mb-12">
-      <HeroBackground image={blogHero} position="object-center" textSide="left" priority />
-      <div class="relative z-10 max-w-3xl p-8 md:p-14">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={blogHero} position="object-center" textSide="left" priority />
+    <div class="container-main py-16 md:py-20 relative z-10">
+      <div class="max-w-3xl">
         <h1 class="text-4xl md:text-6xl font-black mb-6">
           <span class="text-gradient-accent">Blog</span>
         </h1>
@@ -43,6 +43,9 @@ const categoryCounts = BLOG_CATEGORIES.map((cat) => ({
         </p>
       </div>
     </div>
+  </section>
+
+  <section class="container-main py-16">
 
     {categoryCounts.length > 0 && (
       <div class="mb-12">
