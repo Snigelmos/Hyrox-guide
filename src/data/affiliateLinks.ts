@@ -62,6 +62,72 @@ export const affiliateLinks: AmazonAffiliateLink[] = [
     store: "Amazon",
     price: "~$30",
   },
+
+  // ── Gear ───────────────────────────────────────────────────────────────
+  // Search-based links (no fixed ASIN) so they never 404 as models cycle and
+  // always surface current sizes/colours. Prices intentionally omitted here —
+  // shoe/equipment RRPs are quoted in the comparison tables, not as a single
+  // figure that would go stale.
+  {
+    productKey: "puma-fast-r",
+    displayName: "Puma Fast-R Nitro Elite",
+    url: `https://www.amazon.com/s?k=puma+fast-r+nitro+elite&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "nike-metcon-9",
+    displayName: "Nike Metcon 9",
+    url: `https://www.amazon.com/s?k=nike+metcon+9&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "nobull-trainer",
+    displayName: "NoBull Trainer+",
+    url: `https://www.amazon.com/s?k=nobull+trainer+plus&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "puma-deviate-nitro-3",
+    displayName: "Puma Deviate Nitro 3",
+    url: `https://www.amazon.com/s?k=puma+deviate+nitro+3&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "nike-pegasus-41",
+    displayName: "Nike Pegasus 41",
+    url: `https://www.amazon.com/s?k=nike+pegasus+41&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "reebok-nano-x4",
+    displayName: "Reebok Nano X4",
+    url: `https://www.amazon.com/s?k=reebok+nano+x4&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "kettlebell",
+    displayName: "Kettlebell",
+    url: `https://www.amazon.com/s?k=competition+kettlebell+24kg&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "dumbbell",
+    displayName: "Adjustable Dumbbells",
+    url: `https://www.amazon.com/s?k=adjustable+dumbbell+pair&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "air-bike",
+    displayName: "Air Bike",
+    url: `https://www.amazon.com/s?k=assault+air+bike&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
+  {
+    productKey: "row-erg",
+    displayName: "Concept2 RowErg",
+    url: `https://www.amazon.com/s?k=concept2+rowerg&tag=${AMAZON_TAG}`,
+    store: "Amazon",
+  },
 ];
 
 const DEFAULT_LINK: AmazonAffiliateLink = {

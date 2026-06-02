@@ -4,12 +4,15 @@ interface Props {
   productKey: string;
   /** Optional override label — kept for backwards compatibility with existing call sites */
   fallbackLabel?: string;
+  /** Optional CTA text override. Defaults to "Buy on Amazon". */
+  label?: string;
   className?: string;
   variant?: "primary" | "secondary" | "card";
 }
 
 export default function GeoAffiliateButton({
   productKey,
+  label = "Buy on Amazon",
   className = "",
   variant = "primary",
 }: Props) {
@@ -30,7 +33,7 @@ export default function GeoAffiliateButton({
         rel="noopener noreferrer sponsored nofollow"
         className={`${base} ${className}`}
       >
-        Buy on Amazon
+        {label}
       </a>
     );
   }
@@ -43,7 +46,7 @@ export default function GeoAffiliateButton({
       className={`${base} ${className}`}
     >
       <span>
-        Buy on Amazon
+        {label}
         {link.price && (
           <span className="font-normal opacity-75 ml-1">— {link.price}</span>
         )}

@@ -16,6 +16,13 @@ export interface GearComparison {
   slug: string;
   productALabel: string;
   productBLabel: string;
+  /**
+   * Optional affiliate product keys (see `affiliateLinks.ts`). When set, the
+   * comparison page renders a "shop" CTA for each side after the verdict.
+   * Omit for products we don't have an affiliate link for.
+   */
+  productAKey?: string;
+  productBKey?: string;
   category: "shoes" | "equipment";
   title: string;
   metaDescription: string;
@@ -42,6 +49,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "puma-fast-r-vs-nike-metcon",
     productALabel: "Puma Fast-R Nitro Elite",
     productBLabel: "Nike Metcon 9",
+    productAKey: "puma-fast-r",
+    productBKey: "nike-metcon-9",
     category: "shoes",
     title: "Puma Fast-R vs Nike Metcon 9 for Hyrox — Which Is Faster?",
     metaDescription:
@@ -83,6 +92,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "nike-metcon-9-vs-nobull-trainer",
     productALabel: "Nike Metcon 9",
     productBLabel: "NoBull Trainer+",
+    productAKey: "nike-metcon-9",
+    productBKey: "nobull-trainer",
     category: "shoes",
     title: "Nike Metcon 9 vs NoBull Trainer+ for Hyrox — Direct Comparison",
     metaDescription:
@@ -122,6 +133,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "puma-deviate-nitro-vs-nike-pegasus",
     productALabel: "Puma Deviate Nitro 3",
     productBLabel: "Nike Pegasus 41",
+    productAKey: "puma-deviate-nitro-3",
+    productBKey: "nike-pegasus-41",
     category: "shoes",
     title: "Puma Deviate Nitro 3 vs Nike Pegasus 41: Hyrox and Daily Running Comparison (Puma Nitro vs Nike Pegasus)",
     metaDescription:
@@ -159,6 +172,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "reebok-nano-vs-nike-metcon",
     productALabel: "Reebok Nano X4",
     productBLabel: "Nike Metcon 9",
+    productAKey: "reebok-nano-x4",
+    productBKey: "nike-metcon-9",
     category: "shoes",
     title: "Reebok Nano X4 vs Nike Metcon 9 for Hyrox — Verdict by Station (2026)",
     metaDescription:
@@ -232,6 +247,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "kettlebell-vs-dumbbell-hyrox",
     productALabel: "Kettlebell",
     productBLabel: "Dumbbell",
+    productAKey: "kettlebell",
+    productBKey: "dumbbell",
     category: "equipment",
     title: "Kettlebell vs Dumbbell for Hyrox Training — Which Is Better?",
     metaDescription:
@@ -269,6 +286,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     slug: "air-bike-vs-row-erg-hyrox",
     productALabel: "Air Bike",
     productBLabel: "Row Erg",
+    productAKey: "air-bike",
+    productBKey: "row-erg",
     category: "equipment",
     title: "Air Bike vs Row Erg for Hyrox Training — Which Builds Better Cardio?",
     metaDescription:
