@@ -12,44 +12,12 @@
  * Pass `name` to pick the glyph, `size` (default 24) for the box, and an
  * optional `class` forwarded to the root <svg>. Unknown names fall back to a
  * neutral capsule so a missing mapping never renders a broken icon.
+ *
+ * Available names: strength, shaker, bolt, flame, droplet, recovery, capsule,
+ * clipboard, calendar, money, moon, sunrise, flag, book, shoe, shirt, backpack,
+ * home, cart, rocket, run, lift, burst, target, pin, trophy, globe, bulb, male,
+ * female, stadium, medal, seedling, stopwatch, question.
  */
-export type ContentIconName =
-  | "strength"
-  | "shaker"
-  | "bolt"
-  | "flame"
-  | "droplet"
-  | "recovery"
-  | "capsule"
-  | "clipboard"
-  | "calendar"
-  | "money"
-  | "moon"
-  | "sunrise"
-  | "flag"
-  | "book"
-  | "shoe"
-  | "shirt"
-  | "backpack"
-  | "home"
-  | "cart"
-  | "rocket"
-  | "run"
-  | "lift"
-  | "burst"
-  | "target"
-  | "pin"
-  | "trophy"
-  | "globe"
-  | "bulb"
-  | "male"
-  | "female"
-  | "stadium"
-  | "medal"
-  | "seedling"
-  | "stopwatch"
-  | "question";
-
 interface Props {
   name: string;
   size?: number;
