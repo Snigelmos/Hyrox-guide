@@ -32,7 +32,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # Astro 6 requires Node >=22.12.0. Keep this in sync with
+          # package.json "engines.node" so CI matches the Vercel build.
+          node-version: "22"
           cache: "npm"
 
       - name: Install dependencies
