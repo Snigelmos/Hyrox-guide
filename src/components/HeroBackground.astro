@@ -1,0 +1,53 @@
+---
+/**
+ * HeroBackground — drops an optimised, full-bleed photo behind a page hero with
+ * readability overlays tuned to the side the text sits on.
+ *
+ * Usage: place as the first child of a `relative overflow-hidden isolate`
+ * <section>, then give the hero's content wrapper `relative z-10`.
+ *
+ *   <section class="relative overflow-hidden isolate ...">
+ *     <HeroBackground image={heroImg} position="object-[72%_center]" priority />
+ *     <div class="relative z-10 ...">...</div>
+ *   </section>
+ *
+ * Pass an imported `astro:assets` image. `position` is a Tailwind object-position
+ * class (default centre). `textSide` darkens the side the headline sits on.
+ * Mobile gets a stronger, more even darkening so stacked text stays legible.
+ */
+import { Image } from "astro:assets";
+
+interface Props {
+  image: ImageMetadata;
+  position?: string;
+  textSide?: "left" | "center" | "right";
+  priority?: boolean;
+}
+
+const {
+  image,
+  position = "object-center",
+  textSide = "left",
+  priority = false,
+} = Astro.props;
+
+const horizontal =
+  textSide === "right"
+    ? "bg-gradient-to-l from-bg from-10% via-bg/85 to-bg/40 sm:from-5% sm:via-bg/80 sm:to-bg/15"
+    : textSide === "center"
+    ? "bg-gradient-to-r from-bg via-bg/75 to-bg sm:via-bg/65"
+    : "bg-gradient-to-r from-bg from-10% via-bg/85 to-bg/40 sm:from-5% sm:via-bg/80 sm:to-bg/15";
+---
+
+<Image
+  src={image}
+  alt=""
+  aria-hidden="true"
+  loading={priority ? "eager" : "lazy"}
+  fetchpriority={priority ? "high" : "auto"}
+  decoding="async"
+  class:list={["absolute inset-0 -z-30 h-full w-full object-cover opacity-90", position]}
+/>
+<div class:list={["absolute inset-0 -z-20", horizontal]}></div>
+<div class="absolute inset-0 -z-20 bg-gradient-to-t from-bg via-bg/55 to-bg/20 sm:via-bg/45 sm:to-bg/10"></div>
+<div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(56,189,248,0.10),transparent)]"></div>

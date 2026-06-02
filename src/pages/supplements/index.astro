@@ -2,7 +2,9 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import ContentIcons from "../../components/icons/ContentIcons.astro";
+import HeroBackground from "../../components/HeroBackground.astro";
 import GeoAffiliateButton from "../../components/GeoAffiliateButton";
+import suppHero from "../../assets/heroes/supplements-hero.png";
 import { getCollection } from "astro:content";
 
 const supplementGuides = (await getCollection("supplements")).sort(
@@ -60,8 +62,9 @@ const raceDayEssentials = supplementGuides
   dateModified="2026-05-09"
 >
   <!-- Hero -->
-  <section class="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/5 to-transparent">
-    <div class="container-main py-16 md:py-20">
+  <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
+    <HeroBackground image={suppHero} position="object-[72%_center]" textSide="left" priority />
+    <div class="container-main py-16 md:py-20 relative z-10">
       <div class="max-w-3xl">
         <p class="text-sm text-text-muted mb-3">
           Last reviewed May 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a>
