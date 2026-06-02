@@ -1,0 +1,76 @@
+name: Scan venue maps
+
+# Fully-automatic venue-map updater.
+#
+# Hyrox publishes each event's official venue/course map as a media-library
+# attachment on hyrox.com (e.g. HYROX_Berlin_VenueMap_NEW.pdf), usually a few
+# days before race weekend. scripts/scan-venue-maps.mjs discovers those maps
+# via the Hyrox WordPress media REST API, matches each to an upcoming event,
+# and writes the URL to src/data/events.ts -> `courseMapUrl`.
+#
+# This job runs the scanner in --write mode on a schedule. If (and only if)
+# events.ts changed AND `astro build` is green, it commits and pushes to main,
+# which triggers the normal Vercel deploy. Building before pushing means a bad
+# or unreachable map can never produce a red production deploy (see the
+# deploy-safety rule: never push to main without a green build).
+
+on:
+  # Daily at 06:30 UTC (08:30 Stockholm). Maps land a few days pre-race, so a
+  # daily check catches them promptly without hammering hyrox.com.
+  schedule:
+    - cron: "30 6 * * *"
+  workflow_dispatch:
+
+# Prevent overlapping runs (each run may commit).
+concurrency:
+  group: scan-venue-maps
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Scan for venue maps and write updates
+        run: node scripts/scan-venue-maps.mjs --write
+
+      - name: Detect changes
+        id: changes
+        run: |
+          if git diff --quiet -- src/data/events.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No venue-map changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Venue-map changes detected:"
+            git diff --stat -- src/data/events.ts
+          fi
+
+      # Build gate — must pass before anything is pushed to main, so a bad map
+      # (broken URL, wrong asset) can never become a failed Vercel deploy.
+      - name: Build site (astro build)
+        if: steps.changes.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/events.ts
+          git commit -m "chore(events): auto-update venue maps from Hyrox media library"
+          git push

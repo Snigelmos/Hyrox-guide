@@ -55,6 +55,18 @@ export interface HyroxEvent {
    */
   courseMapSourceUrl?: string;
   /**
+   * Optional canonical Hyrox event-page URL (e.g.
+   * `https://hyrox.com/event/hyrox-berlin/`). Used by
+   * scripts/scan-venue-maps.mjs to auto-discover the published venue map:
+   * the scanner fetches this page, finds the official course-map asset, and
+   * writes it to `courseMapUrl`. The generic `officialUrl`
+   * (`find-your-race`) is not enough because it isn't event-specific. Leave
+   * undefined until the specific hyrox.com/event/<slug>/ URL is verified —
+   * the scanner will report and skip events it can't resolve rather than
+   * guessing.
+   */
+  hyroxEventUrl?: string;
+  /**
    * Optional one-liner characterising the venue's running loop — "fast",
    * "neutral", or "tight" with a short note. Athletes use the venue map
    * to assess this; we surface the editorial summary so first-timers
@@ -1287,6 +1299,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-06-07",
     venue: "Javits Center",
     venueAddress: "429 11th Avenue, New York, NY 10001",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/05/2026_HYROX_NewYork_VenueMap_PRINT_79x73-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "NYU Langone Health",
@@ -1399,12 +1412,10 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-06-21",
     venue: "Strawberry Arena",
     venueAddress: "Råsta Strandväg 1, 169 79 Solna",
-    // courseMapUrl: TBC — Hyrox publishes the official venue map ~7-10
-    // days before race weekend. Watch hyrox.com/event/hyrox-world-championships/
-    // and the Hyrox Official Community Facebook group; if Hyrox uses a
-    // signed Facebook CDN URL, mirror locally to /public/images/events/
-    // (same pattern as Ottawa). Until then, EventCourseSection renders
-    // the generic "published in the Hyrox athlete guide" fallback.
+    // Official Worlds venue map, auto-discovered from the Hyrox media library
+    // by scripts/scan-venue-maps.mjs (kept current by the scan-venue-maps
+    // GitHub Action).
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/HYROX_Stockholm_VenueMap_PRINT_2215x1864mm-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Puma",
@@ -1794,6 +1805,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-20",
     venue: "MECC Maastricht",
     venueAddress: "Forum 100, 6229 GV Maastricht, Netherlands",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Maastricht_VenueMap_PRINT_2215x1864mm.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -1821,6 +1833,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-20",
     venue: "Jio World Convention Centre",
     venueAddress: "G-Block, Bandra Kurla Complex, Bandra East, Mumbai 400051",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Mumbai_VenueMap_PRINT_2215x1864mm.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "APAC",
@@ -1874,6 +1887,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-27",
     venue: "Fiera di Roma",
     venueAddress: "Via Portuense 1645/47, 00148 Roma RM, Italy",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Rome_VenueMap_PRINT_2215x1864mm-2.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -1901,6 +1915,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-27",
     venue: "NOVA Spektrum",
     venueAddress: "Olavsgaard, Industriveien 17, 2007 Kjeller, Norway",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Oslo_VenueMap_PRINT_2215x1864mm-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -1928,6 +1943,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-04",
     venue: "Parc des Expositions de Bordeaux",
     venueAddress: "Cours Charles Bricaud, 33300 Bordeaux, France",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_Bordeaux_VenueMap_PRINT_2215x1864mm.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Intersport",
@@ -1985,6 +2001,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-04",
     venue: "The International Centre",
     venueAddress: "6900 Airport Road, Mississauga, ON L4V 1E8, Canada",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/10/2026_HYROX_Toronto_VenueMap_PRINT_79x73-2.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "GoodLife",
@@ -2012,6 +2029,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-11",
     venue: "Boston Convention & Exhibition Center",
     venueAddress: "415 Summer Street, Boston, MA 02210",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/2026_HYROX_Boston_VenueMap_PRINT_79x73-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "HWPO",
@@ -2039,6 +2057,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-11",
     venue: "Palexpo Geneva",
     venueAddress: "Route François-Peyrot 30, 1218 Le Grand-Saconnex, Switzerland",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/10/HYROX_Geneva_VenueMap_PRINT_2215x1864mm-3-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Let's Go Fitness",
@@ -2067,6 +2086,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-11",
     venue: "AmberExpo Gdańsk",
     venueAddress: "Żaglowa 11, 80-560 Gdańsk, Poland",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/10/HYROX_Gdansk_VenueMap_PRINT_2215x1864mm-MEDIA-1-scaled-1.png",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2173,6 +2193,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-01",
     venue: "NEC Birmingham",
     venueAddress: "North Avenue, Marston Green, Birmingham B40 1NT",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/10/HYROX_Birmingham_VenueMap_PRINT_2215x1864mm.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2199,6 +2220,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-01",
     venue: "Hamburg Messe",
     venueAddress: "Messeplatz 1, 20357 Hamburg",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Hamburg_VenueMap_B6_B7_PRINT_2215x1864mm.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Intersport",
@@ -2311,6 +2333,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-15",
     venue: "RDS Simmonscourt",
     venueAddress: "Simmonscourt Road, Ballsbridge, Dublin 4, D04 AK83",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_Dublin_VenueMap_PRINT_2215x1864mm-FINAL.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2446,6 +2469,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-22",
     venue: "Kay Bailey Hutchison Convention Center",
     venueAddress: "650 South Griffin Street, Dallas, TX 75202",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/2026_HYROX_Dallas_VenueMap_PRINT_79x73.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "NA",
@@ -2472,6 +2496,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-22",
     venue: "Poznań International Fair",
     venueAddress: "ul. Głogowska 14, 60-734 Poznań, Poland",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/HYROX_Poznan_VenueMap_PRINT_2215x1864mm-1-scaled-1.png",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2525,6 +2550,7 @@ export const EVENTS: HyroxEvent[] = [
     startDate: "2026-11-21",
     venue: "Riocentro",
     venueAddress: "Av. Salvador Allende 6555, Barra da Tijuca, Rio de Janeiro, RJ 22783-127",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_RioDeJaneiro_VenueMap_PRINT_2215x1864mm-2.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "SA",
@@ -2552,6 +2578,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-29",
     venue: "Jaarbeurs Utrecht",
     venueAddress: "Jaarbeursplein 6, 3521 AL Utrecht, Netherlands",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_Utrecht_VenueMap.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2609,6 +2636,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-06",
     venue: "ExCeL London",
     venueAddress: "Royal Victoria Dock, 1 Western Gateway, London E16 1XL",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/03/HYROX_London_Olympia_General_VenueMap_Digital.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2636,6 +2664,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-06",
     venue: "Anaheim Convention Center",
     venueAddress: "800 W Katella Avenue, Anaheim, CA 92802",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/2026_HYROX_Anaheim_VenueMap_PRINT_79x73-1.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "NA",
@@ -2689,6 +2718,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-13",
     venue: "Messe Frankfurt",
     venueAddress: "Ludwig-Erhard-Anlage 1, 60327 Frankfurt am Main",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/HYROX_Frankfurt_VenueMap_2025.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Fitness First",
@@ -2771,6 +2801,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-20",
     venue: "Flanders Expo",
     venueAddress: "Maaltekouter 1, 9051 Sint-Denijs-Westrem (Gent)",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/HYROX_Gent_VenueMap.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
@@ -2825,6 +2856,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-20",
     venue: "Vancouver Convention Centre",
     venueAddress: "1055 Canada Place, Vancouver, BC V6C 0C3, Canada",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/2026_HYROX_Vancouver_VenueMap_PRINT_79x73.pdf",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "NA",

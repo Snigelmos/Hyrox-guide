@@ -174,6 +174,50 @@ const startIso = event?.startDate ?? "";
 const endIso = event?.endDate ?? event?.startDate ?? "";
 const validUntilIso = endIso;
 
+// Time-aware training funnel. Almost all traffic lands on event pages, so we
+// route athletes into /training-plans/ with a recommendation matched to how
+// many weeks they have before race day — genuine, event-specific guidance
+// rather than a bare CTA. Only meaningful for upcoming events; the section
+// itself is gated on !isPast below.
+const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+const weeksUntil =
+  event && !isPast
+    ? Math.max(
+        0,
+        Math.ceil((new Date(event.startDate).getTime() - Date.now()) / MS_PER_WEEK)
+      )
+    : null;
+const recommendedPlan =
+  weeksUntil === null
+    ? null
+    : weeksUntil >= 12
+      ? {
+          href: "/training-plans/12-week-hyrox-training-plan/",
+          label: "12-week Hyrox training plan",
+          lead: "You have enough runway for a full base-to-peak build.",
+          isTaper: false,
+        }
+      : weeksUntil >= 8
+        ? {
+            href: "/training-plans/8-week-hyrox-training-plan/",
+            label: "8-week Hyrox training plan",
+            lead: "There's still time for a focused, race-specific block.",
+            isTaper: false,
+          }
+        : weeksUntil >= 4
+          ? {
+              href: "/training-plans/4-week-hyrox-training-plan/",
+              label: "4-week Hyrox training plan",
+              lead: "Race day is close — sharpen with a short, specific block.",
+              isTaper: false,
+            }
+          : {
+              href: "/blog/hyrox-race-week-protocol/",
+              label: "race-week taper protocol",
+              lead: "You're inside the final stretch — hold fitness and arrive fresh.",
+              isTaper: true,
+            };
+
 const eventSchema = event
   ? {
       "@context": "https://schema.org",
@@ -619,7 +663,10 @@ const explainerFaqItems = explainer
                 Worlds is invitation-only. If you've earned your spot, the final 6–8 weeks should be a peaking block: race-pace running, sled work, and one full simulator 14 days out.
               </p>
               <div class="flex flex-col gap-1.5 mt-auto">
-                <a href="/calculator/" class="text-sm font-bold text-accent hover:underline no-underline">
+                <a href="/training-plans/8-week-hyrox-training-plan/" class="text-sm font-bold text-accent hover:underline no-underline">
+                  Build an 8-week peaking block →
+                </a>
+                <a href="/calculator/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
                   Set a peak target time →
                 </a>
                 <a href="/blog/hyrox-race-week-protocol/" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">
@@ -689,10 +736,10 @@ const explainerFaqItems = explainer
                 8–16 weeks of specific prep
               </h3>
               <ul class="text-sm text-text-muted leading-relaxed space-y-1.5 mb-4 list-disc pl-4 flex-grow">
+                <li><a href="/training-plans/" class="text-text hover:text-accent">Structured training plan</a> by goal time</li>
                 <li><a href="/training/running/" class="text-text hover:text-accent">Running</a> — 50% of race time</li>
                 <li><a href="/blog/hyrox-sled-push-technique/" class="text-text hover:text-accent">Sled push</a> + <a href="/blog/hyrox-sled-pull-technique/" class="text-text hover:text-accent">pull</a></li>
                 <li>Grip for <a href="/racing-guide/stations/" class="text-text hover:text-accent">farmers carry</a></li>
-                <li><a href="/supplements/protocol/" class="text-text hover:text-accent">Fuelling protocol</a></li>
                 <li><a href="/gyms/map/" class="text-text hover:text-accent">Find a Hyrox gym</a></li>
               </ul>
               <a href="/blog/first-hyrox-race-guide/" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
@@ -808,6 +855,67 @@ const explainerFaqItems = explainer
                 <a href="/live/" class="text-sm font-bold text-accent hover:underline no-underline">Open live tracker →</a>
                 <a href={event.officialUrl} rel="noopener noreferrer" class="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline">Hyrox livestream ↗</a>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Training funnel — routes the event-page traffic into /training-plans/.
+          Time-aware: the lead card recommends a plan matched to weeks-to-race.
+          Renders for every upcoming event (Worlds and regular alike). */}
+      {!isPast && (
+        <>
+          <h2 id="train" class="!mb-3 scroll-mt-24">How to train for Hyrox {event.city}</h2>
+          <p>
+            {weeksUntil !== null && weeksUntil > 0
+              ? `Hyrox ${event.city} ${year} is about ${weeksUntil} week${weeksUntil === 1 ? "" : "s"} out. `
+              : `Hyrox ${event.city} ${year} is almost here. `}
+            {recommendedPlan?.lead} Every Hyrox is the same 8 km of running plus 8 functional stations, so a structured plan that rehearses running under fatigue, the sleds, and high-rep wall balls is what moves your finish time — far more than extra unstructured gym volume.
+          </p>
+          <div class="not-prose grid gap-4 md:grid-cols-3 mb-8">
+            <!-- Recommended plan, matched to time-to-race -->
+            <div class="bg-bg-card border border-accent/30 rounded-2xl p-5 flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+                Start here · {weeksUntil !== null && weeksUntil > 0 ? `${weeksUntil} week${weeksUntil === 1 ? "" : "s"} out` : "Race week"}
+              </div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">
+                {recommendedPlan?.isTaper ? "Lock in your race-week taper" : `Follow the ${recommendedPlan?.label}`}
+              </h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                {recommendedPlan?.isTaper
+                  ? "Too close to start a new block. Hold your fitness, drop volume, and rehearse race-day logistics so you arrive fresh."
+                  : "Matched to how long you have before race day — week-by-week sessions, weekly volume targets, and a built-in taper."}
+              </p>
+              <a href={recommendedPlan?.href} class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                {recommendedPlan?.isTaper ? "Race-week protocol →" : `Open the ${recommendedPlan?.label} →`}
+              </a>
+            </div>
+
+            <!-- Goal-time plans -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Train for a target time</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Pick a plan by goal time</h3>
+              <ul class="text-sm text-text-muted leading-relaxed space-y-1.5 mb-4 list-disc pl-4 flex-grow">
+                <li><a href="/training-plans/sub-100-hyrox-training-plan/" class="text-text hover:text-accent">Sub-1:40</a> — first-timer finish</li>
+                <li><a href="/training-plans/sub-90-hyrox-training-plan/" class="text-text hover:text-accent">Sub-1:30</a> — competitive Open</li>
+                <li><a href="/training-plans/sub-75-hyrox-training-plan/" class="text-text hover:text-accent">Sub-1:15</a> — advanced</li>
+                <li><a href="/training-plans/hyrox-doubles-training-plan/" class="text-text hover:text-accent">Doubles plan</a> — racing the partner format</li>
+              </ul>
+              <a href="/training-plans/" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                Browse all Hyrox training plans →
+              </a>
+            </div>
+
+            <!-- Set a target -->
+            <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Set a realistic target</div>
+              <h3 class="text-base font-black text-text-heading mb-2 leading-tight">Know the time to aim for</h3>
+              <p class="text-sm text-text-muted leading-relaxed mb-4 flex-grow">
+                Plug your run pace and station splits into the calculator to set a {event.city} goal time — then choose the plan that gets you there.
+              </p>
+              <a href="/calculator/" class="text-sm font-bold text-accent hover:underline no-underline mt-auto">
+                Hyrox time calculator →
+              </a>
             </div>
           </div>
         </>
