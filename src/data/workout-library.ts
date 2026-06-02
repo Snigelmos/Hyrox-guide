@@ -42,10 +42,10 @@ export interface LibraryWorkout {
 }
 
 export const LIBRARY_CATEGORIES: WorkoutCategory[] = [
-  { id: "full-simulations", label: "Full Simulations", icon: "🏁", color: "text-sky-400 bg-sky-400/10 border-sky-400/20" },
-  { id: "running",          label: "Running",          icon: "🏃", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
-  { id: "station-work",     label: "Station Work",     icon: "🏋️", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" },
-  { id: "strength-power",   label: "Strength & Power", icon: "💥", color: "text-red-400 bg-red-400/10 border-red-400/20" },
+  { id: "full-simulations", label: "Full Simulations", icon: "flag", color: "text-sky-400 bg-sky-400/10 border-sky-400/20" },
+  { id: "running",          label: "Running",          icon: "run", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
+  { id: "station-work",     label: "Station Work",     icon: "lift", color: "text-amber-400 bg-amber-400/10 border-amber-400/20" },
+  { id: "strength-power",   label: "Strength & Power", icon: "burst", color: "text-red-400 bg-red-400/10 border-red-400/20" },
 ];
 
 export const WORKOUT_TYPE_CONFIG: Record<WorkoutType, { label: string; shortLabel: string; color: string }> = {

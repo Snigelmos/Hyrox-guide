@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ContentIcons from "../../components/icons/ContentIcons.astro";
 ---
 
 <BaseLayout
@@ -29,8 +30,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       {/* Night before */}
       <div class="bg-bg-card border border-border rounded-2xl overflow-hidden">
         <div class="flex items-center gap-4 px-6 py-4 border-b border-border bg-bg-card-hover">
-          <div class="w-10 h-10 rounded-full bg-indigo-400/10 border border-indigo-400/20 flex items-center justify-center flex-shrink-0">
-            <span class="text-lg">🌙</span>
+          <div class="w-10 h-10 rounded-full bg-indigo-400/10 border border-indigo-400/20 flex items-center justify-center flex-shrink-0 text-indigo-400">
+            <ContentIcons name="moon" size={20} />
           </div>
           <div>
             <h2 class="font-black text-text-heading">Night Before Race</h2>
@@ -70,8 +71,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       {/* Race morning */}
       <div class="bg-bg-card border border-border rounded-2xl overflow-hidden">
         <div class="flex items-center gap-4 px-6 py-4 border-b border-border bg-bg-card-hover">
-          <div class="w-10 h-10 rounded-full bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0">
-            <span class="text-lg">🌅</span>
+          <div class="w-10 h-10 rounded-full bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0 text-amber-400">
+            <ContentIcons name="sunrise" size={20} />
           </div>
           <div>
             <h2 class="font-black text-text-heading">Race Morning (2–3 h before start)</h2>
@@ -152,8 +153,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       {/* During race */}
       <div class="bg-bg-card border border-accent/20 rounded-2xl overflow-hidden">
         <div class="flex items-center gap-4 px-6 py-4 border-b border-accent/10 bg-accent/5">
-          <div class="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
-            <span class="text-lg">🏁</span>
+          <div class="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 text-accent">
+            <ContentIcons name="flag" size={20} />
           </div>
           <div>
             <h2 class="font-black text-text-heading">During the Race</h2>
@@ -240,7 +241,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       {/* Quick reference cheat sheet */}
       <div class="bg-accent/5 border border-accent/15 rounded-2xl p-6">
-        <h2 class="text-base font-black text-text-heading mb-4">📋 Quick Reference Cheat Sheet</h2>
+        <h2 class="flex items-center gap-2 text-base font-black text-text-heading mb-4"><ContentIcons name="clipboard" size={20} class="text-accent" /> Quick Reference Cheat Sheet</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
@@ -276,7 +277,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     {/* Related links */}
     <div class="max-w-3xl mt-12 flex flex-wrap gap-3">
-      <a href="/supplements/" class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]">💊 All Supplements</a>
+      <a href="/supplements/" class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]"><ContentIcons name="capsule" size={18} class="text-accent" /> All Supplements</a>
       <a href="/supplements/creatine/" class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]">Creatine Guide</a>
       <a href="/supplements/energy-gels/" class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]">Energy Gels Guide</a>
       <a href="/racing-guide/race-day-tips/" class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]">Race Day Guide</a>

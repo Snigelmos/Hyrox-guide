@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import TrainingIcons from "../../components/icons/TrainingIcons.astro";
+import { iconName } from "../../lib/content-icons";
 import { getCollection } from "astro:content";
 
 const guides = (await getCollection("training")).sort(
@@ -175,7 +176,7 @@ const difficultyConfig: Record<string, { label: string; variant: string }> = {
           title={guide.data.title}
           description={guide.data.description}
           href={`/training/${guide.id}/`}
-          icon={guide.data.icon ?? "📖"}
+          icon={iconName(guide.data.icon)}
         />
       ))}
     </div>

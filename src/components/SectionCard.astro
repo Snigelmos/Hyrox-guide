@@ -1,8 +1,12 @@
 ---
+import ContentIcons from "./icons/ContentIcons.astro";
+import { iconName } from "../lib/content-icons";
+
 interface Props {
   title: string;
   description: string;
   href: string;
+  /** ContentIcons name (or legacy emoji, resolved automatically). */
   icon: string;
   accent?: boolean;
 }
@@ -19,7 +23,7 @@ const { title, description, href, icon, accent = false } = Astro.props;
       : "bg-bg-card border-border hover:border-border-hover hover:bg-bg-card-hover",
   ]}
 >
-  <div class="text-4xl mb-4">{icon}</div>
+  <div class="mb-4 text-accent"><ContentIcons name={iconName(icon)} size={40} /></div>
   <h3 class="text-xl font-bold text-text-heading mb-2 group-hover:text-accent transition-colors">
     {title}
   </h3>

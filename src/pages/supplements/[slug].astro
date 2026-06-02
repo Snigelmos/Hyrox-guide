@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GeoAffiliateButton from "../../components/GeoAffiliateButton";
+import ContentIcons from "../../components/icons/ContentIcons.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -23,12 +24,12 @@ const allSupplements = (await getCollection("supplements")).sort(
 const otherSupplements = allSupplements.filter((s) => s.id !== entry.id);
 
 const categoryIcons: Record<string, string> = {
-  creatine: "💪",
-  protein: "🥤",
-  gels: "⚡",
-  "pre-workout": "🔥",
-  electrolytes: "💧",
-  recovery: "🔄",
+  creatine: "strength",
+  protein: "shaker",
+  gels: "bolt",
+  "pre-workout": "flame",
+  electrolytes: "droplet",
+  recovery: "recovery",
 };
 
 // Product ItemList schema. We deliberately omit AggregateRating, Review, and
@@ -133,8 +134,8 @@ const pageTitle = entry.data.title.includes("2026")
       <article class="min-w-0">
         <header class="mb-10 pb-8 border-b border-border">
           <div class="flex items-center gap-3 mb-4">
-            <span class="text-3xl"
-              >{categoryIcons[entry.data.category] ?? "💊"}</span
+            <span class="text-accent"
+              ><ContentIcons name={categoryIcons[entry.data.category] ?? "capsule"} size={32} /></span
             >
             <span
               class="px-3 py-1 bg-accent/10 text-accent text-xs font-bold rounded-full border border-accent/20 uppercase tracking-wider"
@@ -236,8 +237,8 @@ const pageTitle = entry.data.title.includes("2026")
                           : "text-text-muted hover:text-accent",
                       ]}
                     >
-                      <span class="text-base">
-                        {categoryIcons[s.data.category] ?? "💊"}
+                      <span class:list={[s.id === entry.id ? "text-accent" : "text-accent/70"]}>
+                        <ContentIcons name={categoryIcons[s.data.category] ?? "capsule"} size={18} />
                       </span>
                       {s.data.title.replace("Best ", "").replace(" for Hyrox Athletes", "").replace(" for Hyrox", "").replace(" for Hyrox Race Day", "")}
                     </a>

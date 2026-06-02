@@ -1,5 +1,6 @@
 ---
 import StationIcons from "./icons/StationIcons.astro";
+import ContentIcons from "./icons/ContentIcons.astro";
 
 const stations = [
   { id: "skierg", name: "SkiErg", metric: "1,000m" },
@@ -50,7 +51,7 @@ const stations = [
     </div>
     <div class="mt-6 text-center">
       <div class="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent text-sm font-bold rounded-full">
-        🏁 Finish Line
+        <ContentIcons name="flag" size={16} /> Finish Line
       </div>
     </div>
   </div>

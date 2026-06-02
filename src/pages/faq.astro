@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ContentIcons from "../components/icons/ContentIcons.astro";
 
 const faqItems = [
   { question: "What is Hyrox?", answer: "Hyrox is a global indoor fitness race that combines 8km of running with 8 functional workout stations. Every race follows the same format worldwide: run 1km, complete a station, repeat 8 times. It's the fastest-growing mass participation fitness event in the world, held in 30+ cities." },
@@ -24,11 +25,11 @@ const faqItems = [
 ];
 
 const categories = [
-  { title: "Getting Started", icon: "🚀", items: faqItems.slice(0, 5) },
-  { title: "Race Format", icon: "🏁", items: faqItems.slice(5, 10) },
-  { title: "Training", icon: "💪", items: faqItems.slice(10, 14) },
-  { title: "Results & Times", icon: "⏱️", items: faqItems.slice(14, 18) },
-  { title: "Official Resources", icon: "📋", items: faqItems.slice(18) },
+  { title: "Getting Started", icon: "rocket", items: faqItems.slice(0, 5) },
+  { title: "Race Format", icon: "flag", items: faqItems.slice(5, 10) },
+  { title: "Training", icon: "strength", items: faqItems.slice(10, 14) },
+  { title: "Results & Times", icon: "stopwatch", items: faqItems.slice(14, 18) },
+  { title: "Official Resources", icon: "clipboard", items: faqItems.slice(18) },
 ];
 
 const linkMap: Record<string, string> = {
@@ -67,7 +68,7 @@ const linkMap: Record<string, string> = {
       {categories.map((category) => (
         <div>
           <div class="flex items-center gap-3 mb-4">
-            <span class="text-2xl">{category.icon}</span>
+            <span class="text-accent"><ContentIcons name={category.icon} size={26} /></span>
             <h2 class="text-lg font-bold text-text-heading">{category.title}</h2>
           </div>
           <div class="space-y-2">

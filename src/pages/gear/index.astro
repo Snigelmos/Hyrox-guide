@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ContentIcons from "../../components/icons/ContentIcons.astro";
 import { GEAR_COMPARISONS } from "../../data/gear-comparisons";
 import { getCollection } from "astro:content";
 
@@ -15,10 +16,10 @@ const buyingGuides = (await getCollection("gear")).sort(
 );
 
 const guideIcons: Record<string, string> = {
-  shoes: "👟",
-  clothing: "👕",
-  accessories: "🎒",
-  "home-gym": "🏠",
+  shoes: "shoe",
+  clothing: "shirt",
+  accessories: "backpack",
+  "home-gym": "home",
 };
 ---
 
@@ -68,7 +69,7 @@ const guideIcons: Record<string, string> = {
             class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
           >
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-2xl">{guideIcons[g.data.category] ?? "🛒"}</span>
+              <span class="text-accent"><ContentIcons name={guideIcons[g.data.category] ?? "cart"} size={26} /></span>
               <div class="text-xs font-bold uppercase tracking-wider text-accent">
                 {g.data.category.replace("-", " ")}
               </div>

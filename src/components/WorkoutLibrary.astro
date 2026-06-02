@@ -10,6 +10,7 @@ import {
   LIBRARY_WORKOUT_TYPE_COUNTS,
   LIBRARY_TOTAL_WORKOUTS,
 } from "../data/workout-library";
+import ContentIcons from "./icons/ContentIcons.astro";
 ---
 
 <section class="mt-16 pt-12 border-t border-border" id="workout-library">
@@ -49,7 +50,7 @@ import {
         data-filter={cat.id}
         class={`filter-chip inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border transition-all border-border text-text-muted hover:border-accent/40 hover:text-accent`}
       >
-        {cat.icon} {cat.label} ({cat.count})
+        <ContentIcons name={cat.icon} size={15} /> {cat.label} ({cat.count})
       </button>
     ))}
   </div>
@@ -59,7 +60,7 @@ import {
     return (
       <section class="category-section mb-12" id={cat.id} data-category={cat.id}>
         <h3 class="flex items-center gap-3 text-xl font-black text-text-heading mb-5 pb-3 border-b border-border">
-          <span>{cat.icon}</span>
+          <ContentIcons name={cat.icon} size={22} class="text-accent" />
           <span>{cat.label}</span>
           <span class={`text-xs font-bold px-2 py-0.5 rounded-full border ${cat.color}`}>{cat.count} workouts</span>
         </h3>

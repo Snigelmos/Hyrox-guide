@@ -2,6 +2,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionCard from "../../components/SectionCard.astro";
 import StationIcons from "../../components/icons/StationIcons.astro";
+import ContentIcons from "../../components/icons/ContentIcons.astro";
+import { iconName } from "../../lib/content-icons";
 import { getCollection } from "astro:content";
 
 const guides = (await getCollection("racing-guide")).sort(
@@ -57,7 +59,7 @@ const guideIllustrations: Record<string, string> = {
                     <StationIcons station={stationId} size={48} />
                   </div>
                 ) : (
-                  <span class="text-3xl">{guide.data.icon ?? "📖"}</span>
+                  <span class="text-accent/60 group-hover:text-accent transition-colors"><ContentIcons name={iconName(guide.data.icon)} size={48} /></span>
                 )}
                 {i === 0 && (
                   <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full text-accent bg-accent/10 border border-accent/20">
@@ -120,7 +122,7 @@ const guideIllustrations: Record<string, string> = {
           rel="noopener noreferrer"
           class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
         >
-          <span class="text-lg">📋</span>
+          <span class="text-accent"><ContentIcons name="clipboard" size={20} /></span>
           <div>
             <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Official Rules</span>
             <span class="block text-xs text-text-muted">hyrox.com</span>
@@ -135,7 +137,7 @@ const guideIllustrations: Record<string, string> = {
           rel="noopener noreferrer"
           class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
         >
-          <span class="text-lg">🗓️</span>
+          <span class="text-accent"><ContentIcons name="calendar" size={20} /></span>
           <div>
             <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Find a Race</span>
             <span class="block text-xs text-text-muted">hyrox.com</span>
@@ -150,7 +152,7 @@ const guideIllustrations: Record<string, string> = {
           rel="noopener noreferrer"
           class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
         >
-          <span class="text-lg">🏆</span>
+          <span class="text-accent"><ContentIcons name="trophy" size={20} /></span>
           <div>
             <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">Race Results</span>
             <span class="block text-xs text-text-muted">hyrox.com</span>
@@ -165,7 +167,7 @@ const guideIllustrations: Record<string, string> = {
           rel="noopener noreferrer"
           class="group flex items-center gap-3 bg-bg border border-border rounded-xl px-4 py-3 hover:border-accent/30 transition-all min-h-[44px]"
         >
-          <span class="text-lg">🌍</span>
+          <span class="text-accent"><ContentIcons name="globe" size={20} /></span>
           <div>
             <span class="text-sm font-semibold text-text-heading group-hover:text-accent transition-colors">World Rankings</span>
             <span class="block text-xs text-text-muted">hyrox.com</span>

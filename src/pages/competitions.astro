@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ContentIcons from "../components/icons/ContentIcons.astro";
 
 const regions = [
   {
@@ -48,7 +49,7 @@ const regions = [
       rel="noopener noreferrer"
       class="group flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-accent/5 border border-accent/20 rounded-2xl px-6 py-5 hover:bg-accent/10 hover:border-accent/40 transition-all mb-16"
     >
-      <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 text-2xl">🗓️</div>
+      <div class="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 text-accent"><ContentIcons name="calendar" size={24} /></div>
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-1">
           <span class="text-xs font-bold uppercase tracking-wider text-accent">Official Schedule</span>
@@ -101,7 +102,7 @@ const regions = [
 
     <div class="mt-12 p-6 bg-bg-card border border-border rounded-2xl">
       <div class="flex items-start gap-3">
-        <span class="text-2xl">💡</span>
+        <span class="text-accent"><ContentIcons name="bulb" size={26} /></span>
         <div>
           <h3 class="font-bold text-text-heading mb-1">Pro tip</h3>
           <p class="text-text-muted text-sm leading-relaxed">

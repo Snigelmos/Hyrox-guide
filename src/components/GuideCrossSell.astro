@@ -1,4 +1,6 @@
 ---
+import ContentIcons from "./icons/ContentIcons.astro";
+
 interface Props {
   context?: "training" | "racing" | "general";
 }
@@ -13,23 +15,23 @@ const products = [
 
 const links = context === "training"
   ? [
-      { label: "Sample Workouts", href: "/workouts/", icon: "🏋️" },
-      { label: "Station Drills", href: "/training/stations/", icon: "🎯" },
-      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
-      { label: "Time Calculator", href: "/calculator/", icon: "⏱️" },
+      { label: "Sample Workouts", href: "/workouts/", icon: "lift" },
+      { label: "Station Drills", href: "/training/stations/", icon: "target" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "pin" },
+      { label: "Time Calculator", href: "/calculator/", icon: "stopwatch" },
     ]
   : context === "racing"
   ? [
-      { label: "Training Programs", href: "/training/", icon: "📋" },
-      { label: "Station Benchmarks", href: "/racing-guide/times/", icon: "⏱️" },
-      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
-      { label: "Supplements Guide", href: "/supplements/", icon: "💊" },
+      { label: "Training Programs", href: "/training/", icon: "clipboard" },
+      { label: "Station Benchmarks", href: "/racing-guide/times/", icon: "stopwatch" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "pin" },
+      { label: "Supplements Guide", href: "/supplements/", icon: "capsule" },
     ]
   : [
-      { label: "Racing Guide", href: "/racing-guide/", icon: "🏁" },
-      { label: "Training Programs", href: "/training/", icon: "📋" },
-      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "📍" },
-      { label: "Time Calculator", href: "/calculator/", icon: "⏱️" },
+      { label: "Racing Guide", href: "/racing-guide/", icon: "flag" },
+      { label: "Training Programs", href: "/training/", icon: "clipboard" },
+      { label: "Find a Hyrox Gym", href: "/gyms/map/", icon: "pin" },
+      { label: "Time Calculator", href: "/calculator/", icon: "stopwatch" },
     ];
 ---
 
@@ -61,7 +63,7 @@ const links = context === "training"
         href={link.href}
         class="inline-flex items-center gap-2 px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm font-semibold text-text hover:border-accent/30 hover:text-accent transition-all min-h-[44px]"
       >
-        <span>{link.icon}</span>
+        <ContentIcons name={link.icon} size={18} class="text-accent" />
         {link.label}
       </a>
     ))}
