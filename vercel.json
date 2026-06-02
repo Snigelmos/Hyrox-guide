@@ -6,6 +6,9 @@
       "has": [{ "type": "host", "value": "hyroxvault.com" }],
       "destination": "https://www.hyroxvault.com/:path*",
       "permanent": true
-    }
+    },
+    { "source": "/training/workouts", "destination": "/workouts/", "permanent": true },
+    { "source": "/blog/hyrox-race-day-pacing", "destination": "/blog/best-hyrox-pacing-strategy/", "permanent": true },
+    { "source": "/events/2026/los-angeles", "destination": "/events/2026/anaheim/", "permanent": true }
   ]
 }

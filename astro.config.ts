@@ -205,12 +205,6 @@ function isIndexableSitemapUrl(pageUrl: string): boolean {
 export default defineConfig({
   site: "https://www.hyroxvault.com",
   output: "static",
-  // The site is trailing-slash canonical (every sitemap/canonical URL ends in
-  // "/"). The Vercel adapter emits the `redirects` below using this setting, so
-  // it MUST be "always" — otherwise redirects only match the slash-less form
-  // and every retired URL Google crawls (with a trailing slash) 404s. Astro's
-  // trailingSlash does not act on API routes, so /api/live/* stays unaffected.
-  trailingSlash: "always",
   adapter: vercel(),
   redirects: { ...retiredEventRedirects, ...retired404Redirects },
   integrations: [
