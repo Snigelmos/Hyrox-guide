@@ -55,6 +55,15 @@ export interface HyroxEvent {
    */
   courseMapSourceUrl?: string;
   /**
+   * Optional locally-hosted raster image of the venue map (e.g. a JPG/PNG
+   * under `/public/images/events/`). When set, the event page renders this
+   * image inline so it shows on EVERY device — mobile browsers refuse to
+   * embed cross-origin PDFs in an iframe, so a PDF-only `courseMapUrl`
+   * appears blank on phones. The original `courseMapUrl` (PDF) is still
+   * offered as the "open full size" link. Generate with a PDF→image step.
+   */
+  courseMapImageUrl?: string;
+  /**
    * Optional canonical Hyrox event-page URL (e.g.
    * `https://hyrox.com/event/hyrox-berlin/`). Used by
    * scripts/scan-venue-maps.mjs to auto-discover the published venue map:
@@ -1300,6 +1309,7 @@ export const EVENTS: HyroxEvent[] = [
     venue: "Javits Center",
     venueAddress: "429 11th Avenue, New York, NY 10001",
     courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/05/2026_HYROX_NewYork_VenueMap_PRINT_79x73-1.pdf",
+    courseMapImageUrl: "/images/events/new-york-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "NYU Langone Health",

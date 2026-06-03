@@ -54,9 +54,17 @@ const trackSpeedLabel = event.trackProfile
 //     URL has expiring tokens and can't be embedded directly).
 //   - Anything else → generic "Open official venue map" card link.
 const mapUrl = event.courseMapUrl ?? "";
+// A locally-hosted raster image always renders, including on mobile where
+// cross-origin PDF embeds paint blank. When present it takes priority over
+// the raw courseMapUrl for display; the PDF stays as the "full size" link.
+const mapImageUrl = event.courseMapImageUrl ?? "";
+const hasMapImage = mapImageUrl.length > 0;
 const isInlineMap = /\.(jpe?g|png|webp|avif)(\?|$)/i.test(mapUrl);
 const isPdfMap = /\.pdf(\?|$)/i.test(mapUrl);
 const isFacebookMap = /(?:^|\/\/)(?:www\.|m\.)?facebook\.com\//i.test(mapUrl);
+// Where the "open full size" link should point: the official PDF when we
+// have one, otherwise the image itself.
+const fullSizeMapUrl = mapUrl || mapImageUrl;
 
 // Hyrox venue maps are large landscape print posters. Hint the browser PDF
 // viewer to fit the page to the iframe width so it lands readable instead of
@@ -78,7 +86,43 @@ const pdfEmbedUrl =
   </div>
 
   <!-- ── Official venue map (image when we have one) ────────────── -->
-  {isInlineMap ? (
+  {hasMapImage ? (
+    <figure class="mb-6">
+      <a
+        href={fullSizeMapUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block bg-bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/40 transition-colors no-underline group"
+      >
+        <img
+          src={mapImageUrl}
+          alt={`Official Hyrox ${event.city} ${event.year} venue map at ${event.venue} — running loop, 8 stations, Roxzone, water stations, and bag drop.`}
+          loading="lazy"
+          decoding="async"
+          class="mx-auto block h-auto w-auto max-w-full max-h-[80vh] object-contain bg-black"
+        />
+        <figcaption class="flex items-center justify-between gap-3 px-4 py-3 text-xs text-text-muted">
+          <span>Official Hyrox {event.city} {event.year} venue map · {event.venue}</span>
+          <span class="text-accent font-bold uppercase tracking-wider group-hover:underline">
+            {isPdfMap ? "Open full-size PDF ↗" : "Open full size ↗"}
+          </span>
+        </figcaption>
+      </a>
+      {event.courseMapSourceUrl && (
+        <p class="mt-2 text-xs text-text-muted">
+          Source:{" "}
+          <a
+            href={event.courseMapSourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-accent hover:underline"
+          >
+            Official map source
+          </a>
+        </p>
+      )}
+    </figure>
+  ) : isInlineMap ? (
     <figure class="mb-6">
       <a
         href={mapUrl}
