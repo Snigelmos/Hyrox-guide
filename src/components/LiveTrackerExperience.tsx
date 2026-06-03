@@ -94,13 +94,11 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
         )}
       </div>
 
-      <LiveRails
-        activeEvents={activeEvents}
-        recentlyFinishedEvents={recentlyFinishedEvents}
-        thisWeekEvents={thisWeekEvents}
-        upcomingEvents={upcomingEvents}
-        now={now}
-      />
+      {/* Live-now rail first, then the tracker, then everything else — the
+          primary spectator action (search an athlete / pre-build a share link)
+          sits directly under the live races instead of below the result and
+          upcoming rails. */}
+      <LiveNowRail activeEvents={activeEvents} now={now} />
 
       <section id="track-an-athlete" className="mb-12 scroll-mt-24">
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
@@ -145,23 +143,25 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
           </aside>
         </div>
       </section>
+
+      <SecondaryRails
+        recentlyFinishedEvents={recentlyFinishedEvents}
+        thisWeekEvents={thisWeekEvents}
+        upcomingEvents={upcomingEvents}
+        now={now}
+      />
     </>
   );
 }
 
-function LiveRails({
+function LiveNowRail({
   activeEvents,
-  recentlyFinishedEvents,
-  thisWeekEvents,
-  upcomingEvents,
   now,
 }: {
   activeEvents: RaceStatusEvent[];
-  recentlyFinishedEvents: RaceStatusEvent[];
-  thisWeekEvents: RaceStatusEvent[];
-  upcomingEvents: RaceStatusEvent[];
   now: Date;
 }) {
+  if (activeEvents.length === 0) return null;
   return (
     <>
       {activeEvents.length > 0 && (
@@ -196,7 +196,23 @@ function LiveRails({
           </div>
         </section>
       )}
+    </>
+  );
+}
 
+function SecondaryRails({
+  recentlyFinishedEvents,
+  thisWeekEvents,
+  upcomingEvents,
+  now,
+}: {
+  recentlyFinishedEvents: RaceStatusEvent[];
+  thisWeekEvents: RaceStatusEvent[];
+  upcomingEvents: RaceStatusEvent[];
+  now: Date;
+}) {
+  return (
+    <>
       {recentlyFinishedEvents.length > 0 && (
         <section className="mb-10">
           <h2 className="text-xs font-bold uppercase tracking-wider text-accent mb-3">
