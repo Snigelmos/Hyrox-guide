@@ -1319,7 +1319,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-06-07",
     venue: "Javits Center",
     venueAddress: "429 11th Avenue, New York, NY 10001",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/05/2026_HYROX_NewYork_VenueMap_PRINT_79x73-1.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/06/2026_HYROX_NewYork_VenueMap_PRINT_79x73-1.pdf",
     courseMapImageUrl: "/images/events/new-york-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
