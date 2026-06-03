@@ -155,6 +155,12 @@ function numField(text, name) {
   );
   return m ? Number(m[1]) : null;
 }
+function boolField(text, name) {
+  const m = stripComments(text).match(
+    new RegExp(`(?:^|[\\s,{])${name}\\s*:\\s*(true|false)`)
+  );
+  return m ? m[1] === "true" : null;
+}
 
 function parseEvent(obj) {
   const text = obj.text;
@@ -165,6 +171,7 @@ function parseEvent(obj) {
     year: numField(text, "year"),
     startDate: field(text, "startDate"),
     endDate: field(text, "endDate"),
+    courseMapAuto: boolField(text, "courseMapAuto"),
     courseMapUrl: field(text, "courseMapUrl"),
     courseMapSourceUrl: field(text, "courseMapSourceUrl"),
     hyroxEventUrl: field(text, "hyroxEventUrl"),
@@ -327,6 +334,14 @@ async function main() {
 
   if (slugFilter) events = events.filter((e) => e.slug === slugFilter);
   if (!FLAGS.all) events = events.filter((e) => !isPast(e));
+  // Skip events whose map is human-controlled (courseMapAuto: false). The
+  // auto-matcher picked the wrong asset for these (venue change / one-off
+  // championship venue), so never overwrite their courseMapUrl.
+  const lockedSlugs = events.filter((e) => e.courseMapAuto === false).map((e) => e.slug);
+  if (lockedSlugs.length > 0) {
+    console.log(`Skipping ${lockedSlugs.length} map-locked event(s): ${lockedSlugs.join(", ")}`);
+    events = events.filter((e) => e.courseMapAuto !== false);
+  }
 
   if (events.length === 0) {
     console.log("No matching events to scan.");

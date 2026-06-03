@@ -8,8 +8,15 @@ name: Scan venue maps
 # via the Hyrox WordPress media REST API, matches each to an upcoming event,
 # and writes the URL to src/data/events.ts -> `courseMapUrl`.
 #
-# This job runs the scanner in --write mode on a schedule. If (and only if)
-# events.ts changed AND `astro build` is green, it commits and pushes to main,
+# Then scripts/generate-venue-map-images.py renders the first page of every
+# PDF venue map to a local JPG under public/images/events/ and backfills
+# `courseMapImageUrl`. This is the long-term mobile fix: phones won't embed a
+# cross-origin PDF in an iframe (the map paints blank), so the event page shows
+# the local raster image inline instead — which works on every device. Any new
+# or replaced map therefore becomes mobile-readable automatically.
+#
+# This job runs both scripts on a schedule. If (and only if) events.ts or a map
+# image changed AND `astro build` is green, it commits and pushes to main,
 # which triggers the normal Vercel deploy. Building before pushing means a bad
 # or unreachable map can never produce a red production deploy (see the
 # deploy-safety rule: never push to main without a green build).
@@ -45,19 +52,36 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyMuPDF
+        # Pinned so renders are byte-stable across runs (no spurious image churn).
+        run: pip install "pymupdf==1.27.2"
+
       - name: Scan for venue maps and write updates
         run: node scripts/scan-venue-maps.mjs --write
+
+      - name: Render PDF venue maps to mobile-friendly images
+        run: python scripts/generate-venue-map-images.py
 
       - name: Detect changes
         id: changes
         run: |
-          if git diff --quiet -- src/data/events.ts; then
+          # Stage data + images (public/images/* is git-ignored only on the
+          # case-insensitive Windows dev box via the `Images/` rule, so force-add
+          # to be safe on every runner). Untracked images don't show in a plain
+          # `git diff`, hence the staged check below.
+          git add -f src/data/events.ts public/images/events
+          if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No venue-map changes."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Venue-map changes detected:"
-            git diff --stat -- src/data/events.ts
+            git diff --cached --stat
           fi
 
       # Build gate — must pass before anything is pushed to main, so a bad map
@@ -71,6 +95,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/events.ts
-          git commit -m "chore(events): auto-update venue maps from Hyrox media library"
+          git add -f src/data/events.ts public/images/events
+          git commit -m "chore(events): auto-update venue maps + mobile images from Hyrox media library"
           git push
