@@ -1334,6 +1334,491 @@ export const RACE_RESULTS: RaceResult[] = [
       "The Pro Doubles Men podium was also swept by France (all three spots), confirming the French doubles scene as the strongest in Europe.",
     ],
   },
+
+  // ---- Cardiff (Apr 29–May 4) ----------------------------------------
+  {
+    year: 2026,
+    citySlug: "cardiff",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Charlie Botterill won Pro Men in 55:09, continuing a standout 2026 season.",
+      "Charlie Searle took Pro Women in 1:00:56 — the only woman under 61 minutes.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Charlie Botterill", time: "0:55:09", country: "GB" },
+          { rank: 2, athlete: "Luke Greer", time: "0:55:48", country: "GB" },
+          { rank: 3, athlete: "Liam McCroary", time: "0:55:53", country: "GB" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Charlie Searle", time: "1:00:56", country: "GB" },
+          { rank: 2, athlete: "Lauren Stockley", time: "1:03:12", country: "GB" },
+          { rank: 3, athlete: "Alexia Yannaros", time: "1:04:45", country: "GB" },
+        ],
+      },
+    ],
+    takeaways: [
+      "All-British podiums in both Pro divisions underlined the depth of the home field.",
+    ],
+  },
+
+  // ---- Lisbon (May 1–3) ----------------------------------------------
+  {
+    year: 2026,
+    citySlug: "lisbon",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Xavier Dufour won Pro Men in 54:26 — one of the fastest times of the spring, and the first leg of a strong May that also brought a Lyon win.",
+      "Linda Meier broke the hour to take Pro Women in 59:29.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Xavier Dufour", time: "0:54:26", country: "FR" },
+          { rank: 2, athlete: "Roberto Viciedo Gimeno", time: "0:57:56", country: "ES" },
+          { rank: 3, athlete: "Aitor Lizarazu Hormilla", time: "0:58:22", country: "ES" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Linda Meier", time: "0:59:29", country: "DE" },
+          { rank: 2, athlete: "Anna Seago", time: "1:02:05", country: "GB" },
+          { rank: 3, athlete: "Melanie Maurer", time: "1:02:37", country: "CH" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Dufour's 54:26 set an early-May benchmark before his Lyon win weeks later.",
+    ],
+  },
+
+  // ---- Hong Kong (May 8–10) ------------------------------------------
+  {
+    year: 2026,
+    citySlug: "hong-kong",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Gabriel Heck won Pro Men in 55:17.",
+      "Olivia Vareille edged a razor-thin Pro Women podium — the top three finished within 24 seconds.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Gabriel Heck", time: "0:55:17", country: "US" },
+          { rank: 2, athlete: "Daniel Hoy", time: "0:57:40", country: "NZ" },
+          { rank: 3, athlete: "Jakob Cerneka", time: "0:59:54", country: "AU" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Olivia Vareille", time: "1:06:14", country: "GB" },
+          { rank: 2, athlete: "Emily Fell", time: "1:06:22", country: "GB" },
+          { rank: 3, athlete: "Claire Nesbitt", time: "1:06:38", country: "HK" },
+        ],
+      },
+    ],
+    takeaways: [
+      "The Pro Women race came down to seconds: 1:06:14, 1:06:22 and 1:06:38 across the podium.",
+    ],
+  },
+
+  // ---- Helsinki (May 9–10) -------------------------------------------
+  {
+    year: 2026,
+    citySlug: "helsinki",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Sebastian Ifversen won a fast Pro Men race in 54:44, 11 seconds clear of Jannik Czapla.",
+      "Annie Emilsson took Pro Women in 57:59 — part of a dominant May that also brought a Riga win.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Sebastian Ifversen", time: "0:54:44", country: "DK" },
+          { rank: 2, athlete: "Jannik Czapla", time: "0:54:55", country: "DE" },
+          { rank: 3, athlete: "Eugenio Bianchi", time: "0:55:57", country: "IT" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Annie Emilsson", time: "0:57:59", country: "SE" },
+          { rank: 2, athlete: "Seka Arning", time: "0:58:26", country: "DE" },
+          { rank: 3, athlete: "Lauren Stockley", time: "0:59:26", country: "GB" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Three women went under the hour in Helsinki, led by Emilsson's 57:59.",
+    ],
+  },
+
+  // ---- Ottawa (May 14–17) --------------------------------------------
+  {
+    year: 2026,
+    citySlug: "ottawa",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Rich Ryan won Pro Men by a single second over home favourite Frédéric Dubé — 55:22 to 55:23.",
+      "Rachael Wade took Pro Women in 1:00:59, just ahead of a near-tie for second.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Rich Ryan", time: "0:55:22", country: "US" },
+          { rank: 2, athlete: "Frédéric Dubé", time: "0:55:23", country: "CA" },
+          { rank: 3, athlete: "Ryan Douglas", time: "0:57:43", country: "CA" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Rachael Wade", time: "1:00:59", country: "US" },
+          { rank: 2, athlete: "Terra Jackson", time: "1:03:45", country: "US" },
+          { rank: 3, athlete: "Brooklyn Nichols", time: "1:03:46", country: "US" },
+        ],
+      },
+    ],
+    takeaways: [
+      "One of the closest finishes of the season — a single second split the Pro Men top two.",
+    ],
+  },
+
+  // ---- Barcelona (May 14–17) -----------------------------------------
+  {
+    year: 2026,
+    citySlug: "barcelona",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Luke Greer won Pro Men in 54:43.",
+      "Saskia Millard dominated Pro Women in 57:24, finishing more than three minutes clear.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Luke Greer", time: "0:54:43", country: "GB" },
+          { rank: 2, athlete: "Hugo Hugemark", time: "0:55:47", country: "SE" },
+          { rank: 3, athlete: "Pedro Antonio Toral Leiva", time: "0:55:53", country: "ES" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Saskia Millard", time: "0:57:24", country: "GB" },
+          { rank: 2, athlete: "Manuela Garcia Caparros", time: "1:01:02", country: "ES" },
+          { rank: 3, athlete: "Melanie Maurer", time: "1:01:23", country: "CH" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Millard's 57:24 was one of the fastest Pro Women times of the spring.",
+    ],
+  },
+
+  // ---- Heerenveen (May 14–17) ----------------------------------------
+  {
+    year: 2026,
+    citySlug: "heerenveen",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Louis Osselaer won Pro Men in 54:09 — the fastest time across all of the May 14–17 weekend stops.",
+      "Seka Arning took Pro Women in 59:25, leading an all-German podium.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Louis Osselaer", time: "0:54:09", country: "BE" },
+          { rank: 2, athlete: "Sam Schoeman", time: "0:54:58", country: "NL" },
+          { rank: 3, athlete: "Maarten Enthoven", time: "0:55:44", country: "NL" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Seka Arning", time: "0:59:25", country: "DE" },
+          { rank: 2, athlete: "Jana Lebenstedt", time: "1:00:19", country: "DE" },
+          { rank: 3, athlete: "Henrike Mauersberger", time: "1:02:56", country: "DE" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Osselaer's 54:09 headlined a quick weekend on the fast Thialf-arena floor.",
+    ],
+  },
+
+  // ---- Incheon (May 15–17) -------------------------------------------
+  {
+    year: 2026,
+    citySlug: "incheon",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Georgia Stadelmann won Pro Women in 1:04:45.",
+      "Hyrox's Korean stop continued the series' fast growth across Asia.",
+    ],
+    divisions: [
+      {
+        // Official Pro Men rank 1 is vacant in the Incheon results (a post-race
+        // disqualification/withdrawal), so the podium is held until resolved
+        // rather than listing the 2nd-place finisher as the winner.
+        division: "Pro Men",
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Georgia Stadelmann", time: "1:04:45", country: "AU" },
+          { rank: 2, athlete: "Emily Lankester", time: "1:08:25", country: "GB" },
+          { rank: 3, athlete: "Hayan Seo", time: "1:10:41", country: "KR" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Asia's race calendar keeps expanding — Incheon drew a strong regional Pro Women field.",
+    ],
+  },
+
+  // ---- Puebla (May 16–17) --------------------------------------------
+  {
+    year: 2026,
+    citySlug: "puebla",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Pelayo Menendez Fernandez won Pro Men in 1:02:08.",
+      "Austria's Tanja Stroschneider took Pro Women in 1:10:30 at altitude in Puebla.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Pelayo Menendez Fernandez", time: "1:02:08", country: "ES" },
+          { rank: 2, athlete: "Alexis Trujillo Ortega", time: "1:05:00", country: "MX" },
+          { rank: 3, athlete: "Miguel Hernández Espinosa", time: "1:07:27", country: "MX" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Tanja Stroschneider", time: "1:10:30", country: "AT" },
+          { rank: 2, athlete: "Jocelyn Monserrat Villegas Flores", time: "1:17:20", country: "MX" },
+          { rank: 3, athlete: "Arleth Sánchez", time: "1:18:12", country: "MX" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Puebla sits at roughly 2,100 m — the thin air shows in finish times versus sea-level stops.",
+    ],
+  },
+
+  // ---- Shanghai (May 16–17) ------------------------------------------
+  {
+    year: 2026,
+    citySlug: "shanghai",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Gabe Heck won Pro Men in 56:11, his second Asian-stop win in May after Hong Kong.",
+      "A home athlete topped a fast Pro Women field in 1:03:57.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Gabe Heck", time: "0:56:11", country: "US" },
+          { rank: 2, athlete: "Tanguy Cruz", time: "0:58:27", country: "FR" },
+          { rank: 3, athlete: "Dene Flude", time: "0:59:35", country: "NZ" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "芳 朱", time: "1:03:57", country: "CN" },
+          { rank: 2, athlete: "Sara Gandola", time: "1:06:01", country: "IT" },
+          { rank: 3, athlete: "雨桐 王", time: "1:06:51", country: "CN" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Shanghai capped a busy May for the Asia-Pacific Hyrox calendar.",
+    ],
+  },
+
+  // ---- Lyon (May 20–24) ----------------------------------------------
+  {
+    year: 2026,
+    citySlug: "lyon",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Xavier Dufour led an all-French Pro Men podium at Eurexpo Lyon, winning in 54:48 ahead of Grégory Pereira (56:40) and Guillaume Levoy (57:50).",
+      "Lyon underlined how deep France's Pro field has become — every Pro Men podium spot stayed at home.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        athleteCount: 800,
+        podium: [
+          { rank: 1, athlete: "Xavier Dufour", time: "0:54:48", country: "FR" },
+          { rank: 2, athlete: "Grégory Pereira", time: "0:56:40", country: "FR" },
+          { rank: 3, athlete: "Guillaume Levoy", time: "0:57:50", country: "FR" },
+        ],
+      },
+      {
+        // Official Pro Women rank 1 is vacant in the Lyon results (a
+        // post-race disqualification/withdrawal), so we list the division
+        // with its field size but hold the podium until it's resolved
+        // rather than presenting a 2nd-place finisher as the winner.
+        division: "Pro Women",
+        athleteCount: 210,
+      },
+    ],
+    takeaways: [
+      "Lyon is now one of the largest Pro Men fields in Europe — a sub-58 finish was needed just to crack the top three.",
+    ],
+  },
+
+  // ---- Berlin (May 22–31) --------------------------------------------
+  {
+    year: 2026,
+    citySlug: "berlin",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Tim Wenisch took the Pro Men title at Airport Berlin Tempelhof in 54:50, holding off James Kelly (55:00) and Maarten Enthoven (55:17) in a tight 27-second top three.",
+      "Lea Sophie Pommerening won Pro Women in 59:23, the only woman under the hour, ahead of Gabriella Moriarty (1:01:06) and Henrike Mauersberger (1:01:41).",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        podium: [
+          { rank: 1, athlete: "Tim Wenisch", time: "0:54:50", country: "DE" },
+          { rank: 2, athlete: "James Kelly", time: "0:55:00", country: "AU" },
+          { rank: 3, athlete: "Maarten Enthoven", time: "0:55:17", country: "NL" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        podium: [
+          { rank: 1, athlete: "Lea Sophie Pommerening", time: "0:59:23", country: "DE" },
+          { rank: 2, athlete: "Gabriella Moriarty", time: "1:01:06", country: "GB" },
+          { rank: 3, athlete: "Henrike Mauersberger", time: "1:01:41", country: "DE" },
+        ],
+      },
+    ],
+    takeaways: [
+      "The Pro Men top three were separated by just 27 seconds — one of the closest finishes of the spring season.",
+    ],
+  },
+
+  // ---- Rimini (May 28–31) --------------------------------------------
+  {
+    year: 2026,
+    citySlug: "rimini",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Richard Hynek (Czech Republic) won Pro Men at Rimini Fiera in 57:54, edging Fabian Eisenlauer (58:28) and Alen Ploj (58:38).",
+      "Finland's Elli Stenfors took Pro Women in 1:02:30 ahead of Ida Mathilde Steensgaard (1:04:19) and Gloria Corbetta (1:04:38).",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        athleteCount: 371,
+        podium: [
+          { rank: 1, athlete: "Richard Hynek", time: "0:57:54", country: "CZ" },
+          { rank: 2, athlete: "Fabian Eisenlauer", time: "0:58:28", country: "DE" },
+          { rank: 3, athlete: "Alen Ploj", time: "0:58:38", country: "SI" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        athleteCount: 108,
+        podium: [
+          { rank: 1, athlete: "Elli Stenfors", time: "1:02:30", country: "FI" },
+          { rank: 2, athlete: "Ida Mathilde Steensgaard", time: "1:04:19", country: "DK" },
+          { rank: 3, athlete: "Gloria Corbetta", time: "1:04:38", country: "IT" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Rimini drew an international Pro field — the podium spanned the Czech Republic, Germany, Slovenia, Finland, Denmark, and Italy.",
+    ],
+  },
+
+  // ---- Johannesburg (May 30–31) --------------------------------------
+  {
+    year: 2026,
+    citySlug: "johannesburg",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Kyle Schoonbee won Pro Men on home soil at the Johannesburg Expo Centre in 1:00:30, with Spain's Alejandro Pareja Villar (1:02:17) and Wesley Henning (1:03:11) completing the podium.",
+      "Danél Louw dominated Pro Women in 1:05:49, finishing nearly six minutes clear of Julia Forrest (1:11:38).",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        athleteCount: 131,
+        podium: [
+          { rank: 1, athlete: "Kyle Schoonbee", time: "1:00:30", country: "ZA" },
+          { rank: 2, athlete: "Alejandro Pareja Villar", time: "1:02:17", country: "ES" },
+          { rank: 3, athlete: "Wesley Henning", time: "1:03:11", country: "ZA" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        athleteCount: 78,
+        podium: [
+          { rank: 1, athlete: "Danél Louw", time: "1:05:49", country: "ZA" },
+          { rank: 2, athlete: "Julia Forrest", time: "1:11:38", country: "ZA" },
+          { rank: 3, athlete: "Pauline Ontita", time: "1:16:24", country: "KE" },
+        ],
+      },
+    ],
+    takeaways: [
+      "Johannesburg keeps Hyrox's African calendar growing — South African athletes took five of the six Pro podium places.",
+    ],
+  },
+
+  // ---- Riga (May 30–31) ----------------------------------------------
+  {
+    year: 2026,
+    citySlug: "riga",
+    recapPublished: "2026-06-03",
+    notableStories: [
+      "Norway's Erik Oscar Bøe won Pro Men at Arena Riga in 55:36, ahead of Ronan Lindsay (56:14) and Graham Halliday (56:37).",
+      "Sweden's Annie Emilsson took Pro Women in 58:38 — under the hour — with Norwegians Sanne Skrettingland (1:00:04) and Malene Pedersen (1:00:38) rounding out the podium.",
+    ],
+    divisions: [
+      {
+        division: "Pro Men",
+        athleteCount: 226,
+        podium: [
+          { rank: 1, athlete: "Erik Oscar Bøe", time: "0:55:36", country: "NO" },
+          { rank: 2, athlete: "Ronan Lindsay", time: "0:56:14", country: "IE" },
+          { rank: 3, athlete: "Graham Halliday", time: "0:56:37", country: "GB" },
+        ],
+      },
+      {
+        division: "Pro Women",
+        athleteCount: 110,
+        podium: [
+          { rank: 1, athlete: "Annie Emilsson", time: "0:58:38", country: "SE" },
+          { rank: 2, athlete: "Sanne Skrettingland", time: "1:00:04", country: "NO" },
+          { rank: 3, athlete: "Malene Pedersen", time: "1:00:38", country: "NO" },
+        ],
+      },
+    ],
+    takeaways: [
+      "The Baltic stop was a Nordic showcase — Norwegian and Swedish athletes filled five of six Pro podium spots.",
+    ],
+  },
 ];
 
 export function getResults(year: number, citySlug: string): RaceResult | undefined {
