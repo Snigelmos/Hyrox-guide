@@ -1406,6 +1406,8 @@ export const EVENTS: HyroxEvent[] = [
     startDate: "2026-06-13",
     venue: "La Rural Buenos Aires",
     venueAddress: "Av. Sarmiento 2704, C1425 Cdad. Autónoma de Buenos Aires, Argentina",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/06/HYROX_BuenosAires_VenueMap_PRINT_2215x1864mm-3.pdf",
+    courseMapImageUrl: "/images/events/buenos-aires-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "SA",
