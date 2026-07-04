@@ -1528,7 +1528,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-07-05",
     venue: "Hangzhou International Expo Centre",
     venueAddress: "353 Benjing Avenue, Xiaoshan District, Hangzhou",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/06/hangzhou704_venue_map.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/07/hangzhou704_venue_map.pdf",
     courseMapImageUrl: "/images/events/hangzhou-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
