@@ -22,6 +22,11 @@ docs/hyrox-benchmark-feasibility.md
 # Editor tooling — not site content
 .vscode/
 .cursorindexingignore
+.cursor/settings.json
+
+# Marketing pin intermediates — regenerable backgrounds produced by
+# gen_backgrounds.py before text is composited into the committed images/.
+marketing/pinterest/_bg/
 
 # Local-only working folders — NOT site source. Keep out of the repo so the
 # working tree stays a single source of truth and these never reach Vercel.
