@@ -8,6 +8,17 @@
 export interface GlossaryTerm {
   slug: string;
   term: string;
+  /**
+   * Optional SEO title override (without the " | Hyrox Vault" suffix). Use for
+   * high-impression terms where the generic "X — Hyrox Term Explained" pattern
+   * under-performs on click-through. Falls back to the generated title.
+   */
+  metaTitle?: string;
+  /**
+   * Optional meta description override. Keep under ~155 characters and lead
+   * with the exact query phrase. Falls back to shortDefinition.
+   */
+  metaDescription?: string;
   shortDefinition: string;
   longDefinition: string;
   context: string;
@@ -88,6 +99,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     slug: "wave-start",
     term: "Wave Start",
+    metaTitle: "Hyrox Wave Start & Wave Times Explained",
+    metaDescription:
+      "Hyrox releases athletes in staggered waves of 100-200 every 10-20 minutes. How wave start times work, whether they affect your result, and how to pick your wave.",
     shortDefinition: "The staggered start format used in Hyrox where athletes are released in groups (waves) every few minutes rather than all at once.",
     longDefinition: "Hyrox uses a wave start system to manage congestion in the Roxzone and on the running loop. Athletes are assigned to a specific wave (typically 100-200 athletes per wave) and released every 10-20 minutes. Each wave has its own start time, but all waves race the same course and clock. Waves are typically separated by division (Open Singles, Pro Singles, Doubles, Relay) and sometimes by skill (faster waves released first to avoid congestion).",
     context: "Race format / logistics. Your wave time matters for travel and warm-up planning but not for ranking — your finish time starts when your wave starts.",
@@ -230,6 +244,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     slug: "elite-15",
     term: "Elite 15",
+    metaTitle: "Hyrox Elite 15 Explained: Who Qualifies & How",
+    metaDescription:
+      "Hyrox Elite 15 is the top 15 Pro athletes per division who race the World Championship finals. How season-ranking points decide it and what times qualify.",
     shortDefinition: "The top 15 athletes per Pro division across the season-ranking points board, who race the championship-format finals at the Hyrox World Championship.",
     longDefinition: "Elite 15 is the championship-division finals at the Hyrox World Championship. The top 15 athletes per Pro division (Pro Men, Pro Women, Pro Doubles Men, Pro Doubles Women) qualify based on season-ranking points and race head-to-head at the World Championship in a heat-based finals format. Major events award the highest point totals; consistent high placements across the season can earn you an Elite 15 spot.",
     context: "Division / qualifying. Elite 15 is reserved for full-time professional or near-professional Hyrox athletes — typical times are sub-55 (Pro Men) or sub-65 (Pro Women).",

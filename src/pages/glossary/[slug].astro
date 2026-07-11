@@ -21,8 +21,8 @@ const breadcrumbs = [
   { name: term.term },
 ];
 
-const title = `${term.term} — Hyrox Term Explained`;
-const description = `${term.shortDefinition}`;
+const title = term.metaTitle ?? `${term.term} — Hyrox Term Explained`;
+const description = term.metaDescription ?? term.shortDefinition;
 
 const definedTermSchema = {
   "@context": "https://schema.org",

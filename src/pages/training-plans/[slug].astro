@@ -4,6 +4,7 @@ import { TRAINING_PLANS, getPlan } from "../../data/training-plans";
 import { getSession } from "../../data/training-sessions";
 import { GOAL_TIME_CONFIGS } from "../../data/calculator-goals";
 import { WORKOUTS } from "../../data/workouts";
+import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   return TRAINING_PLANS.map((p) => ({
@@ -38,6 +39,11 @@ const relatedWorkouts = plan.relatedWorkoutSlugs
 const relatedPlans = (plan.relatedPlanSlugs ?? [])
   .map((s) => TRAINING_PLANS.find((p) => p.slug === s))
   .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+const blogPosts = await getCollection("blog");
+const relatedBlogs = (plan.relatedBlogSlugs ?? [])
+  .map((s) => blogPosts.find((b) => b.id === s))
+  .filter((b): b is NonNullable<typeof b> => Boolean(b));
 
 const breadcrumbs = [
   { name: "Training plans", url: "/training-plans/" },
@@ -234,8 +240,20 @@ const itemListSchema = {
       ))}
     </section>
 
-    {(relatedWorkouts.length > 0 || relatedPlans.length > 0) && (
+    {(relatedWorkouts.length > 0 || relatedPlans.length > 0 || relatedBlogs.length > 0) && (
       <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {relatedBlogs.length > 0 && (
+          <div class="bg-bg-card border border-border rounded-2xl p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Related reading</div>
+            <ul class="space-y-2 text-sm">
+              {relatedBlogs.map((b) => (
+                <li>
+                  <a href={`/blog/${b.id}/`} class="text-text-heading hover:text-accent transition-colors font-bold">{b.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {relatedWorkouts.length > 0 && (
           <div class="bg-bg-card border border-border rounded-2xl p-5">
             <div class="text-xs font-bold uppercase tracking-wider text-accent mb-3">Benchmark workouts in this plan</div>
@@ -269,6 +287,9 @@ const itemListSchema = {
       <h2>Track your progress with the calculator</h2>
       <p>
         As you complete each phase, run your improving 5K times and station benchmarks through the <a href="/calculator/">Hyrox time calculator</a> to see how each fitness gain translates to your projected race finish. The calculator's goal-time guides give you split-by-split targets for sub-60, sub-75, sub-90, and sub-100 finishes.
+      </p>
+      <p>
+        Want a different structure? Browse <a href="/training-plans/">all Hyrox training plans</a> or head to the full <a href="/training/">Hyrox training hub</a> for per-station drills, running work, and sample workouts.
       </p>
     </section>
   </div>

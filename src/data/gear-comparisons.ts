@@ -26,6 +26,11 @@ export interface GearComparison {
   category: "shoes" | "equipment";
   title: string;
   metaDescription: string;
+  /**
+   * Optional ISO date (YYYY-MM-DD) surfaced as the Article `dateModified`
+   * freshness signal. Bump when the verdict, specs, or prices are reviewed.
+   */
+  dateModified?: string;
   intro: string;
   bottomLine: string;
   rows: GearComparisonRow[];
@@ -177,7 +182,8 @@ export const GEAR_COMPARISONS: GearComparison[] = [
     category: "shoes",
     title: "Reebok Nano X4 vs Nike Metcon 9 for Hyrox — Verdict by Station (2026)",
     metaDescription:
-      "Verdict: Metcon 9 wins sled push, sled pull, wall balls and lunges; Nano X4 wins the 8 km of running and is the safer all-rounder for sub-90 finishers. Full station-by-station Hyrox breakdown plus the CrossFit answer underneath.",
+      "Reebok Nano X4 vs Nike Metcon 9 for Hyrox: the Metcon wins sled, wall balls and lunges; the Nano wins the 8 km of running. Full station-by-station verdict and buying guide.",
+    dateModified: "2026-07-09",
     intro:
       "If you're choosing between the Reebok Nano X4 and Nike Metcon 9 for a Hyrox, the verdict is short: the Metcon 9 is the better station shoe, the Nano X4 is the better running shoe, and the Hyrox-specific decision turns on whether your finish time is above or below 80 minutes. The CrossFit answer is similar but flipped slightly — most CrossFitters end up in the Metcon for lift-heavy WODs and reach for the Nano on running-dominant metcons. This page gives you the station-by-station verdict, the spec table, the buy criteria, and the FAQs that come up most often.",
     bottomLine:
@@ -233,6 +239,7 @@ export const GEAR_COMPARISONS: GearComparison[] = [
       { question: "Should I own both Nano X4 and Metcon 9?", answer: "Only if you race Hyrox more than 2-3 times per year and have two distinct shoe needs (a running-day shoe and a station-day shoe). For most athletes, owning one is enough — pick the shoe that matches your finish-time bucket and your training week's mix." },
     ],
     internalLinks: [
+      { href: "/gear/shoes/", label: "Best Hyrox shoes 2026 (full guide)" },
       { href: "/gear/nike-metcon-9-vs-nobull-trainer/", label: "Nike Metcon 9 vs NoBull Trainer+" },
       { href: "/gear/puma-fast-r-vs-nike-metcon/", label: "Puma Fast-R vs Nike Metcon 9" },
       { href: "/gear/puma-deviate-nitro-vs-nike-pegasus/", label: "Puma Deviate Nitro 3 vs Nike Pegasus 41" },

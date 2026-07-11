@@ -17,6 +17,17 @@ export interface StationDefinition {
   position: number;
   distance?: string;
   reps?: string;
+  /**
+   * Optional SEO title override (without the " | Hyrox Vault" suffix). Use for
+   * stations where the generic "Weight by Division" pattern under-performs on
+   * click-through. Falls back to the generated title.
+   */
+  metaTitle?: string;
+  /**
+   * Optional meta description override (~155 chars, lead with the key numbers
+   * searchers want). Falls back to the generated description.
+   */
+  metaDescription?: string;
   standards: StationStandard[];
   commonNoReps: string[];
   techniquePostHref?: string;
@@ -203,6 +214,9 @@ export const STATIONS: StationDefinition[] = [
     name: "Wall Balls",
     position: 8,
     reps: "100 reps (all divisions)",
+    metaTitle: "Hyrox Wall Balls: 100 Reps, Weights & Target Height",
+    metaDescription:
+      "Hyrox wall balls: 100 reps for every division. Open Men throw a 6kg ball to a 3m target, women 4kg to 2.7m (Pro 9kg). Standards, common no-reps, and how to break them up.",
     standards: [
       { division: "Open Men", spec: "6kg ball, 3m target" },
       { division: "Open Women", spec: "4kg ball, 2.7m target" },
