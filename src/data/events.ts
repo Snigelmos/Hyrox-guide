@@ -1435,13 +1435,17 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-06-21",
     venue: "Strawberry Arena",
     venueAddress: "Råsta Strandväg 1, 169 79 Solna",
-    // MAP LOCKED (courseMapAuto: false): the 2026 Worlds run at Strawberry
-    // Arena (Solna), but the only Stockholm map in the Hyrox media library is
-    // the Dec 2025 *regional* stop at Stockholmsmässan — wrong venue. Showing
-    // it would mislead, so leave the map empty (the page falls back to the
-    // "released before race weekend" note) until the real Worlds venue map is
-    // published, then set courseMapUrl/courseMapImageUrl here by hand.
+    // MAP HAND-WIRED (courseMapAuto stays false): the auto-scanner only matches
+    // city-named `HYROX_<City>_VenueMap` files, so it can't find this one and
+    // would otherwise re-attach the wrong Dec 2025 *regional* Stockholmsmässan
+    // map by city name. Hyrox published the real Worlds floor plan on 2026-06-09
+    // under the non-standard name `WC26-Elite-Athlete-Map.png`. Mirrored locally
+    // so it renders inline on every device; the hyrox.com URL is the full-size
+    // link. Keep the lock on so the scanner never clobbers it.
     courseMapAuto: false,
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/06/WC26-Elite-Athlete-Map.png",
+    courseMapImageUrl: "/images/events/stockholm-course-map-2026.png",
+    courseMapSourceUrl: "https://hyrox.com/event/puma-hyrox-world-championships-stockholm/",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Puma",
