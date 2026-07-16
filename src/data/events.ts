@@ -1561,6 +1561,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-07-26",
     venue: "Bharat Mandapam",
     venueAddress: "Pragati Maidan, Mathura Road, New Delhi 110001",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/07/HYROX_Delhi_VenueMap.pdf",
+    courseMapImageUrl: "/images/events/delhi-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "Masters' Union",
