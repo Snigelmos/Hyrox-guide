@@ -1592,6 +1592,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-08-02",
     venue: "Chengdu Century City New International Convention & Exhibition Center",
     venueAddress: "198 Century City Road, Wuhou District, Chengdu, Sichuan",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/07/Hyrox-Chengdu-Venue-Map.pdf",
+    courseMapImageUrl: "/images/events/chengdu-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "APAC",
