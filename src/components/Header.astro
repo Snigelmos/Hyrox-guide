@@ -22,14 +22,14 @@ const isActive = (link: (typeof primaryNav)[number]) =>
         >
       </a>
 
-      <nav class="hidden lg:flex items-center gap-1">
+      <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1">
         {
           primaryNav.map((link) => (
             <a
               href={link.href}
               aria-current={isActive(link) ? "page" : undefined}
               class:list={[
-                "px-2.5 xl:px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
+                "px-2 xl:px-4 py-2 rounded-lg text-[13px] xl:text-sm font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
                 isActive(link)
                   ? "bg-accent/10 text-accent"
                   : "text-text-muted hover:text-text hover:bg-white/5",
