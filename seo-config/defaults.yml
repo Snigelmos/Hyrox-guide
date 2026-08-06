@@ -1,0 +1,74 @@
+# Project override for hyroxvault.com research scans.
+# The global defaults filter for high-CPC affiliate niches (min_cpc 0.30,
+# min volume 1000). Hyrox search demand is mostly low-CPC informational and
+# local intent, so those filters discard almost the whole keyword set before
+# any SERP data is collected. Loosened here so gap keywords survive to the
+# SERP/clustering stage.
+
+location_code: 2840          # United States
+language_code: en
+
+filters:
+  min_monthly_volume: 30
+  max_kd: 80
+  min_cpc: 0.0
+  serp_min_top10: 5
+
+weights_cluster:
+  volume:        0.25
+  competition:   0.20
+  trend:         0.15
+  monetisation:  0.20
+  serp_openness: 0.15
+  intent_share:  0.05
+
+weights_page:
+  volume:        0.25
+  competition:   0.25
+  monetisation:  0.20
+  serp_openness: 0.20
+  intent_prior:  0.10
+
+verdict_bands:
+  go:        0.65
+  shortlist: 0.50
+  park:      0.35
+
+anti_criteria:
+  volume_floor:        2000
+  kd_kill_ceiling:     60
+  top5_all_giants_dr70: false
+
+cost:
+  cap_usd:     1.10
+  warn_at_usd:  0.50
+
+clustering:
+  serp_overlap_min_domains: 3
+  serp_depth:               10
+  cluster_for_top_n:        84
+
+trend:
+  rising_threshold:  0.02
+  falling_threshold: -0.02
+  time_range:        past_12_months
+
+dr70_publishers:
+  - healthline.com
+  - menshealth.com
+  - womenshealthmag.com
+  - forbes.com
+  - bbc.co.uk
+  - bbc.com
+  - cnet.com
+  - techradar.com
+  - theguardian.com
+  - wikipedia.org
+  - reddit.com
+  - youtube.com
+  - amazon.com
+  - runnersworld.com
+  - outsideonline.com
+  - hyrox.com
+  - garmin.com
+  - strava.com
