@@ -24,6 +24,12 @@ export interface TrainingWeek {
   days: [DayId, DayId, DayId, DayId, DayId, DayId, DayId];
 }
 
+export interface BenchmarkRow {
+  label: string;
+  men: string;
+  women: string;
+}
+
 export interface TrainingPlan {
   slug: string;
   title: string;
@@ -42,6 +48,15 @@ export interface TrainingPlan {
   weeks: TrainingWeek[];
   weeklyVolumeNotes: string[];
   commonMistakes: string[];
+  /**
+   * Training-standard thresholds that prove the goal time is physically in
+   * reach. These are hit in training, not on race day. Goal-time plans only.
+   */
+  benchmarks?: { note?: string; rows: BenchmarkRow[] };
+  /** Station-by-station pacing rules for this specific goal time. */
+  raceDayRules?: { title: string; body: string }[];
+  /** Free-form diagnostic section — plateau profiles, failure modes, mindset. */
+  fieldNotes?: { heading: string; items: { title: string; body: string }[] };
   faqs: { question: string; answer: string }[];
   relatedCalculatorSlug?: string;
   relatedWorkoutSlugs: string[];
@@ -171,6 +186,33 @@ const subNinety: TrainingPlan = {
     "Skipping the deload weeks. Weeks 4 and 8 are when the previous block actually sticks. Don't 'feel good' your way through them.",
     "One full sim 4 weeks out, not 1 week out. A full simulation in week 12 will compromise race day; week 11 is the latest it should appear.",
   ],
+  benchmarks: {
+    note: "Hit these in training and fitness is no longer your limiting factor. They are training standards, not race-day targets — expect to be slower on the day, in race conditions, with 7 other stations around them.",
+    rows: [
+      { label: "5 km run", men: "Under 27:00", women: "Under 30:00" },
+      { label: "SkiErg 1000 m", men: "Under 4:30", women: "Under 5:15" },
+      { label: "Row 1000 m", men: "Under 4:45", women: "Under 5:30" },
+      { label: "Sled push (race weight, full distance)", men: "Completed, some stops allowed", women: "Completed, some stops allowed" },
+      { label: "Burpee broad jumps (80 m)", men: "Under 6:30", women: "Under 7:30" },
+      { label: "Wall balls (100 reps, race height)", men: "Completed in any number of sets", women: "Completed in any number of sets" },
+      { label: "Farmers carry (race weight, full distance)", men: "Completed without dropping", women: "Completed without dropping" },
+    ],
+  },
+  raceDayRules: [
+    { title: "Run 1 is 5:30/km for men, 6:15/km for women", body: "It will feel easy. That is correct. If it feels hard on Run 1, you are going too fast and Runs 5 to 8 will collect the debt." },
+    { title: "Hold one SkiErg pace from the first stroke", body: "Target a 500 m split of roughly 2:10-2:15 for men or 2:35-2:40 for women, consistent the whole way. Do not sprint the first 500 m." },
+    { title: "Burpees are a rhythm, not a sprint", body: "The 80 m is roughly 40-55 reps depending on jump distance. One rep every 4-5 seconds covers it in about 6:40-8:00. Splitting the 80 m into two halves with a short reset beats going unbroken until you stall into singles." },
+    { title: "Break the wall balls before they break you", body: "Target 25-25-25-25 with 10-15 seconds between sets, roughly 60-70 seconds per set. That keeps total wall ball time under 6:30 and leaves your legs available for the finish." },
+    { title: "Accept slower splits on Runs 5 to 8", body: "Your runs will slow as the race progresses and that is expected. Target a maximum slowdown of 30-45 seconds per kilometre from Run 1 to Run 8. If you paced Run 1 correctly, this is achievable." },
+  ],
+  fieldNotes: {
+    heading: "What actually holds people back at sub-90",
+    items: [
+      { title: "Wall balls near the end", body: "After 80 minutes of racing, 100 wall balls is a different exercise from fresh wall balls. If you have not trained them repeatedly in a tired state, you will be surprised by how much it hurts at the end." },
+      { title: "The sled push stops the race", body: "If you have not pushed a sled at race weight in training, the race-day sled will feel impossible. Get access to a sled or practise with a heavy load substitute. This is the station that most often makes first-timers give up time." },
+      { title: "Runs 6, 7 and 8 fall apart", body: "Usually a fuelling problem or a pacing problem inherited from Run 1. Carry a gel and take it at station 4 or 5." },
+    ],
+  },
   faqs: [
     { question: "Can I do this plan in 10 weeks instead of 12?", answer: "Yes — drop weeks 1 and 2 if you're already running 25-30 km/week comfortably. Don't skip the build or peak phases." },
     { question: "What 5K time correlates with sub-90 Hyrox?", answer: "Roughly 21-23 minutes for Open Men. If you're slower than 24 minutes, focus 70% of your training on running fitness for 6 weeks before starting this plan." },
@@ -236,6 +278,35 @@ const subSeventyFive: TrainingPlan = {
     "Skipping VO₂ work because 'Hyrox is endurance.' Sub-75 needs a 60+ ml/kg/min VO₂ max. 6×800 m at 5K pace is what builds it.",
     "Cramming a second full sim in the taper. One full sim in week 11 is sufficient. A second risks fatigue you can't recover from in 7 days.",
   ],
+  benchmarks: {
+    note: "If you cannot hit these in training, sub-75 is not achievable on race day regardless of how well you execute. These are pre-race training standards, not race targets.",
+    rows: [
+      { label: "5 km run", men: "Under 23:00", women: "Under 26:00" },
+      { label: "SkiErg 1000 m", men: "Under 3:55", women: "Under 4:35" },
+      { label: "Row 1000 m", men: "Under 4:05", women: "Under 4:50" },
+      { label: "Sled push (race weight, full distance)", men: "Unbroken or 1 short stop", women: "Unbroken or 1 short stop" },
+      { label: "Burpee broad jumps (80 m)", men: "Under 5:30", women: "Under 6:30" },
+      { label: "Wall balls (100 reps)", men: "Under 5:00 (2 sets max)", women: "Under 6:00" },
+      { label: "Farmers carry (race weight)", men: "Unbroken full distance", women: "Unbroken full distance" },
+      { label: "Sandbag lunges (race weight)", men: "Under 4:30", women: "Under 5:00" },
+    ],
+  },
+  raceDayRules: [
+    { title: "Run 1 at 4:30/km for men, 5:10/km for women", body: "This should feel controlled rather than easy. Slightly more effort than sub-90 pacing, but still comfortably below threshold." },
+    { title: "SkiErg with no positive split", body: "Target 500 m splits of 1:55-1:57 for men or 2:17-2:18 for women, held from the first stroke to the last." },
+    { title: "Sled push unbroken, or one pause at most", body: "Stopping twice or more costs 30 seconds or more. If you cannot hold it together at race weight in training, that is your priority station." },
+    { title: "Burpees in two sets of 40", body: "Two sets of 40 with 10 seconds rest, or four sets of 20. Do not go unbroken if your first-20 pace would be unsustainable for 80." },
+    { title: "Wall balls in three or four sets", body: "Three sets of 33-34 at the most, or 25-25-25-25. No single attempt past 35 reps. Failure mid-set costs 20-30 seconds of standing recovery." },
+    { title: "Take a gel at station 3 or 4", body: "Non-negotiable at this pace. Glycogen is the limiting factor for the back half of the race." },
+  ],
+  fieldNotes: {
+    heading: "Where athletes stall between sub-80 and sub-75",
+    items: [
+      { title: "Strong runner, weak station output", body: "Running splits are good but stations take 20-30% longer than target. The fix is station-specific volume: more sled work, heavier farmers carry in training, wall balls in a tired state." },
+      { title: "Strong stations, fading runs", body: "Station times are on target but run pace degrades sharply from Run 5 onward. The fix is compromised running, repeated week after week, so the muscles and aerobic system adapt to that specific demand." },
+      { title: "Both fine, but race execution", body: "Athletes who train well but go out too fast, skip transition practice, or do not fuel on course. If training splits hit the benchmarks but race splits are consistently 10-15 seconds over, execution is the issue, not fitness." },
+    ],
+  },
   faqs: [
     { question: "Can this plan get me a sub-70 Hyrox?", answer: "Yes, if you start the block already running 1:13-1:15. Sub-70 needs ~4:00/km running and station splits at the lower end of every range in the plan. If you are coming from 1:20+, target sub-75 first using the same template, then run another 12 weeks at the sub-70 paces." },
     { question: "Is sub-70 or sub-75 Hyrox a good time?", answer: "Sub-75 is top 5-10% of Open Men globally; sub-70 is top 2-3% and competitive at any major race. Both are qualifying-quality for Pro division. For Pro, expect to need closer to 1:05 to qualify for Worlds." },
@@ -302,6 +373,29 @@ const subSixty: TrainingPlan = {
     "Underfueling. At this volume you need 4,000-5,000 kcal/day. Inadequate carbs collapses VO₂ workouts within 3 weeks.",
     "Racing a tune-up Hyrox in week 7 or 8. A real race spike will compromise the build phase. Save the second race for after your goal race.",
   ],
+  benchmarks: {
+    note: "These need to be hit in training, not on race day when you are already fatigued. If you are more than 15% off any of them, sub-60 requires fitness development first rather than race preparation. Twelve weeks is enough only if you are already in 65-minute shape; from further out, run the same four phases over 16 weeks.",
+    rows: [
+      { label: "5 km run", men: "Under 20:30", women: "Under 23:00" },
+      { label: "10 km run", men: "Under 43:00", women: "Under 48:00" },
+      { label: "SkiErg 1000 m", men: "Under 3:25", women: "Under 3:55" },
+      { label: "Row 1000 m", men: "Under 3:40", women: "Under 4:15" },
+      { label: "Sled push (race weight)", men: "Unbroken, under 70 sec", women: "Unbroken, under 80 sec" },
+      { label: "Burpee broad jumps (80 m)", men: "Under 4:45", women: "Under 5:30" },
+      { label: "Wall balls (100 reps)", men: "Under 4:30 (2 sets max)", women: "Under 5:15" },
+      { label: "Farmers carry (race weight)", men: "Unbroken, under 100 sec", women: "Unbroken, under 110 sec" },
+      { label: "Sandbag lunges (race weight)", men: "Under 3:45", women: "Under 4:15" },
+    ],
+  },
+  fieldNotes: {
+    heading: "The mental game at sub-60 pace",
+    items: [
+      { title: "Feeling terrible is the race, not a warning", body: "At 4:00/km running pace with full station work you will feel bad for large portions of the race. Discomfort distributed evenly across the body (heavy legs, working lungs, general misery) is normal. Localised pain — sharp knee pain, chest tightness, an acute back spasm — is a signal to slow or stop." },
+      { title: "From Run 5 onward your brain will ask you to stop", body: "Those signals are mostly threat responses rather than genuine emergencies. Athletes who run sub-60 are not people who feel better than you. They are people who have trained through enough of these sessions to know they can keep going." },
+      { title: "Train the tolerance deliberately", body: "Once a week in the build phase, add 5 minutes to the planned session at the point where you want to stop. You build the tolerance in training so it does not break you in the race." },
+      { title: "Sub-60 in Open is elite-adjacent, not Pro", body: "Pro qualifying standards vary by event and season, but typically require men under 55 minutes and women under 64 minutes. Treat sub-60 as its own goal rather than a stepping stone, unless you have the 12+ hours a week and the racing background to make a Pro project realistic." },
+    ],
+  },
   faqs: [
     { question: "Can I qualify for Hyrox World Championships with sub-60?", answer: "Sub-60 Open is well above the qualification cut-off but Pro qualification requires ranking-list points. Sub-60 in Pro division is genuinely elite and likely above the cut. Check the latest qualifier rules each season." },
     { question: "How does this plan fit around a full-time job?", answer: "Tightly. Most sub-60 athletes train at 6 am, do strength after work, and put long runs on Saturday. If your weekly schedule won't allow this, target sub-75 first and build to sub-60 over 18-24 months." },
@@ -309,7 +403,7 @@ const subSixty: TrainingPlan = {
   ],
   relatedCalculatorSlug: "sub-60-hyrox",
   relatedWorkoutSlugs: ["hyrox-simulation-workout", "hyrox-1k-repeats", "compromised-running-test"],
-  relatedBlogSlugs: ["is-sub-60-hyrox-good", "is-sub-70-hyrox-good"],
+  relatedBlogSlugs: ["is-sub-60-hyrox-good", "is-sub-70-hyrox-good", "hyrox-pro-division-qualification"],
   relatedPlanSlugs: ["sub-75-hyrox-training-plan"],
 };
 

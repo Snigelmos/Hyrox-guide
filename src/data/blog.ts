@@ -90,12 +90,6 @@ export const SERIES_META: Record<
       "Everything that happens on race day — from breakfast to the finish line. Six parts covering morning routine, transitions, warm-up, hitting the wall, race-day kit, and doubles strategy.",
     totalPlanned: 6,
   },
-  "second-race-blueprint": {
-    label: "The Second-Race Blueprint",
-    description:
-      "Already raced once? This four-part series maps the fastest path to a big PR — from fixing first-race mistakes to a full sub-60 training block.",
-    totalPlanned: 4,
-  },
   "nutrition-hybrid-athlete": {
     label: "Nutrition for Hyrox Athletes",
     description:

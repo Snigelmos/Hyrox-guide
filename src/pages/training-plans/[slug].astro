@@ -103,6 +103,9 @@ const itemListSchema = {
       </div>
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">{plan.title}</h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-3xl">{plan.goalSummary}</p>
+      <p class="mt-4 text-sm text-text-muted max-w-3xl">
+        Not sure this is the right block for you? <a href="/training-plans/" class="text-accent hover:underline font-bold">Compare all {TRAINING_PLANS.length} Hyrox training plans</a> by race date, goal time, and sessions per week.
+      </p>
     </header>
 
     <section class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,6 +128,35 @@ const itemListSchema = {
       <h2>Why this plan works</h2>
       <p>{plan.whyItWorks}</p>
     </section>
+
+    {plan.benchmarks && (
+      <section class="mb-10">
+        <h2 class="text-2xl md:text-3xl font-black mb-4">Benchmarks to hit before race day</h2>
+        {plan.benchmarks.note && (
+          <p class="text-text-muted mb-6 max-w-3xl leading-relaxed">{plan.benchmarks.note}</p>
+        )}
+        <div class="overflow-x-auto -mx-4 md:mx-0">
+          <table class="min-w-full text-sm border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th class="border border-border p-3 text-left font-bold text-text-heading">Benchmark</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading">Men</th>
+                <th class="border border-border p-3 text-left font-bold text-text-heading">Women</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.benchmarks.rows.map((row) => (
+                <tr>
+                  <td class="border border-border p-3 text-text-heading font-medium">{row.label}</td>
+                  <td class="border border-border p-3 text-text-muted">{row.men}</td>
+                  <td class="border border-border p-3 text-text-muted">{row.women}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
 
     <section class="mb-10">
       <h2 class="text-2xl md:text-3xl font-black mb-4">Week-by-week schedule</h2>
@@ -195,6 +227,30 @@ const itemListSchema = {
         {plan.commonMistakes.map((m) => <li>{m}</li>)}
       </ul>
     </section>
+
+    {plan.raceDayRules && (
+      <section class="mb-10 prose md:prose-lg max-w-none">
+        <h2>Race-day execution rules</h2>
+        {plan.raceDayRules.map((rule) => (
+          <>
+            <h3>{rule.title}</h3>
+            <p>{rule.body}</p>
+          </>
+        ))}
+      </section>
+    )}
+
+    {plan.fieldNotes && (
+      <section class="mb-10 prose md:prose-lg max-w-none">
+        <h2>{plan.fieldNotes.heading}</h2>
+        {plan.fieldNotes.items.map((item) => (
+          <>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </>
+        ))}
+      </section>
+    )}
 
     <section class="mb-10">
       <h2 class="text-2xl md:text-3xl font-black mb-4">Session library</h2>

@@ -50,6 +50,11 @@
     { "source": "/hyrox/vienna/", "destination": "/events/2026/vienna/", "permanent": true },
     { "source": "/hyrox/zurich/", "destination": "/events/2026/zurich/", "permanent": true },
 
+    { "source": "/blog/hyrox-sub-60-blueprint/", "destination": "/training-plans/sub-60-hyrox-training-plan/", "permanent": true },
+    { "source": "/blog/hyrox-sub-75-blueprint/", "destination": "/training-plans/sub-75-hyrox-training-plan/", "permanent": true },
+    { "source": "/blog/hyrox-sub-90-blueprint/", "destination": "/training-plans/sub-90-hyrox-training-plan/", "permanent": true },
+    { "source": "/blog/series/second-race-blueprint/", "destination": "/training-plans/", "permanent": true },
+
     { "source": "/events/2026/gothenburg/", "destination": "/events/2026/", "permanent": true },
     { "source": "/events/2026/gothenburg/results/", "destination": "/events/2026/", "permanent": true },
     { "source": "/events/2026/los-angeles/", "destination": "/events/2026/anaheim/", "permanent": true },

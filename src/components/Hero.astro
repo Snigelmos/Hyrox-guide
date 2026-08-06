@@ -59,7 +59,7 @@ import heroImage from "../assets/heroes/home-hero.png";
 
       <nav
         aria-label="Primary sections"
-        class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-3 max-w-4xl mx-auto"
+        class="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl mx-auto"
       >
         {primaryNav.map((link) => (
           <a
@@ -69,7 +69,7 @@ import heroImage from "../assets/heroes/home-hero.png";
             <span class="text-text-muted group-hover:text-accent transition-colors [&>svg]:w-7 [&>svg]:h-7 sm:[&>svg]:w-9 sm:[&>svg]:h-9">
               <ModuleIcons name={link.icon} size={36} />
             </span>
-            <span class="text-sm font-semibold text-center leading-tight">
+            <span class="text-[13px] sm:text-sm font-semibold text-center leading-tight">
               {link.label}
             </span>
           </a>

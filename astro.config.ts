@@ -117,6 +117,18 @@ const retired404Redirects: Record<string, string> = {
   "/hyrox/toronto/": "/events/2026/toronto/",
   "/hyrox/vienna/": "/events/2026/vienna/",
   "/hyrox/zurich/": "/events/2026/zurich/",
+  // Retired the three goal-time "blueprint" blog posts (Aug 2026 training-plan
+  // cannibalization pass). Each substantially duplicated its /training-plans/
+  // counterpart and competed for the "hyrox training plan" head term. Their
+  // unique material (training benchmarks, race-day rules, plateau diagnostics)
+  // was merged into the plan pages first, so each redirect lands on a strictly
+  // richer page. Retiring parts 2-4 left the Second-Race Blueprint series with
+  // a single post, so the series was dissolved and its hub folds into the
+  // training-plans hub.
+  "/blog/hyrox-sub-60-blueprint/": "/training-plans/sub-60-hyrox-training-plan/",
+  "/blog/hyrox-sub-75-blueprint/": "/training-plans/sub-75-hyrox-training-plan/",
+  "/blog/hyrox-sub-90-blueprint/": "/training-plans/sub-90-hyrox-training-plan/",
+  "/blog/series/second-race-blueprint/": "/training-plans/",
 };
 
 /**

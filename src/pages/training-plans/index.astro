@@ -6,11 +6,52 @@ const goalTimePlans = getPlansByCategory("goal-time");
 const durationPlans = getPlansByCategory("duration");
 const constraintPlans = getPlansByCategory("constraint");
 
-const title = "Hyrox Training Plans — Free Programs for Every Goal and Schedule";
-const description =
-  "Free Hyrox training plans for every level and goal: sub-60, sub-75, sub-90, sub-100, women's plans, 4-week, 8-week, 12-week, 3-day-a-week, and Doubles. Week-by-week schedules.";
+const title = `Hyrox Training Plans: ${TRAINING_PLANS.length} Free Plans Compared`;
+const description = `Compare all ${TRAINING_PLANS.length} free Hyrox training plans side by side — sub-60 to sub-100, 4 to 12 weeks, 3 to 7 sessions a week, women's and Doubles. Find the one that matches your race date, goal time, and schedule.`;
 
 const breadcrumbs = [{ name: "Training plans" }];
+
+// Decision matrix for the "which plan" section. Ordered by how most readers
+// arrive: race date first, then goal time, then schedule constraints.
+const planPicker: { situation: string; slug: string; why: string }[] = [
+  {
+    situation: "Race is under 5 weeks away",
+    slug: "4-week-hyrox-training-plan",
+    why: "Too late to build fitness. This plan sharpens what you already have and rehearses the stations so nothing on race day is new.",
+  },
+  {
+    situation: "Race is 6-9 weeks away, first Hyrox",
+    slug: "sub-100-hyrox-training-plan",
+    why: "Prioritises finishing strong over finishing fast. Four sessions a week, with compulsory sled and wall ball exposure.",
+  },
+  {
+    situation: "Race is 6-9 weeks away, already have a running base",
+    slug: "8-week-hyrox-training-plan",
+    why: "Assumes you can already run 10 km and skips straight to race-pace work and station capacity.",
+  },
+  {
+    situation: "Race is 10+ weeks away, no specific time goal",
+    slug: "12-week-hyrox-training-plan",
+    why: "The full build: base, strength, race-specific, taper. The default answer for most athletes with time to prepare.",
+  },
+  {
+    situation: "You want to break a specific finish time",
+    slug: "sub-90-hyrox-training-plan",
+    why: "Goal-time plans calibrate running paces and sled volume to a target. Swap in sub-100, sub-75, or sub-60 to match yours.",
+  },
+  {
+    situation: "You can only train 3 days a week",
+    slug: "3-day-hyrox-training-plan",
+    why: "Three sessions that each do two jobs, rather than a five-day plan you will abandon by week four.",
+  },
+  {
+    situation: "You are racing Doubles",
+    slug: "hyrox-doubles-training-plan",
+    why: "Doubles is a different race. This plan trains the handover and the partner-split station work that solo plans never touch.",
+  },
+];
+
+const planBySlug = new Map(TRAINING_PLANS.map((p) => [p.slug, p]));
 
 const faqItems = [
   {
@@ -38,6 +79,21 @@ const faqItems = [
     answer:
       "Partially. Running, strength, and most conditioning work can be done at home. Sled push and pull, ski erg, and rowing are gym-only — you'll need access to a Hyrox-equipped facility for at least one session per week to do this properly.",
   },
+  {
+    question: "How many hours a week does a Hyrox training plan take?",
+    answer:
+      "Roughly 4-5 hours a week on a 4-day plan, 6-7 hours on a 5-day plan, and 8-10 hours on the 6-7 day sub-75 and sub-60 plans. Most individual sessions run 45-75 minutes; the weekly long run and the race simulations are the two that regularly exceed 90 minutes.",
+  },
+  {
+    question: "What happens if I miss a week of training?",
+    answer:
+      "Do not try to make it up. Rejoin the plan at the week you would have been on if the gap was 7 days or less. For a two-week gap, repeat the last week you completed before moving on. For anything longer than three weeks, drop back to the start of the phase you were in.",
+  },
+  {
+    question: "Should I follow a training plan or the level-based programs?",
+    answer:
+      "Use a training plan when you have a fixed race date or a specific finish time to chase, because the plans are calibrated to a countdown. Use the level-based beginner, intermediate, and advanced programs when you are building general Hyrox fitness with no race booked yet.",
+  },
 ];
 ---
 
@@ -49,7 +105,7 @@ const faqItems = [
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
   datePublished="2026-02-01"
-  dateModified="2026-07-09"
+  dateModified="2026-08-06"
   author="HyroxVault Editorial Team"
 >
   <div class="container-main py-10 md:py-16">
@@ -69,19 +125,57 @@ const faqItems = [
         Hyrox Training Plans
       </h1>
       <p class="mt-4 text-sm text-text-muted">
-        Last reviewed July 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a> · See our <a href="/methodology/" class="text-accent hover:underline">methodology</a>
+        Last reviewed August 2026 · By <a href="/author/" class="text-accent hover:underline">HyroxVault Editorial Team</a> · See our <a href="/methodology/" class="text-accent hover:underline">methodology</a>
       </p>
       <p class="mt-5 text-lg text-text-muted leading-relaxed max-w-3xl">
         {description}
       </p>
       <p class="mt-3 text-base text-text-muted leading-relaxed max-w-3xl">
-        Pick the plan that matches your goal time, your race date, or your weekly availability. Every plan below includes a complete week-by-week schedule with daily workouts, race-pace targets, and a built-in taper. New to Hyrox? Start with the <a href="/training-plans/sub-100-hyrox-training-plan/" class="text-accent hover:underline">beginner plan</a> or our <a href="/training/beginner/" class="text-accent hover:underline">first-race training guide</a>.
+        A Hyrox training plan is not a generic gym programme with running bolted on. It has to build an 8 km running engine, condition you to run <em>after</em> a sled push, and rehearse eight stations at race weight. Every plan below does that across a fixed countdown, with a week-by-week schedule, daily sessions, race-pace targets, and a built-in taper. All of them are free and on the web, with no email gate.
+      </p>
+      <p class="mt-3 text-base text-text-muted leading-relaxed max-w-3xl">
+        The only real question is which one. Start with the picker below, or jump to the <a href="#compare" class="text-accent hover:underline">full comparison table</a>.
       </p>
     </header>
 
     <section class="mb-16">
-      <h2 class="text-2xl md:text-3xl font-black mb-2">Compare all Hyrox training plans</h2>
-      <p class="text-text-muted mb-6 max-w-2xl">Every free plan at a glance. Match the length to your race date, the sessions to your schedule, and the target to your goal.</p>
+      <h2 class="text-2xl md:text-3xl font-black mb-2">Which Hyrox training plan should you follow?</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">
+        Find the row that describes you. If two rows fit, take the one higher up the table — the race date constrains everything else.
+      </p>
+      <div class="overflow-x-auto -mx-4 md:mx-0">
+        <table class="min-w-full text-sm border-separate border-spacing-0">
+          <thead>
+            <tr>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Your situation</th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Follow this plan</th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Why this one</th>
+            </tr>
+          </thead>
+          <tbody>
+            {planPicker.map((row) => {
+              const plan = planBySlug.get(row.slug);
+              return (
+                <tr>
+                  <th class="border border-border p-3 text-left font-bold text-text-heading align-top">{row.situation}</th>
+                  <td class="border border-border p-3 align-top">
+                    <a href={`/training-plans/${row.slug}/`} class="font-bold text-accent hover:underline no-underline">{plan?.title}</a>
+                    {plan && (
+                      <div class="text-xs text-text-muted mt-1">{plan.durationWeeks} weeks · {plan.sessionsPerWeek} sessions/week</div>
+                    )}
+                  </td>
+                  <td class="border border-border p-3 text-text-muted align-top">{row.why}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="compare" class="mb-16 scroll-mt-24">
+      <h2 class="text-2xl md:text-3xl font-black mb-2">Compare all {TRAINING_PLANS.length} Hyrox training plans</h2>
+      <p class="text-text-muted mb-6 max-w-3xl">Every free plan at a glance. Match the length to your race date, the sessions to your schedule, and the target to your goal. The entry requirement column is the honest one: if you cannot meet it today, pick a shorter-target plan and come back.</p>
       <div class="overflow-x-auto -mx-4 md:mx-0">
         <table class="min-w-full text-sm border-separate border-spacing-0">
           <thead>
@@ -91,6 +185,7 @@ const faqItems = [
               <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Days/week</th>
               <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Level</th>
               <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Best for</th>
+              <th class="border border-border p-3 text-left font-bold text-text-heading bg-bg-card">Entry requirement</th>
             </tr>
           </thead>
           <tbody>
@@ -103,6 +198,7 @@ const faqItems = [
                 <td class="border border-border p-3 text-text-muted whitespace-nowrap">{p.sessionsPerWeek}</td>
                 <td class="border border-border p-3 text-text-muted capitalize">{p.difficulty}</td>
                 <td class="border border-border p-3 text-text-muted">{p.audienceLabel}</td>
+                <td class="border border-border p-3 text-text-muted">{p.prerequisites[0]}</td>
               </tr>
             ))}
           </tbody>
@@ -170,7 +266,7 @@ const faqItems = [
     <section class="mb-16 prose md:prose-lg max-w-none">
       <h2>How to pick the right Hyrox training plan</h2>
       <p>
-        There are three honest questions to answer before you pick a plan.
+        The picker above is the short version. If your situation does not fit neatly into one row, work through these three questions in order. They are ranked by how much they constrain the answer.
       </p>
       <h3>1. How far out is your race?</h3>
       <p>
@@ -196,6 +292,44 @@ const faqItems = [
         <li><strong>A real taper</strong> — the final week drops volume by 50-60% with one short tempo and one race-pace activation. Race-day fitness is what you've already built; the taper just lets you express it.</li>
       </ul>
 
+      <h2>How much time a Hyrox training plan actually takes</h2>
+      <p>
+        Session count is the number people compare, but session length is what decides whether the plan survives contact with your calendar. Across the plans on this page, a typical week works out at roughly:
+      </p>
+      <ul>
+        <li><strong>3-4 sessions a week:</strong> about 3.5 to 5 hours, on the 3-day and 4-week plans.</li>
+        <li><strong>5 sessions a week:</strong> about 6 to 7 hours, on the 8-week, 12-week, sub-100, and sub-90 plans.</li>
+        <li><strong>6-7 sessions a week:</strong> about 8 to 10 hours, on the sub-80 and sub-75 plans and the sub-60 block.</li>
+      </ul>
+      <p>
+        Most individual sessions land between 45 and 75 minutes. Two things regularly break that: the weekly long run in the base phase, and the race simulations in the peak phase, which take 90 minutes to two hours once you include warm-up and the walk between stations. Schedule those two on your least contested day of the week and the rest of the plan tends to hold together.
+      </p>
+
+      <h2>What to do when you miss sessions</h2>
+      <p>
+        Every plan on this page assumes you will miss some. The failure mode is not the missed week, it is trying to cram it back in and arriving at race day underrecovered. Our rule of thumb:
+      </p>
+      <ul>
+        <li><strong>Missed one or two sessions:</strong> skip them permanently and stay on schedule. Do not double up. If you have to choose which to protect, keep the race-pace running session and the sled work.</li>
+        <li><strong>Missed a full week:</strong> rejoin at the week you would have been on. One week off costs almost nothing in a 12-week block.</li>
+        <li><strong>Missed two weeks:</strong> repeat the last week you completed, then continue. This costs you a week of the plan, so drop the second base week rather than shortening the taper.</li>
+        <li><strong>Missed three weeks or more:</strong> restart at the beginning of the phase you were in. If that no longer fits before your race date, switch to the <a href="/training-plans/4-week-hyrox-training-plan/">4-week plan</a> and reset your goal time.</li>
+      </ul>
+      <p>
+        Never cut the taper to recover lost volume. The final week is the one part of any plan that has no substitute.
+      </p>
+
+      <h2>Training plans vs. our level-based programs</h2>
+      <p>
+        We publish two different things and they answer two different questions, so it is worth being clear about which you need.
+      </p>
+      <p>
+        The plans on this page are <strong>countdown plans</strong>. Each one is built backwards from a race date and a target, which is why they specify exact paces, sled weights, and a taper week. Use one when you have a race booked, or a finish time you want to break.
+      </p>
+      <p>
+        Our <a href="/training/">training hub</a> also hosts <strong>level-based programs</strong> — the <a href="/training/beginner/">beginner program</a>, the <a href="/training/intermediate/">intermediate program</a>, and the <a href="/training/advanced/">advanced program</a>. Those are teaching progressions. They spend more time on technique and station familiarity and less on calibrated pacing, which makes them the better starting point when you have no race booked and are still learning what a sled push at race weight feels like. Most athletes use a level-based program first, then move onto a countdown plan once a race is in the calendar.
+      </p>
+
       <h2>Free Hyrox training plan PDF</h2>
       <p>
         Every plan on this page is free and on the web — no email gate, no download. We deliberately don't offer a PDF because plans drift; the version you bookmark today is the version we'll be improving over the next 12 months. Bookmark the URL of the plan you choose and come back to it weekly.
@@ -203,7 +337,7 @@ const faqItems = [
 
       <h2>More Hyrox training resources</h2>
       <p>
-        The plans above are goal- and schedule-based. If you'd rather train by level, follow one of our program guides: the <a href="/training/beginner/">beginner training plan</a> (first race in 8 weeks), the <a href="/training/intermediate/">10-week intermediate plan</a>, or the <a href="/training/advanced/">12-week advanced plan</a>. Training without equipment? Use the <a href="/blog/hyrox-12-week-no-equipment-training-plan/">12-week no-gym plan</a>. For one-off sessions and simulations, browse our <a href="/workouts/">sample Hyrox workouts</a>, and see the full <a href="/training/">Hyrox training hub</a> for station drills and running work.
+        No gym access? The <a href="/blog/hyrox-12-week-no-equipment-training-plan/">12-week no-equipment plan</a> covers what you can genuinely build with running and bodyweight alone, and what you cannot. For one-off sessions and simulations rather than a full block, browse the <a href="/workouts/">Hyrox workout library</a>. For per-station technique work, see the <a href="/training/stations/">station drills</a>. And before you commit to a goal time, run your current numbers through the <a href="/calculator/">Hyrox time calculator</a> to check the target is realistic.
       </p>
     </section>
   </div>

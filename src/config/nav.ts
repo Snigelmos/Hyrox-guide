@@ -9,6 +9,7 @@
 
 export type NavIcon =
   | "compass"
+  | "clipboard"
   | "dumbbell"
   | "pill"
   | "map"
@@ -70,6 +71,17 @@ export const primaryNav: NavItem[] = [
       "Beginner to advanced programs, station drills, and full race simulations.",
     cta: "Start Training",
     badge: "Get Race-Ready",
+    badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  },
+  {
+    label: "Training Plans",
+    href: "/training-plans/",
+    icon: "clipboard",
+    iconColor: "text-emerald-400",
+    description:
+      "Eleven free week-by-week Hyrox plans. Pick by race date, goal time, or days you can train.",
+    cta: "Compare the Plans",
+    badge: "Week by Week",
     badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
   },
   {
