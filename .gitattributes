@@ -2,3 +2,7 @@
 # Eliminates CRLF noise on Windows where files show as "modified" due to line-ending differences.
 * text=auto eol=lf
 *.bat text eol=crlf
+
+# Pinterest's bulk importer expects RFC 4180 CRLF, so these must survive a
+# fresh checkout unnormalised.
+marketing/pinterest/*.csv text eol=crlf

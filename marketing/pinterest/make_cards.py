@@ -1,19 +1,32 @@
 """
-Workout-card compositor for HyroxVault Pinterest pins (June 2026 batch).
+Workout-card compositor for HyroxVault Pinterest pins.
 
 GPT generates a photographic background (no text); this script overlays the
 exact, verified workout/tips content as a branded card so reps and times are
-always correct and legible. Run after backgrounds exist in --bg-dir as
-pin-01.png ... pin-07.png. Falls back to a dark gradient if a background is
+always correct and legible. Falls back to a dark gradient if a background is
 missing.
+
+Two batches share this renderer:
+
+  June 2026    the CARDS dict below, backgrounds in --bg-dir as pin-01.png ...
+  Aug 2026     --cards cards_2026_08, which also points some pins at existing
+               site heroes instead of a generated background
+
+Examples:
+    python make_cards.py
+    python make_cards.py --only pin-03
+    python make_cards.py --cards cards_2026_08 --out-dir ../../public/images/pins --format jpg
 """
 
 from __future__ import annotations
 
 import argparse
+import importlib
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 W, H = 1000, 1500
 ACCENT = (198, 255, 64)        # hyrox lime
@@ -157,12 +170,19 @@ def make_background() -> Image.Image:
     return bg
 
 
-def cover(img: Image.Image) -> Image.Image:
+def cover(img: Image.Image, focus: float = 0.5) -> Image.Image:
+    """Scale-and-crop to the 1000x1500 pin frame.
+
+    `focus` is the horizontal anchor (0 = left edge, 1 = right edge). Landscape
+    site heroes lose most of their width here, so the anchor decides which part
+    of the frame survives the crop.
+    """
     img = img.convert("RGB")
     scale = max(W / img.width, H / img.height)
     nw, nh = int(img.width * scale), int(img.height * scale)
     img = img.resize((nw, nh), Image.LANCZOS)
-    left, top = (nw - W) // 2, (nh - H) // 2
+    left = int(round((nw - W) * min(max(focus, 0.0), 1.0)))
+    top = (nh - H) // 2
     return img.crop((left, top, left + W, top + H))
 
 
@@ -235,9 +255,15 @@ def layout_rows(d, cfg, start_y, draw):
     return ry
 
 
-def draw_card(cfg: dict, bg_path: Path | None, out_path: Path) -> None:
+def draw_card(
+    cfg: dict,
+    bg_path: Path | None,
+    out_path: Path,
+    focus: float = 0.5,
+    quality: int = 82,
+) -> None:
     if bg_path and bg_path.exists():
-        base = scrim(cover(Image.open(bg_path)))
+        base = scrim(cover(Image.open(bg_path), focus))
     else:
         base = scrim(make_background())
     base = base.convert("RGBA")
@@ -287,8 +313,12 @@ def draw_card(cfg: dict, bg_path: Path | None, out_path: Path) -> None:
         d.text(((W - tw) / 2, fy), ln, font=fff, fill=MUTED)
         fy += 34
 
-    base.convert("RGB").save(out_path, "PNG")
-    print(f"wrote {out_path}")
+    out = base.convert("RGB")
+    if out_path.suffix.lower() in (".jpg", ".jpeg"):
+        out.save(out_path, "JPEG", quality=quality, optimize=True, progressive=True)
+    else:
+        out.save(out_path, "PNG")
+    print(f"wrote {out_path}  ({out_path.stat().st_size / 1024:.0f} KB)")
 
 
 def main() -> None:
@@ -296,6 +326,14 @@ def main() -> None:
     ap.add_argument("--bg-dir", default="_bg")
     ap.add_argument("--out-dir", default="images")
     ap.add_argument("--only", default=None, help="single pin id, e.g. pin-01")
+    ap.add_argument(
+        "--cards",
+        default=None,
+        help="module holding this batch's CARDS (e.g. cards_2026_08); "
+             "defaults to the June set in this file",
+    )
+    ap.add_argument("--format", default="png", choices=["png", "jpg"])
+    ap.add_argument("--quality", type=int, default=82, help="JPEG quality")
     args = ap.parse_args()
 
     base = Path(__file__).resolve().parent
@@ -303,12 +341,33 @@ def main() -> None:
     out_dir = (base / args.out_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    items = CARDS.items()
+    cards = CARDS
+    local_backgrounds: dict[str, dict] = {}
+    if args.cards:
+        module = importlib.import_module(args.cards)
+        cards = module.CARDS
+        local_backgrounds = getattr(module, "LOCAL_BACKGROUNDS", {})
+
+    items = list(cards.items())
     if args.only:
-        items = [(args.only, CARDS[args.only])]
+        items = [(args.only, cards[args.only])]
     for pin_id, cfg in items:
-        bg = bg_dir / f"{pin_id}.png"
-        draw_card(cfg, bg, out_dir / f"{pin_id}.png")
+        local = local_backgrounds.get(pin_id)
+        if local:
+            bg = (REPO_ROOT / local["path"]).resolve()
+            focus = float(local.get("focus", 0.5))
+        else:
+            bg = bg_dir / f"{pin_id}.png"
+            focus = 0.5
+        if not bg.exists():
+            print(f"warn: no background for {pin_id} ({bg}) - using flat dark fill")
+        draw_card(
+            cfg,
+            bg,
+            out_dir / f"{pin_id}.{args.format}",
+            focus=focus,
+            quality=args.quality,
+        )
 
 
 if __name__ == "__main__":

@@ -27,6 +27,7 @@ docs/hyrox-benchmark-feasibility.md
 # Marketing pin intermediates — regenerable backgrounds produced by
 # gen_backgrounds.py before text is composited into the committed images/.
 marketing/pinterest/_bg/
+__pycache__/
 
 # Local-only working folders — NOT site source. Keep out of the repo so the
 # working tree stays a single source of truth and these never reach Vercel.
@@ -35,7 +36,9 @@ Content for driving traffic/
 Performance data/
 # Staging area for raw images dropped in for review before they're optimised
 # into src/assets/. The committed copies live under src/assets/heroes/.
-Images/
+# Root-anchored: an unanchored rule also matches public/images/ on a
+# case-insensitive checkout, which would silently drop deployed site images.
+/Images/
 
 # Throwaway audit/diagnostic dumps written at the repo root during debugging
 __*.txt
