@@ -4,11 +4,163 @@ import WorkoutLibrary from "../../components/WorkoutLibrary.astro";
 import HeroBackground from "../../components/HeroBackground.astro";
 import workoutsHero from "../../assets/heroes/recovery.png";
 import { WORKOUTS } from "../../data/workouts";
-import { LIBRARY_TOTAL_WORKOUTS } from "../../data/workout-library";
+import { LIBRARY_WORKOUTS, LIBRARY_TOTAL_WORKOUTS } from "../../data/workout-library";
 
-const title = "Hyrox Workouts — Benchmarks, Simulations, and Session Library";
-const description = `Named Hyrox benchmarks plus a ${LIBRARY_TOTAL_WORKOUTS}-session training library: full simulations, race-pace intervals, station drills, strength, and conditioning. All levels.`;
+const totalWorkouts = WORKOUTS.length + LIBRARY_TOTAL_WORKOUTS;
+
+const title = `Hyrox Workouts: ${totalWorkouts} Free Sessions and Race Simulations`;
+const description = `${totalWorkouts} Hyrox workouts you can run today: full race simulations, compromised-running sessions, station circuits, and strength days. Each one lists time, equipment, and target pacing.`;
 const breadcrumbs = [{ name: "Workouts" }];
+
+const libraryById = new Map(LIBRARY_WORKOUTS.map((w) => [w.id, w] as const));
+const namedBySlug = new Map(WORKOUTS.map((w) => [w.slug, w] as const));
+
+interface WorkoutPick {
+  href: string;
+  name: string;
+  meta: string;
+}
+
+const fromLibrary = (id: string): WorkoutPick | null => {
+  const w = libraryById.get(id);
+  return w ? { href: `#${w.id}`, name: w.name, meta: `${w.time} · ${w.equipment}` } : null;
+};
+
+const fromNamed = (slug: string): WorkoutPick | null => {
+  const w = namedBySlug.get(slug);
+  return w ? { href: `/workouts/${w.slug}/`, name: w.name, meta: w.durationLabel } : null;
+};
+
+const resolve = (picks: (WorkoutPick | null)[]): WorkoutPick[] =>
+  picks.filter((p): p is WorkoutPick => Boolean(p));
+
+const byTime = [
+  {
+    heading: "20 minutes",
+    note: "Short enough to do on a lunch break and still leave you breathing hard.",
+    picks: resolve([fromLibrary("lunch-break"), fromLibrary("cindy-style-amrap")]),
+  },
+  {
+    heading: "30 minutes",
+    note: "One quality block. Pick the station that costs you the most time on race day.",
+    picks: resolve([
+      fromLibrary("push-grind"),
+      fromLibrary("grip-carry"),
+      fromLibrary("cardio-killer"),
+      fromLibrary("engine-emom-30"),
+    ]),
+  },
+  {
+    heading: "45 to 60 minutes",
+    note: "The standard weekday session. Running quality or a half simulation.",
+    picks: resolve([
+      fromLibrary("race-pace-intervals"),
+      fromLibrary("run-bricks"),
+      fromLibrary("compromised-kilometers"),
+      fromNamed("mini-hyrox-simulation"),
+    ]),
+  },
+  {
+    heading: "60 minutes and up",
+    note: "Weekend work. Expect to need three to five easy days afterwards.",
+    picks: resolve([
+      fromNamed("hyrox-simulation-workout"),
+      fromLibrary("full-send"),
+      fromNamed("hyrox-1k-repeats"),
+    ]),
+  },
+];
+
+const byEquipment = [
+  {
+    heading: "A full Hyrox rig",
+    note: "Sled, SkiErg, rower, sandbag, wall ball target. Usually an affiliated gym.",
+    picks: resolve([
+      fromLibrary("full-send"),
+      fromLibrary("front-four"),
+      fromLibrary("back-four"),
+      fromLibrary("sled-capacity-builder"),
+    ]),
+  },
+  {
+    heading: "A commercial gym with no sled",
+    note: "Treadmill, rower, wall ball, free weights. Covers most chain gyms.",
+    picks: resolve([
+      fromLibrary("race-pace-intervals"),
+      fromLibrary("wall-ball-ladder"),
+      fromLibrary("run-bricks"),
+      fromLibrary("posterior-chain"),
+    ]),
+  },
+  {
+    heading: "Dumbbells or kettlebells only",
+    note: "Hotel gyms, garage setups, and the free-weight corner at peak hours.",
+    picks: resolve([
+      fromLibrary("db-kettlebell-grinder"),
+      fromLibrary("engine-emom-30"),
+      fromLibrary("squat-lunge-power"),
+    ]),
+  },
+  {
+    heading: "Bodyweight and a pull-up bar",
+    note: "No load at all. Trains capacity and movement quality, not race specificity.",
+    picks: resolve([fromLibrary("cindy-style-amrap"), fromLibrary("burpee-basher")]),
+  },
+];
+
+const byWeakness = (
+  [
+    ["grip-carry", "Your grip is gone by the sled pull and you are dropping the kettlebells mid-carry"],
+    ["burpee-basher", "You stall halfway through the 80 m of burpee broad jumps and start resting between reps"],
+    ["compromised-kilometers", "Your first 200 m out of every station is far slower than your fresh pace"],
+    ["sled-capacity-builder", "The sled push turns into a series of short shoves rather than continuous steps"],
+    ["wall-ball-ladder", "Your 100 wall balls break into sets of five and the last 30 reps take as long as the first 70"],
+    ["norwegian-4x4", "Nothing specific hurts, you are simply slower than the people you train with"],
+  ] as const
+)
+  .map(([id, symptom]) => {
+    const pick = fromLibrary(id);
+    return pick ? { ...pick, symptom } : null;
+  })
+  .filter((row): row is WorkoutPick & { symptom: string } => Boolean(row));
+
+const weeklyTemplate = [
+  { day: "Monday", session: "Station circuit", example: '"Push & Grind" or "Grip & Carry"' },
+  { day: "Tuesday", session: "Easy running", example: "5 to 8 km conversational, or the Zone 2 Builder" },
+  { day: "Wednesday", session: "Strength", example: '"Posterior Chain Power" or "Squat & Lunge Power"' },
+  { day: "Thursday", session: "Running quality", example: '"Race Pace Intervals" or "Compromised Kilometers"' },
+  { day: "Friday", session: "Rest or mobility", example: "Walk, stretch, sleep" },
+  { day: "Saturday", session: "Simulation or long run", example: '"The Front Four", "Mini Hyrox", or 10 to 14 km easy' },
+  { day: "Sunday", session: "Rest", example: "Actually rest" },
+];
+
+const faqs = [
+  {
+    question: "How many Hyrox workouts should I do per week?",
+    answer:
+      "Three to five sessions works for most people: two running sessions, one or two station or strength sessions, and one longer race-specific session at the weekend. More than that and the quality of each session drops, which is the opposite of what Hyrox rewards.",
+  },
+  {
+    question: "Can I train for Hyrox without a sled?",
+    answer:
+      "Yes, for everything except sled feel. Running, wall balls, burpee broad jumps, farmers carry, sandbag lunges, rowing, and SkiErg cover six of the eight stations and the large majority of race time. Substitute heavy dumbbell bear crawls or a loaded push on turf for the sled push, and high-resistance cable rows for the sled pull, then get to a rig for two or three sessions in the last six weeks so race day is not your first real push.",
+  },
+  {
+    question: "How often should I do a full Hyrox simulation?",
+    answer:
+      "Once per training block, typically four to six weeks out from your goal race. A full simulation is a maximal effort and most athletes need five to seven days to recover from it. Half simulations are the ones to repeat, every two to three weeks.",
+  },
+  {
+    question: "What is the single best Hyrox workout?",
+    answer:
+      "Compromised running, done regularly. Running 1 km at race pace immediately after a station is the exact skill the race tests and the one most people never practise. If you only add one session, make it Compromised Kilometers or Hyrox Run Bricks.",
+  },
+  {
+    question: "Do I need to run the full 8 km in every session?",
+    answer:
+      "No. Only the full simulation covers the whole 8 km. Most sessions use 4 to 6 km of running broken into 1 km pieces, which trains the same pacing pattern at a fraction of the recovery cost.",
+  },
+];
 ---
 
 <BaseLayout
@@ -16,7 +168,9 @@ const breadcrumbs = [{ name: "Workouts" }];
   description={description}
   ogType="website"
   schemaType="CollectionPage"
+  dateModified="2026-08-06"
   breadcrumbs={breadcrumbs}
+  faqItems={faqs}
 >
   <section class="relative overflow-hidden border-b border-border isolate bg-gradient-to-b from-accent/5 to-transparent">
     <HeroBackground image={workoutsHero} position="object-center" textSide="left" priority />
@@ -32,31 +186,208 @@ const breadcrumbs = [{ name: "Workouts" }];
       </nav>
       <div class="max-w-2xl">
         <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-          Hyrox Benchmark Workouts
+          Hyrox Workouts
         </h1>
         <p class="mt-4 text-lg text-text-muted leading-relaxed">
-          Named Hyrox simulation tests, benchmark workouts, and key training sessions — all with scoring, benchmarks, and how to use them in your prep.
+          {totalWorkouts} sessions you can run today, from a 20-minute blitz to a full eight-station race simulation. Every one lists how long it takes, what equipment it needs, and the pacing to aim for.
         </p>
+        <div class="mt-6 flex flex-wrap gap-3 text-xs font-bold uppercase tracking-wider">
+          <a href="#by-time" class="px-3 py-1.5 rounded-full border border-accent/30 bg-accent/10 text-accent no-underline hover:bg-accent/20 transition-colors">By time available</a>
+          <a href="#by-equipment" class="px-3 py-1.5 rounded-full border border-border text-text-muted no-underline hover:border-accent/40 hover:text-accent transition-colors">By equipment</a>
+          <a href="#benchmarks" class="px-3 py-1.5 rounded-full border border-border text-text-muted no-underline hover:border-accent/40 hover:text-accent transition-colors">Benchmark tests</a>
+          <a href="#workout-library" class="px-3 py-1.5 rounded-full border border-border text-text-muted no-underline hover:border-accent/40 hover:text-accent transition-colors">Full library</a>
+        </div>
       </div>
     </div>
   </section>
 
   <div class="container-main py-10 md:py-16">
 
-    <section aria-labelledby="benchmarks-heading" class="grid gap-4 md:grid-cols-2">
-      <h2 id="benchmarks-heading" class="sr-only">Named benchmark workouts</h2>
-      {WORKOUTS.map((w) => (
-        <a
-          href={`/workouts/${w.slug}/`}
-          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-        >
-          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{w.durationLabel}</div>
-          <h3 class="text-xl font-black text-text-heading mb-2">{w.name}</h3>
-          <p class="text-sm text-text-muted leading-relaxed">{w.shortDescription}</p>
-        </a>
-      ))}
+    <section aria-labelledby="what-counts" class="max-w-3xl">
+      <h2 id="what-counts" class="text-2xl md:text-3xl font-black text-text-heading mb-4">
+        What makes a workout a Hyrox workout
+      </h2>
+      <div class="space-y-4 text-text-muted leading-relaxed">
+        <p>
+          A Hyrox race is 8 km of running cut into eight 1 km segments, with a functional station between each one. None of the individual pieces is hard. The difficulty is the order. You reach every station with your heart rate already near threshold, and you start every run with your legs and forearms already loaded.
+        </p>
+        <p>
+          So a session earns the label only if it trains one of three things: the race format itself, running under station fatigue, or the specific strength that stops one station becoming a bottleneck. Everything on this page is sorted on that basis. Sessions tagged <strong class="text-text">Hyrox specific</strong> rehearse the race. Sessions tagged <strong class="text-text">General</strong> build the engine and the strength underneath it. A training week needs both, and most people who plateau are doing only one.
+        </p>
+        <p>
+          If this is your first block, do not open with a full simulation. Run a half simulation or a station circuit, take one <a href="#benchmarks" class="text-accent hover:underline">benchmark test</a> to find out where you actually are, then build a week around what it exposes. If you would rather follow a structured multi-week programme than assemble your own, start at <a href="/training-plans/" class="text-accent hover:underline">Hyrox training plans</a> instead.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="by-time-heading" id="by-time" class="mt-14 pt-12 border-t border-border scroll-mt-24">
+      <h2 id="by-time-heading" class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        Pick a workout by the time you have
+      </h2>
+      <p class="text-text-muted leading-relaxed mb-8 max-w-2xl">
+        The most common reason a Hyrox session gets skipped is that it did not fit the day. Match the session to the window you actually have.
+      </p>
+      <div class="grid gap-4 md:grid-cols-2">
+        {byTime.map((group) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-6">
+            <h3 class="text-lg font-black text-text-heading mb-1">{group.heading}</h3>
+            <p class="text-sm text-text-muted leading-relaxed mb-4">{group.note}</p>
+            <ul class="space-y-2">
+              {group.picks.map((pick) => (
+                <li>
+                  <a href={pick.href} class="group flex items-start gap-2 text-sm no-underline">
+                    <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
+                    <span>
+                      <span class="font-semibold text-text-heading group-hover:text-accent transition-colors">{pick.name}</span>
+                      <span class="block text-xs text-text-muted mt-0.5">{pick.meta}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section aria-labelledby="by-equipment-heading" id="by-equipment" class="mt-14 pt-12 border-t border-border scroll-mt-24">
+      <h2 id="by-equipment-heading" class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        Pick a workout by the equipment you can get to
+      </h2>
+      <p class="text-text-muted leading-relaxed mb-8 max-w-2xl">
+        Two of the eight stations need a sled and one needs a SkiErg. The rest can be trained in almost any gym, so a missing sled is not a reason to postpone a training block.
+      </p>
+      <div class="grid gap-4 md:grid-cols-2">
+        {byEquipment.map((group) => (
+          <div class="bg-bg-card border border-border rounded-2xl p-6">
+            <h3 class="text-lg font-black text-text-heading mb-1">{group.heading}</h3>
+            <p class="text-sm text-text-muted leading-relaxed mb-4">{group.note}</p>
+            <ul class="space-y-2">
+              {group.picks.map((pick) => (
+                <li>
+                  <a href={pick.href} class="group flex items-start gap-2 text-sm no-underline">
+                    <span class="text-accent flex-shrink-0 mt-0.5">▶</span>
+                    <span>
+                      <span class="font-semibold text-text-heading group-hover:text-accent transition-colors">{pick.name}</span>
+                      <span class="block text-xs text-text-muted mt-0.5">{pick.meta}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p class="mt-6 text-sm text-text-muted leading-relaxed max-w-2xl">
+        Training with no gym at all is a solved problem: read our <a href="/blog/hyrox-training-without-gym-realistic-expectations/" class="text-accent hover:underline">realistic expectations for no-gym Hyrox training</a> and the <a href="/blog/hyrox-12-week-no-equipment-training-plan/" class="text-accent hover:underline">12-week no-equipment plan</a>. When you do want a rig, the <a href="/gyms/map/" class="text-accent hover:underline">gym finder</a> lists affiliated clubs with sleds and wall-ball targets.
+      </p>
+    </section>
+
+    <section aria-labelledby="by-weakness" class="mt-14 pt-12 border-t border-border">
+      <h2 id="by-weakness" class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        Pick a workout by what is costing you the most time
+      </h2>
+      <p class="text-text-muted leading-relaxed mb-8 max-w-2xl">
+        Race splits usually point at one obvious problem. Find the symptom, then run the session that trains it.
+      </p>
+      <div class="overflow-x-auto -mx-4 sm:mx-0">
+        <table class="min-w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-bg-card-hover">
+              <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">What is happening</th>
+              <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">Session to run</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border/50">
+            {byWeakness.map((row) => (
+              <tr class="hover:bg-bg-card/50 transition-colors">
+                <td class="px-3 sm:px-4 py-3 text-text-muted align-top">{row.symptom}</td>
+                <td class="px-3 sm:px-4 py-3 align-top">
+                  <a href={row.href} class="font-semibold text-text hover:text-accent transition-colors">{row.name}</a>
+                  <span class="block text-xs text-text-muted mt-0.5">{row.meta}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-6 text-sm text-text-muted leading-relaxed max-w-2xl">
+        For technique rather than conditioning, each station has its own playbook at <a href="/training/stations/" class="text-accent hover:underline">station training drills</a>, and the official weights and no-rep rules live on the <a href="/stations/" class="text-accent hover:underline">station standards page</a>.
+      </p>
+    </section>
+
+    <section aria-labelledby="benchmarks-heading" id="benchmarks" class="mt-14 pt-12 border-t border-border scroll-mt-24">
+      <h2 id="benchmarks-heading" class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        Benchmark tests worth repeating
+      </h2>
+      <p class="text-text-muted leading-relaxed mb-8 max-w-2xl">
+        These {WORKOUTS.length} are named tests rather than ordinary sessions. Each has its own page with scoring, benchmark times by tier for men and women, and notes on where it belongs in a block. Repeat one every four to six weeks and you have an honest measure of whether the training is working.
+      </p>
+      <div class="grid gap-4 md:grid-cols-2">
+        {WORKOUTS.map((w) => (
+          <a
+            href={`/workouts/${w.slug}/`}
+            class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+          >
+            <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">{w.durationLabel}</div>
+            <h3 class="text-xl font-black text-text-heading mb-2">{w.name}</h3>
+            <p class="text-sm text-text-muted leading-relaxed">{w.shortDescription}</p>
+          </a>
+        ))}
+      </div>
     </section>
 
     <WorkoutLibrary />
+
+    <section aria-labelledby="training-week" class="mt-16 pt-12 border-t border-border">
+      <h2 id="training-week" class="text-2xl md:text-3xl font-black text-text-heading mb-2">
+        How to build a training week around these
+      </h2>
+      <p class="text-text-muted leading-relaxed mb-8 max-w-2xl">
+        Individual workouts only matter in context. This is the shape we use for a general Hyrox block: two running sessions, one strength day, one station circuit, and one longer race-specific piece at the weekend.
+      </p>
+      <div class="overflow-x-auto -mx-4 sm:mx-0">
+        <table class="min-w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-bg-card-hover">
+              <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">Day</th>
+              <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">Session type</th>
+              <th class="text-left px-3 sm:px-4 py-2 text-text-muted font-bold text-xs uppercase tracking-wider border-b border-border">Example</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border/50">
+            {weeklyTemplate.map((row) => (
+              <tr class="hover:bg-bg-card/50 transition-colors">
+                <td class="px-3 sm:px-4 py-2.5 text-text font-semibold">{row.day}</td>
+                <td class="px-3 sm:px-4 py-2.5 text-text-muted">{row.session}</td>
+                <td class="px-3 sm:px-4 py-2.5 text-text-muted">{row.example}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-6 space-y-4 text-text-muted leading-relaxed max-w-3xl">
+        <p>
+          Progression is simple and slow. Spend the first three or four weeks on half simulations and station circuits so the movements stop costing extra energy. Then hold the same weekly shape and change one variable at a time: more distance at race pace, heavier sled, fewer breaks in the wall balls. Repeat a half simulation every two to three weeks, and save the one full simulation for four to six weeks out.
+        </p>
+        <p>
+          Track the same numbers every time. Per-run pace, per-station time, and how long you spent standing still between the two. Transitions are where most first-timers lose three to five minutes, and they are free to fix. Run your improving splits through the <a href="/calculator/" class="text-accent hover:underline">Hyrox time calculator</a> to see what each gain is worth on race day.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="common-questions" class="mt-16 pt-12 border-t border-border">
+      <h2 id="common-questions" class="text-2xl md:text-3xl font-black text-text-heading mb-8">
+        Common questions
+      </h2>
+      <div class="space-y-6 max-w-3xl">
+        {faqs.map((faq) => (
+          <div>
+            <h3 class="text-lg font-bold text-text-heading mb-2">{faq.question}</h3>
+            <p class="text-text-muted leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   </div>
 </BaseLayout>

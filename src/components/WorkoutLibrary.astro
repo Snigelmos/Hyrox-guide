@@ -65,7 +65,7 @@ import ContentIcons from "./icons/ContentIcons.astro";
           <span class={`text-xs font-bold px-2 py-0.5 rounded-full border ${cat.color}`}>{cat.count} workouts</span>
         </h3>
         {catWorkouts.map((w) => (
-          <details class="accordion workout-item" id={w.id} data-category={w.category} data-workout-type={w.workoutType}>
+          <details class="accordion workout-item scroll-mt-24" id={w.id} data-category={w.category} data-workout-type={w.workoutType}>
             <summary>
               <div class="flex items-center gap-3 min-w-0">
                 <span class={`hidden sm:inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-full border flex-shrink-0 ${w.tagColor}`}>
@@ -190,6 +190,18 @@ import ContentIcons from "./icons/ContentIcons.astro";
   const chips = document.querySelectorAll<HTMLButtonElement>(".filter-chip");
   const sections = document.querySelectorAll<HTMLElement>(".category-section");
 
+  function openHashTarget() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!(target instanceof HTMLDetailsElement) || !target.classList.contains("workout-item")) return;
+    if (target.style.display === "none") {
+      document.querySelector<HTMLButtonElement>('.filter-chip[data-filter="all"]')?.click();
+    }
+    target.open = true;
+    target.scrollIntoView({ block: "start" });
+  }
+
   chips.forEach((chip) => {
     chip.addEventListener("click", () => {
       const filter = chip.dataset.filter!;
@@ -223,4 +235,7 @@ import ContentIcons from "./icons/ContentIcons.astro";
       });
     });
   });
+
+  openHashTarget();
+  window.addEventListener("hashchange", openHashTarget);
 </script>
