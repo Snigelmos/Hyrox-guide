@@ -86,6 +86,37 @@ const retired404Redirects: Record<string, string> = {
   "/gyms/washington-d-c/": "/gyms/washington-dc/",
   // Removed gym detail page — redirect to its city hub (May 2026 data cleanup).
   "/gyms/g/migros-fitness-zurich-sihlcity/": "/gyms/zurich/",
+  // Retired the /hyrox/<city>/ evergreen guides (Aug 2026 cannibalization
+  // pass). Six of them ranked at the same position as the matching
+  // /events/<year>/<city>/ page for the same queries while contributing
+  // almost no traffic of their own, so the whole set folds into the event
+  // pages. The venue notes those guides carried already render on the event
+  // page via EventCourseSection; CITY_EVERGREENS stays as the data source.
+  // Cities with no matching event page point at the replacement stop, so no
+  // entry here chains through a second redirect.
+  "/hyrox/amsterdam/": "/events/2026/amsterdam/",
+  "/hyrox/berlin/": "/events/2026/berlin/",
+  "/hyrox/copenhagen/": "/events/2026/copenhagen/",
+  "/hyrox/dallas/": "/events/2026/dallas/",
+  "/hyrox/dubai/": "/events/2026/dubai/",
+  "/hyrox/hamburg/": "/events/2026/hamburg/",
+  "/hyrox/helsinki/": "/events/2026/helsinki/",
+  "/hyrox/hong-kong/": "/events/2026/hong-kong/",
+  "/hyrox/london/": "/events/2026/london/",
+  "/hyrox/los-angeles/": "/events/2026/anaheim/",
+  "/hyrox/madrid/": "/events/2026/madrid/",
+  "/hyrox/manchester/": "/events/2026/manchester/",
+  "/hyrox/melbourne/": "/events/2026/sydney/",
+  "/hyrox/milan/": "/events/2026/milan/",
+  "/hyrox/munich/": "/events/2026/munich/",
+  "/hyrox/new-york/": "/events/2026/new-york/",
+  "/hyrox/paris/": "/events/2026/paris/",
+  "/hyrox/singapore/": "/events/2026/singapore/",
+  "/hyrox/stockholm/": "/events/2026/stockholm/",
+  "/hyrox/sydney/": "/events/2026/sydney/",
+  "/hyrox/toronto/": "/events/2026/toronto/",
+  "/hyrox/vienna/": "/events/2026/vienna/",
+  "/hyrox/zurich/": "/events/2026/zurich/",
 };
 
 /**

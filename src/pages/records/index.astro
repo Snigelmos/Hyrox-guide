@@ -2,9 +2,24 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { RECORDS, RECORDS_LAST_REVIEWED } from "../../data/records";
 
+// Lead the snippet with the actual record times rather than a description of
+// the page. "Hyrox world record" searchers want the number, and a title that
+// carries it earns the click ahead of the generic ranking aggregators.
+const allRecords = RECORDS.flatMap((section) => section.records);
+const shortTime = (time: string) => time.replace(/^00:/, "");
+const proMen = allRecords.find((r) => r.category === "Pro Men");
+const proWomen = allRecords.find((r) => r.category === "Pro Women");
+const reviewedYear = RECORDS_LAST_REVIEWED.slice(0, 4);
+
 const title = "Hyrox World Records — Open, Pro, Doubles, Relay";
-const metaTitle = "Hyrox World Records 2026 — Fastest Times by Division";
-const description = "The fastest confirmed Hyrox finish times worldwide. Open, Pro, Doubles, and Relay records — cross-checked against public Hyrox results and ranking databases.";
+const metaTitle =
+  proMen && proWomen
+    ? `Hyrox World Records ${reviewedYear} — ${shortTime(proMen.time)} Men, ${shortTime(proWomen.time)} Women`
+    : `Hyrox World Records ${reviewedYear} — Fastest Times by Division`;
+const description =
+  proMen && proWomen
+    ? `The fastest Hyrox times on record: ${proMen.athlete} ${shortTime(proMen.time)} and ${proWomen.athlete} ${shortTime(proWomen.time)} in Pro, plus every Open, Doubles, and Relay record with a source link.`
+    : "The fastest confirmed Hyrox finish times worldwide, across Open, Pro, Doubles, and Relay, each cross-checked against public Hyrox results and ranking databases.";
 
 const breadcrumbs = [{ name: "Records" }];
 

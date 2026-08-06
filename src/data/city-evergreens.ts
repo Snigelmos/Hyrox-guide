@@ -1,24 +1,22 @@
 /**
- * Evergreen city pages — "Hyrox [city]" head-term capture.
+ * Per-city venue and context data for event pages.
  *
- * Distinct from year-tied event pages (/events/2026/london/) which target
- * "hyrox london 2026". The /hyrox/[city]/ pages target the bare head term
- * "hyrox london", which is a higher-volume, year-agnostic query and a key
- * search-intent that funnels into events, gyms, and training.
+ * This used to back standalone /hyrox/[city]/ evergreen pages targeting the
+ * bare head term "hyrox london". Those pages were retired in Aug 2026 because
+ * they ranked at the same position as the matching /events/<year>/<city>/ page
+ * for the same queries and split the signal (see the redirect block in
+ * astro.config.ts). The data stays: `cityNotes` renders on the event page via
+ * EventCourseSection when an event has no `venueNotes` override, and
+ * `citySlug` resolves the local gym directory.
  *
  * Each entry must:
- *  - Match an EVENT slug used by /events/[year]/[city]/ so we can roll up
- *    every year of races for the same city.
+ *  - Match an EVENT slug used by /events/[year]/[city]/.
  *  - Use a citySlug compatible with getGymsByCity() in gym-finder.ts.
- *  - Provide a short city-specific tagline and pacing/venue note that adds
- *    real value beyond what the year page already covers.
- *
- * Add new cities here once they appear on the official Hyrox calendar
- * with at least one confirmed year of racing.
+ *  - Provide venue notes that add real value beyond the event data itself.
  */
 
 export interface CityEvergreen {
-  /** URL slug — used at /hyrox/[slug]/. Matches the events.ts slug. */
+  /** Matches the events.ts slug so event pages can resolve their city. */
   slug: string;
   /** Display city name. */
   city: string;

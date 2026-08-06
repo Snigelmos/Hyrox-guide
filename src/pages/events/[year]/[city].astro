@@ -125,11 +125,34 @@ const sponsorPrefix = event?.sponsor ? `${event.sponsor} ` : "";
 const localNamesList = event?.localNames?.length
   ? event.localNames.join(" / ")
   : "";
+// Only one short alternate spelling goes in the title. The full localNames
+// list still renders in the H1 subtitle and the FAQ, so nothing is lost, but
+// a title carrying "Milano / Mailand / Hyrox Italia" or "Paris Porte de
+// Versailles" truncates in the SERP before it reaches the value proposition.
+const TITLE_LOCAL_NAME_MAX_CHARS = 10;
+const titleLocalName = event
+  ? (event.localNames ?? [])
+      .map((n) => n.replace(/^Hyrox\s+/i, "").trim())
+      .find(
+        (n) =>
+          n.length > 0 &&
+          n.length <= TITLE_LOCAL_NAME_MAX_CHARS &&
+          n.toLowerCase() !== event.city.toLowerCase(),
+      )
+  : undefined;
 const cityWithLocalNames = event
-  ? localNamesList
-    ? `${event.city} (${localNamesList})`
+  ? titleLocalName
+    ? `${event.city} (${titleLocalName})`
     : event.city
   : "";
+// Snippet strategy. Event pages share page one with the official hyrox.com
+// listing, which owns the register/confirm-the-date intent. Restating the
+// event name loses that click every time (GSC: 0.7-1.6% CTR at positions
+// 7-9). Titles and descriptions therefore lead with what only this page
+// carries — the venue's running loop, race-day timings, transit, results,
+// and a training plan sized to the weeks remaining — and keep the head term
+// as the qualifier rather than the promise.
+const hasCourseMap = Boolean(event?.courseMapUrl || event?.courseMapImageUrl);
 const activeTitle = event
   ? inRaceWeek && !isPast
     ? // Race-week title — captures schedule/start-list/live queries (incl.
@@ -141,27 +164,41 @@ const activeTitle = event
       : isWorldChampionship
         ? `Hyrox World Championships ${year} — Schedule, Start List & Live Tracker (${event.city}, ${formatEventDate(event.startDate, event.endDate)})`
         : `Hyrox ${event.city} ${year} — Schedule, Start List & Live Tracker (${formatEventDate(event.startDate, event.endDate)})`
-    : isWorldChampionship
-      ? // Lead with the head term so we rank for "Hyrox World Championships
-        // 2026" / "Hyrox Worlds 2026" before the city qualifier. The ${year}
-        // page still owns "Hyrox Stockholm 2026" via the H1, body, and FAQ.
-        `Hyrox World Championships ${year} — ${event.city} Schedule, Divisions & Qualifying (${formatEventDate(event.startDate, event.endDate)})`
-      : `Hyrox ${cityWithLocalNames} ${year} — ${formatEventDate(event.startDate, event.endDate)}`
+    : isPast
+      ? isWorldChampionship
+        ? raceResults
+          ? `Hyrox World Championships ${year} — Elite 15 Winners & Race Report`
+          : `Hyrox World Championships ${year} — ${event.city} Race Recap`
+        : raceResults
+          ? `Hyrox ${cityWithLocalNames} ${year} — Race Report & Winners`
+          : `Hyrox ${cityWithLocalNames} ${year} — Race Recap & Course Notes`
+      : isWorldChampionship
+        ? // Lead with the head term so we rank for "Hyrox World Championships
+          // 2026" / "Hyrox Worlds 2026" before the city qualifier. The ${year}
+          // page still owns "Hyrox Stockholm 2026" via the H1, body, and FAQ.
+          `Hyrox World Championships ${year}: ${event.city} Qualifying & Schedule`
+        : event.confirmed
+          ? `Hyrox ${cityWithLocalNames} ${year} — ${hasCourseMap ? "Course Map" : "Course"} & Race-Day Timings`
+          : `Hyrox ${cityWithLocalNames} ${year} — Expected Date, Venue & Prep`
   : "";
 const activeDescription = event
   ? isPast
     ? isWorldChampionship
-      ? `The ${year} Hyrox World Championships at ${event.venue}, ${event.city} — race report, ${formatEventDate(event.startDate, event.endDate)}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "The qualified"} athletes contested the season's premier event. Elite 15 finals, age-group worlds, full podium and takeaways.` : "Elite 15 finals, age-group worlds, and full podium recap."}`
-      : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} race report — ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. ${raceResults ? `${raceResults.totalAthletes?.toLocaleString() ?? "Thousands of"} athletes competed. Full podium, results, and key takeaways.` : "Full results and recap."}`
+      ? raceResults
+        ? `Hyrox World Championships ${year} at ${event.venue}: Elite 15 podium times, age-group world titles, ${raceResults.totalAthletes ? `the ${raceResults.totalAthletes.toLocaleString()}-strong ${event.city} field` : `how the ${event.city} field raced`}, and the takeaways worth keeping.`
+        : `The ${year} Hyrox World Championships ran ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. How the field qualified, and where the official Elite 15 and age-group times are published.`
+      : raceResults
+        ? `Hyrox ${event.city} ${year} is done. Podium times by division, the size of the field, how the ${event.venue} loop raced, and what to take into your next start.`
+        : `Hyrox ${event.city} ${year} raced ${formatEventDate(event.startDate, event.endDate)}. How the course played out, where the official finish times land, and what to plan for the next edition.`
     : inRaceWeek
       ? isWorldChampionship
         ? `The ${year} Hyrox World Championships at ${event.venue}, ${event.city}, ${formatEventDate(event.startDate, event.endDate)}. Schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, Elite 15 finals start list, live tracker, and spectator info for the season's premier event.`
         : `Hyrox ${event.city} ${year} race weekend at ${event.venue}, ${formatEventDate(event.startDate, event.endDate)}. Race-day schedule${raceWeekTerms?.isLocalised ? ` (${raceWeekTerms.schedule})` : ""}, start list, live tracker for every wave, and spectator info — everything you need ahead of Hyrox ${event.country} ${year}.`
       : event.confirmed
         ? isWorldChampionship
-          ? `The ${year} Hyrox World Championships run ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}, ${event.city}. Qualified-only field, Elite 15 finals, age-group worlds, divisions, schedule, and how to follow live.`
-          : `${sponsorPrefix}Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} runs ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Race format, divisions, training prep, and travel info.`
-        : `Hyrox ${event.city} ${year}${localNamesList ? ` (Hyrox ${localNamesList} ${year})` : ""} expected ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. Indicative date pending official confirmation. Get prep guidance and pacing strategy.`
+          ? `How to qualify for the Hyrox World Championships in ${event.city}, ${formatEventDate(event.startDate, event.endDate)}: the three qualifying paths, Elite 15 finals format, divisions, and how to watch live.`
+          : `Hyrox ${event.city} ${year}, ${formatEventDate(event.startDate, event.endDate)}. What race day actually looks like: the running loop, wave timings, bag drop and transit, plus a plan for the weeks left.`
+        : `Hyrox ${event.city} ${year} is expected ${formatEventDate(event.startDate, event.endDate)} but not yet confirmed. What to expect at ${event.venue}, how race day runs, and how to keep training while the date firms up.`
   : "";
 
 const activeBreadcrumbs = event
@@ -474,10 +511,10 @@ const explainerCityHeadline = explainer
     : explainer.city
   : "";
 const explainerTitle = explainer
-  ? `Hyrox ${explainer.localCity ?? explainer.city} ${year}: Not on the Calendar`
+  ? `Hyrox ${explainer.localCity ?? explainer.city} ${year}: Not Happening — Closest Races`
   : "";
 const explainerDescription = explainer
-  ? `Hyrox ${explainer.city} ${year} is not on the official Hyrox calendar. Closest substitute races, training options, and what to do if you searched for a Hyrox in ${explainer.city}.`
+  ? `Hyrox ${explainer.city} ${year} isn't on the official calendar. The nearest races that are, with dates, how far they are from ${explainer.city}, and where to train locally in the meantime.`
   : "";
 const explainerBreadcrumbs = explainer
   ? [
@@ -1044,56 +1081,44 @@ const explainerFaqItems = explainer
       )}
     </section>
 
-    {/* Local Hyrox-affiliated training gyms + evergreen city-guide
-        cross-link. Only renders for cities where we have curated gyms
-        or an evergreen page — never advertises empty content. */}
-    {(localGyms.length > 0 || cityEvergreen) && (
+    {/* Local Hyrox-affiliated training gyms. Only renders for cities where
+        we have curated gyms — never advertises empty content. */}
+    {localGyms.length > 0 && (
       <section class="mt-16 pt-10 border-t border-border">
         <h2 class="text-2xl font-black text-text-heading mb-2">
           Train for Hyrox {event.city} locally
         </h2>
         <p class="text-text-muted mb-6 max-w-3xl">
-          {localGyms.length > 0
-            ? `Hyrox-affiliated training clubs near ${event.venue} — most run dedicated Hyrox classes through the build-up to race weekend.`
-            : `Use the ${event.city} city guide for the local training-club ecosystem, race history, and pacing notes that don't change between years.`}
+          Hyrox-affiliated training clubs near {event.venue} — most run dedicated Hyrox classes through the build-up to race weekend.
         </p>
-        {localGyms.length > 0 && (
-          <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-6 not-prose">
-            {localGyms.map((gym) => (
-              <a
-                href={`/gyms/g/${gym.slug}/`}
-                class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-              >
-                <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
-                  {gym.neighbourhood ?? gym.city}
-                </div>
-                <div class="text-base text-text-heading font-bold mb-1 leading-tight">
-                  {gym.name}
-                </div>
-                <div class="text-xs text-text-muted">
-                  {gym.affiliationType === "official-training-club"
-                    ? "Official Hyrox training club"
-                    : gym.affiliationType === "chain-partner"
-                      ? "Hyrox chain partner"
-                      : gym.affiliationType === "crossfit-box"
-                        ? "CrossFit box"
-                        : "Boutique studio"}
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
+        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-6 not-prose">
+          {localGyms.map((gym) => (
+            <a
+              href={`/gyms/g/${gym.slug}/`}
+              class="block bg-bg-card border border-border rounded-xl p-4 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+            >
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">
+                {gym.neighbourhood ?? gym.city}
+              </div>
+              <div class="text-base text-text-heading font-bold mb-1 leading-tight">
+                {gym.name}
+              </div>
+              <div class="text-xs text-text-muted">
+                {gym.affiliationType === "official-training-club"
+                  ? "Official Hyrox training club"
+                  : gym.affiliationType === "chain-partner"
+                    ? "Hyrox chain partner"
+                    : gym.affiliationType === "crossfit-box"
+                      ? "CrossFit box"
+                      : "Boutique studio"}
+              </div>
+            </a>
+          ))}
+        </div>
         <div class="flex flex-wrap gap-3">
-          {cityEvergreen && (
-            <a href={`/hyrox/${cityEvergreen.slug}/`} class="inline-flex items-center gap-1.5 bg-accent text-bg font-bold text-sm rounded-xl px-5 py-2.5 hover:bg-accent/90 transition-colors no-underline">
-              Hyrox {event.city} city guide →
-            </a>
-          )}
-          {localGyms.length > 0 && (
-            <a href={`/gyms/${cityEvergreen?.citySlug ?? event.slug}/`} class="inline-flex items-center gap-1.5 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
-              All {event.city} Hyrox gyms →
-            </a>
-          )}
+          <a href={`/gyms/${cityEvergreen?.citySlug ?? event.slug}/`} class="inline-flex items-center gap-1.5 bg-accent text-bg font-bold text-sm rounded-xl px-5 py-2.5 hover:bg-accent/90 transition-colors no-underline">
+            All {event.city} Hyrox gyms →
+          </a>
         </div>
       </section>
     )}
@@ -1202,19 +1227,6 @@ const explainerFaqItems = explainer
             </a>
           ))}
         </div>
-      </section>
-    )}
-
-    {explainer.evergreenCitySlug && (
-      <section class="mb-12 bg-bg-card border border-border rounded-2xl p-6">
-        <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Hyrox in {explainer.city}</div>
-        <h2 class="text-xl md:text-2xl font-black text-text-heading mb-3">Evergreen guide to Hyrox {explainer.city}</h2>
-        <p class="text-text-muted leading-relaxed mb-4">
-          The local training-club ecosystem, race history, and venue notes don't change just because the calendar moves. Use the evergreen city guide to find Hyrox-affiliated training clubs in {explainer.city} and follow when the race returns.
-        </p>
-        <a href={`/hyrox/${explainer.evergreenCitySlug}/`} class="inline-flex items-center gap-2 bg-accent text-white font-bold text-sm rounded-xl px-5 py-2.5 hover:opacity-90 transition-opacity no-underline">
-          Open the Hyrox {explainer.city} guide →
-        </a>
       </section>
     )}
 

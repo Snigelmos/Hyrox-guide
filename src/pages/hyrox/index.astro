@@ -1,9 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { CITY_EVERGREENS } from "../../data/city-evergreens";
 
-const title = "Hyrox by City — Race Locations, Venues, Local Gyms";
-const description = "Evergreen guides to every major Hyrox city. Race history, venue notes, pacing tips, and the best local Hyrox-affiliated gyms in London, Berlin, New York, LA, Sydney, Hong Kong, Dubai, and more.";
+const title = "Hyrox by Country — Germany and Switzerland Race Hubs";
+const description = "Country hubs for the markets that search in their own language: the full Hyrox Germany 2026 and Hyrox Switzerland 2026 calendars, plus explainers for the cities that dropped off the schedule.";
 
 const breadcrumbs = [{ name: "Hyrox cities" }];
 ---
@@ -18,14 +17,14 @@ const breadcrumbs = [{ name: "Hyrox cities" }];
   <div class="container-main py-10 md:py-16">
     <header class="mb-10 pb-8 border-b border-border max-w-4xl">
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        {title}
+        Hyrox by country
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed">{description}</p>
     </header>
 
     <section class="prose md:prose-lg max-w-none mb-10 max-w-3xl">
       <p>
-        Each city page is year-agnostic. Race history, venue notes, local gyms, and pacing notes that don't change between events. For the year-tied event date and registration, see the linked event page from each city.
+        Country hubs cover the whole national calendar in one place, including the local-language search terms and the cities that aren't on this season's schedule. For a specific race city, the <a href="/events/2026/">2026 event calendar</a> has the venue, dates, course notes, and race-day detail for every stop.
       </p>
     </section>
 
@@ -51,22 +50,26 @@ const breadcrumbs = [{ name: "Hyrox cities" }];
       </div>
     </section>
 
-    <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Hyrox by city</h2>
-    <div class="grid gap-4 md:grid-cols-2">
-      {CITY_EVERGREENS.map((c) => (
+    <section class="mb-10">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-4">Looking for a race city?</h2>
+      <div class="grid gap-4 md:grid-cols-2">
         <a
-          href={`/hyrox/${c.slug}/`}
+          href="/events/2026/"
           class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
         >
-          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
-            {c.country}
-          </div>
-          <div class="text-2xl font-black text-text-heading mb-2">
-            Hyrox {c.city}
-          </div>
-          <p class="text-sm text-text-muted leading-relaxed">{c.tagline}</p>
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Calendar</div>
+          <div class="text-xl font-black text-text-heading mb-2">Every Hyrox 2026 race by date</div>
+          <p class="text-sm text-text-muted leading-relaxed">Dates, venues, and course notes for every stop on the season, plus race reports for the ones already run.</p>
         </a>
-      ))}
-    </div>
+        <a
+          href="/gyms/map/"
+          class="block bg-bg-card border border-border rounded-2xl p-6 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">Gym finder</div>
+          <div class="text-xl font-black text-text-heading mb-2">Hyrox gyms near your city</div>
+          <p class="text-sm text-text-muted leading-relaxed">Verified Hyrox-affiliated training clubs worldwide on one searchable map.</p>
+        </a>
+      </div>
+    </section>
   </div>
 </BaseLayout>

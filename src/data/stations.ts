@@ -214,9 +214,9 @@ export const STATIONS: StationDefinition[] = [
     name: "Wall Balls",
     position: 8,
     reps: "100 reps (all divisions)",
-    metaTitle: "Hyrox Wall Balls: 100 Reps, Weights & Target Height",
+    metaTitle: "Hyrox Wall Ball Weight: 6kg Open, 9kg Pro (100 Reps)",
     metaDescription:
-      "Hyrox wall balls: 100 reps for every division. Open Men throw a 6kg ball to a 3m target, women 4kg to 2.7m (Pro 9kg). Standards, common no-reps, and how to break them up.",
+      "Every division throws 100 reps, but ball weight and target height change. The full table, the two no-reps that cost people a PB, and how to break the set up.",
     standards: [
       { division: "Open Men", spec: "6kg ball, 3m target" },
       { division: "Open Women", spec: "4kg ball, 2.7m target" },

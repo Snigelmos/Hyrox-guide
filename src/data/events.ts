@@ -104,8 +104,7 @@ export interface HyroxEvent {
    * runs at Strawberry Arena in Solna while the regular Stockholm regional
    * stop runs at Stockholmsmässan in Älvsjö. EventCourseSection.astro
    * prefers `venueNotes` over the city-evergreen `cityNotes` when present
-   * so the venue copy on the page matches the venue header. The
-   * /hyrox/[city]/ evergreen guide is unaffected.
+   * so the venue copy on the page matches the venue header.
    */
   venueNotes?: { title: string; detail: string }[];
 }
@@ -163,8 +162,8 @@ export const RETIRED_EVENT_SLUGS: {
  * Used when there is meaningful search demand for `Hyrox <city> <year>` even
  * though the city is not on this year's calendar. The explainer page lives at
  * `/events/<year>/<slug>/`, captures the year-specific query intent, and
- * funnels readers to the closest substitute races and the matching
- * `/hyrox/<city>/` evergreen page.
+ * funnels readers to the closest substitute races and the local gym
+ * directory.
  *
  * MAINTENANCE: never put a slug in BOTH `RETIRED_EVENT_SLUGS` and
  * `RETIRED_EVENT_EXPLAINERS` for the same year. Explainers take precedence
@@ -182,7 +181,7 @@ export interface RetiredEventExplainer {
   intro: string[];
   /** Suggested substitute races on this season's calendar. */
   substitutes: { slug: string; city: string; year: number; note: string }[];
-  /** Slug for the matching /hyrox/[city]/ evergreen page if one exists. */
+  /** City slug used to link the local gym directory at /gyms/<slug>/. */
   evergreenCitySlug?: string;
 }
 

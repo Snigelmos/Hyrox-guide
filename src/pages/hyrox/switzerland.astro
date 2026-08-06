@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { EVENTS, formatEventDate, isPastEvent } from "../../data/events";
-import { CITY_EVERGREENS } from "../../data/city-evergreens";
 
 const COUNTRY_CODE = "CH";
 const COUNTRY_NAME = "Switzerland";
@@ -11,11 +10,10 @@ const allChEvents = EVENTS.filter((e) => e.countryCode === COUNTRY_CODE).sort(
 );
 const upcoming = allChEvents.filter((e) => !isPastEvent(e));
 const past = allChEvents.filter((e) => isPastEvent(e));
-const cityHubs = CITY_EVERGREENS.filter((c) => c.countryCode === COUNTRY_CODE);
 
 const title = "Hyrox Switzerland 2026: Calendar (Hyrox Schweiz / Svizzera)";
 const description =
-  "Hyrox Switzerland 2026 calendar: every Swiss Hyrox race, venue, and date. St Gallen and Geneva are confirmed; Zurich is not on the 2026 calendar. Plus city guides for athletes searching Hyrox Schweiz 2026 or Hyrox Svizzera 2026.";
+  "Hyrox Switzerland 2026 calendar: every Swiss Hyrox race, venue, and date. St Gallen and Geneva are confirmed; Zurich is not on the 2026 calendar, and the explainer covers the closest alternatives.";
 const breadcrumbs = [
   { name: "Hyrox cities", url: "/hyrox/" },
   { name: "Switzerland" },
@@ -122,30 +120,11 @@ const faqItems = [
         <a href="/events/2026/zurich/" class="inline-flex items-center gap-2 bg-accent text-white font-bold text-sm rounded-xl px-5 py-2.5 hover:opacity-90 transition-opacity no-underline">
           Hyrox Zürich 2026 explainer →
         </a>
-        <a href="/hyrox/zurich/" class="inline-flex items-center gap-2 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
-          Zurich evergreen guide →
+        <a href="/gyms/zurich/" class="inline-flex items-center gap-2 bg-bg-card border border-border text-text font-semibold text-sm rounded-xl px-5 py-2.5 hover:border-accent/40 transition-colors no-underline">
+          Zurich training clubs →
         </a>
       </div>
     </section>
-
-    {cityHubs.length > 0 && (
-      <section class="mb-12">
-        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-2">Hyrox by city in Switzerland</h2>
-        <p class="text-text-muted mb-6 max-w-3xl">Year-agnostic city guides for Swiss Hyrox host cities. Race history, venue notes, training-club ecosystem, and pacing tips.</p>
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {cityHubs.map((c) => (
-            <a
-              href={`/hyrox/${c.slug}/`}
-              class="block bg-bg-card border border-border rounded-2xl p-5 hover:border-accent/40 hover:bg-bg-card-hover transition-all no-underline"
-            >
-              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-1">City</div>
-              <div class="text-lg font-black text-text-heading mb-1">Hyrox {c.city}</div>
-              <p class="text-sm text-text-muted leading-relaxed">{c.tagline}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
 
     {past.length > 0 && (
       <section class="mb-12">

@@ -208,17 +208,6 @@ async function main() {
     }
   } catch {}
 
-  // Pre-load city evergreens.
-  let cityEvergreenSlugs = new Set();
-  try {
-    const ceTs = await readFile("src/data/city-evergreens.ts", "utf8");
-    const re = /slug:\s*"([^"]+)"/g;
-    let m;
-    while ((m = re.exec(ceTs)) !== null) {
-      cityEvergreenSlugs.add(m[1]);
-    }
-  } catch {}
-
   // Pre-load comparison slugs.
   let comparisonSlugs = new Set();
   try {
@@ -348,9 +337,10 @@ async function main() {
 
     const cityEvergreenMatch = href.match(/^\/hyrox\/([^/]+)\/$/);
     if (cityEvergreenMatch) {
-      if (cityEvergreenSlugs.has(cityEvergreenMatch[1])) continue;
-      // Country-level pages like /hyrox/germany/ are static (already checked above).
-      missing.push({ href, sources: [...sources], reason: `city evergreen '${cityEvergreenMatch[1]}' not in CITY_EVERGREENS` });
+      // Country-level pages like /hyrox/germany/ are static (already checked
+      // above). Everything else under /hyrox/ was retired into /events/ in the
+      // Aug 2026 cannibalization pass and now only exists as a 301.
+      missing.push({ href, sources: [...sources], reason: `/hyrox/${cityEvergreenMatch[1]}/ was retired — link the /events/ page instead` });
       continue;
     }
 
