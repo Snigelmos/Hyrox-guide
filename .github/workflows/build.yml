@@ -40,5 +40,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Runs before the build because it is instant and its failure mode is
+      # invisible otherwise: a mistyped key still builds, still renders a
+      # button, and only reveals itself as visitors bouncing off /gear/.
+      - name: Check affiliate product keys resolve
+        run: npm run check:affiliate
+
       - name: Build site (astro build)
         run: npm run build
