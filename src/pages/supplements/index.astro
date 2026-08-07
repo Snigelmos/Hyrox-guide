@@ -221,13 +221,8 @@ const raceDayEssentials = supplementGuides
               )}
               <h3 class="font-bold text-text-heading mb-2">{product.name}</h3>
               <p class="text-sm text-text-muted leading-relaxed flex-1 mb-4">{product.description}</p>
+              {/* Star scores removed — see the note in supplements/[slug].astro. */}
               <div class="flex items-center gap-3 mb-4">
-                {product.rating && (
-                  <div class="flex items-center gap-1">
-                    <span class="text-amber-400 text-sm">★</span>
-                    <span class="text-sm font-bold text-text-heading">{product.rating}</span>
-                  </div>
-                )}
                 {product.price && (
                   <span class="text-sm text-text-muted">{product.price}</span>
                 )}

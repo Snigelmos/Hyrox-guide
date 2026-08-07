@@ -89,10 +89,12 @@ const productKey =
   entry.data.category === "creatine" ? "creatine-monohydrate" :
   entry.data.category;
 
-// Page title with year for SEO freshness
+// Page title with year for SEO freshness. Not "Tested & Reviewed": these picks
+// come from the published research and the product labels, not from a lab or a
+// hands-on trial, and saying otherwise is a claim we cannot stand behind.
 const pageTitle = entry.data.title.includes("2026")
   ? entry.data.title
-  : `${entry.data.title} 2026 — Tested & Reviewed`;
+  : `${entry.data.title} 2026 — What Works and What to Skip`;
 ---
 
 <BaseLayout
@@ -180,17 +182,19 @@ const pageTitle = entry.data.title.includes("2026")
                     </span>
                     <h2 class="text-xl font-black text-text-heading mb-2">{hero.name}</h2>
                     <p class="text-sm text-text-muted leading-relaxed mb-4">{hero.description}</p>
-                    <div class="flex items-center gap-3 mb-5">
-                      {hero.rating && (
-                        <div class="flex items-center gap-1">
-                          <span class="text-amber-400 text-sm">★</span>
-                          <span class="text-sm font-bold text-text-heading">{hero.rating}/5</span>
-                        </div>
-                      )}
-                      {hero.price && (
+                    {/*
+                      The star score that used to sit here was not derived from
+                      anything — no testing, no scoring rubric, no source. It
+                      read as a review verdict the site had not earned, so it
+                      is gone. The "Editor's Pick" badge above already says what
+                      is honestly being claimed. If a rating comes back it needs
+                      a published methodology behind it.
+                    */}
+                    {hero.price && (
+                      <div class="mb-5">
                         <span class="text-sm font-semibold text-accent">{hero.price}</span>
-                      )}
-                    </div>
+                      </div>
+                    )}
                     <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
                     <p class="text-xs text-text-muted/60 mt-3">
                       We may earn a small commission via Amazon.
