@@ -68,6 +68,21 @@ const PAGE_SIZE = 100;
 const TOP_N = 10;
 /** How long a finished race keeps getting re-synced, to absorb late DQs. */
 const RESYNC_DAYS = 21;
+/**
+ * Guard rails on what counts as a finish time. The Hyrox world best is a shade
+ * under 53 minutes and the slowest finishers come in around three hours, so a
+ * value outside this range means we read the wrong cell rather than that someone
+ * ran a 4-minute race.
+ */
+const MIN_PLAUSIBLE_SECONDS = 40 * 60;
+const MAX_PLAUSIBLE_SECONDS = 5 * 3600;
+/**
+ * A leading row this much faster than the one behind it is a timing error, not a
+ * performance. Incheon's Open Women list opens with a 34:20 ahead of a 1:05:41 —
+ * nobody wins a Hyrox by half an hour. Relative rather than absolute, so it
+ * stays correct as the sport gets faster.
+ */
+const OUTLIER_GAP_RATIO = 0.75;
 
 /**
  * Divisions worth a public leaderboard, in the order they should render.
@@ -257,7 +272,25 @@ function decodeHtml(s) {
  * wrong, since that comma separates two people rather than surname from
  * forename.
  */
+/**
+ * Which cell holds the finish time is a per-page question, and it has to be
+ * answered by outcome rather than by looking for the field.
+ *
+ * Elite 15 pages mention `type-time` somewhere in the markup while their data
+ * rows carry the result in `type-eval` instead, so testing for the field's
+ * presence drops every elite row. Choosing per row is worse still: a DNF has a
+ * blank `type-time` and a station split in `type-eval`, which is how a "3:46
+ * winner" gets published. Parsing the whole page each way and keeping whichever
+ * actually produced times avoids both traps.
+ */
 function parseRows(html) {
+  const byTime = extractRows(html, "time");
+  if (byTime.some((r) => r.seconds !== null)) return byTime;
+  const byEval = extractRows(html, "eval");
+  return byEval.some((r) => r.seconds !== null) ? byEval : byTime;
+}
+
+function extractRows(html, timeField) {
   const rows = [];
   const liRx = /<li class="[^"]*list-group-item[^"]*"[^>]*>([\s\S]*?)<\/li>/g;
   let m;
@@ -277,9 +310,7 @@ function parseRows(html) {
     const ageGroup =
       block.match(/type-age_class"[^>]*>(?:<div[^>]*>[^<]*<\/div>)?\s*([^<]*)</)?.[1]?.trim() ||
       null;
-    const time = block.match(
-      /type-time"[^>]*>(?:<div[^>]*>[^<]*<\/div>)?\s*(\d{1,2}:\d{2}:\d{2})/,
-    )?.[1];
+    const finish = parseFinish(block, timeField);
     rows.push({
       idp: decodeURIComponent(idp),
       name: isTeam ? name : toDisplayName(name),
@@ -287,10 +318,39 @@ function parseRows(html) {
       rank: Number.isFinite(rank) && rank > 0 ? rank : null,
       nation,
       ageGroup: ageGroup && ageGroup !== "–" ? ageGroup : null,
-      time: time ?? null,
+      time: finish?.display ?? null,
+      /** Kept at full precision purely so sorting can break whole-second ties. */
+      seconds: finish?.seconds ?? null,
     });
   }
   return rows;
+}
+
+/**
+ * Read a row's finish time.
+ *
+ * Most divisions put it in `type-time` as h:mm:ss. The Elite 15 races have no
+ * `type-time` field at all and carry the result in `type-eval` as mm:ss.hh
+ * ("53:47.18") — so requiring h:mm:ss silently dropped every elite row, which is
+ * to say the marquee race of a World Championship weekend.
+ */
+function parseFinish(block, field) {
+  const raw =
+    block.match(
+      new RegExp(`type-${field}"[^>]*>(?:<div[^>]*>[^<]*</div>)?\\s*([^<]*)<`),
+    )?.[1]?.trim() ?? "";
+  const m = /^(?:(\d{1,2}):)?(\d{1,2}):(\d{2})(?:\.(\d+))?$/.exec(raw);
+  if (!m) return null;
+  const [, h, a, b, frac] = m;
+  const seconds =
+    (h ? Number(h) * 3600 + Number(a) * 60 : Number(a) * 60) +
+    Number(b) +
+    (frac ? Number(`0.${frac}`) : 0);
+  // A full Hyrox is eight runs and eight stations; the world's fastest are just
+  // under 53 minutes. Anything far below that is not a finish time, it is a
+  // single-station or partial split that has landed in the cell we read.
+  if (seconds < MIN_PLAUSIBLE_SECONDS || seconds > MAX_PLAUSIBLE_SECONDS) return null;
+  return { display: fmtTime(Math.floor(seconds)), seconds };
 }
 
 /**
@@ -322,14 +382,9 @@ function toDisplayName(stored) {
   return [fixCaps(first.trim()), fixCaps(last.trim())].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
 }
 
-const toSeconds = (t) => {
-  const p = t.split(":").map(Number);
-  return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1];
-};
 /** Match the editorial style in event-results.ts: h:mm:ss, no leading zero. */
 const fmtTime = (s) =>
   `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-const normaliseTime = (t) => fmtTime(toSeconds(t));
 
 function dedupe(rows) {
   const seen = new Set();
@@ -358,13 +413,23 @@ async function buildBucket({ season, ids, divisionName, sex }) {
   }
   if (total === 0) return null;
 
-  let rows = dedupe(pages.flatMap((p) => parseRows(p.html))).filter((r) => r.time);
+  let rows = dedupe(pages.flatMap((p) => parseRows(p.html))).filter((r) => r.seconds !== null);
   if (rows.length === 0) return null;
 
   // Within a sex-filtered listing the portal's order is already finish order.
   // Sorting anyway costs nothing and is what makes the unfiltered fallback and
   // the multi-day merge correct.
-  rows.sort((a, b) => toSeconds(a.time) - toSeconds(b.time));
+  rows.sort((a, b) => a.seconds - b.seconds);
+
+  // Discard impossibly fast leaders. Done after sorting and iteratively, since a
+  // field can carry more than one bad chip read.
+  while (rows.length >= 2 && rows[0].seconds < rows[1].seconds * OUTLIER_GAP_RATIO) {
+    console.warn(
+      `    ~ dropped outlier ${rows[0].name} ${rows[0].time} (next ${rows[1].time})`,
+    );
+    rows.shift();
+  }
+  if (rows.length === 0) return null;
 
   // Median. It needs the row at the midpoint of the whole field, so it is only
   // computable when the field is exactly counted; when the midpoint sits beyond
@@ -403,12 +468,12 @@ async function buildBucket({ season, ids, divisionName, sex }) {
     isTeam: rows[0].isTeam,
     fieldSize: total,
     fieldSizeExact: exact,
-    fastestTime: normaliseTime(rows[0].time),
-    medianTime: medianTime ? normaliseTime(medianTime) : null,
+    fastestTime: rows[0].time,
+    medianTime,
     top: rows.slice(0, TOP_N).map((r, i) => ({
       rank: i + 1,
       name: r.name,
-      time: normaliseTime(r.time),
+      time: r.time,
       country: r.nation,
       ageGroup: r.ageGroup,
     })),
@@ -419,7 +484,11 @@ async function buildRace(entry, meta, existing) {
   // Prefer the Overall roll-up: one query covers every day of the race.
   const byPrefix = new Map();
   for (const d of entry.divisions) {
-    const prefix = d.id.split("_")[0];
+    // Stockholm splits its open doubles across HD1_ (Saturday) and HD2_
+    // (Sunday) instead of the usual HD_ with two day ids. Stripping the trailing
+    // digit folds those back into the division they belong to; no real prefix
+    // ends in a number.
+    const prefix = d.id.split("_")[0].replace(/\d+$/, "");
     if (!byPrefix.has(prefix)) byPrefix.set(prefix, { overall: null, days: [] });
     const slot = byPrefix.get(prefix);
     if (d.id.endsWith("_OVERALL")) slot.overall = d.id;
