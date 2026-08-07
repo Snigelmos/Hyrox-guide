@@ -36,7 +36,23 @@ for (const file of await readdir(supplementsDir)) {
   }
 }
 
-// 2. Gear comparisons reference two keys per row.
+// 2. Any MDX guide can drop a <BuyRail products={[...]} /> mid-article.
+for (const dir of ["blog", "gear", "racing-guide", "training", "supplements"]) {
+  const base = join(ROOT, "src/content", dir);
+  for (const file of await readdir(base)) {
+    if (!file.endsWith(".mdx")) continue;
+    const text = await readFile(join(base, file), "utf8");
+    for (const rail of text.matchAll(/products=\{\[([^\]]*)\]\}/g)) {
+      for (const key of rail[1].matchAll(/"([^"]+)"/g)) {
+        if (!known.has(key[1])) {
+          problems.push(`src/content/${dir}/${file}: unknown productKey "${key[1]}" in BuyRail`);
+        }
+      }
+    }
+  }
+}
+
+// 3. Gear comparisons reference two keys per row.
 const gear = await readFile(join(ROOT, "src/data/gear-comparisons.ts"), "utf8");
 for (const m of gear.matchAll(/product[AB]Key:\s*"([^"]+)"/g)) {
   if (!known.has(m[1])) {
@@ -44,7 +60,7 @@ for (const m of gear.matchAll(/product[AB]Key:\s*"([^"]+)"/g)) {
   }
 }
 
-// 3. Literal keys passed straight to a button in page code.
+// 4. Literal keys passed straight to a button in page code.
 for (const page of ["src/pages/index.astro"]) {
   const text = await readFile(join(ROOT, page), "utf8");
   for (const m of text.matchAll(/productKey:\s*"([^"]+)"/g)) {
