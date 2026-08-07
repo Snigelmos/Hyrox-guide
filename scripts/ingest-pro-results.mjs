@@ -322,14 +322,22 @@ function fixCaps(name) {
     .join("");
 }
 
-/** "Menendez Fernandez, Pelayo" -> "Pelayo Menendez Fernandez" */
+/**
+ * "Menendez Fernandez, Pelayo" -> "Pelayo Menendez Fernandez"
+ *
+ * The comma is split off before case-fixing: a token like "CONTESSO," carries
+ * the comma, so it fails the all-caps test and would survive as shouting.
+ */
 function toDisplayName(stored) {
-  const fixed = fixCaps(stored.trim());
-  const i = fixed.indexOf(",");
-  if (i === -1) return fixed.replace(/\s+/g, " ").trim();
-  const last = fixed.slice(0, i).trim();
-  const first = fixed.slice(i + 1).trim();
-  return `${first} ${last}`.replace(/\s+/g, " ").trim();
+  const trimmed = stored.trim();
+  const i = trimmed.indexOf(",");
+  const last = i === -1 ? trimmed : trimmed.slice(0, i);
+  const first = i === -1 ? "" : trimmed.slice(i + 1);
+  return [fixCaps(first.trim()), fixCaps(last.trim())]
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function normaliseName(value) {

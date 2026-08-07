@@ -8,7 +8,6 @@
  */
 
 import raw from "../data/pro-athletes.generated.json";
-import { EVENTS } from "../data/events";
 
 export interface AthleteRace {
   raceSlug: string;
@@ -144,8 +143,6 @@ export interface AthleteSummary {
   /** Signed seconds: negative means the athlete got faster. */
   improvementSeconds: number | null;
   divisions: string[];
-  /** Races that resolve to one of our event pages, for internal linking. */
-  linkableRaces: AthleteRace[];
 }
 
 export function summariseAthlete(athlete: ProAthlete): AthleteSummary {
@@ -172,8 +169,6 @@ export function summariseAthlete(athlete: ProAthlete): AthleteSummary {
   const cutoffYmd = cutoff.toISOString().slice(0, 10);
   const recent = byTime.filter((r) => (r.date ?? "") >= cutoffYmd);
 
-  const eventKeys = new Set(EVENTS.map((e) => `${e.year}:${e.slug}`));
-
   return {
     raceCount: athlete.races.length,
     personalBest: byTime[0] ?? null,
@@ -181,9 +176,6 @@ export function summariseAthlete(athlete: ProAthlete): AthleteSummary {
     bestRank: byRank[0] ?? null,
     improvementSeconds: improvement,
     divisions: [...new Set(athlete.races.map((r) => r.division))],
-    linkableRaces: athlete.races.filter((r) =>
-      eventKeys.has(`${r.raceYear}:${r.raceSlug}`),
-    ),
   };
 }
 
