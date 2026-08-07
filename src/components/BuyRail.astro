@@ -1,0 +1,43 @@
+---
+/**
+ * A row of buy buttons for use inside MDX guides.
+ *
+ * Exists so a guide can put a CTA next to the paragraph that earned it, rather
+ * than parking every commercial link in a block at the bottom of the page that
+ * nobody scrolls to. Labels come from the affiliate registry, so a product
+ * renamed there renames here.
+ *
+ * Keys are validated by scripts/check-affiliate-keys.mjs, but only for the
+ * files that script scans. If you use this in a new content type, add it there.
+ */
+import GeoAffiliateButton from "./GeoAffiliateButton";
+import { getBestLink } from "../data/affiliateLinks";
+
+interface Props {
+  /** Product keys from src/data/affiliateLinks.ts, in display order. */
+  products: string[];
+  /** One line explaining what is being linked and why. */
+  note?: string;
+}
+
+const { products, note } = Astro.props;
+---
+
+<div class="not-prose my-8 p-5 bg-bg-card border border-border rounded-2xl">
+  {note && <p class="text-sm text-text-muted mb-4 mt-0 leading-relaxed">{note}</p>}
+  <div class="flex flex-wrap gap-3">
+    {
+      products.map((key, i) => (
+        <GeoAffiliateButton
+          productKey={key}
+          label={`Shop ${getBestLink(key).displayName.toLowerCase()}`}
+          variant={i === 0 ? "primary" : "secondary"}
+        />
+      ))
+    }
+  </div>
+  <p class="text-xs text-text-muted/60 mt-4 mb-0">
+    Affiliate links. We may earn a commission at no extra cost to you, and it
+    does not change what we recommend.
+  </p>
+</div>
