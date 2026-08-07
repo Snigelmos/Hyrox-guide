@@ -15,6 +15,11 @@ import {
   type HyroxEvent,
 } from "../../../data/events";
 import { getResults } from "../../../data/event-results";
+import {
+  formatSyncedDate,
+  getEventLeaderboard,
+  pickDivision,
+} from "../../../lib/event-leaderboards";
 import { getCityEvergreen } from "../../../data/city-evergreens";
 import { getGymsByCity, hasIndexablePage } from "../../../data/gym-finder";
 import {
@@ -70,6 +75,10 @@ const event: HyroxEvent | null =
 const isPast = event ? isPastEvent(event) : false;
 const isLiveNow = event ? isEventLiveNow(event) : false;
 const raceResults = event ? getResults(event.year, event.slug) : null;
+// Synced leaderboards stand in until an editorial recap is written, so a past
+// race shows who won instead of nothing at all.
+const syncedLb = event ? getEventLeaderboard(event.year, event.slug) : undefined;
+const hasAnyResults = Boolean(raceResults) || Boolean(syncedLb);
 
 // World Championship branch — flips the page from a generic Hyrox stop into a
 // Worlds-aware experience. Triggered by `event.notes === "World Championship"`
@@ -468,7 +477,12 @@ const upcomingOthers = otherSameYear
   .filter((e) => !isPastEvent(e))
   .sort((a, b) => +new Date(a.startDate) - +new Date(b.startDate));
 const recentResultOthers = otherSameYear
-  .filter((e) => isPastEvent(e) && Boolean(getResults(e.year, e.slug)))
+  .filter(
+    (e) =>
+      isPastEvent(e) &&
+      (Boolean(getResults(e.year, e.slug)) ||
+        Boolean(getEventLeaderboard(e.year, e.slug))),
+  )
   .sort((a, b) => +new Date(b.startDate) - +new Date(a.startDate));
 
 const otherEventsInYear = (() => {
@@ -491,18 +505,58 @@ const otherEventsInYear = (() => {
 
 // Pull the top podium entry from the marquee divisions so the city page
 // can surface "this is who won" without bouncing the user to /results/.
-function findWinner(divisionMatchers: string[]) {
-  if (!raceResults) return undefined;
-  for (const matcher of divisionMatchers) {
-    const d = raceResults.divisions.find((x) =>
-      x.division.toLowerCase().includes(matcher),
-    );
-    if (d?.podium?.[0]) return { division: d.division, ...d.podium[0] };
+interface EventWinner {
+  division: string;
+  athlete: string;
+  time: string;
+  country?: string;
+  /** Only known for synced divisions with an exact count. */
+  fieldSize?: number;
+  medianTime?: string;
+}
+function findWinner(
+  divisionMatchers: string[],
+  syncedMatchers: string[],
+): EventWinner | undefined {
+  if (raceResults) {
+    for (const matcher of divisionMatchers) {
+      const d = raceResults.divisions.find((x) =>
+        x.division.toLowerCase().includes(matcher),
+      );
+      if (d?.podium?.[0]) {
+        return {
+          division: d.division,
+          athlete: d.podium[0].athlete,
+          time: d.podium[0].time,
+          country: d.podium[0].country,
+          fieldSize: d.athleteCount,
+          medianTime: d.medianTime,
+        };
+      }
+    }
+  }
+  const s = pickDivision(syncedLb, syncedMatchers);
+  if (s?.top[0]) {
+    return {
+      division: s.division,
+      athlete: s.top[0].name,
+      time: s.top[0].time,
+      country: s.top[0].country ?? undefined,
+      fieldSize: s.fieldSizeExact ? s.fieldSize : undefined,
+      medianTime: s.medianTime ?? undefined,
+    };
   }
   return undefined;
 }
-const proMenWinner = event ? findWinner(["pro men", "elite 15 men", "men"]) : undefined;
-const proWomenWinner = event ? findWinner(["pro women", "elite 15 women", "women"]) : undefined;
+const proMenWinner = event
+  ? findWinner(["pro men", "elite 15 men", "men"], ["Pro Men", "Elite 15 Men", "Open Men"])
+  : undefined;
+const proWomenWinner = event
+  ? findWinner(
+      ["pro women", "elite 15 women", "women"],
+      ["Pro Women", "Elite 15 Women", "Open Women"],
+    )
+  : undefined;
 
 // Explainer computed values
 const explainerCityHeadline = explainer
@@ -601,9 +655,9 @@ const explainerFaqItems = explainer
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
             Race complete
           </div>
-          {raceResults && (
+          {hasAnyResults && (
             <a href={`/events/${year}/${event.slug}/results/`} class="inline-flex items-center gap-1.5 text-xs font-bold text-accent bg-accent/10 border border-accent/25 rounded-full px-4 py-1.5 hover:bg-accent/20 transition-colors no-underline uppercase tracking-wider">
-              View race report →
+              {raceResults ? "View race report →" : "View full results →"}
             </a>
           )}
           {event.resultsUrl && (
@@ -644,6 +698,51 @@ const explainerFaqItems = explainer
   </section>
 
   <div class="container-main py-10 md:py-16">
+    {isPast && (proMenWinner || proWomenWinner) && (
+      <section class="mb-10 pb-10 border-b border-border">
+        <div class="flex items-baseline justify-between flex-wrap gap-2 mb-5">
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading">
+            Who won Hyrox {event.city} {year}
+          </h2>
+          {!raceResults && syncedLb && (
+            <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+              Synced {formatSyncedDate(syncedLb.syncedAt)} · provisional
+            </span>
+          )}
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2 not-prose">
+          {([proMenWinner, proWomenWinner].filter(Boolean) as EventWinner[]).map((w) => (
+            <div class="bg-gradient-to-br from-accent/10 to-bg-card border border-accent/30 rounded-2xl p-5">
+              <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+                {w.division}
+              </div>
+              <div class="text-lg md:text-xl font-black text-text-heading leading-tight break-words">
+                {w.athlete}
+              </div>
+              <div class="mt-2 text-3xl md:text-4xl font-black font-mono text-text-heading leading-none">
+                {w.time}
+              </div>
+              <div class="mt-3 text-xs text-text-muted">
+                {w.country && <span class="font-bold uppercase tracking-wider">{w.country}</span>}
+                {w.country && w.fieldSize && <span class="mx-2">·</span>}
+                {w.fieldSize && <span>{w.fieldSize.toLocaleString()} in the field</span>}
+                {w.medianTime && <span> · median {w.medianTime}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <a
+          href={`/events/${year}/${event.slug}/results/`}
+          class="inline-flex items-center gap-2 mt-5 text-sm font-bold text-accent hover:underline no-underline"
+        >
+          {raceResults
+            ? `Full Hyrox ${event.city} ${year} race report`
+            : `Top 10 in every division, field sizes, and median times`}
+          {" →"}
+        </a>
+      </section>
+    )}
+
     {isLiveNow && (
       <section id="live-tracker" class="mb-10 pb-10 border-b border-border scroll-mt-24">
         <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
@@ -1123,7 +1222,10 @@ const explainerFaqItems = explainer
       <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 not-prose">
         {otherEventsInYear.map((e) => {
           const eIsPast = isPastEvent(e);
-          const eHasResults = eIsPast && Boolean(getResults(e.year, e.slug));
+          const eHasResults =
+            eIsPast &&
+            (Boolean(getResults(e.year, e.slug)) ||
+              Boolean(getEventLeaderboard(e.year, e.slug)));
           return (
             <a
               href={`/events/${e.year}/${e.slug}/`}

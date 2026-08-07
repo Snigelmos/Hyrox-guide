@@ -1,0 +1,589 @@
+#!/usr/bin/env node
+/**
+ * scripts/build-event-leaderboards.mjs
+ *
+ * Builds src/data/event-leaderboards.generated.json — a per-race, per-division
+ * top 10 plus field size and median finish, for every race that has already
+ * happened. Rendered on /events/<year>/<city>/results/ as a provisional
+ * leaderboard until (or unless) an editorial recap replaces it.
+ *
+ * WHY THE SEX FILTER IS ALWAYS APPLIED:
+ *   An unfiltered division listing interleaves categories. Amsterdam 2026 Pro
+ *   Doubles returns two rows ranked "1" — a women's team at 57:21 followed by a
+ *   men's team at 49:45 — so row order is not finish order and row 1 is not the
+ *   winner. Adding search[sex] collapses the list to a single category, and it
+ *   then comes back strictly time-sorted with rank 1 = fastest. Filtering also
+ *   makes the result count exact: unfiltered totals are bucketed ("> 1000
+ *   Results") while filtered ones are precise ("298 Results").
+ *
+ * THE OPEN-DOUBLES EXCEPTION:
+ *   Some divisions never had the sex attribute populated — Amsterdam's open
+ *   doubles reports 6 men and 0 women against a field of 1000+. When both sexes
+ *   come back essentially empty we fall back to the unfiltered listing, re-sort
+ *   it by time ourselves, and label the division "(all categories)". Field size
+ *   is then the portal's bucketed figure and the median is omitted rather than
+ *   guessed.
+ *
+ * PROVISIONAL BY DESIGN:
+ *   Disqualifications and time corrections land days after a race, which is why
+ *   podiums were human-gated before. Re-syncing on a schedule is what makes
+ *   automation safe here: a race stays in the re-sync window for RESYNC_DAYS and
+ *   every entry carries the date it was synced, surfaced on the page.
+ *
+ * PRECEDENCE:
+ *   This file never overrides src/data/event-results.ts. Where an editorial
+ *   division exists, the renderer prefers it.
+ *
+ * USAGE:
+ *   node scripts/build-event-leaderboards.mjs                 # incremental
+ *   node scripts/build-event-leaderboards.mjs --force         # re-sync everything
+ *   node scripts/build-event-leaderboards.mjs --race milan --year 2026
+ *   node scripts/build-event-leaderboards.mjs --max-races 2   # smoke test
+ */
+
+import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const EVENTS_PATH = path.resolve(__dirname, "../src/data/events.ts");
+const INDEX_PATH = path.resolve(__dirname, "../src/data/hyrox-results-index.generated.ts");
+const OUT_PATH = path.resolve(__dirname, "../src/data/event-leaderboards.generated.json");
+const CACHE_DIR = path.resolve(__dirname, "../_research/leaderboard-cache");
+
+const HX_BASE = "https://results.hyrox.com";
+/** The portal 403s on a bare User-Agent — the fuller header set is required. */
+const HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Cache-Control": "no-cache",
+};
+
+/** num_results only accepts a small set of values; anything else falls back to 25. */
+const PAGE_SIZE = 100;
+const TOP_N = 10;
+/** How long a finished race keeps getting re-synced, to absorb late DQs. */
+const RESYNC_DAYS = 21;
+
+/**
+ * Divisions worth a public leaderboard, in the order they should render.
+ * Company Challenge (THD) and Adaptive (HA) are left out: the first is a
+ * corporate side event and the second is a small field where a scraped ranking
+ * invites more harm than value.
+ */
+const DIVISIONS = [
+  { prefix: "HE", name: "Elite 15" },
+  { prefix: "HPRO", name: "Pro" },
+  { prefix: "H", name: "Open" },
+  { prefix: "HDE", name: "Elite 15 Doubles" },
+  { prefix: "HDP", name: "Pro Doubles" },
+  { prefix: "HD", name: "Doubles" },
+  { prefix: "HMR", name: "Team Relay" },
+];
+const SEX_LABEL = { M: "Men", W: "Women" };
+
+// ----------------------------------------------------------------------------
+// CLI
+// ----------------------------------------------------------------------------
+const argv = process.argv.slice(2);
+const FLAGS = {
+  force: false,
+  fresh: false,
+  delayMs: 350,
+  maxRaces: 0,
+  race: null,
+  year: null,
+};
+for (let i = 0; i < argv.length; i++) {
+  const a = argv[i];
+  if (a === "--force") FLAGS.force = true;
+  else if (a === "--fresh") FLAGS.fresh = true;
+  else if (a === "--delay") FLAGS.delayMs = Number(argv[++i]);
+  else if (a === "--max-races") FLAGS.maxRaces = Number(argv[++i]);
+  else if (a === "--race") FLAGS.race = argv[++i];
+  else if (a === "--year") FLAGS.year = Number(argv[++i]);
+  else {
+    console.error(`Unknown flag: ${a}`);
+    process.exit(2);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Reading the committed inputs
+// ----------------------------------------------------------------------------
+function splitTopLevelObjects(src, arrayDeclRe) {
+  const m = arrayDeclRe.exec(src);
+  if (!m) return [];
+  let depthBracket = 0;
+  let depthBrace = 0;
+  let objStart = -1;
+  const objects = [];
+  for (let i = m.index + m[0].length - 1; i < src.length; i++) {
+    const c = src[i];
+    if (c === "[") depthBracket++;
+    else if (c === "]") {
+      depthBracket--;
+      if (depthBracket === 0) break;
+    } else if (c === "{") {
+      if (depthBrace === 0 && depthBracket === 1) objStart = i;
+      depthBrace++;
+    } else if (c === "}") {
+      depthBrace--;
+      if (depthBrace === 0 && objStart !== -1) {
+        objects.push(src.slice(objStart, i + 1));
+        objStart = -1;
+      }
+    }
+  }
+  return objects;
+}
+function stripComments(text) {
+  return text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+}
+function field(text, name) {
+  const m = stripComments(text).match(new RegExp(`(?:^|[\\s,{])${name}\\s*:\\s*"([^"]*)"`));
+  return m ? m[1] : null;
+}
+function numField(text, name) {
+  const m = stripComments(text).match(new RegExp(`(?:^|[\\s,{])${name}\\s*:\\s*(\\d+)`));
+  return m ? Number(m[1]) : null;
+}
+
+async function loadEvents() {
+  const src = await readFile(EVENTS_PATH, "utf8");
+  const map = new Map();
+  for (const text of splitTopLevelObjects(src, /const\s+\w+\s*:\s*HyroxEvent\[\]\s*=\s*\[/)) {
+    const slug = field(text, "slug");
+    const year = numField(text, "year");
+    if (!slug || !year) continue;
+    map.set(`${year}:${slug}`, {
+      city: field(text, "city"),
+      country: field(text, "country"),
+      startDate: field(text, "startDate"),
+      endDate: field(text, "endDate"),
+    });
+  }
+  return map;
+}
+
+async function loadResultsIndex() {
+  const src = await readFile(INDEX_PATH, "utf8");
+  const entries = [];
+  for (const text of splitTopLevelObjects(
+    src,
+    /const\s+HYROX_RESULTS_INDEX\s*:\s*ResultsIndexEntry\[\]\s*=\s*\[/,
+  )) {
+    const slug = field(text, "slug");
+    const year = numField(text, "year");
+    const season = field(text, "season");
+    if (!slug || !year || !season) continue;
+    const divisions = [];
+    const rx = /\{\s*id:\s*"([^"]+)",\s*label:\s*"([^"]*)"\s*\}/g;
+    let m;
+    while ((m = rx.exec(text)) !== null) divisions.push({ id: m[1], label: m[2] });
+    entries.push({ slug, year, season, divisions });
+  }
+  return entries;
+}
+
+// ----------------------------------------------------------------------------
+// Fetching
+// ----------------------------------------------------------------------------
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Names carry accents; a wrong encoding guess corrupts them. */
+function decodeBody(buf) {
+  const utf8 = new TextDecoder("utf-8").decode(buf);
+  return utf8.includes("\uFFFD") ? new TextDecoder("latin1").decode(buf) : utf8;
+}
+
+let fetchCount = 0;
+async function fetchList(season, divisionId, sex, page) {
+  const url =
+    `${HX_BASE}/${season}/?pid=list&event=${encodeURIComponent(divisionId)}` +
+    `&num_results=${PAGE_SIZE}&page=${page}` +
+    (sex ? `&search%5Bsex%5D=${sex}` : "");
+  const cacheFile = path.join(
+    CACHE_DIR,
+    `${createHash("sha1").update(url).digest("hex").slice(0, 16)}.html`,
+  );
+  if (!FLAGS.fresh) {
+    try {
+      await stat(cacheFile);
+      return await readFile(cacheFile, "utf8");
+    } catch {
+      /* not cached yet */
+    }
+  }
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(url, { headers: { ...HEADERS, Referer: `${HX_BASE}/${season}/` } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = decodeBody(await res.arrayBuffer());
+      await writeFile(cacheFile, html, "utf8");
+      fetchCount++;
+      await sleep(FLAGS.delayMs);
+      return html;
+    } catch (err) {
+      if (attempt === 3) throw err;
+      await sleep(700 * attempt);
+    }
+  }
+  return "";
+}
+
+// ----------------------------------------------------------------------------
+// Parsing
+// ----------------------------------------------------------------------------
+function decodeHtml(s) {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&ndash;/g, "–")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+/**
+ * Singles rows name a person in `type-fullname`; doubles and relay rows name the
+ * whole team in `type-relay_member` ("Kim Evers, Cem Ter Burg"). Both are read
+ * here, and the team form is kept verbatim — splitting on its comma would be
+ * wrong, since that comma separates two people rather than surname from
+ * forename.
+ */
+function parseRows(html) {
+  const rows = [];
+  const liRx = /<li class="[^"]*list-group-item[^"]*"[^>]*>([\s\S]*?)<\/li>/g;
+  let m;
+  while ((m = liRx.exec(html)) !== null) {
+    if (/list-group-header/.test(m[0])) continue;
+    const block = m[1];
+    const link = block.match(
+      /type-(fullname|relay_member)"><a\s+href="([^"]*idp=[^"]*)"[^>]*>([\s\S]*?)<\/a>/,
+    );
+    if (!link) continue;
+    const isTeam = link[1] === "relay_member";
+    const idp = decodeHtml(link[2]).match(/[?&]idp=([^&]+)/)?.[1];
+    const name = decodeHtml(link[3].replace(/<[^>]+>/g, "")).trim();
+    if (!idp || !name) continue;
+    const rank = Number(block.match(/type-place place-primary numeric"[^>]*>(\d+)</)?.[1] ?? "");
+    const nation = block.match(/<span class="nation__abbr">([A-Z]+)<\/span>/)?.[1] ?? null;
+    const ageGroup =
+      block.match(/type-age_class"[^>]*>(?:<div[^>]*>[^<]*<\/div>)?\s*([^<]*)</)?.[1]?.trim() ||
+      null;
+    const time = block.match(
+      /type-time"[^>]*>(?:<div[^>]*>[^<]*<\/div>)?\s*(\d{1,2}:\d{2}:\d{2})/,
+    )?.[1];
+    rows.push({
+      idp: decodeURIComponent(idp),
+      name: isTeam ? name : toDisplayName(name),
+      isTeam,
+      rank: Number.isFinite(rank) && rank > 0 ? rank : null,
+      nation,
+      ageGroup: ageGroup && ageGroup !== "–" ? ageGroup : null,
+      time: time ?? null,
+    });
+  }
+  return rows;
+}
+
+/**
+ * The listing prints its own total, which is the cheapest possible field size —
+ * but it is only exact for a filtered query. Unfiltered totals arrive bucketed
+ * as "> 1000 Results".
+ */
+function parseTotal(html) {
+  // Only the &gt; entity marks a bucketed total. Matching a bare ">" would
+  // always match the one closing the enclosing <span>, flagging every count as
+  // inexact and silently suppressing every median.
+  const m = /(&gt;)?\s*([\d][\d.,]*)\s*Results/i.exec(html);
+  if (!m) return { total: null, exact: false };
+  return { total: Number(m[2].replace(/[.,]/g, "")), exact: !m[1] };
+}
+
+function fixCaps(name) {
+  return name
+    .split(/(\s+)/)
+    .map((tok) => (/^[A-ZÀ-Þ'’-]{2,}$/.test(tok) ? tok[0] + tok.slice(1).toLowerCase() : tok))
+    .join("");
+}
+/** "MENENDEZ FERNANDEZ, Pelayo" -> "Pelayo Menendez Fernandez" */
+function toDisplayName(stored) {
+  const trimmed = stored.trim();
+  const i = trimmed.indexOf(",");
+  const last = i === -1 ? trimmed : trimmed.slice(0, i);
+  const first = i === -1 ? "" : trimmed.slice(i + 1);
+  return [fixCaps(first.trim()), fixCaps(last.trim())].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+}
+
+const toSeconds = (t) => {
+  const p = t.split(":").map(Number);
+  return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p[0] * 60 + p[1];
+};
+/** Match the editorial style in event-results.ts: h:mm:ss, no leading zero. */
+const fmtTime = (s) =>
+  `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+const normaliseTime = (t) => fmtTime(toSeconds(t));
+
+function dedupe(rows) {
+  const seen = new Set();
+  return rows.filter((r) => (seen.has(r.idp) ? false : (seen.add(r.idp), true)));
+}
+
+// ----------------------------------------------------------------------------
+// Building one division bucket
+// ----------------------------------------------------------------------------
+/**
+ * Fetch the leading page(s) of one division/sex and reduce it to a leaderboard.
+ * `ids` is usually a single "Overall" id; multi-day races that publish no
+ * Overall roll-up are merged from their day ids instead.
+ */
+async function buildBucket({ season, ids, divisionName, sex }) {
+  const pages = [];
+  let total = 0;
+  let exact = true;
+  for (const id of ids) {
+    const html = await fetchList(season, id, sex, 1);
+    const t = parseTotal(html);
+    if (t.total === null) return null;
+    total += t.total;
+    exact = exact && t.exact;
+    pages.push({ id, html, count: t.total, exact: t.exact });
+  }
+  if (total === 0) return null;
+
+  let rows = dedupe(pages.flatMap((p) => parseRows(p.html))).filter((r) => r.time);
+  if (rows.length === 0) return null;
+
+  // Within a sex-filtered listing the portal's order is already finish order.
+  // Sorting anyway costs nothing and is what makes the unfiltered fallback and
+  // the multi-day merge correct.
+  rows.sort((a, b) => toSeconds(a.time) - toSeconds(b.time));
+
+  // Median. It needs the row at the midpoint of the whole field, so it is only
+  // computable when the field is exactly counted; when the midpoint sits beyond
+  // the page we already hold, fetch just that one page.
+  let medianTime = null;
+  if (exact && ids.length === 1) {
+    const midIndex = Math.ceil(total / 2);
+    if (midIndex <= rows.length) {
+      medianTime = rows[midIndex - 1].time;
+    } else if (midIndex <= total) {
+      const page = Math.ceil(midIndex / PAGE_SIZE);
+      try {
+        const html = await fetchList(season, ids[0], sex, page);
+        const pageRows = parseRows(html);
+        const offset = midIndex - (page - 1) * PAGE_SIZE - 1;
+        // Walk back if the midpoint row is a DNF with no finish time.
+        for (let i = Math.min(offset, pageRows.length - 1); i >= 0; i--) {
+          if (pageRows[i]?.time) {
+            medianTime = pageRows[i].time;
+            break;
+          }
+        }
+      } catch {
+        /* median is optional */
+      }
+    }
+  }
+
+  return {
+    division: `${divisionName} ${SEX_LABEL[sex] ?? "(all categories)"}`.trim(),
+    sex: sex ?? null,
+    /** Upstream division ids this was read from, so a figure can be traced back. */
+    sourceIds: ids,
+    /** Set when the division needed a fallback, to explain a missing median. */
+    note: null,
+    isTeam: rows[0].isTeam,
+    fieldSize: total,
+    fieldSizeExact: exact,
+    fastestTime: normaliseTime(rows[0].time),
+    medianTime: medianTime ? normaliseTime(medianTime) : null,
+    top: rows.slice(0, TOP_N).map((r, i) => ({
+      rank: i + 1,
+      name: r.name,
+      time: normaliseTime(r.time),
+      country: r.nation,
+      ageGroup: r.ageGroup,
+    })),
+  };
+}
+
+async function buildRace(entry, meta, existing) {
+  // Prefer the Overall roll-up: one query covers every day of the race.
+  const byPrefix = new Map();
+  for (const d of entry.divisions) {
+    const prefix = d.id.split("_")[0];
+    if (!byPrefix.has(prefix)) byPrefix.set(prefix, { overall: null, days: [] });
+    const slot = byPrefix.get(prefix);
+    if (d.id.endsWith("_OVERALL")) slot.overall = d.id;
+    else slot.days.push(d.id);
+  }
+
+  const divisions = [];
+  for (const { prefix, name } of DIVISIONS) {
+    const slot = byPrefix.get(prefix);
+    if (!slot) continue;
+    const ids = slot.overall ? [slot.overall] : slot.days;
+    if (ids.length === 0) continue;
+
+    const buckets = [];
+    for (const sex of ["M", "W"]) {
+      try {
+        const b = await buildBucket({ season: entry.season, ids, divisionName: name, sex });
+        if (b) buckets.push(b);
+      } catch (err) {
+        console.warn(`    ! ${prefix} ${sex}: ${err.message}`);
+      }
+    }
+    // The upstream sex attribute is not always usable, in two distinct ways.
+    //
+    //   Missing: Amsterdam's open doubles reports 6 men and 0 women against a
+    //   field of 1000+, so one bucket comes back empty.
+    //
+    //   Wrong: Washington DC labels 2,080 of 2,082 Open entrants "W" on the
+    //   Overall roll-up, and 940 of 941 "M" on the Sunday id. Both buckets are
+    //   populated, so only the lopsidedness gives it away. A real Hyrox field is
+    //   never 99% one sex.
+    //
+    // Either way the fix is the same: fall back to the unfiltered listing, which
+    // is a superset of any filtered view, sort it ourselves, and label it so the
+    // page does not claim a split it cannot support.
+    const filteredTotal = buckets.reduce((n, b) => n + b.fieldSize, 0);
+    const sizes = buckets.map((b) => b.fieldSize);
+    const minSize = Math.min(...sizes);
+    const maxSize = Math.max(...sizes);
+    const lopsided = buckets.length === 2 && maxSize >= 50 && minSize / maxSize < 0.05;
+    const incomplete = buckets.length < 2;
+
+    if (lopsided || incomplete) {
+      try {
+        const combined = await buildBucket({
+          season: entry.season,
+          ids,
+          divisionName: name,
+          sex: null,
+        });
+        // For a lopsided split the unfiltered list is always the better source.
+        // For a merely incomplete one it has to actually be bigger, which keeps
+        // a legitimately tiny field (an Elite 15 wave) as a clean M/W split.
+        if (combined && (lopsided || combined.fieldSize > filteredTotal)) {
+          combined.division = `${name} (all categories)`;
+          // The unfiltered total is bucketed and the order interleaves
+          // categories, so neither an exact count nor a median is available.
+          combined.fieldSizeExact = false;
+          combined.medianTime = null;
+          combined.note = "upstream sex data unusable for this division";
+          divisions.push(combined);
+          continue;
+        }
+      } catch (err) {
+        console.warn(`    ! ${prefix} combined: ${err.message}`);
+      }
+    }
+    divisions.push(...buckets);
+  }
+
+  if (divisions.length === 0) return null;
+  return {
+    slug: entry.slug,
+    year: entry.year,
+    city: meta?.city ?? entry.slug,
+    season: entry.season,
+    syncedAt: new Date().toISOString().slice(0, 10),
+    raceEndDate: meta?.endDate ?? meta?.startDate ?? null,
+    totalFinishers: divisions.reduce((n, d) => n + (d.fieldSizeExact ? d.fieldSize : 0), 0),
+    divisions,
+    previousSyncedAt: existing?.syncedAt ?? null,
+  };
+}
+
+// ----------------------------------------------------------------------------
+// Main
+// ----------------------------------------------------------------------------
+async function main() {
+  await mkdir(CACHE_DIR, { recursive: true });
+  const events = await loadEvents();
+  const index = await loadResultsIndex();
+
+  let previous = { races: {} };
+  try {
+    previous = JSON.parse(await readFile(OUT_PATH, "utf8"));
+  } catch {
+    /* first run */
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const resyncBefore = new Date(Date.now() - RESYNC_DAYS * 86400_000)
+    .toISOString()
+    .slice(0, 10);
+
+  const queue = [];
+  for (const entry of index) {
+    if (FLAGS.race && entry.slug !== FLAGS.race) continue;
+    if (FLAGS.year && entry.year !== FLAGS.year) continue;
+    const meta = events.get(`${entry.year}:${entry.slug}`);
+    const end = meta?.endDate ?? meta?.startDate;
+    if (!end || end >= today) continue; // not raced yet
+
+    const key = `${entry.year}/${entry.slug}`;
+    const existing = previous.races?.[key];
+    // Finished races stay in the re-sync window for a few weeks so late
+    // disqualifications and time corrections get picked up; after that they are
+    // settled and cost nothing to keep.
+    const settled = existing && end < resyncBefore;
+    if (settled && !FLAGS.force) continue;
+    queue.push({ entry, meta, key, existing });
+  }
+  const work = FLAGS.maxRaces ? queue.slice(0, FLAGS.maxRaces) : queue;
+  console.log(
+    `Results index: ${index.length} races. ` +
+      `${Object.keys(previous.races ?? {}).length} already synced. ` +
+      `Building ${work.length}${FLAGS.force ? " (forced)" : ""}.`,
+  );
+
+  const races = { ...(previous.races ?? {}) };
+  let built = 0;
+  for (const job of work) {
+    process.stdout.write(`  ${job.key} ... `);
+    try {
+      const race = await buildRace(job.entry, job.meta, job.existing);
+      if (race) {
+        races[job.key] = race;
+        built++;
+        console.log(
+          `${race.divisions.length} divisions, ` +
+            `${race.divisions.reduce((n, d) => n + d.top.length, 0)} ranked rows`,
+        );
+      } else {
+        console.log("no published results");
+      }
+    } catch (err) {
+      console.log(`FAILED ${err.message}`);
+    }
+  }
+
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    resyncDays: RESYNC_DAYS,
+    note:
+      "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
+    races,
+  };
+  await writeFile(OUT_PATH, JSON.stringify(payload, null, 2), "utf8");
+  console.log(
+    `\nBuilt ${built} race(s), ${Object.keys(races).length} total, ${fetchCount} fetches.\n` +
+      `Wrote ${path.relative(process.cwd(), OUT_PATH)}`,
+  );
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

@@ -7,6 +7,13 @@ import {
   type HyroxEvent,
 } from "../../../../data/events";
 import { getResults } from "../../../../data/event-results";
+import {
+  formatSyncedDate,
+  getEventLeaderboard,
+  pickDivision,
+  sameDivision,
+} from "../../../../lib/event-leaderboards";
+import { MIN_RACES_FOR_PAGE, findAthlete } from "../../../../lib/pro-athletes";
 
 export async function getStaticPaths() {
   return allEventPaths().map(({ year, slug }) => ({
@@ -19,6 +26,15 @@ const { year, slug } = Astro.props;
 const event: HyroxEvent = EVENTS.find((e) => e.year === year && e.slug === slug)!;
 const results = getResults(year, slug);
 
+// Leaderboards synced from the official portal. They stand in for a recap that
+// hasn't been written yet, and sit alongside one that has — the hand-written
+// podium keeps the top of the page, this fills in ranks 4-10, field size, and
+// the median finish nobody would transcribe by hand.
+const synced = getEventLeaderboard(year, slug);
+const hasSynced = Boolean(synced && synced.divisions.length > 0);
+const hasAnyResults = Boolean(results) || hasSynced;
+const totalAthletes = results?.totalAthletes ?? (synced?.totalFinishers || undefined);
+
 // Only link to a next-year edition if it actually exists. Linking blindly to
 // /events/<year+1>/<slug>/ generated hundreds of 404s for events that have no
 // confirmed next-year date yet.
@@ -27,51 +43,30 @@ const nextYearEvent = EVENTS.find((e) => e.year === year + 1 && e.slug === slug)
 const eventDate = new Date(event.endDate ?? event.startDate);
 const today = new Date();
 const isPast = today > eventDate;
-const isPending = isPast && !results;
-const isUpcoming = !isPast && !results;
+const isPending = isPast && !hasAnyResults;
+const isUpcoming = !isPast && !hasAnyResults;
 
 const title = results
   ? `Hyrox ${event.city} ${year} Results — Podium, Splits, and Recap`
-  : isUpcoming
-    ? `Hyrox ${event.city} ${year} Results — Coming ${formatEventDate(event.endDate ?? event.startDate)}`
-    : `Hyrox ${event.city} ${year} Results — Recap Pending`;
+  : hasSynced
+    ? `Hyrox ${event.city} ${year} Results — Top 10 and Median Time by Division`
+    : isUpcoming
+      ? `Hyrox ${event.city} ${year} Results — Coming ${formatEventDate(event.endDate ?? event.startDate)}`
+      : `Hyrox ${event.city} ${year} Results — Recap Pending`;
 
 const description = results
   ? `Hyrox ${event.city} ${year} full results recap: podium finishers across all divisions, finish-time distribution, and key takeaways from the ${results.totalAthletes ?? "thousands of"} athletes who raced.`
-  : isUpcoming
-    ? `Live results for Hyrox ${event.city} ${year} will be posted here within 48 hours of the final wave on ${formatEventDate(event.endDate ?? event.startDate)}. Bookmark this page.`
-    : `Hyrox ${event.city} ${year} race recap is being compiled. Check back shortly.`;
+  : hasSynced
+    ? `Hyrox ${event.city} ${year} results by division: the top 10 in Pro, Open, Doubles, and Relay, plus how many athletes raced and the median finish time in each field.`
+    : isUpcoming
+      ? `Live results for Hyrox ${event.city} ${year} will be posted here within 48 hours of the final wave on ${formatEventDate(event.endDate ?? event.startDate)}. Bookmark this page.`
+      : `Hyrox ${event.city} ${year} race recap is being compiled. Check back shortly.`;
 
 const breadcrumbs = [
   { name: "Events", url: "/events/" },
   { name: String(year), url: `/events/${year}/` },
   { name: event.city, url: `/events/${year}/${event.slug}/` },
   { name: "Results" },
-];
-
-const faqItems = [
-  {
-    question: `Where can I find Hyrox ${event.city} ${year} results?`,
-    answer: results
-      ? `Full Hyrox ${event.city} ${year} results are published on this page including podium times for every division. The official Hyrox leaderboard at hyrox.com/results carries the complete rankings.`
-      : `Official Hyrox ${event.city} ${year} results will appear on hyrox.com/results within 24-48 hours of the final wave. Our recap (with finish-time histogram and podium breakdown) goes live on this page typically the Monday after race weekend.`,
-  },
-  {
-    question: `Who won Hyrox ${event.city} ${year}?`,
-    answer: results && results.divisions[0]?.podium?.[0]
-      ? `The Pro Men winner was ${results.divisions[0].podium[0].athlete} in ${results.divisions[0].podium[0].time}. Full division-by-division podium below.`
-      : `Winner not yet confirmed. Race is ${isPast ? "complete — recap pending" : `scheduled for ${formatEventDate(event.startDate, event.endDate)}`}.`,
-  },
-  {
-    question: `How many athletes raced at Hyrox ${event.city} ${year}?`,
-    answer: results?.totalAthletes
-      ? `${results.totalAthletes.toLocaleString()} athletes raced across all divisions at Hyrox ${event.city} ${year}.`
-      : `Athlete count will be confirmed in the post-race recap. Major Hyrox stops typically host between 5,000 and 50,000 athletes across the race weekend.`,
-  },
-  {
-    question: `What's a good Hyrox ${event.city} time?`,
-    answer: `Hyrox times are globally standardised — a "good" time at ${event.city} matches a "good" time anywhere else. See our full breakdown by division and age group in the time benchmarks section.`,
-  },
 ];
 
 // Pull marquee winners for the hero stats strip. Match common division
@@ -86,8 +81,62 @@ function pickWinner(matchers: string[]) {
   }
   return undefined;
 }
-const heroMen = pickWinner(["pro men", "elite 15 men", "men"]);
-const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
+
+/** Same shape from the synced data, so the hero renders either source. */
+function syncedWinner(matchers: string[]) {
+  const d = pickDivision(synced, matchers);
+  if (!d?.top[0]) return undefined;
+  return {
+    division: d.division,
+    athlete: d.top[0].name,
+    time: d.top[0].time,
+    country: d.top[0].country ?? undefined,
+  };
+}
+
+const heroMen =
+  pickWinner(["pro men", "elite 15 men", "men"]) ??
+  syncedWinner(["Pro Men", "Elite 15 Men", "Open Men"]);
+const heroWomen =
+  pickWinner(["pro women", "elite 15 women", "women"]) ??
+  syncedWinner(["Pro Women", "Elite 15 Women", "Open Women"]);
+
+const faqItems = [
+  {
+    question: `Where can I find Hyrox ${event.city} ${year} results?`,
+    answer: results
+      ? `Full Hyrox ${event.city} ${year} results are published on this page including podium times for every division. The official Hyrox leaderboard at hyrox.com/results carries the complete rankings.`
+      : hasSynced
+        ? `The top 10 of every Hyrox ${event.city} ${year} division is on this page, along with the size of each field and its median finish time, synced from the official timing portal on ${formatSyncedDate(synced!.syncedAt)}. The complete rankings live at hyrox.com/results.`
+        : `Official Hyrox ${event.city} ${year} results will appear on hyrox.com/results within 24-48 hours of the final wave. Our recap (with finish-time histogram and podium breakdown) goes live on this page typically the Monday after race weekend.`,
+  },
+  {
+    question: `Who won Hyrox ${event.city} ${year}?`,
+    answer:
+      heroMen && heroWomen
+        ? `${heroMen.athlete} won the ${heroMen.division} in ${heroMen.time} and ${heroWomen.athlete} won the ${heroWomen.division} in ${heroWomen.time}. Full division-by-division results below.`
+        : heroMen
+          ? `${heroMen.athlete} won the ${heroMen.division} in ${heroMen.time}. Full division-by-division results below.`
+          : `Winner not yet confirmed. Race is ${isPast ? "complete — recap pending" : `scheduled for ${formatEventDate(event.startDate, event.endDate)}`}.`,
+  },
+  {
+    question: `How many athletes raced at Hyrox ${event.city} ${year}?`,
+    answer: totalAthletes
+      ? `${totalAthletes.toLocaleString()} athletes raced across all divisions at Hyrox ${event.city} ${year}.`
+      : `Athlete count will be confirmed in the post-race recap. Major Hyrox stops typically host between 5,000 and 50,000 athletes across the race weekend.`,
+  },
+  {
+    question: `What was the median finish time at Hyrox ${event.city} ${year}?`,
+    answer: (() => {
+      const openMen = pickDivision(synced, ["Open Men"]);
+      const openWomen = pickDivision(synced, ["Open Women"]);
+      if (openMen?.medianTime && openWomen?.medianTime) {
+        return `Half the Open Men field finished inside ${openMen.medianTime} and half the Open Women field inside ${openWomen.medianTime}. Median times per division are listed below — they are a far better benchmark than the winning time for judging your own race.`;
+      }
+      return `Hyrox times are globally standardised — a "good" time at ${event.city} matches a "good" time anywhere else. See our full breakdown by division and age group in the time benchmarks section.`;
+    })(),
+  },
+];
 ---
 
 <BaseLayout
@@ -97,7 +146,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
   schemaType="Article"
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
-  noindex={!results}
+  noindex={!hasAnyResults}
 >
   <div class="container-main py-10 md:py-16">
     <nav class="mb-8 text-sm" aria-label="Breadcrumb">
@@ -129,7 +178,15 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
         {formatEventDate(event.startDate, event.endDate)} · {event.venue}
       </p>
-      {!results && (
+      {hasSynced && !results && (
+        <p class="mt-4 text-sm text-text-muted">
+          Top 10 per division, field sizes, and median finish times synced from
+          the official Hyrox timing portal on{" "}
+          <strong>{formatSyncedDate(synced!.syncedAt)}</strong>. Provisional
+          until the full recap lands.
+        </p>
+      )}
+      {!hasAnyResults && (
         <div class="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
           {isPast ? (
             <>
@@ -144,14 +201,14 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
       )}
     </header>
 
-    {results && (
+    {hasAnyResults && (
       <>
         {/* ---- Hero stats strip ----------------------------------- */}
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10 pb-10 border-b border-border">
           <div class="bg-bg-card border border-border rounded-xl p-5">
             <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Athletes</div>
             <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">
-              {results.totalAthletes ? results.totalAthletes.toLocaleString() : "—"}
+              {totalAthletes ? totalAthletes.toLocaleString() : "—"}
             </div>
             <div class="text-xs text-text-muted mt-2">across all divisions</div>
           </div>
@@ -194,7 +251,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
         </section>
 
         {/* ---- Headlines (story cards) ---------------------------- */}
-        {results.notableStories && results.notableStories.length > 0 && (
+        {results?.notableStories && results.notableStories.length > 0 && (
           <section class="mb-12">
             <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">Headlines from race weekend</h2>
             <div class="grid gap-3 md:grid-cols-2">
@@ -209,6 +266,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
         )}
 
         {/* ---- Podium cards + splits per division ----------------- */}
+        {results && (
         <section class="mb-12">
           <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-6">Podium results by division</h2>
 
@@ -220,16 +278,24 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
             const hasSplits = podium.some((p) => p.splits && p.splits.length > 0);
             const isSingleEntry = podium.length === 1;
 
+            // Fill only what the recap left blank — the hand-written figure wins
+            // wherever there is one.
+            const match = synced?.divisions.find((s) => sameDivision(s.division, d.division));
+            const athleteCount =
+              d.athleteCount ?? (match?.fieldSizeExact ? match.fieldSize : undefined);
+            const medianTime = d.medianTime ?? match?.medianTime ?? undefined;
+            const fastestTime = d.fastestTime ?? match?.fastestTime;
+
             return (
               <div class="mb-10 last:mb-0">
                 <div class="flex items-baseline justify-between flex-wrap gap-2 mb-4">
                   <h3 class="text-xl md:text-2xl font-black text-text-heading">{d.division}</h3>
                   <div class="text-xs text-text-muted">
-                    {d.athleteCount && <span>{d.athleteCount.toLocaleString()} athletes</span>}
-                    {d.athleteCount && d.medianTime && <span class="mx-2">·</span>}
-                    {d.medianTime && <span>median {d.medianTime}</span>}
-                    {(d.athleteCount || d.medianTime) && d.fastestTime && <span class="mx-2">·</span>}
-                    {d.fastestTime && <span>fastest {d.fastestTime}</span>}
+                    {athleteCount && <span>{athleteCount.toLocaleString()} athletes</span>}
+                    {athleteCount && medianTime && <span class="mx-2">·</span>}
+                    {medianTime && <span>median {medianTime}</span>}
+                    {(athleteCount || medianTime) && fastestTime && <span class="mx-2">·</span>}
+                    {fastestTime && <span>fastest {fastestTime}</span>}
                   </div>
                 </div>
 
@@ -344,9 +410,121 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
             );
           })}
         </section>
+        )}
+
+        {/* ---- Synced top 10 per division -------------------------- */}
+        {hasSynced && (
+          <section class="mb-12">
+            <div class="flex items-baseline justify-between flex-wrap gap-2 mb-3">
+              <h2 class="text-2xl md:text-3xl font-black text-text-heading">
+                {results ? "Full top 10 by division" : "Results by division"}
+              </h2>
+              <span class="text-xs font-bold uppercase tracking-wider text-text-muted">
+                Synced {formatSyncedDate(synced!.syncedAt)} · provisional
+              </span>
+            </div>
+            <p class="text-text-muted mb-6 max-w-2xl">
+              Every division that published a ranking, with the size of the field
+              and its median finish. The median is the number to benchmark
+              against — the winning time tells you what the best in the room did,
+              not what a good race looks like.
+            </p>
+
+            <div class="space-y-4">
+              {synced!.divisions.map((d, i) => (
+                <details
+                  open={!results && i === 0}
+                  class="group bg-bg-card border border-border rounded-xl overflow-hidden"
+                >
+                  <summary class="cursor-pointer flex items-center justify-between gap-3 px-5 py-4 hover:bg-bg-card-hover transition-colors">
+                    <div class="min-w-0">
+                      <div class="font-black text-text-heading">{d.division}</div>
+                      <div class="text-xs text-text-muted mt-1">
+                        {d.fieldSize.toLocaleString()}{!d.fieldSizeExact && "+"}{" "}
+                        {d.isTeam ? "teams" : "athletes"}
+                        {d.medianTime && <> · median {d.medianTime}</>}
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                      <div class="text-right">
+                        <div class="text-xs uppercase tracking-wider text-text-muted">Winner</div>
+                        <div class="font-mono font-black text-accent">{d.fastestTime}</div>
+                      </div>
+                      <svg class="w-4 h-4 text-text-muted transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </summary>
+                  <div class="border-t border-border">
+                    {d.note && (
+                      <p class="px-5 py-3 text-xs text-text-muted bg-bg-card-hover/30 m-0">
+                        The official results for this division don't separate men
+                        and women reliably, so this is the combined field ordered
+                        by finish time — and why it carries no median.
+                      </p>
+                    )}
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead class="bg-bg-card-hover/50">
+                        <tr class="text-xs uppercase tracking-wider text-text-muted">
+                          <th class="text-left p-3 font-bold w-12">#</th>
+                          <th class="text-left p-3 font-bold">{d.isTeam ? "Team" : "Athlete"}</th>
+                          <th class="text-left p-3 font-bold hidden sm:table-cell w-24">Age group</th>
+                          <th class="text-right p-3 font-bold w-24">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-border/60">
+                        {d.top.map((r) => {
+                          // Only singles rows name one person. A doubles row is
+                          // two names joined by a comma, so matching it against
+                          // the athlete index would resolve to nobody.
+                          const profile = d.isTeam ? null : findAthlete(r.name, r.country);
+                          const href =
+                            profile && profile.races.length >= MIN_RACES_FOR_PAGE
+                              ? `/athletes/${profile.slug}/`
+                              : null;
+                          return (
+                          <tr class={r.rank <= 3 ? "bg-accent/5" : ""}>
+                            <td class="p-3 font-mono font-bold text-text-muted">{r.rank}</td>
+                            <td class="p-3 text-text-heading font-semibold">
+                              {href ? (
+                                <a href={href} class="text-text-heading hover:text-accent transition-colors">
+                                  {r.name}
+                                </a>
+                              ) : (
+                                r.name
+                              )}
+                              {r.country && (
+                                <span class="ml-2 text-xs font-normal text-text-muted">{r.country}</span>
+                              )}
+                            </td>
+                            <td class="p-3 text-text-muted hidden sm:table-cell">{r.ageGroup ?? "—"}</td>
+                            <td class="p-3 text-right font-mono font-bold text-text-heading">{r.time}</td>
+                          </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    </div>
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <p class="mt-4 text-xs text-text-muted">
+              Synced from the official Hyrox timing portal. Rankings can change
+              after publication when disqualifications and time corrections are
+              applied, so treat these as provisional and check{" "}
+              <a href="https://results.hyrox.com/" rel="noopener noreferrer" class="text-accent underline">
+                results.hyrox.com
+              </a>{" "}
+              for the final word.
+            </p>
+          </section>
+        )}
 
         {/* ---- Finish-time histogram ------------------------------ */}
-        {results.histogram && results.histogram.length > 0 && (
+        {results?.histogram && results.histogram.length > 0 && (
           <section class="mb-12">
             <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">Finish-time distribution</h2>
             <p class="text-text-muted mb-6 max-w-2xl">
@@ -375,7 +553,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
         )}
 
         {/* ---- Takeaways (story cards) ---------------------------- */}
-        {results.takeaways && results.takeaways.length > 0 && (
+        {results?.takeaways && results.takeaways.length > 0 && (
           <section class="mb-12">
             <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">Key takeaways for next year</h2>
             <div class="grid gap-3 md:grid-cols-2">
@@ -405,7 +583,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
       </>
     )}
 
-    {!results && isPast && (
+    {!hasAnyResults && isPast && (
       <section class="prose md:prose-lg max-w-none">
         <h2>While we compile the official recap</h2>
         <ul>
@@ -416,7 +594,7 @@ const heroWomen = pickWinner(["pro women", "elite 15 women", "women"]);
       </section>
     )}
 
-    {!results && !isPast && (
+    {!hasAnyResults && !isPast && (
       <section class="prose md:prose-lg max-w-none">
         <h2>Until race weekend</h2>
         <ul>

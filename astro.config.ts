@@ -155,12 +155,33 @@ const nonIndexableGymPaths = new Set<string>(
   GYMS.filter((g) => !hasIndexablePage(g)).map((g) => `/gyms/g/${g.slug}/`),
 );
 
-// Mirror the `noindex={!results}` rule in src/pages/events/[year]/[city]/results.astro:
-// any results URL without a published RaceResult is noindex and must not be
-// in the sitemap.
+// Mirror the `noindex={!hasAnyResults}` rule in
+// src/pages/events/[year]/[city]/results.astro: a results URL is indexable once
+// it has either a hand-written RaceResult or a synced leaderboard. Read straight
+// off disk rather than through src/lib/event-leaderboards.ts, to keep the config
+// free of a JSON import that would have to survive the config loader.
+const syncedLeaderboardKeys: Set<string> = (() => {
+  try {
+    const raw = readFileSync("./src/data/event-leaderboards.generated.json", "utf8");
+    const parsed = JSON.parse(raw) as {
+      races?: Record<string, { divisions?: unknown[] }>;
+    };
+    return new Set(
+      Object.entries(parsed.races ?? {})
+        .filter(([, race]) => (race?.divisions?.length ?? 0) > 0)
+        .map(([key]) => key),
+    );
+  } catch {
+    return new Set<string>();
+  }
+})();
+
 const unpublishedResultsPaths = new Set<string>(
   allEventPaths()
-    .filter(({ year, slug }) => !getResults(year, slug))
+    .filter(
+      ({ year, slug }) =>
+        !getResults(year, slug) && !syncedLeaderboardKeys.has(`${year}/${slug}`),
+    )
     .map(({ year, slug }) => `/events/${year}/${slug}/results/`),
 );
 

@@ -14,11 +14,19 @@ name: Refresh athlete data
 #  2. scripts/ingest-pro-results.mjs -> src/data/pro-athletes.generated.json
 #     Pro/Elite singles race histories, which the portal has no endpoint for.
 #
+#  3. scripts/build-event-leaderboards.mjs -> src/data/event-leaderboards.generated.json
+#     Per-division top 10, field size, and median for every race that has
+#     happened. Only races inside the re-sync window are re-fetched, so a weekly
+#     run costs a few dozen requests rather than a full backfill.
+#
 # Unlike podium results (see race-results-reminder.yml, which deliberately only
 # opens an issue because a post-race disqualification can leave an official rank
-# 1 vacant), these two files are safe to auto-commit: they are re-derived in full
-# from the official portal on every run, so an upstream correction propagates on
-# the next refresh instead of being frozen in place by a one-time paste.
+# 1 vacant), these files are safe to auto-commit: they are re-derived from the
+# official portal on every run, so an upstream correction propagates on the next
+# refresh instead of being frozen in place by a one-time paste. The leaderboards
+# are additionally labelled with their sync date and marked provisional wherever
+# they render, and they never override the hand-written podiums in
+# src/data/event-results.ts.
 #
 # Nothing is pushed unless `astro build` is green first, per the deploy-safety
 # rule.
@@ -63,10 +71,15 @@ jobs:
       - name: Ingest Pro/Elite race histories
         run: node scripts/ingest-pro-results.mjs
 
+      # Incremental: races already synced and older than the re-sync window are
+      # skipped, so this is a short job except on the very first run.
+      - name: Sync event leaderboards
+        run: node scripts/build-event-leaderboards.mjs
+
       - name: Detect changes
         id: changes
         run: |
-          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json
+          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json src/data/event-leaderboards.generated.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No athlete-data changes."
@@ -86,6 +99,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json
-          git commit -m "chore(live): refresh results index and Pro athlete histories"
+          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json src/data/event-leaderboards.generated.json
+          git commit -m "chore(live): refresh results index, athlete histories, and event leaderboards"
           git push
