@@ -46,22 +46,6 @@ const isPast = today > eventDate;
 const isPending = isPast && !hasAnyResults;
 const isUpcoming = !isPast && !hasAnyResults;
 
-const title = results
-  ? `Hyrox ${event.city} ${year} Results — Podium, Splits, and Recap`
-  : hasSynced
-    ? `Hyrox ${event.city} ${year} Results — Top 10 and Median Time by Division`
-    : isUpcoming
-      ? `Hyrox ${event.city} ${year} Results — Coming ${formatEventDate(event.endDate ?? event.startDate)}`
-      : `Hyrox ${event.city} ${year} Results — Recap Pending`;
-
-const description = results
-  ? `Hyrox ${event.city} ${year} full results recap: podium finishers across all divisions, finish-time distribution, and key takeaways from the ${results.totalAthletes ?? "thousands of"} athletes who raced.`
-  : hasSynced
-    ? `Hyrox ${event.city} ${year} results by division: the top 10 in Pro, Open, Doubles, and Relay, plus how many athletes raced and the median finish time in each field.`
-    : isUpcoming
-      ? `Live results for Hyrox ${event.city} ${year} will be posted here within 48 hours of the final wave on ${formatEventDate(event.endDate ?? event.startDate)}. Bookmark this page.`
-      : `Hyrox ${event.city} ${year} race recap is being compiled. Check back shortly.`;
-
 const breadcrumbs = [
   { name: "Events", url: "/events/" },
   { name: String(year), url: `/events/${year}/` },
@@ -69,8 +53,17 @@ const breadcrumbs = [
   { name: "Results" },
 ];
 
+// Championship races are searched by their title, not their host city:
+// "hyrox world championship 2026" draws far more than "hyrox stockholm 2026
+// results". Titling this page as a regional stop is why those impressions
+// never converted. Both terms go in — the championship name leads, the city
+// stays as the qualifier so the city query keeps matching.
+const isWorldChampionship = event.notes === "World Championship";
+
 // Pull marquee winners for the hero stats strip. Match common division
 // names; fall back gracefully if the event uses non-standard labels.
+// Declared before the title because a finished race's snippet leads with who
+// won, which is the question the search actually asked.
 function pickWinner(matchers: string[]) {
   if (!results) return undefined;
   for (const matcher of matchers) {
@@ -101,7 +94,55 @@ const heroWomen =
   pickWinner(["pro women", "elite 15 women", "women"]) ??
   syncedWinner(["Pro Women", "Elite 15 Women", "Open Women"]);
 
+/** "Ryan Douglas won in 55:23 and Saskia Millard in 57:15". */
+const winnerSnippet = (() => {
+  if (heroMen && heroWomen)
+    return `${heroMen.athlete} won in ${heroMen.time} and ${heroWomen.athlete} in ${heroWomen.time}`;
+  if (heroMen) return `${heroMen.athlete} won in ${heroMen.time}`;
+  if (heroWomen) return `${heroWomen.athlete} won in ${heroWomen.time}`;
+  return "";
+})();
+
+const raceLabel = isWorldChampionship
+  ? `Hyrox World Championships ${year}`
+  : `Hyrox ${event.city} ${year}`;
+/** Championship pages carry the city in brackets so both queries match. */
+const titleSubject = isWorldChampionship
+  ? `Hyrox World Championships ${year} Results (${event.city})`
+  : `Hyrox ${event.city} ${year} Results`;
+
+// `hasAnyResults` is the fallback rather than "pending", because a race can
+// hold results whose divisions don't match the marquee matchers above — an
+// event with only Doubles and Relay published, say. Keying the whole title off
+// the winner alone would label those "Recap Pending" while the page is full.
+const title = winnerSnippet
+  ? `${titleSubject} — Who Won, Top 10 & Median Times`
+  : hasAnyResults
+    ? `${titleSubject} — Full Results by Division`
+    : isUpcoming
+      ? `${titleSubject} — Coming ${formatEventDate(event.endDate ?? event.startDate)}`
+      : `${titleSubject} — Recap Pending`;
+
+const description = winnerSnippet
+  ? `${raceLabel} results: ${winnerSnippet}. The top 10 in every division — Elite 15, Pro, Open, Doubles and Relay — plus the size of each field and its median finish time.`
+  : hasAnyResults
+    ? `${raceLabel} results by division: the top 10 in every field that published a ranking, how many athletes raced, and the median finish time.`
+    : isUpcoming
+      ? `Live results for ${raceLabel} will be posted here within 48 hours of the final wave on ${formatEventDate(event.endDate ?? event.startDate)}. Bookmark this page.`
+      : `${raceLabel} race recap is being compiled. Check back shortly.`;
+
 const faqItems = [
+  // Championship editions get the head-term question explicitly. "Who won the
+  // Hyrox World Championships" is asked far more often than the city-qualified
+  // version, and only this phrasing matches it.
+  ...(isWorldChampionship && winnerSnippet
+    ? [
+        {
+          question: `Who won the Hyrox World Championships ${year}?`,
+          answer: `${winnerSnippet} at ${event.venue} in ${event.city}. The Elite 15, Pro, Open, Doubles and Relay top tens are listed below, each with the size of the field and its median finish time.`,
+        },
+      ]
+    : []),
   {
     question: `Where can I find Hyrox ${event.city} ${year} results?`,
     answer: results
@@ -173,10 +214,13 @@ const faqItems = [
 
     <header class="mb-8 md:mb-10">
       <h1 class="text-4xl md:text-5xl font-black leading-tight text-gradient-accent">
-        Hyrox {event.city} {year} Results
+        {isWorldChampionship
+          ? `Hyrox World Championships ${year} Results`
+          : `Hyrox ${event.city} ${year} Results`}
       </h1>
       <p class="mt-4 text-lg text-text-muted leading-relaxed max-w-2xl">
         {formatEventDate(event.startDate, event.endDate)} · {event.venue}
+        {isWorldChampionship && `, ${event.city}`}
       </p>
       {hasSynced && !results && (
         <p class="mt-4 text-sm text-text-muted">
@@ -601,9 +645,42 @@ const faqItems = [
           <li>Read the full <a href={`/events/${year}/${event.slug}/`}>Hyrox {event.city} {year} preview</a> with venue and registration details.</li>
           <li>Use the <a href="/calculator/">Hyrox time calculator</a> to set a goal time before race day.</li>
           <li>Pick a <a href="/training/">training program</a> that fits the time remaining.</li>
-          <li>Lock in your <a href="/blog/hyrox-race-week-protocol/">race-week protocol</a> seven days out.</li>
-        </ul>
-      </section>
-    )}
+        <li>Lock in your <a href="/blog/hyrox-race-week-protocol/">race-week protocol</a> seven days out.</li>
+      </ul>
+    </section>
+  )}
+
+    {/* ---- FAQ ------------------------------------------------------
+         Rendered, not just serialised. The same questions were already
+         being emitted as FAQPage schema while appearing nowhere on the
+         page, which Google's structured-data guidelines disallow. */}
+    <section class="mt-12 pt-10 border-t border-border">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+        {isWorldChampionship
+          ? `Hyrox World Championships ${year} results — common questions`
+          : `Hyrox ${event.city} ${year} results — common questions`}
+      </h2>
+      <div class="space-y-3">
+        {faqItems.map((item) => (
+          <details class="group bg-bg-card border border-border rounded-xl overflow-hidden">
+            <summary class="cursor-pointer flex items-center justify-between gap-3 px-5 py-4 font-bold text-text-heading hover:bg-bg-card-hover transition-colors">
+              {item.question}
+              <svg
+                class="w-4 h-4 shrink-0 text-text-muted transition-transform group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p class="px-5 pb-4 pt-1 text-text-muted leading-relaxed m-0 border-t border-border/60">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
   </div>
 </BaseLayout>

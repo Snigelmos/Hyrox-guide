@@ -154,6 +154,72 @@ const cityWithLocalNames = event
     ? `${event.city} (${titleLocalName})`
     : event.city
   : "";
+// Pull the top podium entry from the marquee divisions so the city page
+// can surface "this is who won" without bouncing the user to /results/.
+// Computed before the title because a finished race's snippet leads with the
+// winner, which is the only thing the searcher actually asked for.
+interface EventWinner {
+  division: string;
+  athlete: string;
+  time: string;
+  country?: string;
+  /** Only known for synced divisions with an exact count. */
+  fieldSize?: number;
+  medianTime?: string;
+}
+function findWinner(
+  divisionMatchers: string[],
+  syncedMatchers: string[],
+): EventWinner | undefined {
+  if (raceResults) {
+    for (const matcher of divisionMatchers) {
+      const d = raceResults.divisions.find((x) =>
+        x.division.toLowerCase().includes(matcher),
+      );
+      if (d?.podium?.[0]) {
+        return {
+          division: d.division,
+          athlete: d.podium[0].athlete,
+          time: d.podium[0].time,
+          country: d.podium[0].country,
+          fieldSize: d.athleteCount,
+          medianTime: d.medianTime,
+        };
+      }
+    }
+  }
+  const s = pickDivision(syncedLb, syncedMatchers);
+  if (s?.top[0]) {
+    return {
+      division: s.division,
+      athlete: s.top[0].name,
+      time: s.top[0].time,
+      country: s.top[0].country ?? undefined,
+      fieldSize: s.fieldSizeExact ? s.fieldSize : undefined,
+      medianTime: s.medianTime ?? undefined,
+    };
+  }
+  return undefined;
+}
+const proMenWinner = event
+  ? findWinner(["pro men", "elite 15 men", "men"], ["Pro Men", "Elite 15 Men", "Open Men"])
+  : undefined;
+const proWomenWinner = event
+  ? findWinner(
+      ["pro women", "elite 15 women", "women"],
+      ["Pro Women", "Elite 15 Women", "Open Women"],
+    )
+  : undefined;
+/** "Ryan Douglas won in 55:23 and Saskia Millard in 57:15" — the snippet hook. */
+const winnerSnippet = (() => {
+  const m = proMenWinner;
+  const w = proWomenWinner;
+  if (m && w) return `${m.athlete} won in ${m.time} and ${w.athlete} in ${w.time}`;
+  if (m) return `${m.athlete} won in ${m.time}`;
+  if (w) return `${w.athlete} won in ${w.time}`;
+  return "";
+})();
+
 // Snippet strategy. Event pages share page one with the official hyrox.com
 // listing, which owns the register/confirm-the-date intent. Restating the
 // event name loses that click every time (GSC: 0.7-1.6% CTR at positions
@@ -161,7 +227,33 @@ const cityWithLocalNames = event
 // carries — the venue's running loop, race-day timings, transit, results,
 // and a training plan sized to the weeks remaining — and keep the head term
 // as the qualifier rather than the promise.
+//
+// The head term itself never moves. "Hyrox <City> <Year>" stays at the front
+// of every title because that is the phrase these pages already rank 7-9 for;
+// only the promise after the dash changes. A finished race with data promises
+// the winner, an upcoming one promises the date.
 const hasCourseMap = Boolean(event?.courseMapUrl || event?.courseMapImageUrl);
+/**
+ * Compact date for titles — "5 Dec" or "5–7 Dec". The year is already in the
+ * title, so repeating it just eats the character budget before the promise.
+ * Parsed at midday UTC so the day never shifts under a build runner's locale.
+ */
+const shortEventDate = (() => {
+  if (!event) return "";
+  const fmt = (d: string, withMonth: boolean) =>
+    new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", {
+      day: "numeric",
+      ...(withMonth ? { month: "short" as const } : {}),
+      timeZone: "UTC",
+    });
+  const start = event.startDate;
+  const end = event.endDate;
+  if (!end || end === start) return fmt(start, true);
+  const sameMonth = start.slice(0, 7) === end.slice(0, 7);
+  return sameMonth
+    ? `${fmt(start, false)}–${fmt(end, true)}`
+    : `${fmt(start, true)}–${fmt(end, true)}`;
+})();
 const activeTitle = event
   ? inRaceWeek && !isPast
     ? // Race-week title — captures schedule/start-list/live queries (incl.
@@ -174,30 +266,39 @@ const activeTitle = event
         ? `Hyrox World Championships ${year} — Schedule, Start List & Live Tracker (${event.city}, ${formatEventDate(event.startDate, event.endDate)})`
         : `Hyrox ${event.city} ${year} — Schedule, Start List & Live Tracker (${formatEventDate(event.startDate, event.endDate)})`
     : isPast
-      ? isWorldChampionship
-        ? raceResults
-          ? `Hyrox World Championships ${year} — Elite 15 Winners & Race Report`
+      ? // A finished race is asked one question far more than any other, so the
+        // promise is the winner. "Race Recap" described the same page and won
+        // 0.7-1.6% of its impressions. The city stays in front because
+        // "hyrox <city> <year>" is the phrase that earns them.
+        isWorldChampionship
+        ? winnerSnippet
+          ? `Hyrox World Championships ${year} (${event.city}) — Who Won & Elite 15 Times`
           : `Hyrox World Championships ${year} — ${event.city} Race Recap`
-        : raceResults
-          ? `Hyrox ${cityWithLocalNames} ${year} — Race Report & Winners`
-          : `Hyrox ${cityWithLocalNames} ${year} — Race Recap & Course Notes`
+        : winnerSnippet
+          ? `Hyrox ${cityWithLocalNames} ${year} — Who Won, Winning Times & Race Notes`
+          : hasAnyResults
+            ? `Hyrox ${cityWithLocalNames} ${year} — Full Results & Course Notes`
+            : `Hyrox ${cityWithLocalNames} ${year} — Race Recap & Course Notes`
       : isWorldChampionship
         ? // Lead with the head term so we rank for "Hyrox World Championships
           // 2026" / "Hyrox Worlds 2026" before the city qualifier. The ${year}
           // page still owns "Hyrox Stockholm 2026" via the H1, body, and FAQ.
           `Hyrox World Championships ${year}: ${event.city} Qualifying & Schedule`
-        : event.confirmed
-          ? `Hyrox ${cityWithLocalNames} ${year} — ${hasCourseMap ? "Course Map" : "Course"} & Race-Day Timings`
-          : `Hyrox ${cityWithLocalNames} ${year} — Expected Date, Venue & Prep`
+        : // An upcoming race is asked "when and where". hyrox.com outranks us
+          // on the listing itself, so the date in the snippet is the one thing
+          // we can show that answers the question without a click.
+          event.confirmed
+          ? `Hyrox ${cityWithLocalNames} ${year} — ${shortEventDate}, Venue & Race-Day Guide`
+          : `Hyrox ${cityWithLocalNames} ${year} — ${shortEventDate} (Expected), Venue & Prep`
   : "";
 const activeDescription = event
   ? isPast
     ? isWorldChampionship
-      ? raceResults
-        ? `Hyrox World Championships ${year} at ${event.venue}: Elite 15 podium times, age-group world titles, ${raceResults.totalAthletes ? `the ${raceResults.totalAthletes.toLocaleString()}-strong ${event.city} field` : `how the ${event.city} field raced`}, and the takeaways worth keeping.`
+      ? winnerSnippet
+        ? `Hyrox World Championships ${year} at ${event.venue}, ${event.city}: ${winnerSnippet}. Every division's top 10, the size of each field, and the median finish time.`
         : `The ${year} Hyrox World Championships ran ${formatEventDate(event.startDate, event.endDate)} at ${event.venue}. How the field qualified, and where the official Elite 15 and age-group times are published.`
-      : raceResults
-        ? `Hyrox ${event.city} ${year} is done. Podium times by division, the size of the field, how the ${event.venue} loop raced, and what to take into your next start.`
+      : winnerSnippet
+        ? `Hyrox ${event.city} ${year} results: ${winnerSnippet}. The top 10 in every division, how many athletes raced, and the median finish — a far better benchmark than the winning time.`
         : `Hyrox ${event.city} ${year} raced ${formatEventDate(event.startDate, event.endDate)}. How the course played out, where the official finish times land, and what to plan for the next edition.`
     : inRaceWeek
       ? isWorldChampionship
@@ -502,61 +603,6 @@ const otherEventsInYear = (() => {
   add(otherSameYear, OTHER_EVENTS_MAX); // backfill with anything left
   return picked.slice(0, OTHER_EVENTS_MAX);
 })();
-
-// Pull the top podium entry from the marquee divisions so the city page
-// can surface "this is who won" without bouncing the user to /results/.
-interface EventWinner {
-  division: string;
-  athlete: string;
-  time: string;
-  country?: string;
-  /** Only known for synced divisions with an exact count. */
-  fieldSize?: number;
-  medianTime?: string;
-}
-function findWinner(
-  divisionMatchers: string[],
-  syncedMatchers: string[],
-): EventWinner | undefined {
-  if (raceResults) {
-    for (const matcher of divisionMatchers) {
-      const d = raceResults.divisions.find((x) =>
-        x.division.toLowerCase().includes(matcher),
-      );
-      if (d?.podium?.[0]) {
-        return {
-          division: d.division,
-          athlete: d.podium[0].athlete,
-          time: d.podium[0].time,
-          country: d.podium[0].country,
-          fieldSize: d.athleteCount,
-          medianTime: d.medianTime,
-        };
-      }
-    }
-  }
-  const s = pickDivision(syncedLb, syncedMatchers);
-  if (s?.top[0]) {
-    return {
-      division: s.division,
-      athlete: s.top[0].name,
-      time: s.top[0].time,
-      country: s.top[0].country ?? undefined,
-      fieldSize: s.fieldSizeExact ? s.fieldSize : undefined,
-      medianTime: s.medianTime ?? undefined,
-    };
-  }
-  return undefined;
-}
-const proMenWinner = event
-  ? findWinner(["pro men", "elite 15 men", "men"], ["Pro Men", "Elite 15 Men", "Open Men"])
-  : undefined;
-const proWomenWinner = event
-  ? findWinner(
-      ["pro women", "elite 15 women", "women"],
-      ["Pro Women", "Elite 15 Women", "Open Women"],
-    )
-  : undefined;
 
 // Explainer computed values
 const explainerCityHeadline = explainer
