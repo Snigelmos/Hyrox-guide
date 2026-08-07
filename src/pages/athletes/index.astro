@@ -1,0 +1,245 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getPublishableAthletes,
+  MIN_RACES_FOR_PAGE,
+  PRO_DATASET_GENERATED_AT,
+  summariseAthlete,
+  timeToSeconds,
+} from "../../lib/pro-athletes";
+
+const athletes = getPublishableAthletes();
+
+const withSummary = athletes.map((athlete) => ({
+  athlete,
+  summary: summariseAthlete(athlete),
+}));
+
+/** Fastest first, since that's the ranking a visitor actually wants. */
+function fastest(list: typeof withSummary, sex: "M" | "W") {
+  return list
+    .filter((x) => x.athlete.sex === sex && x.summary.personalBest)
+    .sort(
+      (a, b) =>
+        (timeToSeconds(a.summary.personalBest?.time ?? null) ?? Infinity) -
+        (timeToSeconds(b.summary.personalBest?.time ?? null) ?? Infinity),
+    );
+}
+
+const fastestMen = fastest(withSummary, "M").slice(0, 25);
+const fastestWomen = fastest(withSummary, "W").slice(0, 25);
+
+const mostRaces = [...withSummary]
+  .sort((a, b) => b.summary.raceCount - a.summary.raceCount)
+  .slice(0, 25);
+
+const byNation = new Map<string, number>();
+for (const { athlete } of withSummary) {
+  if (!athlete.nation) continue;
+  byNation.set(athlete.nation, (byNation.get(athlete.nation) ?? 0) + 1);
+}
+const topNations = [...byNation.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 12);
+
+const alphabetical = [...withSummary].sort((a, b) =>
+  a.athlete.name.localeCompare(b.athlete.name),
+);
+
+const generatedLabel = new Date(PRO_DATASET_GENERATED_AT).toLocaleDateString(
+  "en-GB",
+  { day: "numeric", month: "long", year: "numeric" },
+);
+
+const title = "Hyrox Pro Athlete Results and Race Histories";
+const description = `Race histories for ${athletes.length} Hyrox Pro and Elite 15 athletes — personal bests, finishing positions and season-by-season progression, with every race linked to its event page.`;
+
+const faqItems = [
+  {
+    question: "Which athletes have a profile here?",
+    answer: `Athletes with at least ${MIN_RACES_FOR_PAGE} recorded races in the Hyrox Pro or Elite 15 singles divisions. That bar exists so every profile shows a genuine progression rather than a single result. Athletes with fewer races still appear in the live tracker.`,
+  },
+  {
+    question: "Why are doubles and relay results missing?",
+    answer:
+      "A doubles or relay result belongs to a team, not an individual, and the timing portal publishes it under the team entry. Splitting those results across two athletes would mean guessing, so they are left out rather than reported inaccurately.",
+  },
+  {
+    question: "How are athletes identified across races?",
+    answer:
+      "The official timing system issues a new entry id for every race, so there is no permanent athlete id to follow. Profiles are assembled by matching name and nation, which is accurate for the overwhelming majority of Pro athletes but can merge two people who share both.",
+  },
+  {
+    question: "How current is this data?",
+    answer: `The dataset was last refreshed on ${generatedLabel} and is rebuilt weekly from the official Hyrox results portal. Results from a race that finished in the last few days may not have landed yet.`,
+  },
+];
+
+const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Athletes" }];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  schemaType="CollectionPage"
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <header class="mb-10 max-w-3xl">
+      <h1 class="text-3xl md:text-5xl font-black text-text-heading leading-tight">
+        Hyrox Pro athlete race histories
+      </h1>
+      <p class="mt-4 text-lg text-text-muted">
+        Personal bests, finishing positions and progression for {athletes.length}{" "}
+        Hyrox Pro and Elite 15 athletes, built from the official timing portal.
+        The portal itself has no athlete history — it only searches one race day at
+        a time — so these pages stitch each athlete's races back together.
+      </p>
+      <p class="mt-3 text-sm text-text-muted">
+        Last refreshed {generatedLabel} · Pro and Elite 15 singles only
+      </p>
+    </header>
+
+    <section class="mb-12">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h2 class="text-2xl font-black text-text-heading mb-4">
+            Fastest women
+          </h2>
+          <ol class="space-y-1.5">
+            {
+              fastestWomen.map(({ athlete, summary }, i) => (
+                <li class="flex items-baseline gap-3 text-sm">
+                  <span class="w-6 shrink-0 text-text-muted tabular-nums">
+                    {i + 1}
+                  </span>
+                  <a
+                    href={`/athletes/${athlete.slug}/`}
+                    class="flex-1 font-bold text-text-heading hover:text-accent transition-colors no-underline truncate"
+                  >
+                    {athlete.name}
+                  </a>
+                  {athlete.nation && (
+                    <span class="text-xs text-text-muted shrink-0">
+                      {athlete.nation}
+                    </span>
+                  )}
+                  <span class="font-bold tabular-nums text-accent shrink-0">
+                    {summary.personalBest?.time}
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-text-heading mb-4">Fastest men</h2>
+          <ol class="space-y-1.5">
+            {
+              fastestMen.map(({ athlete, summary }, i) => (
+                <li class="flex items-baseline gap-3 text-sm">
+                  <span class="w-6 shrink-0 text-text-muted tabular-nums">
+                    {i + 1}
+                  </span>
+                  <a
+                    href={`/athletes/${athlete.slug}/`}
+                    class="flex-1 font-bold text-text-heading hover:text-accent transition-colors no-underline truncate"
+                  >
+                    {athlete.name}
+                  </a>
+                  {athlete.nation && (
+                    <span class="text-xs text-text-muted shrink-0">
+                      {athlete.nation}
+                    </span>
+                  )}
+                  <span class="font-bold tabular-nums text-accent shrink-0">
+                    {summary.personalBest?.time}
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-2xl font-black text-text-heading mb-1">
+        Busiest race schedules
+      </h2>
+      <p class="text-text-muted mb-4">
+        Athletes with the most recorded races — the deepest progression data on
+        the site.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        {
+          mostRaces.map(({ athlete, summary }) => (
+            <a
+              href={`/athletes/${athlete.slug}/`}
+              class="inline-flex items-center gap-2 bg-bg-card border border-border hover:border-accent/60 rounded-lg px-3 py-2 text-sm no-underline transition-colors"
+            >
+              <span class="font-bold text-text-heading">{athlete.name}</span>
+              <span class="text-xs text-text-muted">
+                {summary.raceCount} races
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      topNations.length > 0 && (
+        <section class="mb-12">
+          <h2 class="text-2xl font-black text-text-heading mb-4">
+            Where these athletes race from
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {topNations.map(([nation, count]) => (
+              <span class="inline-flex items-center gap-2 bg-bg-card border border-border rounded-lg px-3 py-1.5 text-sm">
+                <span class="font-bold text-text-heading">{nation}</span>
+                <span class="text-xs text-text-muted">{count}</span>
+              </span>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="mb-12">
+      <h2 class="text-2xl font-black text-text-heading mb-4">
+        All athletes A–Z
+      </h2>
+      <div class="columns-2 md:columns-3 lg:columns-4 gap-6 text-sm">
+        {
+          alphabetical.map(({ athlete, summary }) => (
+            <a
+              href={`/athletes/${athlete.slug}/`}
+              class="block mb-1.5 break-inside-avoid text-text-muted hover:text-accent transition-colors no-underline"
+            >
+              <span class="font-medium">{athlete.name}</span>
+              <span class="text-xs opacity-70"> ({summary.raceCount})</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="bg-bg-card border border-border rounded-2xl p-6">
+      <h2 class="text-xl font-black text-text-heading mb-4">
+        About this dataset
+      </h2>
+      <dl class="space-y-4 text-sm">
+        {
+          faqItems.map((item) => (
+            <div>
+              <dt class="font-bold text-text-heading mb-1">{item.question}</dt>
+              <dd class="text-text-muted">{item.answer}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+  </div>
+</BaseLayout>

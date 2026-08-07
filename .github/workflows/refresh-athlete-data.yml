@@ -1,0 +1,91 @@
+name: Refresh athlete data
+
+# Keeps the live tracker and the /athletes/ profiles current.
+#
+# Two generated files are rebuilt, in order, because the second depends on the
+# first:
+#
+#  1. scripts/build-results-index.mjs -> src/data/hyrox-results-index.generated.ts
+#     Maps our events onto results.hyrox.com. Neither the season bucket nor the
+#     division-day ids can be derived from a race date, so they have to be
+#     discovered from the portal. Until a race is in here the live tracker cannot
+#     search it, so this must run before each race weekend, not after.
+#
+#  2. scripts/ingest-pro-results.mjs -> src/data/pro-athletes.generated.json
+#     Pro/Elite singles race histories, which the portal has no endpoint for.
+#
+# Unlike podium results (see race-results-reminder.yml, which deliberately only
+# opens an issue because a post-race disqualification can leave an official rank
+# 1 vacant), these two files are safe to auto-commit: they are re-derived in full
+# from the official portal on every run, so an upstream correction propagates on
+# the next refresh instead of being frozen in place by a one-time paste.
+#
+# Nothing is pushed unless `astro build` is green first, per the deploy-safety
+# rule.
+
+on:
+  # Mondays 05:00 UTC — after the weekend's results have settled, and early
+  # enough that the fresh index is in place well before the next race weekend.
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-athlete-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    # The ingest walks a few hundred result pages, throttled to stay polite.
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Race days already resolved are cached inside the generated file, so this
+      # only probes race days it has never seen.
+      - name: Rebuild the results index
+        run: node scripts/build-results-index.mjs
+
+      - name: Ingest Pro/Elite race histories
+        run: node scripts/ingest-pro-results.mjs
+
+      - name: Detect changes
+        id: changes
+        run: |
+          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No athlete-data changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --stat
+          fi
+
+      # Build gate — a malformed generated file must never become a failed
+      # production deploy.
+      - name: Build site (astro build)
+        if: steps.changes.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/hyrox-results-index.generated.ts src/data/pro-athletes.generated.json
+          git commit -m "chore(live): refresh results index and Pro athlete histories"
+          git push

@@ -1,41 +1,75 @@
 /**
  * Live race tracking helpers.
  *
- * Hyrox does not publish a public live-data API. The official live timing
- * portal at results.hyrox.com is server-rendered HTML powered by Mika/timing
- * (Quicksearch is a JS widget that mounts after page load). URL-based form
- * pre-fill for name/bib does NOT work reliably — the search inputs are
- * created client-side. So Phase 1 of our tracker is a deep-link launcher:
+ * Hyrox publishes no live-data API. The official portal at results.hyrox.com is
+ * server-rendered HTML from Mika timing, so `/api/live/search` and
+ * `/api/live/athlete` read it server-side and we render splits on our own pages.
  *
- *  1. We open the official search page in a new tab (preselected to the
- *     current Hyrox season).
- *  2. The component copies the spectator's query (athlete name OR bib) to
- *     the clipboard before the popup so they can paste with one keystroke.
- *  3. The watchlist on our /live/ hub remembers what they've been tracking
- *     across the weekend.
+ * Two hard constraints shape everything here:
  *
- * Phase 2 (not yet shipped) will introduce a Vercel serverless function
- * that scrapes results.hyrox.com server-side and renders splits inline. See
- * the project plan for the architecture.
+ *  1. A search must name one division-day id (e.g. `HPRO_LR3MS4JI16C0`). There
+ *     is no cross-race or cross-season search — `event=ALL` is ignored. So
+ *     finding an athlete without knowing their race means fanning out across
+ *     every division of every candidate race.
+ *  2. Neither the season bucket nor the division ids can be derived from a
+ *     date, so they are discovered by scripts/build-results-index.mjs and
+ *     committed to hyrox-results-index.generated.ts.
+ *
+ * The portal also exposes no per-athlete history: detail pages link only to
+ * rankings and startlists. Race history therefore comes from our own ingested
+ * dataset, not from a live lookup.
  */
 
 import type { HyroxEvent } from "../data/events";
 import { EVENTS } from "../data/events";
+import {
+  HYROX_RESULTS_INDEX,
+  RESULTS_INDEX_CURRENT_SEASON,
+  type ResultsIndexEntry,
+} from "../data/hyrox-results-index.generated";
 
 /**
- * Hyrox season identifier used in results.hyrox.com URLs.
+ * Where a race lives on results.hyrox.com.
  *
- * Season 25/26 (Aug 2025 – Aug 2026) lives at /season-9/.
- * Season 26/27 (Aug 2026 – Aug 2027) is expected at /season-10/.
- *
- * The exact Hyrox-side cutoff isn't documented; we use 2026-08-15 as the
- * boundary because that's roughly when the 2026/27 calendar opens. Update
- * the cutoff if Hyrox shifts seasons.
+ * The season bucket cannot be computed from a race date. The buckets are not
+ * chronological: season-8 holds the completed 2025/26 season, season-9 the
+ * current window, and season-10 is a 2018/2019 archive. An earlier version of
+ * this file guessed the bucket from a 2026-08-15 cutoff, which pointed every
+ * later race at the 2018 archive. The mapping is now discovered from the portal
+ * by scripts/build-results-index.mjs and committed to the generated index.
  */
-const SEASON_BOUNDARY = "2026-08-15";
+export function getResultsLocation(
+  slug: string,
+  year: number,
+): ResultsIndexEntry | null {
+  return RESULTS_INDEX_BY_KEY.get(`${year}:${slug}`) ?? null;
+}
 
-export function resultsHyroxSeason(event: HyroxEvent): "season-9" | "season-10" {
-  return event.startDate < SEASON_BOUNDARY ? "season-9" : "season-10";
+const RESULTS_INDEX_BY_KEY = new Map(
+  HYROX_RESULTS_INDEX.map((e) => [`${e.year}:${e.slug}`, e] as const),
+);
+
+export function resultsHyroxSeason(event: HyroxEvent): string {
+  return (
+    getResultsLocation(event.slug, event.year)?.season ??
+    RESULTS_INDEX_CURRENT_SEASON
+  );
+}
+
+/**
+ * The division ids to search for a race.
+ *
+ * `*_OVERALL` ids are dropped even though they look like a cheap way to cover a
+ * whole weekend in one request: they are aggregate rankings and they drop
+ * entries. Amsterdam 2026 returns three matches for "Smith" via
+ * H_AMS26_OVERALL but four across the individual days, and the detail page
+ * reached through an overall id reports its race as "General Ranking" instead
+ * of the city. Per-day ids are the only complete, correctly-labelled set.
+ */
+export function getSearchDivisionIds(entry: ResultsIndexEntry): string[] {
+  return entry.divisions
+    .filter((d) => !d.id.endsWith("_OVERALL"))
+    .map((d) => d.id);
 }
 
 /**
@@ -202,9 +236,21 @@ export interface WatchlistEntry {
   event?: string;
   /** Friendly division label inferred from the event-id prefix. */
   divisionLabel?: string;
+  /**
+   * Season bucket the entry lives in. Absent on entries saved before the
+   * tracker stopped assuming a single season.
+   */
+  season?: string;
 }
 
-/** A single match returned by `/api/live/search`. */
+/**
+ * A single match returned by `/api/live/search`.
+ *
+ * The race fields are authoritative: they come from the division that actually
+ * produced the match, not from whatever race the spectator had selected. That
+ * distinction matters because the finder used to label every result with the
+ * selected race even though the search never sent one upstream.
+ */
 export interface LiveMatch {
   idp: string;
   event: string;
@@ -215,6 +261,13 @@ export interface LiveMatch {
   totalTime: string | null;
   divisionLabel: string | null;
   detailUrl: string;
+  /** Our event slug for the race this entry was found in. */
+  raceSlug: string;
+  raceYear: number;
+  /** Display name for the race, e.g. "Hyrox Chiba 2026". */
+  raceName: string;
+  /** Season bucket the entry lives in, needed to re-fetch the athlete. */
+  season: string;
 }
 
 /** One row in the splits table — either a 1 km run or a station. */

@@ -28,6 +28,13 @@ interface Props {
   pinnedEventSlug?: string;
   showWatchlist?: boolean;
   className?: string;
+  /**
+   * Optional race filter, owned by the parent so the "Live right now" rail can
+   * point the finder at a race without navigating off the page. Empty string
+   * means "search every race that's live or recently finished".
+   */
+  raceFilterSlug?: string;
+  onRaceFilterChange?: (slug: string) => void;
 }
 
 type ViewState =
@@ -40,6 +47,9 @@ type ViewState =
       event: string;
       name: string;
       raceLabel?: string;
+      season?: string;
+      raceSlug?: string;
+      raceYear?: number;
       previousMatches?: LiveMatch[];
       previousQuery?: string;
       previousType?: LiveSearchType;
@@ -60,12 +70,18 @@ const SHARE_PARAM_IDP = "idp";
 const SHARE_PARAM_EVENT = "event";
 const SHARE_PARAM_NAME = "name";
 const SHARE_PARAM_RACE = "race";
+const SHARE_PARAM_SEASON = "season";
+
+/** Sentinel for the race filter meaning "search everything that's on". */
+const ANY_RACE = "";
 
 export default function LiveAthleteFinder({
   events,
   pinnedEventSlug,
   showWatchlist = true,
   className = "",
+  raceFilterSlug,
+  onRaceFilterChange,
 }: Props) {
   const pinnedEvent = useMemo(
     () =>
@@ -75,7 +91,10 @@ export default function LiveAthleteFinder({
     [events, pinnedEventSlug],
   );
 
-  const initialSlug = pinnedEvent?.slug ?? events[0]?.slug ?? "";
+  // Default to "any race". The old default of events[0] implied the search was
+  // scoped to that race when it never was, so every result inherited a race
+  // label it had nothing to do with.
+  const initialSlug = pinnedEvent?.slug ?? raceFilterSlug ?? ANY_RACE;
   const [selectedSlug, setSelectedSlug] = useState(initialSlug);
   const [searchType, setSearchType] = useState<LiveSearchType>("name");
   const [query, setQuery] = useState("");
@@ -86,8 +105,18 @@ export default function LiveAthleteFinder({
   const [view, setView] = useState<ViewState>({ kind: "form" });
 
   useEffect(() => {
-    setSelectedSlug(initialSlug);
-  }, [initialSlug]);
+    if (pinnedEvent?.slug) setSelectedSlug(pinnedEvent.slug);
+  }, [pinnedEvent?.slug]);
+
+  // The parent (the "Live right now" rail) can aim the finder at a race.
+  useEffect(() => {
+    if (raceFilterSlug !== undefined) setSelectedSlug(raceFilterSlug);
+  }, [raceFilterSlug]);
+
+  function changeRaceFilter(slug: string) {
+    setSelectedSlug(slug);
+    onRaceFilterChange?.(slug);
+  }
 
   useEffect(() => {
     try {
@@ -110,12 +139,14 @@ export default function LiveAthleteFinder({
     if (!idp || !event) return;
     const name = params.get(SHARE_PARAM_NAME) ?? "";
     const race = params.get(SHARE_PARAM_RACE) ?? undefined;
+    const season = params.get(SHARE_PARAM_SEASON) ?? undefined;
     setView({
       kind: "dashboard",
       idp,
       event,
       name,
       raceLabel: race,
+      season,
     });
   }, []);
 
@@ -128,12 +159,20 @@ export default function LiveAthleteFinder({
     }
   }
 
+  /** Null when the spectator hasn't narrowed to one race. */
   const selectedEvent = useMemo(
-    () => events.find((e) => e.slug === selectedSlug) ?? events[0] ?? null,
+    () =>
+      selectedSlug === ANY_RACE
+        ? null
+        : events.find((e) => e.slug === selectedSlug) ?? null,
     [events, selectedSlug],
   );
 
-  const hasNoEvents = events.length === 0;
+  /** Manual escape hatch to the official portal, shown only on failure. */
+  const fallbackSearchUrl = useMemo(
+    () => selectedEvent?.searchUrl ?? events[0]?.searchUrl ?? null,
+    [selectedEvent, events],
+  );
 
   const isFutureEvent = useMemo(() => {
     if (!selectedEvent?.startDate) return false;
@@ -143,22 +182,24 @@ export default function LiveAthleteFinder({
   }, [selectedEvent]);
 
   const buildShareLink = useCallback(
-    (match: { idp: string; event: string; name: string }) => {
+    (match: {
+      idp: string;
+      event: string;
+      name: string;
+      raceName?: string;
+      season?: string;
+    }) => {
       const params = new URLSearchParams();
       params.set(SHARE_PARAM_IDP, match.idp);
       params.set(SHARE_PARAM_EVENT, match.event);
       if (match.name) params.set(SHARE_PARAM_NAME, match.name);
-      if (selectedEvent) {
-        params.set(
-          SHARE_PARAM_RACE,
-          `Hyrox ${selectedEvent.city} ${selectedEvent.year}`,
-        );
-      }
+      if (match.raceName) params.set(SHARE_PARAM_RACE, match.raceName);
+      if (match.season) params.set(SHARE_PARAM_SEASON, match.season);
       const origin =
         typeof window !== "undefined" ? window.location.origin : "";
       return `${origin}/live/?${params.toString()}`;
     },
-    [selectedEvent],
+    [],
   );
 
   async function copyShareLink(match: LiveMatch) {
@@ -225,18 +266,35 @@ export default function LiveAthleteFinder({
 
     setView({ kind: "loading", query: effectiveQuery, type: searchType });
     try {
-      const res = await fetch(
-        `/api/live/search?q=${encodeURIComponent(effectiveQuery)}&type=${searchType}`,
-        { cache: "no-store" },
-      );
+      const params = new URLSearchParams({ q: effectiveQuery, type: searchType });
+      // Only ever sent when the spectator actually narrowed to a race. With no
+      // race the API fans out across every division that's live.
+      if (selectedEvent) {
+        params.set("race", `${selectedEvent.slug}:${selectedEvent.year}`);
+      }
+      const res = await fetch(`/api/live/search?${params.toString()}`, {
+        cache: "no-store",
+      });
       if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as {
+          detail?: string;
+        };
         offerManualFallback(
-          `Tracker search is temporarily unavailable. Stay here and retry in a moment — no Hyrox tab was opened.`,
+          body.detail ??
+            `Tracker search is temporarily unavailable. Stay here and retry in a moment — no Hyrox tab was opened.`,
         );
         return;
       }
-      const data = (await res.json()) as { matches: LiveMatch[] };
+      const data = (await res.json()) as {
+        matches: LiveMatch[];
+        detail?: string;
+      };
       const matches = data.matches ?? [];
+      if (matches.length === 0 && data.detail) {
+        setView({ kind: "form" });
+        setError(data.detail);
+        return;
+      }
       const fullNameMatches =
         searchType === "name" && hasMultipleNameParts(trimmed)
           ? matches.filter((match) => nameMatchesQuery(match.name, trimmed))
@@ -244,15 +302,18 @@ export default function LiveAthleteFinder({
       const displayMatches = fullNameMatches.length > 0 ? fullNameMatches : matches;
       if (matches.length === 0) {
         setView({ kind: "form" });
-        setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
+        setOfficialFallbackUrl(fallbackSearchUrl);
         if (isFutureEvent) {
           setError(
             `No startlist match for "${effectiveQuery}" yet. Hyrox publishes startlists a few days before race day — try again closer to the event.`,
           );
           return;
         }
+        const scope = selectedEvent
+          ? `at Hyrox ${selectedEvent.city} ${selectedEvent.year}`
+          : `at any race currently on`;
         setError(
-          `No matches for "${effectiveQuery}". Hyrox searches by surname — try the last name only (e.g. "Smith", not "John Smith").`,
+          `No matches for "${effectiveQuery}" ${scope}. Hyrox only matches surnames — try the last name on its own (e.g. "Smith", not "John Smith")${selectedEvent ? ", or set Race back to Any race" : ""}.`,
         );
         return;
       }
@@ -280,24 +341,26 @@ export default function LiveAthleteFinder({
   function offerManualFallback(message: string) {
     setView({ kind: "form" });
     setError(message);
-    setOfficialFallbackUrl(selectedEvent?.searchUrl ?? null);
+    setOfficialFallbackUrl(fallbackSearchUrl);
   }
 
   function openDashboard(
     match: LiveMatch,
     fromMatches?: { matches: LiveMatch[]; query: string; type: LiveSearchType },
   ) {
-    if (!selectedEvent) return;
+    // The race comes from the match, never from the filter — the athlete may
+    // well have been found at a race the spectator never selected.
     const entry: WatchlistEntry = {
-      eventSlug: selectedEvent.slug,
-      year: selectedEvent.year,
-      eventCity: selectedEvent.city,
+      eventSlug: match.raceSlug,
+      year: match.raceYear,
+      eventCity: match.raceName.replace(/^Hyrox\s+/, "").replace(/\s+\d{4}$/, ""),
       type: "name",
       query: match.name,
       addedAt: Date.now(),
       idp: match.idp,
       event: match.event,
       divisionLabel: match.divisionLabel ?? undefined,
+      season: match.season,
     };
     persist(upsertWatchlist(watchlist, entry));
     setView({
@@ -305,7 +368,10 @@ export default function LiveAthleteFinder({
       idp: match.idp,
       event: match.event,
       name: match.name,
-      raceLabel: selectedEvent ? `Hyrox ${selectedEvent.city} ${selectedEvent.year}` : undefined,
+      raceLabel: match.raceName,
+      season: match.season,
+      raceSlug: match.raceSlug,
+      raceYear: match.raceYear,
       previousMatches: fromMatches?.matches,
       previousQuery: fromMatches?.query,
       previousType: fromMatches?.type,
@@ -321,6 +387,9 @@ export default function LiveAthleteFinder({
         event: entry.event,
         name: entry.query,
         raceLabel: `Hyrox ${entry.eventCity} ${entry.year}`,
+        season: entry.season,
+        raceSlug: entry.eventSlug,
+        raceYear: entry.year,
       });
       return;
     }
@@ -343,9 +412,13 @@ export default function LiveAthleteFinder({
       // Strip any share-link query params so the form view shows cleanly.
       if (typeof window !== "undefined" && window.location.search) {
         const url = new URL(window.location.href);
-        [SHARE_PARAM_IDP, SHARE_PARAM_EVENT, SHARE_PARAM_NAME, SHARE_PARAM_RACE].forEach(
-          (k) => url.searchParams.delete(k),
-        );
+        [
+          SHARE_PARAM_IDP,
+          SHARE_PARAM_EVENT,
+          SHARE_PARAM_NAME,
+          SHARE_PARAM_RACE,
+          SHARE_PARAM_SEASON,
+        ].forEach((k) => url.searchParams.delete(k));
         window.history.replaceState({}, "", url.toString());
       }
       setView({ kind: "form" });
@@ -381,7 +454,16 @@ export default function LiveAthleteFinder({
             event={view.event}
             athleteHint={view.name}
             raceLabel={view.raceLabel}
-            shareUrl={buildShareLink({ idp: view.idp, event: view.event, name: view.name })}
+            season={view.season}
+            raceSlug={view.raceSlug}
+            raceYear={view.raceYear}
+            shareUrl={buildShareLink({
+              idp: view.idp,
+              event: view.event,
+              name: view.name,
+              raceName: view.raceLabel,
+              season: view.season,
+            })}
             onClose={backToMatches}
           />
         </div>
@@ -395,20 +477,28 @@ export default function LiveAthleteFinder({
             {!pinnedEvent && events.length > 0 && (
               <label className="block">
                 <span className="block text-xs font-bold uppercase tracking-wider text-text-muted mb-1.5">
-                  Race
+                  Race <span className="text-text-muted/70 normal-case">(optional)</span>
                 </span>
                 <select
                   value={selectedSlug}
-                  onChange={(e) => setSelectedSlug(e.target.value)}
+                  onChange={(e) => changeRaceFilter(e.target.value)}
                   className="w-full bg-bg border border-border rounded-lg px-3 py-2.5 text-text font-medium focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent"
-                  aria-label="Choose the event to track"
+                  aria-label="Optionally narrow the search to one race"
                 >
+                  <option value={ANY_RACE}>
+                    Any race — search everything that's on
+                  </option>
                   {events.map((e) => (
                     <option key={`${e.year}-${e.slug}`} value={e.slug}>
                       Hyrox {e.city} {e.year}
                     </option>
                   ))}
                 </select>
+                <span className="mt-1.5 block text-xs text-text-muted">
+                  {selectedEvent
+                    ? `Only searching Hyrox ${selectedEvent.city} ${selectedEvent.year}.`
+                    : "Just enter a name — we'll search every division of every race that's live, and tell you which race we found them in."}
+                </span>
               </label>
             )}
 
@@ -487,7 +577,7 @@ export default function LiveAthleteFinder({
                 />
                 <button
                   type="submit"
-                  disabled={hasNoEvents || view.kind === "loading"}
+                  disabled={view.kind === "loading"}
                   className="inline-flex items-center justify-center gap-2 bg-accent text-bg font-bold px-5 py-2.5 rounded-lg hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {view.kind === "loading" ? (
@@ -506,9 +596,10 @@ export default function LiveAthleteFinder({
               </div>
             </label>
 
-            {hasNoEvents && (
+            {events.length === 0 && (
               <p className="text-sm text-text-muted">
-                No Hyrox races are running right now. The tracker re-activates the moment an event goes live.
+                No Hyrox race is live or recently finished right now. You can still
+                search — we'll check any race with a published startlist.
               </p>
             )}
 
@@ -569,6 +660,9 @@ export default function LiveAthleteFinder({
                         <div className="min-w-0">
                           <div className="font-bold text-text-heading truncate">
                             {m.name}
+                          </div>
+                          <div className="text-xs font-bold text-accent truncate">
+                            {m.raceName}
                           </div>
                           <div className="text-xs text-text-muted">
                             {[m.divisionLabel, m.bib ? `Bib ${m.bib}` : null, m.country, m.ageGroup ? `AG ${m.ageGroup}` : null]

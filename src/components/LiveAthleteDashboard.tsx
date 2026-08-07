@@ -6,6 +6,8 @@ import {
   type LiveSplit,
 } from "../lib/hyrox-live";
 import { analyzeRace, entryKindLabel, type RaceAnalysis } from "../lib/race-analysis";
+import { RESULTS_INDEX_CURRENT_SEASON } from "../data/hyrox-results-index.generated";
+import AthleteHistoryPanel from "./AthleteHistoryPanel";
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -19,6 +21,17 @@ interface Props {
    */
   athleteHint?: string;
   raceLabel?: string;
+  /**
+   * Season bucket the entry lives in. Buckets are not chronological, so this
+   * has to travel with the match rather than being derived from a date.
+   */
+  season?: string;
+  /**
+   * The race being watched, so the "Past races" panel can leave it out of the
+   * history list rather than showing today's race as a past result.
+   */
+  raceSlug?: string;
+  raceYear?: number;
   /** Pre-built share URL. When provided, a Copy share link button appears. */
   shareUrl?: string;
   onClose?: () => void;
@@ -47,6 +60,9 @@ export default function LiveAthleteDashboard({
   event,
   athleteHint,
   raceLabel,
+  season = RESULTS_INDEX_CURRENT_SEASON,
+  raceSlug,
+  raceYear,
   shareUrl,
   onClose,
 }: Props) {
@@ -56,14 +72,17 @@ export default function LiveAthleteDashboard({
   const [tick, setTick] = useState(0);
   const [justFinished, setJustFinished] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
-  const fallbackUrl = `https://results.hyrox.com/season-9/?content=detail&pid=search&idp=${encodeURIComponent(idp)}&event=${encodeURIComponent(event)}&lang=EN_CAP`;
+  const fallbackUrl = `https://results.hyrox.com/${season}/?content=detail&pid=search&idp=${encodeURIComponent(idp)}&event=${encodeURIComponent(event)}&lang=EN_CAP`;
   const lastFetchRef = useRef<number>(0);
   const wasFinishedRef = useRef<boolean>(false);
+  // The portal stores names as "Lastname, Firstname", which is the form the
+  // history lookup matches on.
+  const historyName = snapshot?.athlete.name || athleteHint || "";
 
   const fetchSnapshot = useCallback(async () => {
     try {
       const res = await fetch(
-        `/api/live/athlete?idp=${encodeURIComponent(idp)}&event=${encodeURIComponent(event)}`,
+        `/api/live/athlete?idp=${encodeURIComponent(idp)}&event=${encodeURIComponent(event)}&season=${encodeURIComponent(season)}`,
         { cache: "no-store" },
       );
       if (!res.ok) {
@@ -86,7 +105,7 @@ export default function LiveAthleteDashboard({
     } catch {
       setError("Couldn't reach the live tracker. Trying again shortly.");
     }
-  }, [idp, event]);
+  }, [idp, event, season]);
 
   useEffect(() => {
     setSnapshot(null);
@@ -539,6 +558,15 @@ export default function LiveAthleteDashboard({
           <div className="text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg px-3 py-2">
             {error}
           </div>
+        )}
+
+        {historyName && (
+          <AthleteHistoryPanel
+            storedName={historyName}
+            nation={snapshot?.athlete.country ?? null}
+            currentRaceSlug={raceSlug}
+            currentRaceYear={raceYear}
+          />
         )}
 
         <div className="pt-4 border-t border-border flex items-center gap-3 flex-wrap">

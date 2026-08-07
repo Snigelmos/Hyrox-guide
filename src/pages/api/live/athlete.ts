@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { RESULTS_INDEX_CURRENT_SEASON } from "../../../data/hyrox-results-index.generated";
 
 export const prerender = false;
 
@@ -36,7 +37,6 @@ const HX_BROWSER_HEADERS = {
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
   "Accept-Language": "en-US,en;q=0.9",
   "Cache-Control": "no-cache",
-  Referer: `${HX_BASE}/season-9/`,
 };
 
 function decodeHtml(s: string): string {
@@ -169,7 +169,10 @@ function parseSnapshot(html: string, source: string): LiveAthleteSnapshot | null
 export const GET: APIRoute = async ({ url }) => {
   const idp = (url.searchParams.get("idp") ?? "").trim();
   const event = (url.searchParams.get("event") ?? "").trim();
-  const season = url.searchParams.get("season") ?? "season-9";
+  // Season buckets are not chronological, so the caller passes the one the
+  // match came from. The generated fallback is only for legacy share links
+  // created before the season travelled with the match.
+  const season = url.searchParams.get("season") ?? RESULTS_INDEX_CURRENT_SEASON;
 
   if (!idp || !event) {
     return json({ error: "missing idp or event" }, 400);
@@ -197,7 +200,7 @@ export const GET: APIRoute = async ({ url }) => {
   let html: string;
   try {
     const res = await fetch(upstream, {
-      headers: HX_BROWSER_HEADERS,
+      headers: { ...HX_BROWSER_HEADERS, Referer: `${HX_BASE}/${season}/` },
     });
     if (!res.ok) {
       return json({ error: `upstream ${res.status}` }, 502);

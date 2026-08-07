@@ -1,6 +1,36 @@
 import type { APIRoute } from "astro";
+import { EVENTS } from "../../../data/events";
+import {
+  getResultsLocation,
+  getSearchDivisionIds,
+} from "../../../lib/hyrox-live";
+import {
+  getActiveEventsOnDate,
+  getRecentlyFinishedEventsOnDate,
+  getUpcomingEventsOnDate,
+} from "../../../lib/race-status";
 
 export const prerender = false;
+
+/**
+ * Athlete search across the official Hyrox timing portal.
+ *
+ * The portal has no cross-race search: every query must name one division-day
+ * id, and `event=ALL` is silently ignored. Asking without an id returns
+ * whichever race the portal defaults to — which is why this endpoint used to
+ * answer Cape Town Pro Friday for every search regardless of the race the
+ * spectator picked.
+ *
+ * So a race is optional here, but only because we fan out: with no race we
+ * search every division of every race that is live now, and fall back to
+ * recently-finished and imminent races when nothing is on the floor. Each match
+ * carries the race it was actually found in.
+ *
+ * Query params:
+ *   q      - surname or bib (required)
+ *   type   - "name" | "bib"
+ *   race   - optional "<slug>:<year>" to search a single race
+ */
 
 interface LiveMatch {
   idp: string;
@@ -12,6 +42,10 @@ interface LiveMatch {
   totalTime: string | null;
   divisionLabel: string | null;
   detailUrl: string;
+  raceSlug: string;
+  raceYear: number;
+  raceName: string;
+  season: string;
 }
 
 const HX_BASE = "https://results.hyrox.com";
@@ -22,8 +56,11 @@ const HX_BROWSER_HEADERS = {
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
   "Accept-Language": "en-US,en;q=0.9",
   "Cache-Control": "no-cache",
-  Referer: `${HX_BASE}/season-9/`,
 };
+
+/** Upstream is a third party — cap how hard one visitor can make us hit it. */
+const MAX_DIVISIONS_PER_REQUEST = 60;
+const UPSTREAM_CONCURRENCY = 8;
 
 const DIVISION_LABELS: Record<string, string> = {
   HPRO: "HYROX PRO",
@@ -34,7 +71,12 @@ const DIVISION_LABELS: Record<string, string> = {
   HDP: "HYROX PRO DOUBLES",
   HMD: "HYROX MIXED DOUBLES",
   HRELAY: "HYROX TEAM RELAY",
+  HMR: "HYROX TEAM RELAY",
   HADP: "HYROX ADAPTIVE",
+  HA: "HYROX ADAPTIVE",
+  H: "HYROX",
+  HE: "HYROX ELITE 15",
+  HDE: "HYROX ELITE 15 DOUBLES",
 };
 
 function decodeHtml(s: string): string {
@@ -53,16 +95,24 @@ function divisionFromEventId(eventId: string): string | null {
   return DIVISION_LABELS[prefix] ?? null;
 }
 
-function parseMatches(html: string): LiveMatch[] {
+interface RaceContext {
+  slug: string;
+  year: number;
+  name: string;
+  season: string;
+}
+
+function parseMatches(
+  html: string,
+  race: RaceContext,
+  divisionLabelFallback: string | null,
+): LiveMatch[] {
   const matches: LiveMatch[] = [];
-  const itemRx =
-    /<li class="[^"]*list-group-item[^"]*"[^>]*>([\s\S]*?)<\/li>/g;
+  const itemRx = /<li class="[^"]*list-group-item[^"]*"[^>]*>([\s\S]*?)<\/li>/g;
   let m: RegExpExecArray | null;
   while ((m = itemRx.exec(html)) !== null) {
     const block = m[1];
-    const link = block.match(
-      /<a\s+href="([^"]*idp=[^"]+)"[^>]*>([\s\S]*?)<\/a>/,
-    );
+    const link = block.match(/<a\s+href="([^"]*idp=[^"]+)"[^>]*>([\s\S]*?)<\/a>/);
     if (!link) continue;
     const href = decodeHtml(link[1]);
     const name = decodeHtml(link[2].replace(/<[^>]+>/g, "")).trim();
@@ -117,11 +167,15 @@ function parseMatches(html: string): LiveMatch[] {
       country,
       ageGroup,
       totalTime,
-      divisionLabel: divisionFromEventId(event),
-      detailUrl: `${HX_BASE}/season-9/${slug}`,
+      divisionLabel: divisionFromEventId(event) ?? divisionLabelFallback,
+      detailUrl: `${HX_BASE}/${race.season}/${slug}`,
+      raceSlug: race.slug,
+      raceYear: race.year,
+      raceName: race.name,
+      season: race.season,
     });
   }
-  return dedupe(matches);
+  return matches;
 }
 
 function dedupe(list: LiveMatch[]): LiveMatch[] {
@@ -136,10 +190,105 @@ function dedupe(list: LiveMatch[]): LiveMatch[] {
   return out;
 }
 
+/** Races to search when the spectator hasn't named one. */
+function candidateRaces(now: Date): RaceContext[] {
+  const pools = [
+    getActiveEventsOnDate(now, EVENTS),
+    getRecentlyFinishedEventsOnDate(now, 14, EVENTS),
+    getUpcomingEventsOnDate(now, 10, EVENTS),
+  ];
+  const out: RaceContext[] = [];
+  const seen = new Set<string>();
+  for (const pool of pools) {
+    for (const ev of pool) {
+      const key = `${ev.year}:${ev.slug}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const located = getResultsLocation(ev.slug, ev.year);
+      if (!located) continue;
+      out.push({
+        slug: ev.slug,
+        year: ev.year,
+        name: `Hyrox ${ev.city} ${ev.year}`,
+        season: located.season,
+      });
+    }
+    // A live race is what spectators mean by "now" — don't dilute the results
+    // (or the upstream budget) with older races when one is on the floor.
+    if (out.length > 0) break;
+  }
+  return out;
+}
+
+interface Task {
+  race: RaceContext;
+  divisionId: string;
+  divisionLabel: string | null;
+}
+
+function buildTasks(races: RaceContext[]): Task[] {
+  const tasks: Task[] = [];
+  for (const race of races) {
+    const located = getResultsLocation(race.slug, race.year);
+    if (!located) continue;
+    const ids = new Set(getSearchDivisionIds(located));
+    for (const d of located.divisions) {
+      if (!ids.has(d.id)) continue;
+      tasks.push({ race, divisionId: d.id, divisionLabel: d.label });
+    }
+  }
+  return tasks.slice(0, MAX_DIVISIONS_PER_REQUEST);
+}
+
+async function runTask(
+  task: Task,
+  q: string,
+  type: "name" | "bib",
+): Promise<LiveMatch[]> {
+  const param = type === "bib" ? "search%5Bstart_no%5D" : "search%5Bname%5D";
+  const url =
+    `${HX_BASE}/${task.race.season}/?pid=search` +
+    `&event=${encodeURIComponent(task.divisionId)}` +
+    `&${param}=${encodeURIComponent(q)}`;
+  try {
+    const res = await fetch(url, {
+      headers: { ...HX_BROWSER_HEADERS, Referer: `${HX_BASE}/${task.race.season}/` },
+    });
+    if (!res.ok) return [];
+    const html = await res.text();
+    return parseMatches(html, task.race, task.divisionLabel);
+  } catch {
+    return [];
+  }
+}
+
+/** Worker pool so a 40-division weekend doesn't open 40 sockets at once. */
+async function fanOut(
+  tasks: Task[],
+  q: string,
+  type: "name" | "bib",
+): Promise<{ matches: LiveMatch[]; failures: number }> {
+  const collected: LiveMatch[] = [];
+  let cursor = 0;
+  let failures = 0;
+  async function worker() {
+    while (cursor < tasks.length) {
+      const task = tasks[cursor++];
+      const found = await runTask(task, q, type);
+      if (found.length === 0) failures++;
+      collected.push(...found);
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(UPSTREAM_CONCURRENCY, tasks.length) }, worker),
+  );
+  return { matches: dedupe(collected), failures };
+}
+
 export const GET: APIRoute = async ({ url }) => {
   const q = (url.searchParams.get("q") ?? "").trim();
   const type = url.searchParams.get("type") === "bib" ? "bib" : "name";
-  const season = url.searchParams.get("season") ?? "season-9";
+  const raceParam = url.searchParams.get("race");
 
   if (!q) {
     return json({ matches: [], error: "missing query" }, 400);
@@ -147,34 +296,79 @@ export const GET: APIRoute = async ({ url }) => {
   if (!/^[\w\d\-\s.,'']{1,80}$/u.test(q)) {
     return json({ matches: [], error: "invalid query" }, 400);
   }
-  if (!/^season-\d{1,2}$/.test(season)) {
-    return json({ matches: [], error: "invalid season" }, 400);
-  }
 
-  const param = type === "bib" ? "search%5Bstart_no%5D" : "search%5Bname%5D";
-  const upstream = `${HX_BASE}/${season}/?pid=search&${param}=${encodeURIComponent(q)}`;
-
-  let html: string;
-  try {
-    const res = await fetch(upstream, {
-      headers: HX_BROWSER_HEADERS,
-    });
-    if (!res.ok) {
-      return json({ matches: [], error: `upstream ${res.status}` }, 502);
+  const now = new Date();
+  let races: RaceContext[];
+  if (raceParam) {
+    const [slug, yearStr] = raceParam.split(":");
+    const year = Number(yearStr);
+    const ev = EVENTS.find((e) => e.slug === slug && e.year === year);
+    const located = ev ? getResultsLocation(ev.slug, ev.year) : null;
+    if (!ev || !located) {
+      return json(
+        {
+          matches: [],
+          error: "unmapped race",
+          detail:
+            "Hyrox hasn't published a startlist for that race yet, so there is nothing to search.",
+        },
+        404,
+      );
     }
-    html = await res.text();
-  } catch {
-    return json({ matches: [], error: "fetch failed" }, 502);
+    races = [
+      {
+        slug: ev.slug,
+        year: ev.year,
+        name: `Hyrox ${ev.city} ${ev.year}`,
+        season: located.season,
+      },
+    ];
+  } else {
+    races = candidateRaces(now);
   }
 
-  const matches = parseMatches(html);
-  return new Response(JSON.stringify({ matches, source: upstream }), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+  if (races.length === 0) {
+    return json(
+      {
+        matches: [],
+        error: "no searchable races",
+        detail:
+          "No Hyrox race is live, recently finished, or has a published startlist right now.",
+      },
+      200,
+    );
+  }
+
+  const tasks = buildTasks(races);
+  if (tasks.length === 0) {
+    return json({ matches: [], error: "no divisions" }, 200);
+  }
+
+  const { matches } = await fanOut(tasks, q, type);
+
+  // Finished entries first (they have a time), then alphabetically — a
+  // spectator scanning a long surname list wants the settled results at top.
+  matches.sort(
+    (a, b) =>
+      Number(Boolean(b.totalTime)) - Number(Boolean(a.totalTime)) ||
+      a.raceName.localeCompare(b.raceName) ||
+      a.name.localeCompare(b.name),
+  );
+
+  return new Response(
+    JSON.stringify({
+      matches,
+      races: races.map((r) => ({ slug: r.slug, year: r.year, name: r.name })),
+      divisionsSearched: tasks.length,
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+      },
     },
-  });
+  );
 };
 
 function json(body: unknown, status: number): Response {
