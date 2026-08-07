@@ -16,6 +16,7 @@
     "reddit-prompts": "node scripts/reddit-prompts.mjs",
     "link-audit": "node scripts/link-graph-audit.mjs",
     "image-audit": "node scripts/image-audit.mjs",
+    "check:affiliate": "node scripts/check-affiliate-keys.mjs",
     "new-post": "node scripts/new-post.mjs"
   },
   "dependencies": {

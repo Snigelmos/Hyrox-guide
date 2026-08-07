@@ -83,6 +83,121 @@ export const affiliateLinks: AmazonAffiliateLink[] = [
     price: "~$30",
   },
 
+  // ── Named supplement products ──────────────────────────────────────────
+  // One key per product recommended in src/content/supplements/*.mdx. The
+  // category keys above still back the hub and the "top pick" rails; these
+  // exist so each card on a guide links to the product it is actually about
+  // rather than to a generic category search. No `price` here on purpose —
+  // the guide frontmatter already shows one, and two would disagree eventually.
+  {
+    productKey: "thorne-creatine",
+    displayName: "Thorne Creatine",
+    search: "Thorne Creatine Monohydrate",
+    store: "Amazon",
+  },
+  {
+    productKey: "on-micronized-creatine",
+    displayName: "Optimum Nutrition Micronized Creatine",
+    search: "Optimum Nutrition Micronized Creatine",
+    store: "Amazon",
+  },
+  {
+    productKey: "sis-go-isotonic-gel",
+    displayName: "SiS GO Isotonic Energy Gel",
+    search: "SiS GO Isotonic Energy Gel",
+    store: "Amazon",
+  },
+  {
+    productKey: "gu-energy-original-gel",
+    displayName: "GU Energy Original Gel",
+    search: "GU Energy Original Gel",
+    store: "Amazon",
+  },
+  {
+    productKey: "honey-stinger-organic-gel",
+    displayName: "Honey Stinger Organic Energy Gel",
+    search: "Honey Stinger Organic Energy Gel",
+    store: "Amazon",
+  },
+  {
+    productKey: "on-gold-standard-whey",
+    displayName: "Optimum Nutrition Gold Standard 100% Whey",
+    search: "Optimum Nutrition Gold Standard Whey",
+    store: "Amazon",
+  },
+  {
+    productKey: "ghost-whey-protein",
+    displayName: "Ghost Whey Protein",
+    search: "GHOST Whey Protein",
+    store: "Amazon",
+  },
+  {
+    productKey: "garden-of-life-plant-protein",
+    displayName: "Garden of Life Organic Plant Protein",
+    search: "Garden of Life Sport Organic Plant Protein",
+    store: "Amazon",
+  },
+  {
+    productKey: "nuun-sport",
+    displayName: "Nuun Sport",
+    search: "Nuun Sport Electrolyte Tablets",
+    store: "Amazon",
+  },
+  {
+    productKey: "liquid-iv-hydration",
+    displayName: "Liquid I.V. Hydration Multiplier",
+    search: "Liquid IV Hydration Multiplier",
+    store: "Amazon",
+  },
+  {
+    productKey: "sis-go-electrolyte-powder",
+    displayName: "SiS GO Electrolyte Powder",
+    search: "SiS GO Electrolyte Powder",
+    store: "Amazon",
+  },
+  {
+    productKey: "caffeine-tablets",
+    displayName: "Caffeine Tablets (200mg)",
+    search: "Caffeine Tablets 200mg",
+    store: "Amazon",
+  },
+  {
+    productKey: "ghost-legend-preworkout",
+    displayName: "Ghost Legend Pre-Workout",
+    search: "GHOST Legend Pre-Workout",
+    store: "Amazon",
+  },
+  {
+    productKey: "c4-original-preworkout",
+    displayName: "C4 Original Pre-Workout",
+    search: "C4 Original Pre Workout",
+    store: "Amazon",
+  },
+  {
+    productKey: "nordic-naturals-omega",
+    displayName: "Nordic Naturals Ultimate Omega",
+    search: "Nordic Naturals Ultimate Omega",
+    store: "Amazon",
+  },
+  {
+    productKey: "calm-magnesium",
+    displayName: "Natural Vitality Calm Magnesium",
+    search: "Natural Vitality Calm Magnesium",
+    store: "Amazon",
+  },
+  {
+    productKey: "tart-cherry-extract",
+    displayName: "HumanN Tart Cherry Extract",
+    search: "HumanN Tart Cherry Extract",
+    store: "Amazon",
+  },
+  {
+    productKey: "now-sports-zma",
+    displayName: "NOW Sports ZMA",
+    search: "NOW Sports ZMA",
+    store: "Amazon",
+  },
+
   // ── Gear ───────────────────────────────────────────────────────────────
   // Prices intentionally omitted — shoe and equipment RRPs are quoted in the
   // comparison tables, not as a single figure that would go stale.

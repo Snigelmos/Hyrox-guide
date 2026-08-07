@@ -24,8 +24,7 @@ type Product = {
   name: string;
   description: string;
   price?: string;
-  rating?: number;
-  affiliateUrl: string;
+  productKey: string;
   badge?: string;
   image?: string;
   category: string;
@@ -208,10 +207,6 @@ const raceDayEssentials = supplementGuides
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {
         featuredProducts.map((product) => {
-          const productKey =
-            product.category === "protein" ? "protein-powder" :
-            product.category === "gels" ? "energy-gels" :
-            product.category;
           return (
             <div class="bg-bg-card border border-border rounded-2xl p-5 flex flex-col hover:border-accent/30 transition-all">
               {product.badge && (
@@ -227,7 +222,11 @@ const raceDayEssentials = supplementGuides
                   <span class="text-sm text-text-muted">{product.price}</span>
                 )}
               </div>
-              <GeoAffiliateButton productKey={productKey} variant="primary" client:visible />
+              <GeoAffiliateButton
+                productKey={product.productKey}
+                label="Check price on Amazon"
+                variant="primary"
+              />
             </div>
           );
         })
@@ -281,11 +280,12 @@ const raceDayEssentials = supplementGuides
                   <div class="flex flex-wrap gap-2">
                     <GeoAffiliateButton
                       productKey={
-                        guide.data.category === "protein" ? "protein-powder" :
-                        guide.data.category
+                        guide.data.products?.[0]?.productKey ??
+                        (guide.data.category === "protein"
+                          ? "protein-powder"
+                          : guide.data.category)
                       }
                       variant="secondary"
-                      client:visible
                     />
                     <a
                       href={`/supplements/${guide.id}/`}

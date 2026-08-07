@@ -56,8 +56,12 @@ const supplements = defineCollection({
           name: z.string(),
           description: z.string(),
           price: z.string().optional(),
-          rating: z.number().optional(),
-          affiliateUrl: z.string(),
+          /**
+           * Key into src/data/affiliateLinks.ts. Replaced a raw `affiliateUrl`,
+           * which hard-coded amazon.com and a US tag and so could not be
+           * geo-routed. Buttons resolve this through /go/<key> instead.
+           */
+          productKey: z.string(),
           badge: z.string().optional(),
           image: z.string().optional(),
         })

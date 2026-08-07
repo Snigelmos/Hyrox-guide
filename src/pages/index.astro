@@ -150,7 +150,7 @@ const supplementStrip: { icon: SupplementIcon; name: string; productKey: string;
               <ModuleIcons name={s.icon} size={32} class="mb-1" />
               <span class="text-xs font-bold text-text-heading leading-tight">{s.name}</span>
             </a>
-            <GeoAffiliateButton productKey={s.productKey} variant="card" client:visible />
+            <GeoAffiliateButton productKey={s.productKey} variant="card" />
           </div>
         ))}
       </div>
