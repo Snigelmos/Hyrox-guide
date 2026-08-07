@@ -1,0 +1,366 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  athleteUrl,
+  getPublishableAthletes,
+  PRO_DATASET_GENERATED_AT,
+  secondsToTime,
+  summariseAthlete,
+  timeToSeconds,
+  type ProAthlete,
+} from "../../lib/pro-athletes";
+import { EVENTS } from "../../data/events";
+
+export async function getStaticPaths() {
+  return getPublishableAthletes().map((athlete) => ({
+    params: { slug: athlete.slug },
+    props: { athlete },
+  }));
+}
+
+interface Props {
+  athlete: ProAthlete;
+}
+
+const { athlete } = Astro.props as Props;
+const summary = summariseAthlete(athlete);
+
+const eventByKey = new Map(EVENTS.map((e) => [`${e.year}:${e.slug}`, e] as const));
+
+const sexLabel = athlete.sex === "W" ? "Women" : "Men";
+const divisionLabel = summary.divisions.join(" and ");
+const latest = athlete.races[0];
+const pb = summary.personalBest;
+
+const title = `${athlete.name} — Hyrox Results, Times and Race History`;
+const description = pb
+  ? `Every Hyrox ${divisionLabel} result for ${athlete.name}${athlete.nation ? ` (${athlete.nation})` : ""}: ${summary.raceCount} races, a personal best of ${pb.time} at ${pb.raceCity} ${pb.raceYear}, plus finishing positions and season-by-season progression.`
+  : `Hyrox race history for ${athlete.name}: ${summary.raceCount} races with finishing positions and progression.`;
+
+function raceHref(race: { raceSlug: string; raceYear: number }): string | null {
+  return eventByKey.has(`${race.raceYear}:${race.raceSlug}`)
+    ? `/events/${race.raceYear}/${race.raceSlug}/`
+    : null;
+}
+
+function officialHref(race: { season: string; idp: string; event: string }): string {
+  return `https://results.hyrox.com/${race.season}/?content=detail&pid=list&idp=${encodeURIComponent(race.idp)}&event=${encodeURIComponent(race.event)}&lang=EN_CAP`;
+}
+
+function formatDate(ymd: string | null): string {
+  if (!ymd) return "—";
+  return new Date(`${ymd}T12:00:00Z`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/** Bar widths for the progression chart, relative to the athlete's own range. */
+const timedRaces = athlete.races.filter((r) => timeToSeconds(r.time) !== null);
+const chronological = [...timedRaces].sort((a, b) =>
+  (a.date ?? "").localeCompare(b.date ?? ""),
+);
+const secondsList = chronological.map((r) => timeToSeconds(r.time) ?? 0);
+// An athlete whose every race is a DNF leaves this empty; spreading an empty
+// array into Math.min yields Infinity and poisons the bar widths.
+const minSec = secondsList.length > 0 ? Math.min(...secondsList) : 0;
+const maxSec = secondsList.length > 0 ? Math.max(...secondsList) : 0;
+const span = Math.max(1, maxSec - minSec);
+
+const improvement = summary.improvementSeconds;
+const improvementLabel =
+  improvement === null
+    ? null
+    : improvement < 0
+      ? `${secondsToTime(Math.abs(improvement))} faster`
+      : improvement > 0
+        ? `${secondsToTime(improvement)} slower`
+        : "unchanged";
+
+const breadcrumbs = [
+  { name: "Home", url: "/" },
+  { name: "Athletes", url: "/athletes/" },
+  { name: athlete.name },
+];
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: athlete.name,
+  url: new URL(athleteUrl(athlete.slug), Astro.site).href,
+  ...(athlete.nation ? { nationality: athlete.nation } : {}),
+  subjectOf: {
+    "@type": "SportsEvent",
+    name: `Hyrox ${divisionLabel}`,
+  },
+};
+
+const generatedLabel = formatDate(PRO_DATASET_GENERATED_AT.slice(0, 10));
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  schemaType="Article"
+  dateModified={PRO_DATASET_GENERATED_AT.slice(0, 10)}
+>
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(personSchema)}
+  />
+
+  <div class="container-main py-10 md:py-16">
+    <nav class="mb-6 text-xs font-bold uppercase tracking-wider text-text-muted">
+      <a href="/athletes/" class="hover:text-accent transition-colors no-underline">
+        Athletes
+      </a>
+      <span class="mx-2 opacity-50">/</span>
+      <span>{athlete.name}</span>
+    </nav>
+
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-5xl font-black text-text-heading leading-tight">
+        {athlete.name}
+      </h1>
+      <p class="mt-3 text-text-muted text-lg">
+        {
+          [
+            athlete.nation,
+            `${divisionLabel} ${sexLabel}`,
+            `${summary.raceCount} races tracked`,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        }
+      </p>
+    </header>
+
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      <div class="bg-bg-card border border-border rounded-xl p-4">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">
+          Personal best
+        </div>
+        <div class="text-2xl font-black text-text-heading">{pb?.time ?? "—"}</div>
+        {pb && (
+          <div class="text-xs text-text-muted mt-1">
+            {pb.raceCity} {pb.raceYear}
+          </div>
+        )}
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-4">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">
+          Best finish
+        </div>
+        <div class="text-2xl font-black text-text-heading">
+          {summary.bestRank?.rank ? `#${summary.bestRank.rank}` : "—"}
+        </div>
+        {summary.bestRank && (
+          <div class="text-xs text-text-muted mt-1">
+            {summary.bestRank.raceCity} {summary.bestRank.raceYear}
+          </div>
+        )}
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-4">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">
+          Last 12 months
+        </div>
+        <div class="text-2xl font-black text-text-heading">
+          {summary.seasonBest?.time ?? "—"}
+        </div>
+        <div class="text-xs text-text-muted mt-1">Fastest in window</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-4">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted mb-1">
+          First to latest
+        </div>
+        <div
+          class:list={[
+            "text-2xl font-black",
+            improvement !== null && improvement < 0
+              ? "text-emerald-400"
+              : improvement !== null && improvement > 0
+                ? "text-text-heading"
+                : "text-text-heading",
+          ]}
+        >
+          {improvementLabel ?? "—"}
+        </div>
+        <div class="text-xs text-text-muted mt-1">Across tracked races</div>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-1">
+        Race history
+      </h2>
+      <p class="text-text-muted mb-5">
+        Every Hyrox {divisionLabel} race we have on record for {athlete.name},
+        newest first. Times are official finish times from results.hyrox.com.
+      </p>
+
+      <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <table class="w-full min-w-[640px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="text-left py-3 pr-4 font-bold text-text-heading">Race</th>
+              <th class="text-left py-3 pr-4 font-bold text-text-heading">Date</th>
+              <th class="text-left py-3 pr-4 font-bold text-text-heading">Division</th>
+              <th class="text-right py-3 pr-4 font-bold text-text-heading">Rank</th>
+              <th class="text-right py-3 pr-4 font-bold text-text-heading">Time</th>
+              <th class="text-right py-3 font-bold text-text-heading">Splits</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              athlete.races.map((race) => {
+                const href = raceHref(race);
+                const isPb = pb && race.idp === pb.idp;
+                return (
+                  <tr class="border-b border-border/60 hover:bg-bg-card/60 transition-colors">
+                    <td class="py-3 pr-4 font-bold">
+                      {href ? (
+                        <a
+                          href={href}
+                          class="text-accent hover:underline no-underline"
+                        >
+                          Hyrox {race.raceCity} {race.raceYear}
+                        </a>
+                      ) : (
+                        <span class="text-text-heading">
+                          Hyrox {race.raceCity} {race.raceYear}
+                        </span>
+                      )}
+                    </td>
+                    <td class="py-3 pr-4 text-text-muted whitespace-nowrap">
+                      {formatDate(race.date)}
+                    </td>
+                    <td class="py-3 pr-4 text-text-muted">
+                      {race.division}
+                      {race.ageGroup ? ` · ${race.ageGroup}` : ""}
+                    </td>
+                    <td class="py-3 pr-4 text-right text-text-muted">
+                      {race.rank ? `#${race.rank}` : "—"}
+                    </td>
+                    <td class="py-3 pr-4 text-right font-bold tabular-nums">
+                      <span class={isPb ? "text-emerald-400" : "text-text-heading"}>
+                        {race.time ?? "DNF"}
+                      </span>
+                      {isPb && (
+                        <span class="ml-1.5 text-[10px] font-bold uppercase text-emerald-400">
+                          PB
+                        </span>
+                      )}
+                    </td>
+                    <td class="py-3 text-right">
+                      <a
+                        href={officialHref(race)}
+                        rel="nofollow noopener"
+                        target="_blank"
+                        class="text-xs font-bold text-text-muted hover:text-accent transition-colors no-underline"
+                      >
+                        Official →
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {
+      chronological.length >= 3 && (
+        <section class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-1">
+            Progression
+          </h2>
+          <p class="text-text-muted mb-5">
+            Finish times in chronological order. Bars are scaled to{" "}
+            {athlete.name.split(" ")[0]}'s own range, so the shortest bar is their
+            fastest race — not an absolute scale.
+          </p>
+          <div class="space-y-2">
+            {chronological.map((race) => {
+              const sec = timeToSeconds(race.time) ?? 0;
+              const width = 30 + ((sec - minSec) / span) * 70;
+              const isPb = sec === minSec;
+              return (
+                <div class="flex items-center gap-3">
+                  <div class="w-32 md:w-44 shrink-0 text-xs text-text-muted truncate">
+                    {race.raceCity} {race.raceYear}
+                  </div>
+                  <div class="flex-1 bg-bg-card rounded-md overflow-hidden">
+                    <div
+                      class:list={[
+                        "h-7 rounded-md flex items-center justify-end px-2",
+                        isPb ? "bg-emerald-500/30" : "bg-accent/20",
+                      ]}
+                      style={`width: ${width}%`}
+                    >
+                      <span class="text-xs font-bold tabular-nums text-text-heading">
+                        {race.time}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      summary.linkableRaces.length > 0 && (
+        <section class="mb-12">
+          <h2 class="text-2xl font-black text-text-heading mb-4">
+            Races on this site
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {summary.linkableRaces.map((race) => (
+              <a
+                href={`/events/${race.raceYear}/${race.raceSlug}/`}
+                class="inline-flex items-center gap-2 bg-bg-card border border-border hover:border-accent/60 rounded-lg px-3 py-2 text-sm font-bold text-text-heading hover:text-accent transition-colors no-underline"
+              >
+                Hyrox {race.raceCity} {race.raceYear}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="bg-bg-card border border-border rounded-2xl p-6 mb-10">
+      <h2 class="text-xl font-black text-text-heading mb-3">
+        How this page is built
+      </h2>
+      <div class="text-sm text-text-muted space-y-2">
+        <p>
+          Results are read from the official Hyrox timing portal and cover the
+          Hyrox Pro and Elite 15 <strong>singles</strong> divisions. Doubles and
+          relay results are not included, because those entries identify a team
+          rather than one athlete.
+        </p>
+        <p>
+          Athletes are matched on name and nation, which is reliable but not
+          infallible — if two athletes share both, their races could appear on one
+          page. Last updated {generatedLabel}.
+        </p>
+        {latest && (
+          <p>
+            Racing this weekend? The{" "}
+            <a href="/live/" class="text-accent hover:underline">
+              live tracker
+            </a>{" "}
+            follows splits in real time.
+          </p>
+        )}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

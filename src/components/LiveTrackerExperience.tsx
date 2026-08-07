@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import LiveAthleteFinder, { type LiveEventOption } from "./LiveAthleteFinder";
 import {
   daysSinceEvent,
@@ -11,6 +11,8 @@ import {
   liveEventDayLabel,
   type RaceStatusEvent,
 } from "../lib/race-status";
+import { getResultsLocation } from "../lib/hyrox-live";
+import { RESULTS_INDEX_CURRENT_SEASON } from "../data/hyrox-results-index.generated";
 
 interface Props {
   events: RaceStatusEvent[];
@@ -19,6 +21,7 @@ interface Props {
 
 export default function LiveTrackerExperience({ events, initialDateYmd }: Props) {
   const [dateYmd, setDateYmd] = useState(initialDateYmd);
+  const [raceFilterSlug, setRaceFilterSlug] = useState("");
 
   useEffect(() => {
     const update = () => setDateYmd(todayYmd());
@@ -58,11 +61,29 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
         year: event.year,
         city: event.city,
         country: event.country,
-        searchUrl: `https://results.hyrox.com/${event.startDate < "2026-08-15" ? "season-9" : "season-10"}/?pid=search`,
+        // Looked up, never computed from the date: season-10 is a 2018/2019
+        // archive, so the old date cutoff sent every later race there.
+        searchUrl: `https://results.hyrox.com/${
+          getResultsLocation(event.slug, event.year)?.season ??
+          RESULTS_INDEX_CURRENT_SEASON
+        }/?pid=search`,
         startDate: event.startDate,
         endDate: event.endDate ?? event.startDate,
       }));
   }, [activeEvents, recentlyFinishedEvents, thisWeekEvents, upcomingEvents]);
+
+  // Selecting a live race must not navigate anywhere — the finder is already
+  // on this page. Sending spectators to the event page (which links back here)
+  // was a dead-end round trip.
+  const trackRace = useCallback((slug: string) => {
+    setRaceFilterSlug(slug);
+    const target = document.getElementById("track-an-athlete");
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      const input = target?.querySelector<HTMLInputElement>("input[type=text]");
+      input?.focus({ preventScroll: true });
+    }, 400);
+  }, []);
 
   return (
     <>
@@ -98,7 +119,7 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
           primary spectator action (search an athlete / pre-build a share link)
           sits directly under the live races instead of below the result and
           upcoming rails. */}
-      <LiveNowRail activeEvents={activeEvents} now={now} />
+      <LiveNowRail activeEvents={activeEvents} now={now} onTrack={trackRace} />
 
       <section id="track-an-athlete" className="mb-12 scroll-mt-24">
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
@@ -113,7 +134,11 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
                   ? "Race weekend is coming up. Find an athlete or team now and copy a share link — the dashboard goes live the moment the start gun fires."
                   : "Pick a race, find an athlete or team, and the dashboard streams every split as it happens. Outside race weekends you can still build share links from upcoming startlists."}
             </p>
-            <LiveAthleteFinder events={finderEvents} />
+            <LiveAthleteFinder
+              events={finderEvents}
+              raceFilterSlug={raceFilterSlug}
+              onRaceFilterChange={setRaceFilterSlug}
+            />
           </div>
 
           <aside className="bg-bg-card border border-border rounded-2xl p-5 md:p-6">
@@ -157,9 +182,11 @@ export default function LiveTrackerExperience({ events, initialDateYmd }: Props)
 function LiveNowRail({
   activeEvents,
   now,
+  onTrack,
 }: {
   activeEvents: RaceStatusEvent[];
   now: Date;
+  onTrack: (slug: string) => void;
 }) {
   if (activeEvents.length === 0) return null;
   return (
@@ -169,11 +196,9 @@ function LiveNowRail({
           <h2 className="text-xs font-bold uppercase tracking-wider text-accent mb-3">Live right now</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {activeEvents.map((event) => (
-              <a
+              <div
                 key={`${event.year}-${event.slug}`}
-                href={`/events/${event.year}/${event.slug}/#live-tracker`}
-                className="group relative block bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5 hover:border-emerald-400/60 hover:from-emerald-500/15 transition-colors no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
-                aria-label={`Open the live tracker for Hyrox ${event.city} ${event.year}`}
+                className="relative bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card border border-emerald-500/30 rounded-2xl p-5"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -181,17 +206,29 @@ function LiveNowRail({
                     {liveEventDayLabel(event, now)}
                   </span>
                 </div>
-                <h3 className="text-xl font-black text-text-heading leading-tight group-hover:text-emerald-300 transition-colors">
+                <h3 className="text-xl font-black text-text-heading leading-tight">
                   Hyrox {event.city}
                 </h3>
                 <p className="mt-1 text-sm text-text-muted">
                   {formatEventDate(event.startDate, event.endDate)} · {event.venue}
                 </p>
-                <div className="mt-4 flex items-center gap-2 text-emerald-300 font-bold text-sm">
-                  <ArrowIcon />
-                  <span>Open live tracker — splits, share link, dashboard</span>
+                <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <button
+                    type="button"
+                    onClick={() => onTrack(event.slug)}
+                    className="inline-flex items-center gap-2 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 hover:border-emerald-400/70 text-emerald-200 font-bold text-sm rounded-lg px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
+                  >
+                    <ArrowIcon />
+                    Track an athlete
+                  </button>
+                  <a
+                    href={`/events/${event.year}/${event.slug}/`}
+                    className="text-sm font-bold text-text-muted hover:text-accent transition-colors no-underline"
+                  >
+                    Race guide →
+                  </a>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </section>
