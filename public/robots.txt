@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# Outbound affiliate redirects. Nothing to index, and following them just
+# burns crawl budget on 302s to Amazon. The links themselves also carry
+# rel="sponsored nofollow".
+Disallow: /go/
+
 Sitemap: https://www.hyroxvault.com/sitemap-index.xml

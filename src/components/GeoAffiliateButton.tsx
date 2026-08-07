@@ -1,15 +1,24 @@
-import { getBestLink } from "../data/affiliateLinks";
+import { affiliateHref, getBestLink } from "../data/affiliateLinks";
 
 interface Props {
   productKey: string;
-  /** Optional override label — kept for backwards compatibility with existing call sites */
-  fallbackLabel?: string;
   /** Optional CTA text override. Defaults to "Buy on Amazon". */
   label?: string;
   className?: string;
   variant?: "primary" | "secondary" | "card";
 }
 
+/**
+ * Outbound buy button.
+ *
+ * The name is finally accurate: the href points at /go/<key>, which picks the
+ * storefront from the visitor's country at request time. Previously this
+ * rendered a hard-coded amazon.com URL, so the "Geo" was aspirational.
+ *
+ * There is no client-side behaviour here — it is an anchor. The `client:*`
+ * directives still on the call sites are therefore redundant and can be
+ * dropped, but that is a separate change across several pages.
+ */
 export default function GeoAffiliateButton({
   productKey,
   label = "Buy on Amazon",
@@ -17,6 +26,7 @@ export default function GeoAffiliateButton({
   variant = "primary",
 }: Props) {
   const link = getBestLink(productKey);
+  const href = affiliateHref(productKey);
 
   const base =
     variant === "primary"
@@ -28,7 +38,7 @@ export default function GeoAffiliateButton({
   if (variant === "card") {
     return (
       <a
-        href={link.url}
+        href={href}
         target="_blank"
         rel="noopener noreferrer sponsored nofollow"
         className={`${base} ${className}`}
@@ -40,7 +50,7 @@ export default function GeoAffiliateButton({
 
   return (
     <a
-      href={link.url}
+      href={href}
       target="_blank"
       rel="noopener noreferrer sponsored nofollow"
       className={`${base} ${className}`}
