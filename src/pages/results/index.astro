@@ -1,0 +1,467 @@
+---
+/**
+ * The results hub.
+ *
+ * "hyrox results" is one of the largest unserved queries the site sees
+ * (~12,100/mo) and until now there was no page for it at all — 65 finished
+ * races each had a results page, but nothing collected them, so the only way
+ * in was a city-specific search. This page is that entry point.
+ *
+ * It deliberately does not try to out-do the official portal on completeness.
+ * results.hyrox.com holds every finisher; what it does not do is let you see
+ * who won a race, how big the field was, and what a median finish looked like
+ * without picking your way through a division dropdown. That is the gap.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { EVENTS, formatEventDate, isPastEvent } from "../../data/events";
+import { getResults } from "../../data/event-results";
+import {
+  formatSyncedDate,
+  getEventLeaderboard,
+  LEADERBOARDS_GENERATED_AT,
+  pickDivision,
+} from "../../lib/event-leaderboards";
+import {
+  findAthlete,
+  getPublishableAthletes,
+  MIN_RACES_FOR_PAGE,
+} from "../../lib/pro-athletes";
+
+interface Winner {
+  name: string;
+  time: string;
+  country: string | null;
+  /** Set only when the athlete clears the bar for a profile page. */
+  href: string | null;
+}
+
+interface RaceRow {
+  key: string;
+  slug: string;
+  year: number;
+  city: string;
+  country: string;
+  date: string;
+  dateLabel: string;
+  venue: string;
+  isWorldChampionship: boolean;
+  hasEditorial: boolean;
+  syncedAt: string | null;
+  finishers: number | null;
+  men: Winner | null;
+  women: Winner | null;
+}
+
+/** Editorial podium wins over the synced one; see lib/event-leaderboards.ts. */
+function buildWinner(
+  editorialPodium: { athlete: string; time: string; country?: string } | undefined,
+  synced: { name: string; time: string; country: string | null } | undefined,
+): Winner | null {
+  const name = editorialPodium?.athlete ?? synced?.name;
+  const time = editorialPodium?.time ?? synced?.time;
+  if (!name || !time) return null;
+  const country = editorialPodium?.country ?? synced?.country ?? null;
+  const profile = findAthlete(name, country);
+  return {
+    name,
+    time,
+    country,
+    href:
+      profile && profile.races.length >= MIN_RACES_FOR_PAGE
+        ? `/athletes/${profile.slug}/`
+        : null,
+  };
+}
+
+const rows: RaceRow[] = [];
+for (const event of EVENTS) {
+  if (!isPastEvent(event)) continue;
+
+  const editorial = getResults(event.year, event.slug);
+  const synced = getEventLeaderboard(event.year, event.slug);
+  if (!editorial && !synced) continue;
+
+  const editorialDivision = (matcher: string) =>
+    editorial?.divisions.find((d) => d.division.toLowerCase().includes(matcher))
+      ?.podium?.[0];
+
+  const men = buildWinner(
+    editorialDivision("pro men") ?? editorialDivision("men"),
+    pickDivision(synced, ["Pro Men", "Elite 15 Men", "Open Men"])?.top[0],
+  );
+  const women = buildWinner(
+    editorialDivision("pro women") ?? editorialDivision("women"),
+    pickDivision(synced, ["Pro Women", "Elite 15 Women", "Open Women"])?.top[0],
+  );
+  if (!men && !women) continue;
+
+  rows.push({
+    key: `${event.year}/${event.slug}`,
+    slug: event.slug,
+    year: event.year,
+    city: event.city,
+    country: event.country,
+    date: event.endDate ?? event.startDate,
+    dateLabel: formatEventDate(event.startDate, event.endDate),
+    venue: event.venue,
+    isWorldChampionship: event.notes === "World Championship",
+    hasEditorial: Boolean(editorial),
+    syncedAt: synced?.syncedAt ?? null,
+    finishers: editorial?.totalAthletes ?? synced?.totalFinishers ?? null,
+    men,
+    women,
+  });
+}
+
+rows.sort((a, b) => b.date.localeCompare(a.date));
+
+const worlds = rows.find((r) => r.isWorldChampionship);
+const latest = rows.filter((r) => r !== worlds).slice(0, 6);
+
+const byYear = new Map<number, RaceRow[]>();
+for (const row of rows) {
+  const list = byYear.get(row.year) ?? [];
+  list.push(row);
+  byYear.set(row.year, list);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+const totalFinishers = rows.reduce((sum, r) => sum + (r.finishers ?? 0), 0);
+const athleteCount = getPublishableAthletes().length;
+const syncLabel = formatSyncedDate(LEADERBOARDS_GENERATED_AT.slice(0, 10));
+
+const title = `Hyrox Results — Every Race, Winner and Median Time`;
+const description = `Results from ${rows.length} Hyrox races: who won each one and in what time, how big the field was, and the median finish. Plus world records, Pro athlete race histories, and live tracking on race day.`;
+
+const faqItems = [
+  {
+    question: "Where are the official Hyrox results?",
+    answer:
+      "The official timing portal is results.hyrox.com, which holds every finisher for every race. This page is a faster way in: it shows who won each race and what the field looked like without needing to know the season bucket and division id the portal asks for.",
+  },
+  {
+    question: "How soon after a race do results appear?",
+    answer: `Provisional results usually reach the official portal within a few hours of the final wave. This site re-syncs weekly, so a race that finished in the last few days may not be listed yet. The leaderboards here were last rebuilt on ${syncLabel}.`,
+  },
+  {
+    question: "Why do the times here sometimes differ from the official ones?",
+    answer:
+      "Rankings change after publication when disqualifications and time corrections are applied. Every synced leaderboard on this site carries the date it was pulled and is labelled provisional for that reason. Where the two disagree, results.hyrox.com is correct.",
+  },
+  {
+    question: "What is a median finish time and why does it matter more than the winner's?",
+    answer:
+      "The median is the time half the field beat and half did not. The winning time tells you what the fastest person in the building did, which is not a benchmark most people can use. The median tells you what a normal race in that division actually looks like, so it is the more useful number for setting a target.",
+  },
+  {
+    question: "Can I look up one athlete across several races?",
+    answer: `Yes. Athletes with at least ${MIN_RACES_FOR_PAGE} races in the Pro or Elite 15 singles divisions have a profile showing every race, their personal best and their progression. There are ${athleteCount.toLocaleString()} of them.`,
+  },
+];
+
+const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Results" }];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  schemaType="CollectionPage"
+  faqItems={faqItems}
+>
+  <div class="container-main py-10 md:py-16">
+    <header class="mb-10 max-w-3xl">
+      <h1 class="text-3xl md:text-5xl font-black text-text-heading leading-tight">
+        Hyrox results
+      </h1>
+      <p class="mt-4 text-lg text-text-muted leading-relaxed">
+        Who won every Hyrox race, in what time, against how many people — and
+        the median finish, which is the number worth measuring yourself
+        against. Synced from the official timing portal and updated weekly.
+      </p>
+    </header>
+
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-12">
+      <div class="bg-bg-card border border-border rounded-xl p-5">
+        <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">
+          {rows.length}
+        </div>
+        <div class="text-xs text-text-muted mt-2">races with results</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-5">
+        <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">
+          {totalFinishers.toLocaleString()}
+        </div>
+        <div class="text-xs text-text-muted mt-2">finishers ranked</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-5">
+        <div class="text-3xl md:text-4xl font-black font-mono text-text-heading">
+          {athleteCount.toLocaleString()}
+        </div>
+        <div class="text-xs text-text-muted mt-2">athlete race histories</div>
+      </div>
+      <div class="bg-bg-card border border-border rounded-xl p-5">
+        <div class="text-xl md:text-2xl font-black text-text-heading leading-tight">
+          {syncLabel}
+        </div>
+        <div class="text-xs text-text-muted mt-2">last synced</div>
+      </div>
+    </section>
+
+    {worlds && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+          Hyrox World Championships {worlds.year}
+        </h2>
+        <a
+          href={`/events/${worlds.year}/${worlds.slug}/results/`}
+          class="block bg-gradient-to-br from-accent/12 to-bg-card border border-accent/30 rounded-2xl p-6 md:p-8 no-underline hover:border-accent/60 transition-colors"
+        >
+          <div class="text-xs font-bold uppercase tracking-wider text-accent mb-2">
+            {worlds.city} · {worlds.dateLabel}
+          </div>
+          <div class="grid gap-5 sm:grid-cols-2 mb-5">
+            {[worlds.men, worlds.women].filter(Boolean).map((w) => (
+              <div>
+                <div class="text-lg md:text-xl font-black text-text-heading leading-tight break-words">
+                  {w!.name}
+                </div>
+                <div class="mt-1 text-3xl md:text-4xl font-black font-mono text-accent leading-none">
+                  {w!.time}
+                </div>
+              </div>
+            ))}
+          </div>
+          <span class="text-sm font-bold text-accent">
+            Every division's top 10, field size and median time →
+          </span>
+        </a>
+      </section>
+    )}
+
+    {latest.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+          Latest races
+        </h2>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {latest.map((r) => (
+            <a
+              href={`/events/${r.year}/${r.slug}/results/`}
+              class="block bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-accent/50 transition-colors"
+            >
+              <div class="font-black text-text-heading">
+                Hyrox {r.city} {r.year}
+              </div>
+              <div class="text-xs text-text-muted mt-1">
+                {r.dateLabel}
+                {r.finishers && <> · {r.finishers.toLocaleString()} finishers</>}
+              </div>
+              <div class="mt-4 space-y-1.5">
+                {[r.men, r.women].filter(Boolean).map((w) => (
+                  <div class="flex items-baseline justify-between gap-3">
+                    <span class="text-sm text-text truncate">{w!.name}</span>
+                    <span class="text-sm font-mono font-bold text-accent shrink-0">
+                      {w!.time}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-12">
+      <div class="flex items-baseline justify-between flex-wrap gap-3 mb-5">
+        <h2 class="text-2xl md:text-3xl font-black text-text-heading">
+          Every race
+        </h2>
+        <label class="text-sm">
+          <span class="sr-only">Filter races by city or country</span>
+          <input
+            id="race-filter"
+            type="search"
+            placeholder="Filter by city or country…"
+            autocomplete="off"
+            class="bg-bg-card border border-border rounded-lg px-4 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/60 focus:border-accent"
+          />
+        </label>
+      </div>
+
+      {years.map((year) => (
+        <div class="mb-8" data-year-group={year}>
+          <h3 class="text-lg font-black text-text-heading mb-3">{year}</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-bg-card-hover/50">
+                <tr class="text-xs uppercase tracking-wider text-text-muted">
+                  <th class="text-left p-3 font-bold">Race</th>
+                  <th class="text-left p-3 font-bold hidden md:table-cell">Winner (men)</th>
+                  <th class="text-left p-3 font-bold hidden md:table-cell">Winner (women)</th>
+                  <th class="text-right p-3 font-bold hidden sm:table-cell w-28">Finishers</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border/60">
+                {byYear.get(year)!.map((r) => (
+                  <tr data-race={`${r.city} ${r.country}`.toLowerCase()}>
+                    <td class="p-3">
+                      <a
+                        href={`/events/${r.year}/${r.slug}/results/`}
+                        class="font-semibold text-text-heading hover:text-accent transition-colors"
+                      >
+                        Hyrox {r.city}
+                      </a>
+                      <div class="text-xs text-text-muted mt-0.5">
+                        {r.country}
+                        {r.isWorldChampionship && (
+                          <span class="ml-2 text-accent font-bold uppercase tracking-wider">
+                            World Champs
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td class="p-3 hidden md:table-cell">
+                      {r.men ? (
+                        <>
+                          {r.men.href ? (
+                            <a href={r.men.href} class="text-text hover:text-accent transition-colors">
+                              {r.men.name}
+                            </a>
+                          ) : (
+                            <span class="text-text">{r.men.name}</span>
+                          )}
+                          <span class="ml-2 font-mono font-bold text-text-muted">{r.men.time}</span>
+                        </>
+                      ) : (
+                        <span class="text-text-muted">—</span>
+                      )}
+                    </td>
+                    <td class="p-3 hidden md:table-cell">
+                      {r.women ? (
+                        <>
+                          {r.women.href ? (
+                            <a href={r.women.href} class="text-text hover:text-accent transition-colors">
+                              {r.women.name}
+                            </a>
+                          ) : (
+                            <span class="text-text">{r.women.name}</span>
+                          )}
+                          <span class="ml-2 font-mono font-bold text-text-muted">{r.women.time}</span>
+                        </>
+                      ) : (
+                        <span class="text-text-muted">—</span>
+                      )}
+                    </td>
+                    <td class="p-3 text-right font-mono text-text-muted hidden sm:table-cell">
+                      {r.finishers ? r.finishers.toLocaleString() : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+
+      <p id="race-filter-empty" class="hidden text-text-muted py-6">
+        No race matches that. Try a city or country name.
+      </p>
+
+      <p class="mt-4 text-xs text-text-muted">
+        Synced from the official Hyrox timing portal and provisional — rankings
+        can change after publication when disqualifications and time
+        corrections are applied. Check{" "}
+        <a href="https://results.hyrox.com/" rel="noopener noreferrer" class="text-accent underline">
+          results.hyrox.com
+        </a>{" "}
+        for the final word.
+      </p>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+        Looking for something more specific?
+      </h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <a href="/records/" class="block bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-accent/50 transition-colors">
+          <div class="font-black text-text-heading">Hyrox world records</div>
+          <p class="text-sm text-text-muted mt-1 mb-0">
+            The fastest times ever recorded in each division, with a source for each.
+          </p>
+        </a>
+        <a href="/athletes/" class="block bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-accent/50 transition-colors">
+          <div class="font-black text-text-heading">Athlete race histories</div>
+          <p class="text-sm text-text-muted mt-1 mb-0">
+            Every race, personal best and season progression for {athleteCount.toLocaleString()} Pro athletes.
+          </p>
+        </a>
+        <a href="/times/" class="block bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-accent/50 transition-colors">
+          <div class="font-black text-text-heading">Time standards</div>
+          <p class="text-sm text-text-muted mt-1 mb-0">
+            What a good Hyrox time is by division, age group and experience level.
+          </p>
+        </a>
+        <a href="/live/" class="block bg-bg-card border border-border rounded-xl p-5 no-underline hover:border-accent/50 transition-colors">
+          <div class="font-black text-text-heading">Live race tracker</div>
+          <p class="text-sm text-text-muted mt-1 mb-0">
+            Follow an athlete station by station while a race is actually running.
+          </p>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-5">
+        Common questions
+      </h2>
+      <div class="space-y-3">
+        {faqItems.map((item) => (
+          <details class="group bg-bg-card border border-border rounded-xl overflow-hidden">
+            <summary class="cursor-pointer flex items-center justify-between gap-3 px-5 py-4 font-bold text-text-heading hover:bg-bg-card-hover transition-colors">
+              {item.question}
+              <svg
+                class="w-4 h-4 shrink-0 text-text-muted transition-transform group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p class="px-5 pb-4 pt-1 text-text-muted leading-relaxed m-0 border-t border-border/60">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <script>
+  // Plain DOM filtering. Sixty-five rows is enough that scanning for one city
+  // is tedious, but nowhere near enough to justify shipping a framework.
+  const input = document.getElementById("race-filter") as HTMLInputElement | null;
+  const empty = document.getElementById("race-filter-empty");
+  if (input) {
+    const rows = Array.from(document.querySelectorAll<HTMLElement>("[data-race]"));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>("[data-year-group]"));
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      for (const row of rows) {
+        row.hidden = q !== "" && !(row.dataset.race ?? "").includes(q);
+      }
+      // Hide a year heading once every race under it has been filtered out.
+      let anyVisible = false;
+      for (const group of groups) {
+        const visible = group.querySelectorAll<HTMLElement>("[data-race]:not([hidden])").length;
+        group.hidden = visible === 0;
+        if (visible > 0) anyVisible = true;
+      }
+      empty?.classList.toggle("hidden", anyVisible);
+    });
+  }
+  </script>
+</BaseLayout>

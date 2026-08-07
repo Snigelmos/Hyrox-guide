@@ -29,7 +29,11 @@ const isActive = (link: (typeof primaryNav)[number]) =>
               href={link.href}
               aria-current={isActive(link) ? "page" : undefined}
               class:list={[
-                "px-2 xl:px-4 py-2 rounded-lg text-[13px] xl:text-sm font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
+                // px-3 at xl, not px-4: the container stops growing at 1200px
+                // while the xl type scale keeps growing, so the wider padding
+                // cost more than the breakpoint gained and left the nine-item
+                // ribbon with ~18px of slack. See the note in config/nav.ts.
+                "px-2 xl:px-3 py-2 rounded-lg text-[13px] xl:text-sm font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
                 isActive(link)
                   ? "bg-accent/10 text-accent"
                   : "text-text-muted hover:text-text hover:bg-white/5",

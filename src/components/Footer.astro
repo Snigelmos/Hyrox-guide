@@ -16,11 +16,16 @@ const footerLinks = {
     { label: "Advanced Program", href: "/training/advanced/" },
     { label: "Supplements", href: "/supplements/" },
   ],
+  Results: [
+    { label: "All Race Results", href: "/results/" },
+    { label: "World Records", href: "/records/" },
+    { label: "Athlete Race Histories", href: "/athletes/" },
+    { label: "Time Benchmarks", href: "/times/" },
+    { label: "Live Race Tracker", href: "/live/" },
+  ],
   Tools: [
     { label: "Race Time Predictor", href: "/calculator/" },
     { label: "Sled Push Watts", href: "/calculator/sled-push-watts/" },
-    { label: "Time Benchmarks", href: "/times/" },
-    { label: "World Records", href: "/records/" },
     { label: "Compare Hyrox", href: "/compare/" },
     { label: "Hyrox by Country", href: "/hyrox/" },
   ],
@@ -45,7 +50,12 @@ const footerLinks = {
 
 <footer class="bg-bg-card border-t border-border mt-16 md:mt-24">
   <div class="container-main py-10 md:py-16">
-    <div class="md:hidden mb-8">
+    {/*
+      The brand block sits above the columns rather than inside them. It used
+      to be a grid cell with a duplicate copy for mobile, which capped the grid
+      at five link groups; there are six now.
+    */}
+    <div class="mb-10 max-w-md">
       <a href="/" class="flex items-center gap-2 mb-3">
         <div
           class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center font-black text-bg text-sm"
@@ -62,24 +72,7 @@ const footerLinks = {
       </p>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-x-6 gap-y-8 md:gap-10">
-      <div class="hidden md:block">
-        <a href="/" class="flex items-center gap-2 mb-4">
-          <div
-            class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center font-black text-bg text-sm"
-          >
-            H
-          </div>
-          <span class="font-black text-xl text-text-heading tracking-tight"
-            >HYROX<span class="text-accent">VAULT</span></span
-          >
-        </a>
-        <p class="text-text-muted text-sm leading-relaxed">
-          An independent Hyrox resource. Race guides, training programs, gear
-          reviews, and evidence-based supplement picks.
-        </p>
-      </div>
-
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-8 md:gap-10">
       {
         Object.entries(footerLinks).map(([title, links]) => (
           <div>

@@ -57,14 +57,21 @@ import heroImage from "../assets/heroes/home-hero.png";
         Everything you need to race, train, and fuel your best Hyrox — all in one place.
       </p>
 
+      {/*
+        Ten items tile evenly as 5x2 from `sm` up. Three columns on mobile keeps
+        the grid short enough to stay near the fold, and the odd one out is
+        stretched across the last row so it reads as deliberate rather than as a
+        gap. Both rules depend on primaryNav's length — see the note in
+        config/nav.ts before adding to it.
+      */}
       <nav
         aria-label="Primary sections"
-        class="grid grid-cols-3 gap-2 sm:gap-3 max-w-2xl mx-auto"
+        class="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 max-w-2xl mx-auto"
       >
         {primaryNav.map((link) => (
           <a
             href={link.href}
-            class="group flex flex-col items-center justify-center gap-2 px-3 py-3 sm:py-4 min-h-[88px] sm:min-h-[100px] bg-bg-card/70 border border-border rounded-xl text-text-muted hover:text-accent hover:border-accent/40 hover:bg-bg-card hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 transition-all"
+            class="group flex flex-col items-center justify-center gap-2 px-3 py-3 sm:py-4 min-h-[88px] sm:min-h-[100px] bg-bg-card/70 border border-border rounded-xl text-text-muted hover:text-accent hover:border-accent/40 hover:bg-bg-card hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 transition-all last:col-span-3 sm:last:col-span-1"
           >
             <span class="text-text-muted group-hover:text-accent transition-colors [&>svg]:w-7 [&>svg]:h-7 sm:[&>svg]:w-9 sm:[&>svg]:h-9">
               <ModuleIcons name={link.icon} size={36} />

@@ -5,6 +5,14 @@
  * homepage "Inside the Vault" module cards) MUST render this list. Do not
  * fork it. If you need a different cut, add a separate, clearly-named export
  * (e.g. `utilityNav`) so the primary nav stays consistent everywhere.
+ *
+ * THE HEADER HAS NO ROOM LEFT. The desktop ribbon lays this list out on one
+ * line inside a 1200px container, and at the time of writing the ten items
+ * below leave roughly 35px of slack at the `lg` breakpoint. Adding an item, or
+ * lengthening a label, will overflow it — which has already happened once.
+ * Labels are kept deliberately short for this reason ("Calculator", not "Time
+ * Calculator"). Measure before you change this list; do not reason about it
+ * from character counts, which is what broke it last time.
  */
 
 export type NavIcon =
@@ -16,6 +24,7 @@ export type NavIcon =
   | "gauge"
   | "post"
   | "trophy"
+  | "flag"
   | "stopwatch";
 
 export interface NavItem {
@@ -63,6 +72,18 @@ export const primaryNav: NavItem[] = [
     badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
   },
   {
+    label: "Results",
+    href: "/results/",
+    activePrefix: "/results/",
+    icon: "flag",
+    iconColor: "text-amber-400",
+    description:
+      "Who won every Hyrox race and in what time, with field sizes and the median finish.",
+    cta: "See Who Won",
+    badge: "Every Race",
+    badgeColor: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  },
+  {
     label: "Training",
     href: "/training/",
     icon: "dumbbell",
@@ -108,7 +129,7 @@ export const primaryNav: NavItem[] = [
     badgeColor: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
   },
   {
-    label: "Time Calculator",
+    label: "Calculator",
     href: "/calculator/",
     icon: "gauge",
     iconColor: "text-accent",
@@ -130,7 +151,7 @@ export const primaryNav: NavItem[] = [
     badgeColor: "text-sky-400 bg-sky-400/10 border-sky-400/20",
   },
   {
-    label: "2026 Calendar",
+    label: "2026 Races",
     href: "/events/2026/",
     activePrefix: "/events/",
     icon: "trophy",
