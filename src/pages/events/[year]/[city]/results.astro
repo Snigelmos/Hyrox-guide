@@ -6,7 +6,7 @@ import {
   formatEventDate,
   type HyroxEvent,
 } from "../../../../data/events";
-import { getResults } from "../../../../data/event-results";
+import { getResults, isRealTime } from "../../../../data/event-results";
 import {
   formatSyncedDate,
   getEventLeaderboard,
@@ -94,12 +94,19 @@ const heroWomen =
   pickWinner(["pro women", "elite 15 women", "women"]) ??
   syncedWinner(["Pro Women", "Elite 15 Women", "Open Women"]);
 
-/** "Ryan Douglas won in 55:23 and Saskia Millard in 57:15". */
+/**
+ * "Ryan Douglas won in 55:23 and Saskia Millard in 57:15".
+ *
+ * Only winners with a published time qualify. A couple of hand-written podiums
+ * record the placing but not the clock, and composing a snippet from those
+ * produces "Cole Learn won in —" in the SERP.
+ */
 const winnerSnippet = (() => {
-  if (heroMen && heroWomen)
-    return `${heroMen.athlete} won in ${heroMen.time} and ${heroWomen.athlete} in ${heroWomen.time}`;
-  if (heroMen) return `${heroMen.athlete} won in ${heroMen.time}`;
-  if (heroWomen) return `${heroWomen.athlete} won in ${heroWomen.time}`;
+  const m = heroMen && isRealTime(heroMen.time) ? heroMen : null;
+  const w = heroWomen && isRealTime(heroWomen.time) ? heroWomen : null;
+  if (m && w) return `${m.athlete} won in ${m.time} and ${w.athlete} in ${w.time}`;
+  if (m) return `${m.athlete} won in ${m.time}`;
+  if (w) return `${w.athlete} won in ${w.time}`;
   return "";
 })();
 
@@ -155,9 +162,9 @@ const faqItems = [
     question: `Who won Hyrox ${event.city} ${year}?`,
     answer:
       heroMen && heroWomen
-        ? `${heroMen.athlete} won the ${heroMen.division} in ${heroMen.time} and ${heroWomen.athlete} won the ${heroWomen.division} in ${heroWomen.time}. Full division-by-division results below.`
+        ? `${heroMen.athlete} won the ${heroMen.division}${isRealTime(heroMen.time) ? ` in ${heroMen.time}` : ""} and ${heroWomen.athlete} won the ${heroWomen.division}${isRealTime(heroWomen.time) ? ` in ${heroWomen.time}` : ""}. Full division-by-division results below.`
         : heroMen
-          ? `${heroMen.athlete} won the ${heroMen.division} in ${heroMen.time}. Full division-by-division results below.`
+          ? `${heroMen.athlete} won the ${heroMen.division}${isRealTime(heroMen.time) ? ` in ${heroMen.time}` : ""}. Full division-by-division results below.`
           : `Winner not yet confirmed. Race is ${isPast ? "complete — recap pending" : `scheduled for ${formatEventDate(event.startDate, event.endDate)}`}.`,
   },
   {

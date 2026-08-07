@@ -14,7 +14,7 @@
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { EVENTS, formatEventDate, isPastEvent } from "../../data/events";
-import { getResults } from "../../data/event-results";
+import { getResults, isRealTime } from "../../data/event-results";
 import {
   formatSyncedDate,
   getEventLeaderboard,
@@ -29,7 +29,8 @@ import {
 
 interface Winner {
   name: string;
-  time: string;
+  /** Null where the placing is recorded but the time was never published. */
+  time: string | null;
   country: string | null;
   /** Set only when the athlete clears the bar for a profile page. */
   href: string | null;
@@ -52,15 +53,7 @@ interface RaceRow {
   women: Winner | null;
 }
 
-/** Editorial podium wins over the synced one; see lib/event-leaderboards.ts. */
-function buildWinner(
-  editorialPodium: { athlete: string; time: string; country?: string } | undefined,
-  synced: { name: string; time: string; country: string | null } | undefined,
-): Winner | null {
-  const name = editorialPodium?.athlete ?? synced?.name;
-  const time = editorialPodium?.time ?? synced?.time;
-  if (!name || !time) return null;
-  const country = editorialPodium?.country ?? synced?.country ?? null;
+function toWinner(name: string, time: string | null, country: string | null): Winner {
   const profile = findAthlete(name, country);
   return {
     name,
@@ -71,6 +64,29 @@ function buildWinner(
         ? `/athletes/${profile.slug}/`
         : null,
   };
+}
+
+/**
+ * Editorial data wins over synced (see lib/event-leaderboards.ts), but only
+ * while it is complete. A hand-written podium that records the placing without
+ * a time loses to a synced row that has both, rather than dragging a "—" into
+ * the table. Name and time always come from the same source — mixing them
+ * would pair one division's winner with another's clock.
+ */
+function buildWinner(
+  editorial: { athlete: string; time: string; country?: string } | undefined,
+  synced: { name: string; time: string; country: string | null } | undefined,
+): Winner | null {
+  if (editorial && isRealTime(editorial.time)) {
+    return toWinner(editorial.athlete, editorial.time, editorial.country ?? null);
+  }
+  if (synced && isRealTime(synced.time)) {
+    return toWinner(synced.name, synced.time, synced.country);
+  }
+  if (editorial?.athlete) {
+    return toWinner(editorial.athlete, null, editorial.country ?? null);
+  }
+  return null;
 }
 
 const rows: RaceRow[] = [];
@@ -226,9 +242,11 @@ const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Results" }];
                 <div class="text-lg md:text-xl font-black text-text-heading leading-tight break-words">
                   {w!.name}
                 </div>
-                <div class="mt-1 text-3xl md:text-4xl font-black font-mono text-accent leading-none">
-                  {w!.time}
-                </div>
+                {w!.time && (
+                  <div class="mt-1 text-3xl md:text-4xl font-black font-mono text-accent leading-none">
+                    {w!.time}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -261,9 +279,11 @@ const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Results" }];
                 {[r.men, r.women].filter(Boolean).map((w) => (
                   <div class="flex items-baseline justify-between gap-3">
                     <span class="text-sm text-text truncate">{w!.name}</span>
-                    <span class="text-sm font-mono font-bold text-accent shrink-0">
-                      {w!.time}
-                    </span>
+                    {w!.time && (
+                      <span class="text-sm font-mono font-bold text-accent shrink-0">
+                        {w!.time}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -332,7 +352,9 @@ const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Results" }];
                           ) : (
                             <span class="text-text">{r.men.name}</span>
                           )}
-                          <span class="ml-2 font-mono font-bold text-text-muted">{r.men.time}</span>
+                          {r.men.time && (
+                            <span class="ml-2 font-mono font-bold text-text-muted">{r.men.time}</span>
+                          )}
                         </>
                       ) : (
                         <span class="text-text-muted">—</span>
@@ -348,7 +370,9 @@ const breadcrumbs = [{ name: "Home", url: "/" }, { name: "Results" }];
                           ) : (
                             <span class="text-text">{r.women.name}</span>
                           )}
-                          <span class="ml-2 font-mono font-bold text-text-muted">{r.women.time}</span>
+                          {r.women.time && (
+                            <span class="ml-2 font-mono font-bold text-text-muted">{r.women.time}</span>
+                          )}
                         </>
                       ) : (
                         <span class="text-text-muted">—</span>

@@ -14,7 +14,7 @@ import {
   isPastEvent,
   type HyroxEvent,
 } from "../../../data/events";
-import { getResults } from "../../../data/event-results";
+import { getResults, isRealTime } from "../../../data/event-results";
 import {
   formatSyncedDate,
   getEventLeaderboard,
@@ -210,10 +210,16 @@ const proWomenWinner = event
       ["Pro Women", "Elite 15 Women", "Open Women"],
     )
   : undefined;
-/** "Ryan Douglas won in 55:23 and Saskia Millard in 57:15" — the snippet hook. */
+/**
+ * "Ryan Douglas won in 55:23 and Saskia Millard in 57:15" — the snippet hook.
+ *
+ * Only winners with a published time qualify. A couple of hand-written podiums
+ * record the placing but not the clock, and composing a title from those
+ * produces "Charlie Botterill won in —" in the SERP.
+ */
 const winnerSnippet = (() => {
-  const m = proMenWinner;
-  const w = proWomenWinner;
+  const m = proMenWinner && isRealTime(proMenWinner.time) ? proMenWinner : null;
+  const w = proWomenWinner && isRealTime(proWomenWinner.time) ? proWomenWinner : null;
   if (m && w) return `${m.athlete} won in ${m.time} and ${w.athlete} in ${w.time}`;
   if (m) return `${m.athlete} won in ${m.time}`;
   if (w) return `${w.athlete} won in ${w.time}`;
@@ -765,9 +771,11 @@ const explainerFaqItems = explainer
               <div class="text-lg md:text-xl font-black text-text-heading leading-tight break-words">
                 {w.athlete}
               </div>
-              <div class="mt-2 text-3xl md:text-4xl font-black font-mono text-text-heading leading-none">
-                {w.time}
-              </div>
+                  {isRealTime(w.time) && (
+                    <div class="mt-2 text-3xl md:text-4xl font-black font-mono text-text-heading leading-none">
+                      {w.time}
+                    </div>
+                  )}
               <div class="mt-3 text-xs text-text-muted">
                 {w.country && <span class="font-bold uppercase tracking-wider">{w.country}</span>}
                 {w.country && w.fieldSize && <span class="mx-2">·</span>}

@@ -45,10 +45,25 @@ export const HYROX_SEGMENTS = [
   "Wall Balls",
 ] as const;
 
+/**
+ * A few podiums record who finished where without a published time — the
+ * Washington DC and London Spring Elite/Pro fields, at the time of writing.
+ * Those entries carry "—" rather than being omitted, because the placing is
+ * still worth showing.
+ *
+ * Anything that renders a time, and especially anything that composes prose or
+ * a meta description from one, has to tell a placeholder apart from a real
+ * time. Otherwise you get "Cole Learn won in —".
+ */
+export function isRealTime(time: string | undefined | null): time is string {
+  return Boolean(time && !/^\s*[—–-]+\s*$/.test(time));
+}
+
 export interface PodiumEntry {
   rank: 1 | 2 | 3;
   athlete: string;
-  time: string; // h:mm:ss
+  /** "h:mm:ss", or "—" when the placing is known but the time is not. */
+  time: string;
   country?: string; // ISO
   team?: string;
   /** Short tag like "World record", "Personal best", "Pro debut". */
