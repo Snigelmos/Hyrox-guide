@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-08-07T17:50:52.859Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-08-10T06:51:26.294Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox
@@ -351,6 +351,7 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
       { id: "H_LR3MS4JI17AA", label: "HYROX - Saturday" },
       { id: "HA_LR3MS4JI17A7", label: "HYROX ADAPTIVE - Friday" },
       { id: "HA_LR3MS4JI17AA", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HCR_LR3MS4JI17A7", label: "HYROX CORPORATE RELAY - Friday" },
       { id: "HD_LR3MS4JI17A7", label: "HYROX DOUBLES - Friday" },
       { id: "HD_LR3MS4JI17A9", label: "HYROX DOUBLES - Sunday" },
       { id: "HD_LR3MS4JI17AA", label: "HYROX DOUBLES - Saturday" },
