@@ -16,6 +16,17 @@
  *   makes the result count exact: unfiltered totals are bucketed ("> 1000
  *   Results") while filtered ones are precise ("298 Results").
  *
+ * WHY THE PORTAL'S OWN TOTAL IS NOT THE FIELD SIZE:
+ *   Many listings emit one row per team member rather than one per team, and a
+ *   few duplicate the odd singles entrant too. Istanbul's open doubles returns
+ *   100 rows for 50 teams and reports "636 Results"; the real field is 318.
+ *   Where duplication is detected, the field size is read off the highest rank
+ *   the portal itself prints on the last page, which is exact. This also matters
+ *   for the median, which is a position in the field: indexing a de-duplicated
+ *   list with a row-space position lands twice as deep as it should, which is
+ *   how a relay division with ten teams ended up publishing the slowest of them
+ *   as its median.
+ *
  * THE OPEN-DOUBLES EXCEPTION:
  *   Some divisions never had the sex attribute populated — Amsterdam's open
  *   doubles reports 6 men and 0 women against a field of 1000+. When both sexes
@@ -83,6 +94,12 @@ const MAX_PLAUSIBLE_SECONDS = 5 * 3600;
  * stays correct as the sport gets faster.
  */
 const OUTLIER_GAP_RATIO = 0.75;
+/**
+ * Ceiling on how deep the merged-median walk will page through one division id.
+ * The largest field we have seen is a shade under 2,000, so 40 pages is a stop
+ * for a runaway loop rather than a limit anyone should hit.
+ */
+const MAX_MEDIAN_PAGES = 40;
 
 /**
  * Divisions worth a public leaderboard, in the order they should render.
@@ -313,7 +330,7 @@ function extractRows(html, timeField) {
     const finish = parseFinish(block, timeField);
     rows.push({
       idp: decodeURIComponent(idp),
-      name: isTeam ? name : toDisplayName(name),
+      name: isTeam ? teamName(name) : toDisplayName(name),
       isTeam,
       rank: Number.isFinite(rank) && rank > 0 ? rank : null,
       nation,
@@ -373,6 +390,26 @@ function fixCaps(name) {
     .map((tok) => (/^[A-ZÀ-Þ'’-]{2,}$/.test(tok) ? tok[0] + tok.slice(1).toLowerCase() : tok))
     .join("");
 }
+/**
+ * Team rosters arrive with members repeated, and not always the same number of
+ * times: "Dexter Buchanan, Dexter Buchanan, Dexter Buchanan, Chris Woolley,
+ * Chris Woolley" is one pair. Collapse repeats, keeping first-seen order.
+ *
+ * Two teammates sharing a full name would collapse to one, which is a trade
+ * worth making against 17% of team rows reading like a stutter.
+ */
+function teamName(raw) {
+  const seen = new Set();
+  const members = [];
+  for (const part of raw.split(",")) {
+    const member = part.trim();
+    if (!member || seen.has(member)) continue;
+    seen.add(member);
+    members.push(member);
+  }
+  return members.join(", ");
+}
+
 /** "MENENDEZ FERNANDEZ, Pelayo" -> "Pelayo Menendez Fernandez" */
 function toDisplayName(stored) {
   const trimmed = stored.trim();
@@ -392,6 +429,119 @@ function dedupe(rows) {
 }
 
 // ----------------------------------------------------------------------------
+// Median
+// ----------------------------------------------------------------------------
+/**
+ * How many rows the portal prints per entrant on this listing.
+ *
+ * Usually 1. Doubles and relay listings repeat a team once per member, and the
+ * odd singles entrant shows up twice for no visible reason, so it is measured
+ * rather than assumed.
+ */
+function duplicationFactor(pageRows) {
+  const distinct = new Set(pageRows.map((r) => r.idp)).size;
+  return distinct > 0 ? pageRows.length / distinct : 1;
+}
+
+/**
+ * How many entrants a duplicating listing actually holds.
+ *
+ * Scaling the reported row count by the first page's duplication factor is only
+ * right when every entrant repeats the same number of times, and several races
+ * mix the two — Katowice's Open Men repeats some athletes and not others, which
+ * put a 22% error on a 1,332-strong field. The portal ranks entrants rather than
+ * rows, so the highest rank on the last page is the answer, exactly, for one
+ * extra fetch. Only duplicating listings pay for it.
+ */
+async function countEntrants(season, id, sex, reported) {
+  const fallback = () => Math.round(reported.total / 2);
+  if (!reported.exact) return reported.total;
+  try {
+    const lastPage = Math.max(1, Math.ceil(reported.total / PAGE_SIZE));
+    const rows = parseRows(await fetchList(season, id, sex, lastPage));
+    const maxRank = Math.max(...rows.map((r) => r.rank ?? 0), 0);
+    // A listing whose last page carries no usable rank tells us nothing; halving
+    // is the overwhelmingly common case and beats leaving the count doubled.
+    return maxRank > 0 ? maxRank : fallback();
+  } catch {
+    return fallback();
+  }
+}
+
+/**
+ * Median of a division that lives under a single upstream id.
+ *
+ * The portal has already ranked the whole field, so the median is whatever sits
+ * at the midpoint — which usually means fetching exactly one more page. The
+ * target is found by its rank rather than by counting rows, because rows are
+ * not entrants on a duplicating listing.
+ */
+async function singleIdMedian({ season, sex, total, rows, page: first }) {
+  const targetRank = Math.ceil(total / 2);
+  // `rows` is already de-duplicated and time-sorted, so on a field small enough
+  // to fit in one page the midpoint is just an index into it.
+  if (targetRank <= rows.length) return rows[targetRank - 1].time;
+  if (targetRank > total) return null;
+
+  // Estimate which page holds that rank, then confirm by reading the rank back.
+  const pageNo = Math.max(1, Math.ceil((targetRank * first.dup) / PAGE_SIZE));
+  for (const candidate of [pageNo, pageNo + 1, pageNo - 1]) {
+    if (candidate < 1) continue;
+    const pageRows = dedupe(parseRows(await fetchList(season, first.id, sex, candidate)));
+    if (pageRows.length === 0) continue;
+    const hit = pageRows.find((r) => r.rank === targetRank && r.time);
+    if (hit) return hit.time;
+    // Ranks skip when a listing carries DNFs, so settle for the closest one
+    // that is on this page rather than paging around forever.
+    if (pageRows.some((r) => r.rank !== null && r.rank >= targetRank)) {
+      const near = pageRows.filter((r) => r.time && r.rank !== null);
+      if (near.length === 0) continue;
+      return near.reduce((best, r) =>
+        Math.abs(r.rank - targetRank) < Math.abs(best.rank - targetRank) ? r : best,
+      ).time;
+    }
+  }
+  return null;
+}
+
+/**
+ * Median of a division assembled from several upstream ids.
+ *
+ * Multi-day races that publish no Overall roll-up rank each day separately, and
+ * the midpoint of the combined field is not the midpoint of any one day — which
+ * is why this used to be skipped outright, costing 38 divisions their median
+ * including every large Open field at Las Vegas, Bengaluru and Riga.
+ *
+ * There is no way to ask the portal for a merged ranking, so the field is pulled
+ * in full and merged here. That is only a few hundred page fetches across the
+ * whole calendar, and they are disk-cached, so the exact answer is cheaper than
+ * a clever approximation would be to justify.
+ */
+async function mergedMedian({ season, pages, sex, total }) {
+  const all = [];
+  for (const p of pages) {
+    // `reported` counts rows, which is what decides how many pages there are.
+    const pageCount = Math.min(Math.ceil(p.reported / PAGE_SIZE), MAX_MEDIAN_PAGES);
+    for (let page = 1; page <= pageCount; page++) {
+      // Page 1 is already on disk from building the leaderboard itself.
+      all.push(...parseRows(await fetchList(season, p.id, sex, page)));
+    }
+  }
+
+  const finishers = dedupe(all)
+    .filter((r) => r.seconds !== null)
+    .sort((a, b) => a.seconds - b.seconds);
+  if (finishers.length === 0) return null;
+
+  // The portal ranks finishers ahead of anyone without a time, so the midpoint
+  // of the field lands on a finisher unless most of the field failed to finish.
+  // Clamping rather than returning null mirrors the walk-back in the single-id
+  // path: the slowest recorded finish is the honest answer there.
+  const midIndex = Math.min(Math.ceil(total / 2), finishers.length);
+  return finishers[midIndex - 1].time;
+}
+
+// ----------------------------------------------------------------------------
 // Building one division bucket
 // ----------------------------------------------------------------------------
 /**
@@ -407,13 +557,31 @@ async function buildBucket({ season, ids, divisionName, sex }) {
     const html = await fetchList(season, id, sex, 1);
     const t = parseTotal(html);
     if (t.total === null) return null;
-    total += t.total;
+    const firstPage = parseRows(html);
+    // The portal counts rows, and rows are not entrants — see the header note.
+    const count =
+      duplicationFactor(firstPage) > 1
+        ? await countEntrants(season, id, sex, t)
+        : t.total;
+    total += count;
     exact = exact && t.exact;
-    pages.push({ id, html, count: t.total, exact: t.exact });
+    pages.push({
+      id,
+      rows: firstPage,
+      count,
+      reported: t.total,
+      /**
+       * Average rows per entrant over the whole listing, used only to guess
+       * which page holds the median. Derived from the two totals rather than
+       * sampled from page 1, because the sample is what was unreliable.
+       */
+      dup: count > 0 ? t.total / count : 1,
+      exact: t.exact,
+    });
   }
   if (total === 0) return null;
 
-  let rows = dedupe(pages.flatMap((p) => parseRows(p.html))).filter((r) => r.seconds !== null);
+  let rows = dedupe(pages.flatMap((p) => p.rows)).filter((r) => r.seconds !== null);
   if (rows.length === 0) return null;
 
   // Within a sex-filtered listing the portal's order is already finish order.
@@ -432,29 +600,16 @@ async function buildBucket({ season, ids, divisionName, sex }) {
   if (rows.length === 0) return null;
 
   // Median. It needs the row at the midpoint of the whole field, so it is only
-  // computable when the field is exactly counted; when the midpoint sits beyond
-  // the page we already hold, fetch just that one page.
+  // computable when the field is exactly counted.
   let medianTime = null;
-  if (exact && ids.length === 1) {
-    const midIndex = Math.ceil(total / 2);
-    if (midIndex <= rows.length) {
-      medianTime = rows[midIndex - 1].time;
-    } else if (midIndex <= total) {
-      const page = Math.ceil(midIndex / PAGE_SIZE);
-      try {
-        const html = await fetchList(season, ids[0], sex, page);
-        const pageRows = parseRows(html);
-        const offset = midIndex - (page - 1) * PAGE_SIZE - 1;
-        // Walk back if the midpoint row is a DNF with no finish time.
-        for (let i = Math.min(offset, pageRows.length - 1); i >= 0; i--) {
-          if (pageRows[i]?.time) {
-            medianTime = pageRows[i].time;
-            break;
-          }
-        }
-      } catch {
-        /* median is optional */
-      }
+  if (exact) {
+    try {
+      medianTime =
+        ids.length === 1
+          ? await singleIdMedian({ season, sex, total, rows, page: pages[0] })
+          : await mergedMedian({ season, pages, sex, total });
+    } catch {
+      /* median is optional */
     }
   }
 

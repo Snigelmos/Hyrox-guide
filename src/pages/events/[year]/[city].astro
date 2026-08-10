@@ -2,6 +2,7 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LiveAthleteFinder from "../../../components/LiveAthleteFinder";
 import RaceWeekPanel from "../../../components/RaceWeekPanel.astro";
+import RaceStateSwitch from "../../../components/RaceStateSwitch.astro";
 import EventCourseSection from "../../../components/EventCourseSection.astro";
 import HeroBackground from "../../../components/HeroBackground.astro";
 import eventsHero from "../../../assets/heroes/events-hero.png";
@@ -109,8 +110,15 @@ const localGyms = event
   : [];
 
 // Lightweight projection passed to the React island so it doesn't import the
-// full HyroxEvent shape. Only used when the event is currently live.
-const finderEvents = event && isLiveNow
+// full HyroxEvent shape.
+//
+// Populated for every not-yet-past event, not just the live one. `isLiveNow` is
+// a build-time answer and the site rebuilds every other day, so a page built on
+// Friday for a Saturday race used to ship no tracker at all and the next build
+// landed after the race had finished. The markup for all three race states is
+// now emitted and a script below picks between them from the real date — which
+// means the finder's props have to exist before race day.
+const finderEvents = event && !isPast
   ? [
       {
         slug: event.slug,
@@ -124,6 +132,16 @@ const finderEvents = event && isLiveNow
     ]
   : [];
 const liveDayLabel = event && isLiveNow ? liveEventDayLabel(event) : "";
+
+/**
+ * Server-rendered visibility for a date-dependent block.
+ *
+ * Inline `display` rather than a `hidden` attribute or a Tailwind class,
+ * because these wrappers also carry `flex`, and which of two same-specificity
+ * display utilities wins comes down to stylesheet order. An inline style beats
+ * both, so the toggle can't silently stop working after an unrelated CSS change.
+ */
+const hideUnless = (shown: boolean) => (shown ? undefined : "display:none");
 
 // Shared values for layout
 const year = props.year;
@@ -718,32 +736,66 @@ const explainerFaqItems = explainer
             </a>
           )}
         </div>
-      ) : isLiveNow ? (
-        <div class="mt-6 flex flex-wrap gap-3 items-center">
-          <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Race live now · {liveDayLabel}
-          </div>
-          <a href="#live-tracker" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent bg-accent/10 border border-accent/25 rounded-full px-4 py-1.5 hover:bg-accent/20 transition-colors no-underline uppercase tracking-wider">
-            Track an athlete/team ↓
-          </a>
-        </div>
-      ) : event.confirmed ? (
-        <div class="mt-6 flex flex-wrap gap-3 items-center">
-          <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Confirmed on official {year} calendar
-          </div>
-          {inRaceWeek && raceWeekStatus && (
-            <a href="#race-week" class="inline-flex items-center gap-1.5 bg-accent/10 border border-accent/30 text-accent rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-accent/20 transition-colors no-underline">
-              {raceWeekStatus} · Schedule &amp; start list ↓
-            </a>
-          )}
-        </div>
       ) : (
-        <div class="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
-          Dates are indicative and based on previous seasons. Always confirm on the <a href={event.officialUrl} rel="noopener noreferrer" class="text-accent underline">official Hyrox schedule</a> before booking travel.
-        </div>
+        <>
+          <div
+            data-race-state="live"
+            style={hideUnless(isLiveNow)}
+            class="mt-6 flex flex-wrap gap-3 items-center"
+          >
+            <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Race live now<span data-live-day-label>{liveDayLabel && ` · ${liveDayLabel}`}</span>
+            </div>
+            <a href="#live-tracker" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent bg-accent/10 border border-accent/25 rounded-full px-4 py-1.5 hover:bg-accent/20 transition-colors no-underline uppercase tracking-wider">
+              Track an athlete/team ↓
+            </a>
+          </div>
+
+          <div
+            data-race-state="pre"
+            style={hideUnless(!isLiveNow)}
+            class="mt-6 flex flex-wrap gap-3 items-center"
+          >
+            {event.confirmed ? (
+              <>
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Confirmed on official {year} calendar
+                </div>
+                {inRaceWeek && raceWeekStatus && (
+                  <a href="#race-week" class="inline-flex items-center gap-1.5 bg-accent/10 border border-accent/30 text-accent rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-accent/20 transition-colors no-underline">
+                    {raceWeekStatus} · Schedule &amp; start list ↓
+                  </a>
+                )}
+              </>
+            ) : (
+              <div class="w-full bg-accent/5 border border-accent/20 rounded-xl p-4 text-sm text-text-muted">
+                Dates are indicative and based on previous seasons. Always confirm on the <a href={event.officialUrl} rel="noopener noreferrer" class="text-accent underline">official Hyrox schedule</a> before booking travel.
+              </div>
+            )}
+          </div>
+
+          {/* Shown only when the client clock says the race finished after this
+              page was built. Results have not been synced yet at that point, so
+              this deliberately carries no result links — the next build adds
+              them via the `isPast` branch above. */}
+          <div
+            data-race-state="post"
+            style="display:none"
+            class="mt-6 flex flex-wrap gap-3 items-center"
+          >
+            <div class="inline-flex items-center gap-2 bg-slate-500/10 border border-slate-500/25 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+              Race complete
+            </div>
+            {event.resultsUrl && (
+              <a href={event.resultsUrl} rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-text-muted bg-bg-card border border-border rounded-full px-4 py-1.5 hover:border-accent/40 transition-colors no-underline uppercase tracking-wider">
+                Official results ↗
+              </a>
+            )}
+          </div>
+        </>
       )}
     </header>
     </div>
@@ -797,8 +849,13 @@ const explainerFaqItems = explainer
       </section>
     )}
 
-    {isLiveNow && (
-      <section id="live-tracker" class="mb-10 pb-10 border-b border-border scroll-mt-24">
+    {!isPast && (
+      <section
+        id="live-tracker"
+        data-race-state="live"
+        style={hideUnless(isLiveNow)}
+        class="mb-10 pb-10 border-b border-border scroll-mt-24"
+      >
         <h2 class="text-2xl md:text-3xl font-black text-text-heading mb-3">
           Track an athlete or team live
         </h2>
@@ -808,7 +865,7 @@ const explainerFaqItems = explainer
           splits station-by-station on this page.
         </p>
         <LiveAthleteFinder
-          client:load
+          client:visible
           events={finderEvents}
           pinnedEventSlug={event.slug}
           showWatchlist={false}
@@ -817,10 +874,14 @@ const explainerFaqItems = explainer
     )}
 
     {/* Pre-race promise: tell upcoming-event visitors this same page becomes
-        the live tracker on race day, so they bookmark and return here. Only
-        for events that haven't happened and aren't live right now. */}
-    {!isPast && !isLiveNow && (
-      <section class="mb-10 pb-10 border-b border-border scroll-mt-24">
+        the live tracker on race day, so they bookmark and return here. Hidden
+        by the script above once the race starts. */}
+    {!isPast && (
+      <section
+        data-race-state="pre"
+        style={hideUnless(!isLiveNow)}
+        class="mb-10 pb-10 border-b border-border scroll-mt-24"
+      >
         <div class="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-bg-card to-bg-card p-6 md:p-7">
           <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -1306,6 +1367,13 @@ const explainerFaqItems = explainer
       </div>
     </aside>
   </div>
+
+  {!isPast && (
+    <RaceStateSwitch
+      startDate={event.startDate}
+      endDate={event.endDate ?? event.startDate}
+    />
+  )}
 
   {eventSchema && <script type="application/ld+json" set:html={JSON.stringify(eventSchema)} slot="head" />}
 </BaseLayout>

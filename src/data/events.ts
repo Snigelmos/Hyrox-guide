@@ -8,6 +8,8 @@
  * (kids' format) is intentionally excluded.
  */
 
+import { parseYmd, toYmd } from "../lib/race-status";
+
 export interface HyroxEvent {
   slug: string;
   city: string;
@@ -110,14 +112,18 @@ export interface HyroxEvent {
 }
 
 /**
- * Returns true if the event's end date (or start date if no end) is before
- * the supplied reference date (defaults to today at build time).
+ * Returns true once the event's end date (or start date if no end) has passed,
+ * counting the whole end day as still-current.
+ *
+ * Compared as `YYYY-MM-DD` strings rather than as Dates. The previous version
+ * built a Date from the ISO string, which JavaScript reads as UTC midnight, and
+ * then advanced it with `setDate`, which operates in the local timezone — so
+ * whether an event counted as past depended on where the code ran. West of UTC
+ * a Saturday race flipped to "past" on Saturday evening. This also now agrees
+ * with `isEventLiveNow` in src/lib/hyrox-live.ts, which always compared strings.
  */
 export function isPastEvent(event: HyroxEvent, now: Date = new Date()): boolean {
-  const end = new Date(event.endDate ?? event.startDate);
-  // Treat the full end day as still-current by advancing to next day midnight
-  end.setDate(end.getDate() + 1);
-  return now >= end;
+  return toYmd(now) > (event.endDate ?? event.startDate);
 }
 
 const DEFAULT_DIVISIONS = [
@@ -2949,16 +2955,25 @@ export function allEventPaths(): { year: number; slug: string }[] {
   return EVENTS.map((e) => ({ year: e.year, slug: e.slug }));
 }
 
+/**
+ * "May 8–10, 2026". Feeds every event headline and meta description.
+ *
+ * Dates are parsed as local midnight via `parseYmd`, because the previous
+ * version mixed the two: `new Date("2026-05-10")` is UTC midnight, but
+ * `toLocaleDateString` renders it in local time, so a build running west of UTC
+ * printed the day before. It then read the end date back with `getUTCDate`, so
+ * the two halves of a range could disagree with each other.
+ */
 export function formatEventDate(startDate: string, endDate?: string): string {
-  const s = new Date(startDate);
+  const s = parseYmd(startDate);
   const fmt: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", year: "numeric" };
+  const startLabel = s.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   if (endDate) {
-    const e = new Date(endDate);
-    const sameMonth = s.getUTCMonth() === e.getUTCMonth();
-    if (sameMonth) {
-      return `${s.toLocaleDateString("en-US", { month: "long", day: "numeric" })}–${e.getUTCDate()}, ${e.getUTCFullYear()}`;
+    const e = parseYmd(endDate);
+    if (s.getFullYear() === e.getFullYear() && s.getMonth() === e.getMonth()) {
+      return `${startLabel}–${e.getDate()}, ${e.getFullYear()}`;
     }
-    return `${s.toLocaleDateString("en-US", { month: "long", day: "numeric" })}–${e.toLocaleDateString("en-US", fmt)}`;
+    return `${startLabel}–${e.toLocaleDateString("en-US", fmt)}`;
   }
   return s.toLocaleDateString("en-US", fmt);
 }
