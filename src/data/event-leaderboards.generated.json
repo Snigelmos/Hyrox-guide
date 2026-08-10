@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-10T06:53:37.624Z",
+  "generatedAt": "2026-08-10T07:20:00.198Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -54327,7 +54327,7 @@
             },
             {
               "rank": 8,
-              "name": "Viola Oberlander, Viola Oberländer, Jana Lebenstedt",
+              "name": "Viola Oberländer, Jana Lebenstedt",
               "time": "0:56:21",
               "country": null,
               "ageGroup": null
@@ -54691,7 +54691,7 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-08-07"
+      "previousSyncedAt": "2026-08-10"
     },
     "2026/london-spring": {
       "slug": "london-spring",

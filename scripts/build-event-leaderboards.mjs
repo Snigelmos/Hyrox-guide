@@ -395,19 +395,32 @@ function fixCaps(name) {
  * times: "Dexter Buchanan, Dexter Buchanan, Dexter Buchanan, Chris Woolley,
  * Chris Woolley" is one pair. Collapse repeats, keeping first-seen order.
  *
+ * Matching folds accents and case, because the repeats are not always spelled
+ * consistently — one Elite 15 Doubles row read "Viola Oberlander, Viola
+ * Oberländer". Where spellings differ the accented one wins, since a stripped
+ * diacritic is a transcription loss rather than a choice.
+ *
  * Two teammates sharing a full name would collapse to one, which is a trade
  * worth making against 17% of team rows reading like a stutter.
  */
 function teamName(raw) {
-  const seen = new Set();
-  const members = [];
+  const stripAccents = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const hasAccents = (s) => stripAccents(s) !== s;
+
+  const best = new Map();
+  const order = [];
   for (const part of raw.split(",")) {
     const member = part.trim();
-    if (!member || seen.has(member)) continue;
-    seen.add(member);
-    members.push(member);
+    if (!member) continue;
+    const key = stripAccents(member).toLowerCase();
+    if (!best.has(key)) {
+      best.set(key, member);
+      order.push(key);
+    } else if (!hasAccents(best.get(key)) && hasAccents(member)) {
+      best.set(key, member);
+    }
   }
-  return members.join(", ");
+  return order.map((k) => best.get(k)).join(", ");
 }
 
 /** "MENENDEZ FERNANDEZ, Pelayo" -> "Pelayo Menendez Fernandez" */
