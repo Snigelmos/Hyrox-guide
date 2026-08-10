@@ -1,0 +1,71 @@
+---
+/**
+ * Re-decides an event page's pre / live / post state from the visitor's clock
+ * rather than the build clock.
+ *
+ * Astro renders these pages statically and the site rebuilds every other day,
+ * so anything gated on `isEventLiveNow()` in frontmatter is answering "was this
+ * race on when the build ran". A page built on Friday for a Saturday race shows
+ * no live tracker, and the next build lands after the race has finished — the
+ * tracker was never visible during the only window it was useful.
+ *
+ * The page instead renders all three states and marks each block with
+ * `data-race-state`. This component ships the small script that shows exactly
+ * one of them. Blocks toggle via inline `display` because several of them also
+ * carry a Tailwind `flex` utility, and between two same-specificity display
+ * rules the winner is stylesheet order.
+ *
+ * Any element with `data-live-day-label` gets " · Day 2 of 3 (Sun)" written into
+ * it while live, matching `liveEventDayLabel()` in src/lib/hyrox-live.ts.
+ */
+interface Props {
+  /** ISO `YYYY-MM-DD`. */
+  startDate: string;
+  /** ISO `YYYY-MM-DD`. Pass the start date for single-day events. */
+  endDate: string;
+}
+
+const { startDate, endDate } = Astro.props;
+---
+
+<script define:vars={{ startDate, endDate }}>
+  (() => {
+    const pad = (n) => String(n).padStart(2, "0");
+    const ymdOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const parseYmd = (s) => {
+      const [y, m, d] = s.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    };
+    const weekdayShort = (d) => d.toLocaleDateString("en-GB", { weekday: "short" });
+
+    const dayLabel = (today) => {
+      const start = parseYmd(startDate);
+      const end = parseYmd(endDate);
+      const DAY = 86400000;
+      const total = Math.round((end - start) / DAY) + 1;
+      if (total <= 1) return weekdayShort(start);
+      const index = Math.max(1, Math.min(total, Math.round((today - start) / DAY) + 1));
+      return `Day ${index} of ${total} (${weekdayShort(today)})`;
+    };
+
+    const apply = () => {
+      const ymd = ymdOf(new Date());
+      const state = ymd < startDate ? "pre" : ymd <= endDate ? "live" : "post";
+
+      for (const el of document.querySelectorAll("[data-race-state]")) {
+        el.style.display = el.dataset.raceState === state ? "" : "none";
+      }
+
+      if (state === "live") {
+        const label = ` \u00b7 ${dayLabel(parseYmd(ymd))}`;
+        for (const el of document.querySelectorAll("[data-live-day-label]")) {
+          el.textContent = label;
+        }
+      }
+    };
+
+    apply();
+    // Catches a tab left open overnight into race day.
+    setInterval(apply, 60_000);
+  })();
+</script>

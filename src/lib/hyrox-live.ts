@@ -27,6 +27,7 @@ import {
   RESULTS_INDEX_CURRENT_SEASON,
   type ResultsIndexEntry,
 } from "../data/hyrox-results-index.generated";
+import { parseYmd, toYmd, weekdayShort } from "./race-status";
 
 /**
  * Where a race lives on results.hyrox.com.
@@ -355,18 +356,6 @@ export function removeFromWatchlist(
   );
 }
 
-function toYmd(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function parseYmd(ymd: string): Date {
-  const [y, m, d] = ymd.split("-").map((n) => parseInt(n, 10));
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
-
-function weekdayShort(date: Date): string {
-  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
-}
+// toYmd, parseYmd and weekdayShort used to be defined here as well, character
+// for character. They now come from src/lib/race-status.ts, so a timezone fix
+// lands in one place instead of three.

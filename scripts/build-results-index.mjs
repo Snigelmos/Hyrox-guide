@@ -85,6 +85,26 @@ const RACE_LABEL_OVERRIDES = {
   // Cities the portal names differently to us.
   "season-8|2026 Lisboa": { slug: "lisbon", year: 2026 },
   "season-8|2026 Paris GP": { slug: "paris", year: 2026 },
+  // The portal names both March London races after the venue, so neither
+  // normalises to one of our slugs and both fell through silently. Which is
+  // which was confirmed against the portal rather than inferred: the EMEA label
+  // carries HYROX ELITE 15 DOUBLES and only Saturday/Sunday divisions (our
+  // 21–22 March championship), while the plain label runs Tuesday through
+  // Sunday (our 24–29 March city race).
+  "season-8|2026 EMEA London Olympia": { slug: "london-emea-championships", year: 2026 },
+  "season-8|2026 London Olympia": { slug: "london-spring", year: 2026 },
+  // The February Istanbul carries a trailing "1", which is why the plain
+  // "season-8|2026 Istanbul" key above never fired. Kept anyway in case the
+  // portal renames it. Verified by its division set: PRO, DOUBLES, RELAY and
+  // ADAPTIVE with no day suffix, and a day token before the March races.
+  "season-8|2026 Istanbul 1": { slug: "istanbul", year: 2026 },
+
+  // Not races of ours. Listed explicitly so the unmatched report stays short
+  // enough that a genuinely missing city is visible in it.
+  "season-8|2026 London Olympia - Youngstars": null,
+  "season-8|2026 Amsterdam - Youngstars": null,
+  "season-8|2026 Berlin - Youngstars": null,
+  "season-8|2026 Red Bull Monday Night shift: HYROX Invitational": null,
 };
 
 // ----------------------------------------------------------------------------

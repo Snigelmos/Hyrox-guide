@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-08-07T09:20:30.311Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-08-07T17:50:52.859Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox
@@ -694,6 +694,20 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
     ],
   },
   {
+    slug: "istanbul",
+    year: 2026,
+    season: "season-8",
+    raceLabel: "2026 Istanbul 1",
+    divisions: [
+      { id: "H_LR3MS4JI1327", label: "HYROX" },
+      { id: "HA_LR3MS4JI1327", label: "HYROX ADAPTIVE" },
+      { id: "HD_LR3MS4JI1327", label: "HYROX DOUBLES" },
+      { id: "HDP_LR3MS4JI1327", label: "HYROX PRO DOUBLES" },
+      { id: "HMR_LR3MS4JI1327", label: "HYROX TEAM RELAY" },
+      { id: "HPRO_LR3MS4JI1327", label: "HYROX PRO" },
+    ],
+  },
+  {
     slug: "istanbul-summer",
     year: 2026,
     season: "season-9",
@@ -792,6 +806,55 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
       { id: "HDP_LR3MS4JI14F3", label: "HYROX PRO DOUBLES - Saturday" },
       { id: "HMR_LR3MS4JI14F4", label: "HYROX TEAM RELAY - Sunday" },
       { id: "HPRO_LR3MS4JI14F2", label: "HYROX PRO - Friday" },
+    ],
+  },
+  {
+    slug: "london-emea-championships",
+    year: 2026,
+    season: "season-8",
+    raceLabel: "2026 EMEA London Olympia",
+    divisions: [
+      { id: "H_LR3MS4JI1402", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI1403", label: "HYROX - Sunday" },
+      { id: "HA_LR3MS4JI1402", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI1403", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HD_LR3MS4JI1402", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI1403", label: "HYROX DOUBLES - Sunday" },
+      { id: "HDE_LR3MS4JI1405", label: "HYROX ELITE 15 DOUBLES - Saturday" },
+      { id: "HE_LR3MS4JI1404", label: "HYROX ELITE 15 - Friday" },
+      { id: "HMR_LR3MS4JI1403", label: "HYROX TEAM RELAY - Sunday" },
+    ],
+  },
+  {
+    slug: "london-spring",
+    year: 2026,
+    season: "season-8",
+    raceLabel: "2026 London Olympia",
+    divisions: [
+      { id: "H_LHR26_OVERALL", label: "HYROX - Overall" },
+      { id: "H_LR3MS4JI1407", label: "HYROX - Tuesday" },
+      { id: "H_LR3MS4JI1408", label: "HYROX - Wednesday" },
+      { id: "H_LR3MS4JI1409", label: "HYROX - Thursday" },
+      { id: "H_LR3MS4JI140A", label: "HYROX - Friday" },
+      { id: "H_LR3MS4JI140B", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI140C", label: "HYROX - Sunday" },
+      { id: "HA_LHR26_OVERALL", label: "HYROX ADAPTIVE - Overall" },
+      { id: "HA_LR3MS4JI1407", label: "HYROX ADAPTIVE - Tuesday" },
+      { id: "HA_LR3MS4JI1408", label: "HYROX ADAPTIVE - Wednesday" },
+      { id: "HA_LR3MS4JI1409", label: "HYROX ADAPTIVE - Thursday" },
+      { id: "HA_LR3MS4JI140A", label: "HYROX ADAPTIVE - Friday" },
+      { id: "HA_LR3MS4JI140B", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI140C", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HD_LHR26_OVERALL", label: "HYROX DOUBLES - Overall" },
+      { id: "HD_LR3MS4JI1407", label: "HYROX DOUBLES - Tuesday" },
+      { id: "HD_LR3MS4JI1408", label: "HYROX DOUBLES - Wednesday" },
+      { id: "HD_LR3MS4JI1409", label: "HYROX DOUBLES - Thursday" },
+      { id: "HD_LR3MS4JI140A", label: "HYROX DOUBLES - Friday" },
+      { id: "HD_LR3MS4JI140B", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI140C", label: "HYROX DOUBLES - Sunday" },
+      { id: "HDP_LR3MS4JI140B", label: "HYROX PRO DOUBLES - Saturday" },
+      { id: "HMR_LR3MS4JI140A", label: "HYROX TEAM RELAY - Friday" },
+      { id: "HPRO_LR3MS4JI140A", label: "HYROX PRO - Friday" },
     ],
   },
   {

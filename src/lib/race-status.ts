@@ -113,6 +113,6 @@ export function liveEventDayLabel(event: RaceStatusEvent, date: Date): string {
   return `Day ${dayIndex} of ${totalDays} (${weekdayShort(cur)})`;
 }
 
-function weekdayShort(date: Date): string {
+export function weekdayShort(date: Date): string {
   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
 }
