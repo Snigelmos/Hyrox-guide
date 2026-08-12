@@ -1709,6 +1709,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-08-16",
     venue: "Shenzhen World Exhibition & Convention Center",
     venueAddress: "Fuhai Subdistrict, Bao'an District, Shenzhen 518103",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/08/HYROX-Shenzhen-Venue-Map.pdf",
+    courseMapImageUrl: "/images/events/shenzhen-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "APAC",
