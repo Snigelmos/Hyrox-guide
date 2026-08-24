@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-08-17T05:28:27.318Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-08-24T05:31:44.337Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox

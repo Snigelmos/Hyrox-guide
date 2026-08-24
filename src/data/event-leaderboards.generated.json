@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-17T05:32:07.951Z",
+  "generatedAt": "2026-08-24T05:34:16.584Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -55473,7 +55473,7 @@
       "year": 2026,
       "city": "Chiba",
       "season": "season-9",
-      "syncedAt": "2026-08-17",
+      "syncedAt": "2026-08-24",
       "raceEndDate": "2026-08-09",
       "totalFinishers": 5535,
       "divisions": [
@@ -55605,7 +55605,7 @@
             },
             {
               "rank": 5,
-              "name": "Alice Schürer",
+              "name": "Alice Schurer",
               "time": "1:05:19",
               "country": "AUT",
               "ageGroup": "30-34"
@@ -56328,16 +56328,16 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-08-10"
+      "previousSyncedAt": "2026-08-17"
     },
     "2026/cape-town-summer": {
       "slug": "cape-town-summer",
       "year": 2026,
       "city": "Cape Town (Summer)",
       "season": "season-9",
-      "syncedAt": "2026-08-17",
+      "syncedAt": "2026-08-24",
       "raceEndDate": "2026-08-15",
-      "totalFinishers": 3627,
+      "totalFinishers": 2966,
       "divisions": [
         {
           "division": "Pro Men",
@@ -56347,10 +56347,10 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 179,
+          "fieldSize": 178,
           "fieldSizeExact": true,
           "fastestTime": "0:56:10",
-          "medianTime": "1:20:37",
+          "medianTime": "1:20:27",
           "top": [
             {
               "rank": 1,
@@ -56439,7 +56439,7 @@
           "top": [
             {
               "rank": 1,
-              "name": "Danél Louw",
+              "name": "Danel Louw",
               "time": "1:00:57",
               "country": "RSA",
               "ageGroup": "25-29"
@@ -56453,7 +56453,7 @@
             },
             {
               "rank": 3,
-              "name": "Juan-Marié Herbst",
+              "name": "Juan-Marie Herbst",
               "time": "1:07:10",
               "country": "RSA",
               "ageGroup": "30-34"
@@ -56567,31 +56567,31 @@
             },
             {
               "rank": 7,
+              "name": "Sebastian Pahl",
+              "time": "1:02:43",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
               "name": "Gerrie Van Dalen",
               "time": "1:03:36",
               "country": "RSA",
               "ageGroup": "16-24"
             },
             {
-              "rank": 8,
+              "rank": 9,
               "name": "Francois Marais",
               "time": "1:03:47",
               "country": "RSA",
               "ageGroup": "25-29"
             },
             {
-              "rank": 9,
+              "rank": 10,
               "name": "Alexander Kruger",
               "time": "1:04:13",
               "country": "RSA",
               "ageGroup": "25-29"
-            },
-            {
-              "rank": 10,
-              "name": "Sebastian Pahl",
-              "time": "1:04:43",
-              "country": null,
-              "ageGroup": "30-34"
             }
           ]
         },
@@ -56604,10 +56604,10 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 429,
+          "fieldSize": 428,
           "fieldSizeExact": true,
           "fastestTime": "1:08:10",
-          "medianTime": "1:42:44",
+          "medianTime": "1:42:42",
           "top": [
             {
               "rank": 1,
@@ -56689,10 +56689,10 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 100,
+          "fieldSize": 99,
           "fieldSizeExact": true,
           "fastestTime": "0:50:35",
-          "medianTime": "1:12:08",
+          "medianTime": "1:12:14",
           "top": [
             {
               "rank": 1,
@@ -56717,52 +56717,52 @@
             },
             {
               "rank": 4,
-              "name": "Luke Jacobs, Simon Goldsbrough",
-              "time": "0:54:07",
-              "country": null,
-              "ageGroup": "30-34"
-            },
-            {
-              "rank": 5,
               "name": "Jacques Badenhorst, Janno Nel",
               "time": "0:54:56",
               "country": null,
               "ageGroup": "25-29"
             },
             {
-              "rank": 6,
+              "rank": 5,
               "name": "Ignatius Ferreira, Roux Havenga",
               "time": "0:55:56",
               "country": null,
               "ageGroup": "30-34"
             },
             {
-              "rank": 7,
+              "rank": 6,
               "name": "Andre Van Der Merwe, Tristan Blewett",
               "time": "0:56:00",
               "country": null,
               "ageGroup": "25-29"
             },
             {
-              "rank": 8,
+              "rank": 7,
               "name": "Franko Van Zyl, Janu Gous",
               "time": "0:56:13",
               "country": null,
               "ageGroup": "16-24"
             },
             {
-              "rank": 9,
+              "rank": 8,
               "name": "Damien Botes, Damian Burns",
               "time": "0:56:37",
               "country": null,
               "ageGroup": "30-34"
             },
             {
-              "rank": 10,
+              "rank": 9,
               "name": "Jean-Marc Trichard, Zach Van Coller",
               "time": "0:56:54",
               "country": null,
               "ageGroup": "16-24"
+            },
+            {
+              "rank": 10,
+              "name": "Andrew Cronje, Justin Willard",
+              "time": "0:57:47",
+              "country": null,
+              "ageGroup": "40-44"
             }
           ]
         },
@@ -56781,7 +56781,7 @@
           "top": [
             {
               "rank": 1,
-              "name": "Danél Louw, Juan-Marie Herbst",
+              "name": "Danel Louw, Juan-Marie Herbst",
               "time": "0:57:11",
               "country": null,
               "ageGroup": "30-34"
@@ -56859,80 +56859,80 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 811,
+          "fieldSize": 599,
           "fieldSizeExact": true,
-          "fastestTime": "0:55:45",
-          "medianTime": "1:21:52",
+          "fastestTime": "0:54:52",
+          "medianTime": "1:24:03",
           "top": [
             {
               "rank": 1,
-              "name": "Max Strack-Zimmermann, Teko Khetsi",
-              "time": "0:55:45",
+              "name": "Frans Van Der Merwe, Jacques Badenhorst",
+              "time": "0:54:52",
               "country": null,
-              "ageGroup": "30-34"
+              "ageGroup": "16-24"
             },
             {
               "rank": 2,
-              "name": "Maxime Villalongue, Ryan Steer",
-              "time": "0:56:28",
-              "country": null,
-              "ageGroup": "30-34"
-            },
-            {
-              "rank": 3,
-              "name": "Ryan Basson, Ryeong Choi",
-              "time": "0:56:29",
+              "name": "Tristan Blewett, Andre van der Merwe",
+              "time": "0:55:33",
               "country": null,
               "ageGroup": "25-29"
             },
             {
+              "rank": 3,
+              "name": "Quintin de Jongh, Mathieu Cros",
+              "time": "0:58:39",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
               "rank": 4,
-              "name": "Mathew Mbambo, Jacque Gericke",
-              "time": "0:56:43",
+              "name": "Neo Ratale, Nathan Ndhlovu",
+              "time": "0:58:46",
               "country": null,
               "ageGroup": "25-29"
             },
             {
               "rank": 5,
-              "name": "Nkanyiso Buthelezi, Kamo Motaung",
-              "time": "0:56:57",
+              "name": "Ewan Hickling, Zander Venter",
+              "time": "0:58:54",
               "country": null,
               "ageGroup": "25-29"
             },
             {
               "rank": 6,
-              "name": "Tim Schudde, Just Nicolaij",
-              "time": "0:57:12",
+              "name": "Ben Le Cornu, Josh Oosthuisen",
+              "time": "0:59:58",
               "country": null,
               "ageGroup": "16-24"
             },
             {
               "rank": 7,
-              "name": "Jesse Herbert, Dean Herbert",
-              "time": "0:57:39",
+              "name": "Wayne van Niekerk, Chad Sharrock",
+              "time": "1:00:06",
               "country": null,
               "ageGroup": "30-34"
             },
             {
               "rank": 8,
-              "name": "Bismarck Olivier, Jacques Olivier",
-              "time": "0:57:57",
+              "name": "Diego De Carvalho, Jean-Claude Fernandes",
+              "time": "1:00:45",
               "country": null,
-              "ageGroup": "16-24"
+              "ageGroup": "25-29"
             },
             {
               "rank": 9,
-              "name": "Sipho Marima, Siphesihle Maseko",
-              "time": "0:57:58",
+              "name": "Alexio dos Santos, Schalk Viljoen",
+              "time": "1:00:52",
               "country": null,
-              "ageGroup": "30-34"
+              "ageGroup": "35-39"
             },
             {
               "rank": 10,
-              "name": "Hillary Arries, Dean Berndt",
-              "time": "0:58:03",
+              "name": "Jur Kranenburg, Jelle van Diepen",
+              "time": "1:00:55",
               "country": null,
-              "ageGroup": "40-44"
+              "ageGroup": "16-24"
             }
           ]
         },
@@ -56944,80 +56944,80 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 1196,
+          "fieldSize": 749,
           "fieldSizeExact": true,
-          "fastestTime": "1:03:10",
-          "medianTime": "1:33:20",
+          "fastestTime": "1:07:43",
+          "medianTime": "1:39:28",
           "top": [
             {
               "rank": 1,
-              "name": "Valentina Fernandes, Daniella Thomas",
-              "time": "1:03:10",
+              "name": "Carmen Buchacher, Caity Perry",
+              "time": "1:07:43",
               "country": null,
-              "ageGroup": "16-24"
+              "ageGroup": "35-39"
             },
             {
               "rank": 2,
-              "name": "Frederique Jullian, Alicia Lamusse",
-              "time": "1:03:15",
+              "name": "Danielle Vermaak, Rebecca Rivett",
+              "time": "1:07:48",
               "country": null,
               "ageGroup": "35-39"
             },
             {
               "rank": 3,
-              "name": "Tennille Gay, Gabriella Dryden",
-              "time": "1:03:15",
+              "name": "Caelan Armour, Tayla Haslam",
+              "time": "1:08:09",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 4,
+              "name": "Madeleine Myburgh, Shannon Parker",
+              "time": "1:08:17",
               "country": null,
               "ageGroup": "35-39"
             },
             {
-              "rank": 4,
-              "name": "Alexandra Leask, Samantha Calitz",
-              "time": "1:03:32",
-              "country": null,
-              "ageGroup": "40-44"
-            },
-            {
               "rank": 5,
-              "name": "Azelle Van Zyl, Anria Van Der Walt",
-              "time": "1:05:28",
+              "name": "Hendrika Louw, Hester Du Toit",
+              "time": "1:08:23",
               "country": null,
-              "ageGroup": "30-34"
+              "ageGroup": "45-49"
             },
             {
               "rank": 6,
-              "name": "Hendrieka Van Der Merwe, Corin Trieloff",
-              "time": "1:05:34",
+              "name": "Elri Combrink, Ninette Bezuidenhout",
+              "time": "1:08:47",
               "country": null,
               "ageGroup": "30-34"
             },
             {
               "rank": 7,
-              "name": "Lehandre Visser, Casey-Jean Terblanche",
-              "time": "1:05:56",
+              "name": "Sav Comins, Michele Fortmann",
+              "time": "1:09:23",
               "country": null,
-              "ageGroup": "25-29"
+              "ageGroup": "35-39"
             },
             {
               "rank": 8,
-              "name": "Laikin Kaka, Siannah Kaka",
-              "time": "1:06:06",
+              "name": "Tayler Wessels, Lisa Coates",
+              "time": "1:10:45",
               "country": null,
-              "ageGroup": "16-24"
+              "ageGroup": "30-34"
             },
             {
               "rank": 9,
-              "name": "Johanna Naudé, Beatrice De Klerk",
-              "time": "1:06:37",
+              "name": "Sunadia Geldenhuys, Zaan Barrett-Theron",
+              "time": "1:11:00",
               "country": null,
               "ageGroup": "40-44"
             },
             {
               "rank": 10,
-              "name": "Rozelle Van Der Sande, Leozette Roode",
-              "time": "1:06:53",
+              "name": "Deyna Joseph, Nicola MacLeod",
+              "time": "1:11:09",
               "country": null,
-              "ageGroup": "30-34"
+              "ageGroup": "25-29"
             }
           ]
         },
@@ -57029,7 +57029,7 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 31,
+          "fieldSize": 32,
           "fieldSizeExact": true,
           "fastestTime": "0:55:38",
           "medianTime": "1:24:50",
@@ -57092,7 +57092,7 @@
             },
             {
               "rank": 9,
-              "name": "Chris Dunderdale, Damon Calecoda, Rihard Van Den Berg, Chad Mc Kenzie",
+              "name": "Chris Dunderdale, Damon Calecoda, RIHARD VAN DEN BERG, Chad Mc Kenzie",
               "time": "1:12:57",
               "country": null,
               "ageGroup": "U40"
@@ -57192,16 +57192,16 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-08-17"
     },
     "2026/shenzhen": {
       "slug": "shenzhen",
       "year": 2026,
       "city": "Shenzhen",
       "season": "season-9",
-      "syncedAt": "2026-08-17",
+      "syncedAt": "2026-08-24",
       "raceEndDate": "2026-08-16",
-      "totalFinishers": 4981,
+      "totalFinishers": 4935,
       "divisions": [
         {
           "division": "Pro Men",
@@ -57211,10 +57211,10 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 350,
+          "fieldSize": 352,
           "fieldSizeExact": true,
           "fastestTime": "0:53:30",
-          "medianTime": "1:31:05",
+          "medianTime": "1:31:08",
           "top": [
             {
               "rank": 1,
@@ -57260,7 +57260,7 @@
             },
             {
               "rank": 7,
-              "name": "嘉豪 李",
+              "name": "Jiahao Li",
               "time": "1:04:02",
               "country": "CHN",
               "ageGroup": "25-29"
@@ -57338,7 +57338,7 @@
             },
             {
               "rank": 6,
-              "name": "蓓萱 张",
+              "name": "Bei Xuan Zhang",
               "time": "1:08:59",
               "country": "CHN",
               "ageGroup": "25-29"
@@ -57468,7 +57468,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 638,
+          "fieldSize": 636,
           "fieldSizeExact": true,
           "fastestTime": "1:01:24",
           "medianTime": "1:39:06",
@@ -57560,14 +57560,14 @@
           "top": [
             {
               "rank": 1,
-              "name": "Wong Ching, Wai Chung Ryan Hui",
+              "name": "Ching Wong, Wai Chung Ryan Hui",
               "time": "0:54:50",
               "country": null,
               "ageGroup": "25-29"
             },
             {
               "rank": 2,
-              "name": "东昊 马, 志博 胡",
+              "name": "Donghao Ma, 志博 胡",
               "time": "0:55:17",
               "country": null,
               "ageGroup": "30-34"
@@ -57588,21 +57588,21 @@
             },
             {
               "rank": 5,
-              "name": "瑟 王, ·布尔力克 吐尔松江",
+              "name": "se wang, ·布尔力克 吐尔松江",
               "time": "0:56:52",
               "country": null,
               "ageGroup": "35-39"
             },
             {
               "rank": 6,
-              "name": "振 韩, 聪 李",
+              "name": "振 韩, Cong Li",
               "time": "0:56:54",
               "country": null,
               "ageGroup": "30-34"
             },
             {
               "rank": 7,
-              "name": "易龙 邵秦, 正 陶",
+              "name": "易龙 邵秦, Zheng Tao",
               "time": "0:57:11",
               "country": null,
               "ageGroup": "25-29"
@@ -57652,7 +57652,7 @@
             },
             {
               "rank": 2,
-              "name": "路娇 廖, 志君 刘",
+              "name": "lu jiao liao, 志君 刘",
               "time": "0:59:02",
               "country": null,
               "ageGroup": "30-34"
@@ -57680,7 +57680,7 @@
             },
             {
               "rank": 6,
-              "name": "蓓萱 张, 敏烨 倪",
+              "name": "Bei Xuan Zhang, 敏烨 倪",
               "time": "1:02:56",
               "country": null,
               "ageGroup": "30-34"
@@ -57724,10 +57724,10 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 805,
+          "fieldSize": 759,
           "fieldSizeExact": true,
           "fastestTime": "0:55:40",
-          "medianTime": "1:24:14",
+          "medianTime": "1:23:28",
           "top": [
             {
               "rank": 1,
@@ -58060,7 +58060,7 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-08-17"
     }
   }
 }
