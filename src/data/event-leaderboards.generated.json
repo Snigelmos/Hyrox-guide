@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-24T05:34:16.584Z",
+  "generatedAt": "2026-08-31T11:18:52.543Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -56335,7 +56335,7 @@
       "year": 2026,
       "city": "Cape Town (Summer)",
       "season": "season-9",
-      "syncedAt": "2026-08-24",
+      "syncedAt": "2026-08-31",
       "raceEndDate": "2026-08-15",
       "totalFinishers": 2966,
       "divisions": [
@@ -57192,14 +57192,14 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-08-17"
+      "previousSyncedAt": "2026-08-24"
     },
     "2026/shenzhen": {
       "slug": "shenzhen",
       "year": 2026,
       "city": "Shenzhen",
       "season": "season-9",
-      "syncedAt": "2026-08-24",
+      "syncedAt": "2026-08-31",
       "raceEndDate": "2026-08-16",
       "totalFinishers": 4935,
       "divisions": [
@@ -58060,7 +58060,7 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-08-17"
+      "previousSyncedAt": "2026-08-24"
     }
   }
 }

@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-08-24T05:31:44.337Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-08-31T11:16:20.281Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox
@@ -1430,6 +1430,29 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
     ],
   },
   {
+    slug: "tenerife",
+    year: 2026,
+    season: "season-9",
+    raceLabel: "2026 Tenerife",
+    divisions: [
+      { id: "H_LR3MS4JI16FA", label: "HYROX - Friday" },
+      { id: "H_LR3MS4JI16FB", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI16FC", label: "HYROX - Sunday" },
+      { id: "H_TFS26_OVERALL", label: "HYROX - Overall" },
+      { id: "HA_LR3MS4JI16FA", label: "HYROX ADAPTIVE - Friday" },
+      { id: "HA_LR3MS4JI16FB", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI16FC", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HA_TFS26_OVERALL", label: "HYROX ADAPTIVE - Overall" },
+      { id: "HD_LR3MS4JI16FA", label: "HYROX DOUBLES - Friday" },
+      { id: "HD_LR3MS4JI16FB", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI16FC", label: "HYROX DOUBLES - Sunday" },
+      { id: "HD_TFS26_OVERALL", label: "HYROX DOUBLES - Overall" },
+      { id: "HDP_LR3MS4JI16FB", label: "HYROX PRO DOUBLES - Saturday" },
+      { id: "HMR_LR3MS4JI16FC", label: "HYROX TEAM RELAY - Sunday" },
+      { id: "HPRO_LR3MS4JI16FB", label: "HYROX PRO - Saturday" },
+    ],
+  },
+  {
     slug: "toulouse",
     year: 2026,
     season: "season-8",
@@ -1964,6 +1987,9 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "LR3MS4JI16C2": { season: "season-9", race: "2026 Sydney" },
   /* dayToken */ "LR3MS4JI16D2": { season: "season-9", race: "2026 Hangzhou" },
   /* dayToken */ "LR3MS4JI16D3": { season: "season-9", race: "2026 Hangzhou" },
+  /* dayToken */ "LR3MS4JI16FA": { season: "season-9", race: "2026 Tenerife" },
+  /* dayToken */ "LR3MS4JI16FB": { season: "season-9", race: "2026 Tenerife" },
+  /* dayToken */ "LR3MS4JI16FC": { season: "season-9", race: "2026 Tenerife" },
   /* dayToken */ "LR3MS4JI170F": { season: "season-9", race: "2026 Delhi" },
   /* dayToken */ "LR3MS4JI1710": { season: "season-9", race: "2026 Delhi" },
   /* dayToken */ "LR3MS4JI1712": { season: "season-9", race: "2026 Delhi" },
@@ -1990,6 +2016,7 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "NRT26_OVERALL": { season: "season-9", race: "2026 Chiba" },
   /* dayToken */ "PER26_OVERALL": { season: "season-9", race: "2026 Perth" },
   /* dayToken */ "SYD26_OVERALL": { season: "season-9", race: "2026 Sydney" },
+  /* dayToken */ "TFS26_OVERALL": { season: "season-9", race: "2026 Tenerife" },
   /* dayToken */ "THA26_OVERALL": { season: "season-9", race: "2026 Bangkok" },
 };
 export type ResolvedRaceDays = typeof RESOLVED_RACE_DAYS;
