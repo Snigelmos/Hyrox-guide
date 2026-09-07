@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-08-31T11:16:20.281Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-09-07T09:52:16.375Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox
@@ -32,6 +32,29 @@ export interface ResultsIndexEntry {
 }
 
 export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
+  {
+    slug: "acapulco",
+    year: 2026,
+    season: "season-9",
+    raceLabel: "2026 Acapulco",
+    divisions: [
+      { id: "H_ACA26_OVERALL", label: "HYROX - Overall" },
+      { id: "H_LR3MS4JI17DB", label: "HYROX - Friday" },
+      { id: "H_LR3MS4JI17DC", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI17DE", label: "HYROX - Sunday" },
+      { id: "HA_ACA26_OVERALL", label: "HYROX ADAPTIVE - Overall" },
+      { id: "HA_LR3MS4JI17DB", label: "HYROX ADAPTIVE - Friday" },
+      { id: "HA_LR3MS4JI17DC", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI17DE", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HD_ACA26_OVERALL", label: "HYROX DOUBLES - Overall" },
+      { id: "HD_LR3MS4JI17DB", label: "HYROX DOUBLES - Friday" },
+      { id: "HD_LR3MS4JI17DC", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI17DE", label: "HYROX DOUBLES - Sunday" },
+      { id: "HDP_LR3MS4JI17DC", label: "HYROX PRO DOUBLES - Saturday" },
+      { id: "HMR_LR3MS4JI17DE", label: "HYROX TEAM RELAY - Sunday" },
+      { id: "HPRO_LR3MS4JI17DC", label: "HYROX PRO - Saturday" },
+    ],
+  },
   {
     slug: "amsterdam",
     year: 2026,
@@ -1976,7 +1999,9 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "Verona25_OVERALL": { season: "season-8", race: "2025 Verona" },
   /* dayToken */ "WAW26_OVERALL": { season: "season-8", race: "2026 Warsaw" },
   /* dayToken */ "YOW26_OVERALL": { season: "season-8", race: "2026 Ottawa" },
+  /* dayToken */ "ACA26_OVERALL": { season: "season-9", race: "2026 Acapulco" },
   /* dayToken */ "CPT26_OVERALL": { season: "season-9", race: "2026 Cape Town" },
+  /* dayToken */ "DCA26_OVERALL": { season: "season-9", race: "2026 Washington DC" },
   /* dayToken */ "DEL26_OVERALL": { season: "season-9", race: "2026 Delhi" },
   /* dayToken */ "LR3MS4JI16AA": { season: "season-9", race: "2026 Jakarta" },
   /* dayToken */ "LR3MS4JI16AB": { season: "season-9", race: "2026 Jakarta" },
@@ -2013,8 +2038,23 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "LR3MS4JI17A7": { season: "season-9", race: "2026 Cape Town" },
   /* dayToken */ "LR3MS4JI17A9": { season: "season-9", race: "2026 Cape Town" },
   /* dayToken */ "LR3MS4JI17AA": { season: "season-9", race: "2026 Cape Town" },
+  /* dayToken */ "LR3MS4JI17AE": { season: "season-9", race: "2026 Athens" },
+  /* dayToken */ "LR3MS4JI17AF": { season: "season-9", race: "2026 Athens" },
+  /* dayToken */ "LR3MS4JI17C2": { season: "season-9", race: "2026 Washington DC" },
+  /* dayToken */ "LR3MS4JI17DB": { season: "season-9", race: "2026 Acapulco" },
+  /* dayToken */ "LR3MS4JI17DC": { season: "season-9", race: "2026 Acapulco" },
+  /* dayToken */ "LR3MS4JI17DE": { season: "season-9", race: "2026 Acapulco" },
+  /* dayToken */ "LR3MS4JI17F2": { season: "season-9", race: "2026 Washington DC" },
+  /* dayToken */ "LR3MS4JI17F3": { season: "season-9", race: "2026 Washington DC" },
+  /* dayToken */ "LR3MS4JI17F4": { season: "season-9", race: "2026 Washington DC" },
+  /* dayToken */ "LR3MS4JI17F5": { season: "season-9", race: "2026 Washington DC" },
+  /* dayToken */ "LR3MS4JI17FE": { season: "season-9", race: "2026 Beijing" },
+  /* dayToken */ "LR3MS4JI17FF": { season: "season-9", race: "2026 Beijing" },
+  /* dayToken */ "LR3MS4JI1800": { season: "season-9", race: "2026 Beijing" },
+  /* dayToken */ "LR3MS4JI1801": { season: "season-9", race: "2026 Beijing" },
   /* dayToken */ "NRT26_OVERALL": { season: "season-9", race: "2026 Chiba" },
   /* dayToken */ "PER26_OVERALL": { season: "season-9", race: "2026 Perth" },
+  /* dayToken */ "PKX26_OVERALL": { season: "season-9", race: "2026 Beijing" },
   /* dayToken */ "SYD26_OVERALL": { season: "season-9", race: "2026 Sydney" },
   /* dayToken */ "TFS26_OVERALL": { season: "season-9", race: "2026 Tenerife" },
   /* dayToken */ "THA26_OVERALL": { season: "season-9", race: "2026 Bangkok" },
