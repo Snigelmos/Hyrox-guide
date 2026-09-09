@@ -1848,7 +1848,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-20",
     venue: "MECC Maastricht",
     venueAddress: "Forum 100, 6229 GV Maastricht, Netherlands",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_YS_VenueMap_PRINT_Maastricht_2210x1860mm.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_Maastricht_VenueMap.pdf",
     courseMapImageUrl: "/images/events/maastricht-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
