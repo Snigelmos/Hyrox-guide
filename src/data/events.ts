@@ -1907,6 +1907,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-20",
     venue: "Salt Palace Convention Center",
     venueAddress: "100 SW Temple Street, Salt Lake City, UT 84101",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/2026_HYROX_SaltLakeCity_VenueMap_PRINT_79x73-3.pdf",
+    courseMapImageUrl: "/images/events/salt-lake-city-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     sponsor: "InBody",
