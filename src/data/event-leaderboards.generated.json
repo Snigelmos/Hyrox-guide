@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-07T09:54:05.646Z",
+  "generatedAt": "2026-09-14T10:16:16.831Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -58067,9 +58067,9 @@
       "year": 2026,
       "city": "Acapulco",
       "season": "season-9",
-      "syncedAt": "2026-09-07",
+      "syncedAt": "2026-09-14",
       "raceEndDate": "2026-09-06",
-      "totalFinishers": 4896,
+      "totalFinishers": 4900,
       "divisions": [
         {
           "division": "Pro Men",
@@ -58249,7 +58249,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 1510,
+          "fieldSize": 1508,
           "fieldSizeExact": true,
           "fastestTime": "0:59:44",
           "medianTime": "1:33:39",
@@ -58844,10 +58844,10 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 57,
+          "fieldSize": 63,
           "fieldSizeExact": true,
           "fastestTime": "1:00:13",
-          "medianTime": "1:22:48",
+          "medianTime": "1:25:34",
           "top": [
             {
               "rank": 1,
@@ -58922,16 +58922,16 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-09-07"
     },
     "2026/tenerife": {
       "slug": "tenerife",
       "year": 2026,
       "city": "Tenerife",
       "season": "season-9",
-      "syncedAt": "2026-09-07",
+      "syncedAt": "2026-09-14",
       "raceEndDate": "2026-09-06",
-      "totalFinishers": 3242,
+      "totalFinishers": 3246,
       "divisions": [
         {
           "division": "Pro Men",
@@ -59111,7 +59111,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 833,
+          "fieldSize": 836,
           "fieldSizeExact": true,
           "fastestTime": "0:59:18",
           "medianTime": "1:27:16",
@@ -59366,7 +59366,7 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 48,
+          "fieldSize": 49,
           "fieldSizeExact": true,
           "fastestTime": "1:00:43",
           "medianTime": "1:23:09",
@@ -59784,7 +59784,7 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-09-07"
     }
   }
 }
