@@ -1965,7 +1965,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-27",
     venue: "NOVA Spektrum",
     venueAddress: "Olavsgaard, Industriveien 17, 2007 Kjeller, Norway",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Oslo_VenueMap_PRINT_2215x1864mm-1.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_YS_VenueMap_PRINT_Oslo_2210x1860mm-1.pdf",
     courseMapImageUrl: "/images/events/oslo-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
