@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T10:16:16.831Z",
+  "generatedAt": "2026-09-21T10:23:53.099Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -58067,7 +58067,7 @@
       "year": 2026,
       "city": "Acapulco",
       "season": "season-9",
-      "syncedAt": "2026-09-14",
+      "syncedAt": "2026-09-21",
       "raceEndDate": "2026-09-06",
       "totalFinishers": 4900,
       "divisions": [
@@ -58922,14 +58922,14 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-09-07"
+      "previousSyncedAt": "2026-09-14"
     },
     "2026/tenerife": {
       "slug": "tenerife",
       "year": 2026,
       "city": "Tenerife",
       "season": "season-9",
-      "syncedAt": "2026-09-14",
+      "syncedAt": "2026-09-21",
       "raceEndDate": "2026-09-06",
       "totalFinishers": 3246,
       "divisions": [
@@ -59784,7 +59784,3285 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-09-07"
+      "previousSyncedAt": "2026-09-14"
+    },
+    "2026/maastricht": {
+      "slug": "maastricht",
+      "year": 2026,
+      "city": "Maastricht",
+      "season": "season-9",
+      "syncedAt": "2026-09-21",
+      "raceEndDate": "2026-09-20",
+      "totalFinishers": 7165,
+      "divisions": [
+        {
+          "division": "Pro Men",
+          "sex": "M",
+          "sourceIds": [
+            "HPRO_LR3MS4JI183B"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 399,
+          "fieldSizeExact": true,
+          "fastestTime": "0:55:33",
+          "medianTime": "1:19:02",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Graham Halliday",
+              "time": "0:55:33",
+              "country": "GBR",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Julien Coquillaud-Salomon",
+              "time": "0:56:05",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Ronan Lindsay",
+              "time": "0:56:12",
+              "country": "IRL",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Alen Ploj",
+              "time": "0:57:04",
+              "country": "SLO",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Erik Oscar Bøe",
+              "time": "0:57:06",
+              "country": "NOR",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Hidde Weersma",
+              "time": "0:57:18",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Aljaz Ploj",
+              "time": "0:57:56",
+              "country": "SLO",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Sam Schoeman",
+              "time": "0:57:58",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Benjamin Desmet",
+              "time": "0:58:23",
+              "country": "BEL",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Jop Janssen",
+              "time": "0:58:35",
+              "country": "NED",
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Pro Women",
+          "sex": "W",
+          "sourceIds": [
+            "HPRO_LR3MS4JI183B"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 160,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:04",
+          "medianTime": "1:28:08",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Stefanie Oswald",
+              "time": "0:59:04",
+              "country": "GER",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Linda Meier",
+              "time": "1:00:37",
+              "country": "GER",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Lauren Armstrong",
+              "time": "1:00:37",
+              "country": "GBR",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 4,
+              "name": "Kat Parnell",
+              "time": "1:02:56",
+              "country": "GBR",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 5,
+              "name": "Hedvig Nøtsund Carlsen",
+              "time": "1:03:56",
+              "country": "NOR",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Michaela Disseldorp",
+              "time": "1:04:32",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Henrike Mauersberger",
+              "time": "1:05:41",
+              "country": "GER",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Luisa Maria Waerdt",
+              "time": "1:05:48",
+              "country": "GER",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Bo Grievink",
+              "time": "1:05:52",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Iza Tulkens",
+              "time": "1:07:04",
+              "country": "NED",
+              "ageGroup": "25-29"
+            }
+          ]
+        },
+        {
+          "division": "Open Men",
+          "sex": "M",
+          "sourceIds": [
+            "H_MST26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 2059,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:01",
+          "medianTime": "1:26:02",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Callum Overton",
+              "time": "0:59:01",
+              "country": "GBR",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Tom Leenart",
+              "time": "0:59:11",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Lars Rademaker",
+              "time": "0:59:15",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Suhayb Ahmed",
+              "time": "1:00:00",
+              "country": "NED",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 5,
+              "name": "Jordy Snel",
+              "time": "1:00:04",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Stefan Grootkarzijn",
+              "time": "1:00:21",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Steven Knops",
+              "time": "1:00:55",
+              "country": "NED",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Géry Thérer",
+              "time": "1:00:58",
+              "country": "BEL",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 9,
+              "name": "André Meute",
+              "time": "1:01:01",
+              "country": "BEL",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Dino Linden",
+              "time": "1:01:05",
+              "country": "NED",
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Open Women",
+          "sex": "W",
+          "sourceIds": [
+            "H_MST26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 1072,
+          "fieldSizeExact": true,
+          "fastestTime": "1:03:45",
+          "medianTime": "1:35:35",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Noortje Corstjens",
+              "time": "1:03:45",
+              "country": "NED",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 2,
+              "name": "Dianne Weijmans",
+              "time": "1:06:13",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Nienke Van Dijk",
+              "time": "1:06:17",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Maud Visser",
+              "time": "1:07:42",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Sophie Engel",
+              "time": "1:08:01",
+              "country": "NED",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 6,
+              "name": "Jip Simonis",
+              "time": "1:08:18",
+              "country": "NED",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Amber Brouwer",
+              "time": "1:08:38",
+              "country": "NED",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Nynke Vis",
+              "time": "1:08:56",
+              "country": "NED",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Angélique Roukia",
+              "time": "1:09:36",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Nolwenn Lenglet",
+              "time": "1:09:36",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HDP_LR3MS4JI183C"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 315,
+          "fieldSizeExact": true,
+          "fastestTime": "0:49:24",
+          "medianTime": "1:07:36",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Jake Williamson, Luke Greer",
+              "time": "0:49:24",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Louis Osselaer, Emile Mattheeuws",
+              "time": "0:50:16",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Danny Rae, Jamie Hennessy",
+              "time": "0:51:04",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Alen Ploj, Aljaž Ploj",
+              "time": "0:51:39",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Lukas Zajons, Jan-Niklas Friedrich",
+              "time": "0:52:34",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Jop Janssen, Jordi Fuhler",
+              "time": "0:52:54",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Renning Elischer, Moritz Kümmeler",
+              "time": "0:53:44",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Tieme De Boer, Daan Van Hees",
+              "time": "0:53:58",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 9,
+              "name": "Joao Sousa, Bruno Ferreira",
+              "time": "0:53:59",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Niels Kinget, Joey Seetsen",
+              "time": "0:54:21",
+              "country": null,
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HDP_LR3MS4JI183C"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 203,
+          "fieldSizeExact": true,
+          "fastestTime": "0:55:28",
+          "medianTime": "1:19:17",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Seka Arning, Stefanie Oswald",
+              "time": "0:55:28",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Iza Tulkens, Michaela Disseldorp",
+              "time": "0:56:26",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Charlotte Vandenlindenloof, Margot Vandenlindenloof",
+              "time": "0:58:36",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Lisa Oed, Kerstin Bertsch",
+              "time": "0:59:54",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Henrike Mauersberger, Zeliha Puls",
+              "time": "1:00:06",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Thanee Uittenhout, Anne Stellaard",
+              "time": "1:00:49",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Isabelle Hoffmann, Jessica Schaaf",
+              "time": "1:01:01",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 8,
+              "name": "Luisa Maria Waerdt, Alisa Brehmer",
+              "time": "1:01:24",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Inga Debusmann, Julia Letzgus",
+              "time": "1:01:56",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Helen Hofstede, Ilse Pol",
+              "time": "1:02:07",
+              "country": null,
+              "ageGroup": "40-44"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HD_MST26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1512,
+          "fieldSizeExact": true,
+          "fastestTime": "0:52:03",
+          "medianTime": "1:14:39",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Robert Van Herk, Jaafar Moumen",
+              "time": "0:52:03",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 2,
+              "name": "Shaun Demicoli, Jordy Snel",
+              "time": "0:52:17",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Grimont Nicolas, Grimont Pierre",
+              "time": "0:54:13",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Michael Mabille, Mathieu Meeûs",
+              "time": "0:54:42",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Taylor Gouin, Anthony Mahe",
+              "time": "0:54:51",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Anton Baeyens, Ruben Lembrechts",
+              "time": "0:54:55",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 7,
+              "name": "Bob Van Der Marel, Youp Schreuder",
+              "time": "0:55:09",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Dirjan Bouma, Njord Visser",
+              "time": "0:55:24",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Kenneth Persoons, Christian Fusseder",
+              "time": "0:55:35",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Francis Gerritsen, Nick Pans",
+              "time": "0:55:51",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HD_MST26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1366,
+          "fieldSizeExact": true,
+          "fastestTime": "1:02:31",
+          "medianTime": "1:29:14",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Amber Brouwer, Puck Van Eijck",
+              "time": "1:02:31",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 2,
+              "name": "Carlijn Van Bussel, Marique Dieudonne",
+              "time": "1:03:56",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Amber Bosman, Esmée Bosman",
+              "time": "1:04:15",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Charlotte Overath, Céline Gester",
+              "time": "1:04:31",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Katrin Irsch, Miriam Geisinger",
+              "time": "1:04:40",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Eline Tielen, Eva Den Uijl",
+              "time": "1:06:07",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Sharon Bergrath, Mirthe Pex",
+              "time": "1:06:31",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Bente Noordhoff, Anne Noordhoff",
+              "time": "1:06:37",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Denise Oerlemans, Pien Rutten",
+              "time": "1:07:04",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 10,
+              "name": "Merle De Graaf, Marit Ijmker",
+              "time": "1:07:05",
+              "country": null,
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Men",
+          "sex": "M",
+          "sourceIds": [
+            "HMR_LR3MS4JI183B"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 37,
+          "fieldSizeExact": true,
+          "fastestTime": "0:52:53",
+          "medianTime": "1:11:42",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Marius Toborek, Jaafar Moumen, David Fischer, Roman Hopp",
+              "time": "0:52:53",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 2,
+              "name": "Daan Harkema, Lammert Kerkhof, Dirjan Bouma, Njord Visser",
+              "time": "0:54:07",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "Jordy Snel, Mitchell Eijkenboom, Shaun Demicoli, Jordy Habets",
+              "time": "0:54:28",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 4,
+              "name": "Arthur Verzellenberg, David Van Rooij, Stefan Bongers, Camiel Pesch",
+              "time": "0:55:48",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 5,
+              "name": "Xavi Van Der Ent, Julian Van Der Ent, Hidde Van Der Ent, Brent Van Der Ent",
+              "time": "0:56:19",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 6,
+              "name": "Servé Pluijmen, Paul Odekerken, Steven Knops, Bart Janssen",
+              "time": "0:57:23",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 7,
+              "name": "Armin Isady, Tim Bitterlich, Michael Uwannah, Cornelius Krüger",
+              "time": "0:57:29",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 8,
+              "name": "Eelco Van Der Wind, Arco Kolken, Henk Kenter, Michel Van Breevoort",
+              "time": "0:58:06",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 9,
+              "name": "Sjeer Hamers, Redon Schmeitz, Stefan Bierbauer, Bo Breukers",
+              "time": "0:58:09",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Jorg Fuchs, Scott Boesten, Tom Van Hees, Rob Beeren",
+              "time": "1:00:47",
+              "country": null,
+              "ageGroup": "U40"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Women",
+          "sex": "W",
+          "sourceIds": [
+            "HMR_LR3MS4JI183B"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 42,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:05",
+          "medianTime": "1:21:25",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Roos Nouwens, Annette De Wolf, Belin Van Mensvoort, Nienke Van Dijk",
+              "time": "0:59:05",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 2,
+              "name": "Tessa Rood, Amber Brouwer, Marique Dieudonné, Thanee Uittenhout",
+              "time": "0:59:52",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "Marieke Vanwersch, Carmen Kuijer, Kristina Erman, Nica Ortu",
+              "time": "1:03:10",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 4,
+              "name": "Anne Stickelbrock, Marie Van Bebber, Antonia Schulte, Julia Janssen",
+              "time": "1:05:57",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 5,
+              "name": "Wanda Bakker, Mirjam Laanstra, Kyra Meijer, Anneke Wartena",
+              "time": "1:07:23",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 6,
+              "name": "Marthe Munzebrock, Chantal Sterk, Denise Scheer, Jomijn Van Den Broek",
+              "time": "1:07:27",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 7,
+              "name": "Paris Polderman, Bo Blaak, Elize Polderman, Evi Alloush",
+              "time": "1:08:18",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 8,
+              "name": "Romy Schreurs, Meggie Hochstenbach, Lieke Schreuder, Sylvia Schreurs",
+              "time": "1:10:08",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 9,
+              "name": "Ruby Vermaat, Seher In 'T Veen, Rosanne Pittens, Yvonne Van Dijk",
+              "time": "1:11:01",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Stella Probst, Dette Rutten, Emma Ewalds, Frauke Classen",
+              "time": "1:13:45",
+              "country": null,
+              "ageGroup": "U40"
+            }
+          ]
+        }
+      ],
+      "previousSyncedAt": null
+    },
+    "2026/mumbai": {
+      "slug": "mumbai",
+      "year": 2026,
+      "city": "Mumbai",
+      "season": "season-9",
+      "syncedAt": "2026-09-21",
+      "raceEndDate": "2026-09-20",
+      "totalFinishers": 6886,
+      "divisions": [
+        {
+          "division": "Pro Men",
+          "sex": "M",
+          "sourceIds": [
+            "HPRO_LR3MS4JI1803"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 277,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:28",
+          "medianTime": "1:49:21",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Fabian Eisenlauer",
+              "time": "0:59:28",
+              "country": "GER",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Damien Bourke",
+              "time": "1:00:21",
+              "country": "IRL",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Aidan Dwyer",
+              "time": "1:01:00",
+              "country": "IRL",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Jacques Badenhorst",
+              "time": "1:02:13",
+              "country": "RSA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "karim hegazy",
+              "time": "1:04:45",
+              "country": "EGY",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 6,
+              "name": "Oumar Ba",
+              "time": "1:04:56",
+              "country": "SEN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Rayane Kara",
+              "time": "1:05:03",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Julian Hosp",
+              "time": "1:06:19",
+              "country": "AUT",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 9,
+              "name": "Tiago Peruzzo",
+              "time": "1:06:31",
+              "country": "BRA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Wen Loong Lau",
+              "time": "1:08:01",
+              "country": "SIN",
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Pro Women",
+          "sex": "W",
+          "sourceIds": [
+            "HPRO_LR3MS4JI1803"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 62,
+          "fieldSizeExact": true,
+          "fastestTime": "1:00:18",
+          "medianTime": "1:41:28",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Gabrielle Nikora-Baker",
+              "time": "1:00:18",
+              "country": "NZL",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Jennifer Nikolaus",
+              "time": "1:01:19",
+              "country": "GER",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Danel Louw",
+              "time": "1:02:24",
+              "country": "RSA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Manuela Garcia Caparros",
+              "time": "1:03:44",
+              "country": "ESP",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Jess Towl",
+              "time": "1:05:36",
+              "country": "ENG",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 6,
+              "name": "Cyrielle Perrigault",
+              "time": "1:08:30",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "haley adams",
+              "time": "1:10:54",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "tilly johnson",
+              "time": "1:13:19",
+              "country": "GBR",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Yvonne Elizabeth Chee",
+              "time": "1:13:49",
+              "country": "SIN",
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 10,
+              "name": "sanjana george",
+              "time": "1:16:39",
+              "country": "IND",
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Open Men",
+          "sex": "M",
+          "sourceIds": [
+            "H_BOM26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 2966,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:39",
+          "medianTime": "1:58:43",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Sikandar Chindu Tadakhe",
+              "time": "0:59:39",
+              "country": "IND",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Mohd Saddam Bin Mohd Pittli",
+              "time": "1:03:09",
+              "country": "MAS",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Tegvir Hara",
+              "time": "1:03:34",
+              "country": "IND",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Sanjay Negi",
+              "time": "1:04:00",
+              "country": "IND",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 5,
+              "name": "Jonny Drake",
+              "time": "1:05:03",
+              "country": "GBR",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Pushkar Bhardwaj",
+              "time": "1:05:05",
+              "country": "IND",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Jay Johnson",
+              "time": "1:06:29",
+              "country": "GBR",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Tejas Maru",
+              "time": "1:07:38",
+              "country": "IND",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Manjeet Ahlawat",
+              "time": "1:07:53",
+              "country": "IND",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Barry Lomas",
+              "time": "1:08:06",
+              "country": "GBR",
+              "ageGroup": "40-44"
+            }
+          ]
+        },
+        {
+          "division": "Open Women",
+          "sex": "W",
+          "sourceIds": [
+            "H_BOM26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 1081,
+          "fieldSizeExact": true,
+          "fastestTime": "1:14:14",
+          "medianTime": "2:10:44",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Milan Devi",
+              "time": "1:14:14",
+              "country": "IND",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 2,
+              "name": "Mary O Leary",
+              "time": "1:14:49",
+              "country": "IRL",
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 3,
+              "name": "Karissa Van Liew",
+              "time": "1:17:58",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Sakura Fukushima",
+              "time": "1:18:05",
+              "country": "JPN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Riddhi Kadam",
+              "time": "1:18:27",
+              "country": "IND",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Annabelle Lumbis",
+              "time": "1:19:09",
+              "country": "PHI",
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 7,
+              "name": "Jing Wen Chew",
+              "time": "1:19:31",
+              "country": "SIN",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Banipreet Sasson",
+              "time": "1:20:21",
+              "country": "IND",
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 9,
+              "name": "Bhavneet Kaur",
+              "time": "1:20:30",
+              "country": "IND",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Minal Sangatwani",
+              "time": "1:20:37",
+              "country": "IND",
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HDP_LR3MS4JI1804"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 181,
+          "fieldSizeExact": true,
+          "fastestTime": "0:51:59",
+          "medianTime": "1:24:49",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Tony Revell, Ciaran Parkinson",
+              "time": "0:51:59",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 2,
+              "name": "Ewan Applewhite, Mohamed Redaoui",
+              "time": "0:52:53",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Jay Hogan, Tom Hogan",
+              "time": "0:53:33",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Johnny Daly, Damien Bourke",
+              "time": "0:54:06",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Jonny Drake, Aidan Dwyer",
+              "time": "0:56:08",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Chandan Rajput, Hunny Tyagi",
+              "time": "0:56:57",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 7,
+              "name": "Martin Vondrak, Oumar BA",
+              "time": "0:57:19",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Jimmy Dhillon, Jacques Badenhorst",
+              "time": "0:57:43",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Stephen Kusuma, Standy Tjandra",
+              "time": "0:57:43",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Joe Turner, Jack Graham",
+              "time": "0:57:53",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HDP_LR3MS4JI1804"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 31,
+          "fieldSizeExact": true,
+          "fastestTime": "0:57:45",
+          "medianTime": "1:28:10",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Juan-Marie Herbst, Danel Louw",
+              "time": "0:57:45",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Susana Alonso Dominguez, Manuela Garcia Caparros",
+              "time": "0:58:09",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "sanjana george, Tishya Sagar",
+              "time": "1:08:43",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Michelle Lee, Jaylen Chin",
+              "time": "1:10:38",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Isabel Fu, Sonia Naidu",
+              "time": "1:11:10",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Sarah Sutherland, Samantha Clements",
+              "time": "1:13:24",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Kimi Neo, Cheryl Guek",
+              "time": "1:15:14",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Ramneek Gupta, Vidushi Kumar",
+              "time": "1:15:14",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 9,
+              "name": "Sonali Saraogi Singh, Dr Palvi Kapoor",
+              "time": "1:15:16",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Kanaros Termsakcharoen, Nawaporn Chawengchinnawong",
+              "time": "1:16:08",
+              "country": null,
+              "ageGroup": "40-44"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HD_BOM26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1597,
+          "fieldSizeExact": true,
+          "fastestTime": "0:55:39",
+          "medianTime": "1:39:08",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Sven Wierda, Dave Agterhof",
+              "time": "0:55:39",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Jacques badenhorst, Jimmy Dhillon",
+              "time": "0:56:30",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Joachim Trinel, Michael Melly",
+              "time": "0:56:57",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 4,
+              "name": "Pushkar Bhardwaj, Ashish Beniwal",
+              "time": "0:57:07",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Ying Sun Wong, Fai Hung Chan",
+              "time": "0:57:08",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Akash Dubey, Kamal Raj bhat",
+              "time": "0:57:24",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Monu Dagar, Mahesh Vats",
+              "time": "0:57:27",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Devavrat Bhartiya, Sikandar Tadakhe",
+              "time": "0:58:19",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "u SHREERAM, Sanjay Negi",
+              "time": "0:58:38",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Kundan Mishra, Arvendra Gautam",
+              "time": "0:59:24",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HD_BOM26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 595,
+          "fieldSizeExact": true,
+          "fastestTime": "1:06:10",
+          "medianTime": "1:55:37",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Hannah Davies, Rai Wade",
+              "time": "1:06:10",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Sonia Naidu, Isabel Fu",
+              "time": "1:07:41",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Jade Patterson, April Kenny",
+              "time": "1:08:26",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 4,
+              "name": "Ramneek Gupta, Vidushi Kumar",
+              "time": "1:13:25",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 5,
+              "name": "Sindura Pudota, Aishwarya Agarwal",
+              "time": "1:15:48",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Krithi Accamma, Dhivya Natarajan",
+              "time": "1:16:48",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Holly Perry, Paromita Mandal",
+              "time": "1:17:03",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Angela Tamang, Aiusha Iongren",
+              "time": "1:17:30",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Savannah Pate, Bethany Basile",
+              "time": "1:18:29",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 10,
+              "name": "Malini Munisamy, Vidhi Kapoor",
+              "time": "1:18:56",
+              "country": null,
+              "ageGroup": "45-49"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Men",
+          "sex": "M",
+          "sourceIds": [
+            "HMR_LR3MS4JI1805"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 73,
+          "fieldSizeExact": true,
+          "fastestTime": "0:56:10",
+          "medianTime": "1:37:36",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Shreyas Rao, Akash Dubey, Kamal raj Bhat, sanjay negi",
+              "time": "0:56:10",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 2,
+              "name": "Harneshpal Karamjit Singh, Mohd Saddam Bin Mohd Pittli, Joachim Trinel, Michael Melly",
+              "time": "0:56:50",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "Sikandar chindhu tadakhe, Monu Dagar, Hunny Tyagi, Chandan Rajput",
+              "time": "0:57:30",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 4,
+              "name": "Sven Wierda, Oshadix Leonora, Jadire Rudolfina, Dave Agterhof",
+              "time": "0:58:39",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 5,
+              "name": "Sandeep Kumar, Harsh Khaneja, Yogender Singh, Tiago Peruzzo",
+              "time": "1:00:48",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 6,
+              "name": "Akash Kashiappa, Rajath Somanna, Karthic Kariappa, Takshak Appaiah",
+              "time": "1:01:29",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 7,
+              "name": "Nitesh Yadav, Devik Choudhary, Vikas Yadav, Bhopender Bhopender",
+              "time": "1:01:42",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 8,
+              "name": "Harshan Radhakrishnan, Rohit verma, Priyanshu Yadav, Aashay Hirpara",
+              "time": "1:03:18",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 9,
+              "name": "Sakorn Jayakan, Sitthichai Kaewserm, Ekkavee Ukkarakittisak, Akkarachatree Meerod",
+              "time": "1:03:23",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Arjun Menon, Mayur Harsha, Ankit Kataria, Sachit Kumar",
+              "time": "1:04:25",
+              "country": null,
+              "ageGroup": "U40"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Women",
+          "sex": "W",
+          "sourceIds": [
+            "HMR_LR3MS4JI1805"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 23,
+          "fieldSizeExact": true,
+          "fastestTime": "1:04:56",
+          "medianTime": "1:45:24",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Bhavneet kaur, sanjana george, Simran kataria, Tishya Sagar",
+              "time": "1:04:56",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 2,
+              "name": "Paromita Mandal, Saachi Rajawat, Srishti Parekh, Jyothi Manjunath Poojari",
+              "time": "1:16:46",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "NISchitha A Shenoy, Puneetha Rao, Nisha Millet, Navanitha K B",
+              "time": "1:20:39",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 4,
+              "name": "Vandana Arora, Sunmbul Rahman, Varsha Krishnagiri, Sheran Mehra",
+              "time": "1:27:24",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 5,
+              "name": "Mandy Chan, Ying Ying Toh, Jolyn Ng, Anna Goh",
+              "time": "1:31:41",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 6,
+              "name": "Archana Swaminathan, Shinjini Misra, Almas Zeeshan Sayyed, Sayeeda Banu Momin",
+              "time": "1:34:28",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 7,
+              "name": "Lucrecia Grane, Anh Tran, Prema Mokhna Rau, Kyunghye Yoo",
+              "time": "1:35:18",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 8,
+              "name": "Ananya Menon, Shweta Murkute, Yosha Jagtap, Leena Shende",
+              "time": "1:35:32",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 9,
+              "name": "Sarika Sawant, Theertha Shetty, Anisha Singh, Ekta Chhoda",
+              "time": "1:36:05",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Iva Snyder, Mijke Bonsel, Neha Swaminathan, Vineeta Gupta",
+              "time": "1:38:30",
+              "country": null,
+              "ageGroup": "40+"
+            }
+          ]
+        }
+      ],
+      "previousSyncedAt": null
+    },
+    "2026/nice": {
+      "slug": "nice",
+      "year": 2026,
+      "city": "Nice",
+      "season": "season-8",
+      "syncedAt": "2026-09-21",
+      "raceEndDate": "2026-02-15",
+      "totalFinishers": 7196,
+      "divisions": [
+        {
+          "division": "Pro Men",
+          "sex": "M",
+          "sourceIds": [
+            "HPRO_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 356,
+          "fieldSizeExact": true,
+          "fastestTime": "0:55:51",
+          "medianTime": "1:14:20",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Xavier Dufour",
+              "time": "0:55:51",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Quentin Garel",
+              "time": "0:56:56",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Alexis Bernier",
+              "time": "0:57:10",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 4,
+              "name": "Tommy Valentin",
+              "time": "0:57:35",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Thomas Dubost",
+              "time": "0:57:46",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 6,
+              "name": "Jocelyn Pacewicz",
+              "time": "0:57:52",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Steve Pinau",
+              "time": "0:58:07",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Arthur Marquet",
+              "time": "0:58:42",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 9,
+              "name": "Willy Georges",
+              "time": "0:58:53",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Fergus Jenkins",
+              "time": "0:58:56",
+              "country": "ENG",
+              "ageGroup": "25-29"
+            }
+          ]
+        },
+        {
+          "division": "Pro Women",
+          "sex": "W",
+          "sourceIds": [
+            "HPRO_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 181,
+          "fieldSizeExact": true,
+          "fastestTime": "1:01:04",
+          "medianTime": "1:24:10",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Elli Stenfors",
+              "time": "1:01:04",
+              "country": "FIN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Ida Mathilde Steensgaard",
+              "time": "1:01:29",
+              "country": "DEN",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Ambre Keram",
+              "time": "1:04:08",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Anne Bonnin",
+              "time": "1:04:22",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Camille Bat",
+              "time": "1:06:50",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "MAnon Cueto",
+              "time": "1:07:16",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Elodie Ravera",
+              "time": "1:07:16",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Marine Christmann",
+              "time": "1:07:28",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 9,
+              "name": "Anine Rabe",
+              "time": "1:07:55",
+              "country": "NOR",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Camille Julien",
+              "time": "1:08:22",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            }
+          ]
+        },
+        {
+          "division": "Open Men",
+          "sex": "M",
+          "sourceIds": [
+            "H_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 2110,
+          "fieldSizeExact": true,
+          "fastestTime": "0:53:57",
+          "medianTime": "1:21:51",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Grégory Pereira",
+              "time": "0:53:57",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Steve Pinau",
+              "time": "0:55:55",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Thomas Cayarcy",
+              "time": "0:56:09",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 4,
+              "name": "Arkadiusz Grabowiec",
+              "time": "0:57:00",
+              "country": "POL",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Bastien Laloue",
+              "time": "0:57:38",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Francois Fletcher",
+              "time": "0:57:59",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Imad Saine",
+              "time": "0:58:21",
+              "country": "ITA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Espen Berget",
+              "time": "0:59:07",
+              "country": "NOR",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Loïc Cebelieu",
+              "time": "0:59:20",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Thierry Ellena",
+              "time": "0:59:22",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Open Women",
+          "sex": "W",
+          "sourceIds": [
+            "H_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 1307,
+          "fieldSizeExact": true,
+          "fastestTime": "1:01:41",
+          "medianTime": "1:32:09",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Laurie Delafosse",
+              "time": "1:01:41",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 2,
+              "name": "Marion Gay-Pageon",
+              "time": "1:04:22",
+              "country": "FRA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Kitty Jones",
+              "time": "1:04:37",
+              "country": "GBR",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 4,
+              "name": "Alessia Verrando",
+              "time": "1:05:06",
+              "country": "ITA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Juliette Guillermin",
+              "time": "1:05:43",
+              "country": "FRA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 6,
+              "name": "Emma Mailer",
+              "time": "1:06:39",
+              "country": "GBR",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 7,
+              "name": "Florie Lahmi",
+              "time": "1:07:18",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Maisie Pennant",
+              "time": "1:07:29",
+              "country": "GBR",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Anne Lise Seklecki",
+              "time": "1:07:30",
+              "country": "FRA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Anna Joao",
+              "time": "1:07:58",
+              "country": "FRA",
+              "ageGroup": "25-29"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HDP_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 370,
+          "fieldSizeExact": true,
+          "fastestTime": "0:50:02",
+          "medianTime": "1:07:39",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Quentin Garel, Alan Cao",
+              "time": "0:50:02",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Dimitry Martins, Olivier Jouve",
+              "time": "0:51:13",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Thomas Dubost, Tommy VALENTIN",
+              "time": "0:51:23",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Quentin Pingliez, Thomas Fry",
+              "time": "0:52:01",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Guillaume Levoy, Joffrey Voisin",
+              "time": "0:52:05",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 6,
+              "name": "Theo Kis, Mehdi Dergaoui",
+              "time": "0:52:11",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Romain Serveaux, Thibaud Nael",
+              "time": "0:52:48",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 8,
+              "name": "Camil Haddadi, Gruson Dylan",
+              "time": "0:53:48",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Thibaut Morgado Da Costa, Eliott Goi",
+              "time": "0:53:59",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Alexandre Poch, Bilal Qobaa",
+              "time": "0:54:31",
+              "country": null,
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HDP_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 98,
+          "fieldSizeExact": true,
+          "fastestTime": "1:01:34",
+          "medianTime": "1:15:00",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Laura Jullien, Coraline Moinat",
+              "time": "1:01:34",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Lou Terraillon, Pauline Latil",
+              "time": "1:02:39",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Enola Koenig, Clémence Merou",
+              "time": "1:03:56",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Romane Miege, Sarah Menguy",
+              "time": "1:04:16",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Ronja Hammernes, Ida Erlandsen",
+              "time": "1:04:26",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Angelique Loge, Alexandra Louis",
+              "time": "1:04:30",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 7,
+              "name": "Ilona Frigout, Roxane Bustone",
+              "time": "1:04:49",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Charlotte Bomphrey, Lydia Powell",
+              "time": "1:04:56",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Cecilia Calvigioni, Gloria Camilletti",
+              "time": "1:05:08",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Sarah Teysseyre, Marie Estampe",
+              "time": "1:05:20",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HD_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1373,
+          "fieldSizeExact": true,
+          "fastestTime": "0:53:17",
+          "medianTime": "1:13:07",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Laurent Navarro, Romain Chamayou Brien",
+              "time": "0:53:17",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Raphaël Tarlette, Thierry Ellena",
+              "time": "0:53:17",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Evan MARION, Valentin COPIN",
+              "time": "0:54:08",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Thomas Jurado, Jules Chouvin",
+              "time": "0:54:46",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Maxime Pons, Roch Rabino",
+              "time": "0:54:56",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Corentin Coirnot, Lucas Lepretre",
+              "time": "0:55:05",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Mohamed Akermi, Matieu Clerget",
+              "time": "0:55:06",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Fabien Clair, Romain Degioanni",
+              "time": "0:55:41",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Nicolas Blin, Anthony Mahé",
+              "time": "0:56:41",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Mathieu Escobosa, Eliott Goi",
+              "time": "0:56:46",
+              "country": null,
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HD_NCE26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1401,
+          "fieldSizeExact": true,
+          "fastestTime": "1:01:32",
+          "medianTime": "1:26:08",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Angelica Olmo, Marion Fernandez",
+              "time": "1:01:32",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Anna Pyschkin, Antonia Herok",
+              "time": "1:01:39",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Johanna Kupferle, Marie Martin",
+              "time": "1:02:53",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Alice Bindler, Audrey Martinez",
+              "time": "1:03:32",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Marisa Simões, Inês Xavier",
+              "time": "1:03:43",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Annette De Wolf, Bonny Bastian",
+              "time": "1:04:05",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Amandine Ainardi, Laeticia Dufour",
+              "time": "1:04:18",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Poerava Meunier, Moeata Meunier",
+              "time": "1:04:22",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Marion Deroulede, Clémence Orfevre Vidaud",
+              "time": "1:04:30",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Malene Rob Kolnes, Hanne Nilssen",
+              "time": "1:05:22",
+              "country": null,
+              "ageGroup": "25-29"
+            }
+          ]
+        }
+      ],
+      "previousSyncedAt": null
+    },
+    "2026/salt-lake-city": {
+      "slug": "salt-lake-city",
+      "year": 2026,
+      "city": "Salt Lake City",
+      "season": "season-9",
+      "syncedAt": "2026-09-21",
+      "raceEndDate": "2026-09-20",
+      "totalFinishers": 5348,
+      "divisions": [
+        {
+          "division": "Pro Men",
+          "sex": "M",
+          "sourceIds": [
+            "HPRO_LR3MS4JI183E"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 349,
+          "fieldSizeExact": true,
+          "fastestTime": "0:56:28",
+          "medianTime": "1:26:05",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Greyson Kilgore",
+              "time": "0:56:28",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Stephen Pelkofer",
+              "time": "0:56:58",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Jack Driscoll",
+              "time": "0:57:14",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Gabe Piepergerdes",
+              "time": "0:57:20",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Rich Ryan",
+              "time": "0:57:59",
+              "country": "USA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 6,
+              "name": "Stirling Peters",
+              "time": "1:00:25",
+              "country": "CAN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Austin Azar",
+              "time": "1:01:02",
+              "country": "CAN",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Isaac Sanderson",
+              "time": "1:02:02",
+              "country": "CAN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Dylan Nurse",
+              "time": "1:02:05",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Lucas Parker",
+              "time": "1:03:16",
+              "country": "GBR",
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Pro Women",
+          "sex": "W",
+          "sourceIds": [
+            "HPRO_LR3MS4JI183E"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 243,
+          "fieldSizeExact": true,
+          "fastestTime": "0:57:18",
+          "medianTime": "1:31:11",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Lauren Weeks",
+              "time": "0:57:18",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 2,
+              "name": "Madelyn Eybergen",
+              "time": "0:57:56",
+              "country": "CAN",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Rachael Wade",
+              "time": "0:58:48",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Willow Collins",
+              "time": "1:03:30",
+              "country": "USA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 5,
+              "name": "Briley Metcalf",
+              "time": "1:06:02",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 6,
+              "name": "Kris Azar",
+              "time": "1:06:33",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 7,
+              "name": "Haly Herrera",
+              "time": "1:07:39",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Hannah Taylor",
+              "time": "1:07:53",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 9,
+              "name": "Taylor Kasteler",
+              "time": "1:07:59",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 10,
+              "name": "Molly Chambers",
+              "time": "1:08:10",
+              "country": "USA",
+              "ageGroup": "16-24"
+            }
+          ]
+        },
+        {
+          "division": "Open Men",
+          "sex": "M",
+          "sourceIds": [
+            "H_SLC26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 1294,
+          "fieldSizeExact": true,
+          "fastestTime": "1:02:37",
+          "medianTime": "1:34:44",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Andy Pompa",
+              "time": "1:02:37",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 2,
+              "name": "Trevor Reed",
+              "time": "1:03:06",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Garrett Martin",
+              "time": "1:03:37",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Duncan Homer",
+              "time": "1:03:43",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Connor Frost",
+              "time": "1:04:31",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 6,
+              "name": "Clark OBannon",
+              "time": "1:04:31",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "connor hughes",
+              "time": "1:05:02",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 8,
+              "name": "Zander Dakis",
+              "time": "1:05:34",
+              "country": "USA",
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 9,
+              "name": "Dustin Needham",
+              "time": "1:05:42",
+              "country": "USA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 10,
+              "name": "Daniel Johnson",
+              "time": "1:05:47",
+              "country": "USA",
+              "ageGroup": "40-44"
+            }
+          ]
+        },
+        {
+          "division": "Open Women",
+          "sex": "W",
+          "sourceIds": [
+            "H_SLC26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": false,
+          "fieldSize": 988,
+          "fieldSizeExact": true,
+          "fastestTime": "1:07:45",
+          "medianTime": "1:38:08",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Stacey Rawley",
+              "time": "1:07:45",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 2,
+              "name": "Ashley Norton",
+              "time": "1:09:02",
+              "country": "USA",
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Melanie Worley",
+              "time": "1:09:26",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Carlie Hardy",
+              "time": "1:09:31",
+              "country": "USA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 5,
+              "name": "Delayna Waite",
+              "time": "1:10:16",
+              "country": "USA",
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Jennifer Johnson",
+              "time": "1:10:51",
+              "country": "USA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 7,
+              "name": "Teresa Christensen",
+              "time": "1:10:59",
+              "country": "USA",
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 8,
+              "name": "Abbie Hafen",
+              "time": "1:11:03",
+              "country": "USA",
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 9,
+              "name": "Sasha Marson",
+              "time": "1:11:31",
+              "country": "USA",
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 10,
+              "name": "Amanda Melnick",
+              "time": "1:11:31",
+              "country": "USA",
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HDP_LR3MS4JI183F"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 200,
+          "fieldSizeExact": true,
+          "fastestTime": "0:51:52",
+          "medianTime": "1:13:59",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Rich Ryan, Jack Driscoll",
+              "time": "0:51:52",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Colin Stiefer, Ryan Kent",
+              "time": "0:52:31",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Chase Stevenson, Stirling Peters",
+              "time": "0:52:47",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Alex Ratkovich, Bret Gornik",
+              "time": "0:53:20",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "AJ Baucco, Chris Leiferman",
+              "time": "0:55:55",
+              "country": null,
+              "ageGroup": "40-44"
+            },
+            {
+              "rank": 6,
+              "name": "Blake Mistretta, Wade Jacobs",
+              "time": "0:56:59",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 7,
+              "name": "Benjamin Davies, Hunter Auch",
+              "time": "0:57:46",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Serhad Ketsamanian, Alexander Tremaine",
+              "time": "0:57:50",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "CHRIS THRESHER, JAMES CLAY",
+              "time": "0:58:00",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Alex Partow, Giovanni Sabatasso",
+              "time": "0:58:19",
+              "country": null,
+              "ageGroup": "25-29"
+            }
+          ]
+        },
+        {
+          "division": "Pro Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HDP_LR3MS4JI183F"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 203,
+          "fieldSizeExact": true,
+          "fastestTime": "0:58:46",
+          "medianTime": "1:18:51",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Erika Tvedten, Rachael Wade",
+              "time": "0:58:46",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Maria Fecik, Lianne Girard",
+              "time": "0:59:38",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 3,
+              "name": "Marie Pier Cloutier, Alexa Marrazzo",
+              "time": "1:00:47",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 4,
+              "name": "Hannah Taylor, Kelsey Hochleitner",
+              "time": "1:00:52",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 5,
+              "name": "Brittany McCall, Briana Carbonell",
+              "time": "1:01:31",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 6,
+              "name": "Haly Herrera, Erin Beck",
+              "time": "1:01:53",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Madeleine McIlroy, Bri Ungania",
+              "time": "1:02:33",
+              "country": null,
+              "ageGroup": "16-24"
+            },
+            {
+              "rank": 8,
+              "name": "Kris Azar, Julie Best",
+              "time": "1:02:54",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 9,
+              "name": "Meghan Mcnab, Ali Summers",
+              "time": "1:03:02",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Alexis Weisenburger, Hannah Wells",
+              "time": "1:03:17",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Men",
+          "sex": "M",
+          "sourceIds": [
+            "HD_SLC26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 298,
+          "fieldSizeExact": true,
+          "fastestTime": "0:57:21",
+          "medianTime": "1:18:43",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Connor Frost, Jerred Benniquez",
+              "time": "0:57:21",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 2,
+              "name": "Ryan Roundy, Ben Parkin",
+              "time": "0:57:46",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 3,
+              "name": "Charles Donahue, Jefte Chavez",
+              "time": "0:57:49",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 4,
+              "name": "Gibson Berryhill, Brian Wilkerson",
+              "time": "0:59:03",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 5,
+              "name": "Brock Painter, Max Oliver",
+              "time": "0:59:54",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Michael Garcia, Angel Valdivia",
+              "time": "0:59:58",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Christopher Loum, Mariano Navarro",
+              "time": "1:00:26",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 8,
+              "name": "Sean Adams, Ian McGetrick",
+              "time": "1:00:27",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 9,
+              "name": "Chance Kidd, Jordan Douglas",
+              "time": "1:01:00",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 10,
+              "name": "Mitchell Blume, Mike Nguyen",
+              "time": "1:01:05",
+              "country": null,
+              "ageGroup": "35-39"
+            }
+          ]
+        },
+        {
+          "division": "Doubles Women",
+          "sex": "W",
+          "sourceIds": [
+            "HD_SLC26_OVERALL"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 1633,
+          "fieldSizeExact": true,
+          "fastestTime": "0:59:24",
+          "medianTime": "1:33:03",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Madison Russell, Annelise Rowe",
+              "time": "0:59:24",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 2,
+              "name": "Lindsay Balkenbush, Jadyn Berryhill",
+              "time": "1:01:40",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 3,
+              "name": "Shannon Kelley, Paige Reece",
+              "time": "1:01:46",
+              "country": null,
+              "ageGroup": "30-34"
+            },
+            {
+              "rank": 4,
+              "name": "Liis Rametta, Nikki Todd",
+              "time": "1:04:05",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 5,
+              "name": "Noelle Morrow, Kaitlyn Frump",
+              "time": "1:04:23",
+              "country": null,
+              "ageGroup": "25-29"
+            },
+            {
+              "rank": 6,
+              "name": "Brandi Broadley, Jordan Cannon",
+              "time": "1:04:40",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 7,
+              "name": "Jamie Hunter, Lydia Cromwell",
+              "time": "1:05:09",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 8,
+              "name": "Megan Ruiz, Abby Rittenhouse",
+              "time": "1:05:15",
+              "country": null,
+              "ageGroup": "35-39"
+            },
+            {
+              "rank": 9,
+              "name": "Jill Griffiths, Amber Foster",
+              "time": "1:05:34",
+              "country": null,
+              "ageGroup": "45-49"
+            },
+            {
+              "rank": 10,
+              "name": "Kate Yeargin, Katie Gardiner",
+              "time": "1:05:47",
+              "country": null,
+              "ageGroup": "30-34"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Men",
+          "sex": "M",
+          "sourceIds": [
+            "HMR_LR3MS4JI183E"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 61,
+          "fieldSizeExact": true,
+          "fastestTime": "0:56:40",
+          "medianTime": "1:17:54",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Andy Pompa, Tanner Hendrix, Rafael Diaz, Dakota Arriola",
+              "time": "0:56:40",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 2,
+              "name": "Sean Garner, Axel Ramirez, Riley Balolong, Fabian Acuna",
+              "time": "0:59:45",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "Jordan Johnson, Spencer Johnson, Daniel Johnson, Michael Sidwell",
+              "time": "1:00:43",
+              "country": null,
+              "ageGroup": "40+"
+            },
+            {
+              "rank": 4,
+              "name": "Ray Flores, Ray Oliva, Ray Ramos, Gabe Jaramillo",
+              "time": "1:01:26",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 5,
+              "name": "Adan Martinez, Travis Almazan, Daniel Baek, Josue Bermudez",
+              "time": "1:02:44",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 6,
+              "name": "Todd Eldredge, Matt Fortin, Jeferson Goncalves, Carter Petersen",
+              "time": "1:04:59",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 7,
+              "name": "Jacob Hannemann, Ammon Hannemann, Micah Hannemann, Kyle Hannemann",
+              "time": "1:05:00",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 8,
+              "name": "Max Morgenegg, Dylan Johnson, Cody Dzierzon, Jack Wall",
+              "time": "1:05:41",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 9,
+              "name": "Nathan Dooley, Wes Taylor, Colton Chronister, Scott Martineau",
+              "time": "1:05:45",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Ali Alwahdani, Thomas Mladenovic, Harrison O'Dear, Cole Nelson",
+              "time": "1:07:02",
+              "country": null,
+              "ageGroup": "U40"
+            }
+          ]
+        },
+        {
+          "division": "Team Relay Women",
+          "sex": "W",
+          "sourceIds": [
+            "HMR_LR3MS4JI183E"
+          ],
+          "note": null,
+          "isTeam": true,
+          "fieldSize": 79,
+          "fieldSizeExact": true,
+          "fastestTime": "1:02:18",
+          "medianTime": "1:26:11",
+          "top": [
+            {
+              "rank": 1,
+              "name": "Jaden Bailey, Elisabeth McClatchie, Malea Lunt, Rebecca Malmrose",
+              "time": "1:02:18",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 2,
+              "name": "Kate Yeargin, Ashley Gardner, Katie Gardiner, Nicole Richards",
+              "time": "1:02:52",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 3,
+              "name": "Jill Terracciano, Sharon Anderson, Ellen Fallin, Aly Meschko",
+              "time": "1:03:06",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 4,
+              "name": "Trista Montoya, Ari Leask, Kym Broadhurst, Megan Fortier",
+              "time": "1:03:57",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 5,
+              "name": "Ashton Bagley, Kara Kurth, Cerissa Hebdon, Ivy Anderson",
+              "time": "1:06:33",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 6,
+              "name": "Olivia Brunsdale, Abby Johnson, Whitney Douglas, Patricia Schauss",
+              "time": "1:06:42",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 7,
+              "name": "Olivia Hammerschmidt, Emily Buckingham, Kendra Sandbeck, Sophia Backlund",
+              "time": "1:07:45",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 8,
+              "name": "Emma Parkin, Shaylea Croft, Lainie Hallows, Megan Timpson",
+              "time": "1:08:07",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 9,
+              "name": "Ali Linthorst, Eliza Williams, megan fogarty, Amanda Radford",
+              "time": "1:11:47",
+              "country": null,
+              "ageGroup": "U40"
+            },
+            {
+              "rank": 10,
+              "name": "Julia Anderson, Tavia Wade, Tiera Fullmer, Tatiana Campbell",
+              "time": "1:13:23",
+              "country": null,
+              "ageGroup": "U40"
+            }
+          ]
+        }
+      ],
+      "previousSyncedAt": null
     }
   }
 }
