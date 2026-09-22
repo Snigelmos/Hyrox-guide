@@ -1936,7 +1936,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-09-27",
     venue: "Fiera di Roma",
     venueAddress: "Via Portuense 1645/47, 00148 Roma RM, Italy",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/09/HYROX_Rome_VenueMap_PRINT_2215x1864mm-2.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_Rome_VenueMap_PRINT_2215x1864mm-3.pdf",
     courseMapImageUrl: "/images/events/rome-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
