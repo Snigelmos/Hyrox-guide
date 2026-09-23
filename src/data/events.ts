@@ -1994,7 +1994,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-04",
     venue: "Parc des Expositions de Bordeaux",
     venueAddress: "Cours Charles Bricaud, 33300 Bordeaux, France",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_Bordeaux_VenueMap_PRINT_2215x1864mm.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_Bordeaux_VenueMap_PRINT_2215x1864mm-2.pdf",
     courseMapImageUrl: "/images/events/bordeaux-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
