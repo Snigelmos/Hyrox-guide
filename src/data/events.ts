@@ -2026,6 +2026,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-04",
     venue: "Messe Karlsruhe",
     venueAddress: "Messeallee 1, 76287 Rheinstetten",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_Karlsruhe_VenueMap_PRINT_2215x1864mm.pdf",
+    courseMapImageUrl: "/images/events/karlsruhe-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
