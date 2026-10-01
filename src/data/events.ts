@@ -2173,6 +2173,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-18",
     venue: "Feria Valencia",
     venueAddress: "Av. de las Ferias s/n, 46035 Valencia, Spain",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/09/HYROX_YS_VenueMap_Valencia-scaled.png",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "EU",
