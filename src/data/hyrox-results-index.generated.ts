@@ -5,7 +5,7 @@
 // discovered from the portal and committed here. Re-run the script when
 // new races appear on the calendar.
 
-export const RESULTS_INDEX_GENERATED_AT = "2026-09-28T11:21:59.768Z";
+export const RESULTS_INDEX_GENERATED_AT = "2026-10-05T11:58:04.374Z";
 
 /**
  * The bucket holding the most recent race we could map. Races that Hyrox
@@ -568,6 +568,23 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
       { id: "HDP_LR3MS4JI138C", label: "HYROX PRO DOUBLES" },
       { id: "HMR_LR3MS4JI138C", label: "HYROX TEAM RELAY" },
       { id: "HPRO_LR3MS4JI138C", label: "HYROX PRO" },
+    ],
+  },
+  {
+    slug: "gdansk",
+    year: 2026,
+    season: "season-9",
+    raceLabel: "2026 Gdansk",
+    divisions: [
+      { id: "H_LR3MS4JI18EE", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI18EF", label: "HYROX - Sunday" },
+      { id: "HA_LR3MS4JI18EE", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI18EF", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HD_LR3MS4JI18EE", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI18EF", label: "HYROX DOUBLES - Sunday" },
+      { id: "HDP_LR3MS4JI18EE", label: "HYROX PRO DOUBLES - Saturday" },
+      { id: "HMR_LR3MS4JI18EF", label: "HYROX TEAM RELAY - Sunday" },
+      { id: "HPRO_LR3MS4JI18EE", label: "HYROX PRO - Saturday" },
     ],
   },
   {
@@ -1658,6 +1675,32 @@ export const HYROX_RESULTS_INDEX: ResultsIndexEntry[] = [
     ],
   },
   {
+    slug: "toronto",
+    year: 2026,
+    season: "season-9",
+    raceLabel: "2026 Toronto",
+    divisions: [
+      { id: "H_LR3MS4JI189E", label: "HYROX - Thursday" },
+      { id: "H_LR3MS4JI189F", label: "HYROX - Friday" },
+      { id: "H_LR3MS4JI18A0", label: "HYROX - Saturday" },
+      { id: "H_LR3MS4JI18A1", label: "HYROX - Sunday" },
+      { id: "H_YYZ26_OVERALL", label: "HYROX - Overall" },
+      { id: "HA_LR3MS4JI189E", label: "HYROX ADAPTIVE - Thursday" },
+      { id: "HA_LR3MS4JI189F", label: "HYROX ADAPTIVE - Friday" },
+      { id: "HA_LR3MS4JI18A0", label: "HYROX ADAPTIVE - Saturday" },
+      { id: "HA_LR3MS4JI18A1", label: "HYROX ADAPTIVE - Sunday" },
+      { id: "HA_YYZ26_OVERALL", label: "HYROX ADAPTIVE - Overall" },
+      { id: "HD_LR3MS4JI189E", label: "HYROX DOUBLES - Thursday" },
+      { id: "HD_LR3MS4JI189F", label: "HYROX DOUBLES - Friday" },
+      { id: "HD_LR3MS4JI18A0", label: "HYROX DOUBLES - Saturday" },
+      { id: "HD_LR3MS4JI18A1", label: "HYROX DOUBLES - Sunday" },
+      { id: "HD_YYZ26_OVERALL", label: "HYROX DOUBLES - Overall" },
+      { id: "HDP_LR3MS4JI18A0", label: "HYROX PRO DOUBLES - Saturday" },
+      { id: "HMR_LR3MS4JI189F", label: "HYROX TEAM RELAY - Friday" },
+      { id: "HPRO_LR3MS4JI189F", label: "HYROX PRO - Friday" },
+    ],
+  },
+  {
     slug: "toulouse",
     year: 2026,
     season: "season-8",
@@ -2269,10 +2312,16 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "LR3MS4JI1864": { season: "season-9", race: "2026 Oslo" },
   /* dayToken */ "LR3MS4JI1876": { season: "season-9", race: "2026 Salt Lake City - Youngstars" },
   /* dayToken */ "LR3MS4JI1877": { season: "season-9", race: "2026 Salt Lake City - Youngstars" },
+  /* dayToken */ "LR3MS4JI189E": { season: "season-9", race: "2026 Toronto" },
+  /* dayToken */ "LR3MS4JI189F": { season: "season-9", race: "2026 Toronto" },
+  /* dayToken */ "LR3MS4JI18A0": { season: "season-9", race: "2026 Toronto" },
+  /* dayToken */ "LR3MS4JI18A1": { season: "season-9", race: "2026 Toronto" },
   /* dayToken */ "LR3MS4JI18B2": { season: "season-9", race: "2026 Karlsruhe" },
   /* dayToken */ "LR3MS4JI18B3": { season: "season-9", race: "2026 Karlsruhe" },
   /* dayToken */ "LR3MS4JI18B4": { season: "season-9", race: "2026 Karlsruhe" },
   /* dayToken */ "LR3MS4JI18B5": { season: "season-9", race: "2026 Karlsruhe" },
+  /* dayToken */ "LR3MS4JI18EE": { season: "season-9", race: "2026 Gdansk" },
+  /* dayToken */ "LR3MS4JI18EF": { season: "season-9", race: "2026 Gdansk" },
   /* dayToken */ "MST26_OVERALL": { season: "season-9", race: "2026 Maastricht" },
   /* dayToken */ "NRT26_OVERALL": { season: "season-9", race: "2026 Chiba" },
   /* dayToken */ "OSL26_OVERALL": { season: "season-9", race: "2026 Oslo" },
@@ -2283,5 +2332,6 @@ const RESOLVED_RACE_DAYS = {
   /* dayToken */ "SYD26_OVERALL": { season: "season-9", race: "2026 Sydney" },
   /* dayToken */ "TFS26_OVERALL": { season: "season-9", race: "2026 Tenerife" },
   /* dayToken */ "THA26_OVERALL": { season: "season-9", race: "2026 Bangkok" },
+  /* dayToken */ "YYZ26_OVERALL": { season: "season-9", race: "2026 Toronto" },
 };
 export type ResolvedRaceDays = typeof RESOLVED_RACE_DAYS;
