@@ -2115,7 +2115,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-10-11",
     venue: "Palexpo Geneva",
     venueAddress: "Route François-Peyrot 30, 1218 Le Grand-Saconnex, Switzerland",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/10/HYROX_Geneva_VenueMap_PRINT_2215x1864mm-3-1.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/10/HYROX-Geneva-VenueMap.pdf",
     courseMapImageUrl: "/images/events/geneva-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
