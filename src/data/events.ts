@@ -2256,7 +2256,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-01",
     venue: "NEC Birmingham",
     venueAddress: "North Avenue, Marston Green, Birmingham B40 1NT",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/10/HYROX_Birmingham_VenueMap_PRINT_2215x1864mm-5-1.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/10/HYROX_YS_VenueMap_Birmingham-1.pdf",
     courseMapImageUrl: "/images/events/birmingham-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
