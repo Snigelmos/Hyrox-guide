@@ -2481,6 +2481,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-15",
     venue: "Colorado Convention Center",
     venueAddress: "700 14th Street, Denver, CO 80202",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/2026_HYROX_Denver_VenueMap_PRINT_79x73-1-4-1.pdf",
+    courseMapImageUrl: "/images/events/denver-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "NA",
