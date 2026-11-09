@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-02T13:01:57.537Z",
+  "generatedAt": "2026-11-09T13:33:32.452Z",
   "resyncDays": 21,
   "note": "Provisional leaderboards synced from results.hyrox.com. Always queried with an explicit sex filter, because unfiltered division listings interleave categories and are not in finish order. Editorial data in event-results.ts takes precedence over anything here.",
   "races": {
@@ -70831,7 +70831,7 @@
       "year": 2026,
       "city": "Tampa",
       "season": "season-9",
-      "syncedAt": "2026-11-02",
+      "syncedAt": "2026-11-09",
       "raceEndDate": "2026-10-25",
       "totalFinishers": 8350,
       "divisions": [
@@ -71686,16 +71686,16 @@
           ]
         }
       ],
-      "previousSyncedAt": "2026-10-26"
+      "previousSyncedAt": "2026-11-02"
     },
     "2026/birmingham": {
       "slug": "birmingham",
       "year": 2026,
       "city": "Birmingham",
       "season": "season-9",
-      "syncedAt": "2026-11-02",
+      "syncedAt": "2026-11-09",
       "raceEndDate": "2026-11-01",
-      "totalFinishers": 15044,
+      "totalFinishers": 15049,
       "divisions": [
         {
           "division": "Pro Men",
@@ -71705,7 +71705,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 693,
+          "fieldSize": 692,
           "fieldSizeExact": true,
           "fastestTime": "0:55:48",
           "medianTime": "1:16:06",
@@ -71804,9 +71804,9 @@
             },
             {
               "rank": 2,
-              "name": "Lucy (GBR) Davis",
+              "name": "Lucy (ENG) Davis",
               "time": "1:00:36",
-              "country": "GBR",
+              "country": "ENG",
               "ageGroup": "25-29"
             },
             {
@@ -71860,9 +71860,9 @@
             },
             {
               "rank": 10,
-              "name": "Eilidh (GBR) Boyd",
+              "name": "Eilidh (SCO) Boyd",
               "time": "1:05:23",
-              "country": "GBR",
+              "country": "SCO",
               "ageGroup": "25-29"
             }
           ]
@@ -71875,7 +71875,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 3693,
+          "fieldSize": 3696,
           "fieldSizeExact": true,
           "fastestTime": "0:54:16",
           "medianTime": "1:23:28",
@@ -71960,7 +71960,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 2803,
+          "fieldSize": 2804,
           "fieldSizeExact": true,
           "fastestTime": "1:01:44",
           "medianTime": "1:33:10",
@@ -72045,7 +72045,7 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 475,
+          "fieldSize": 476,
           "fieldSizeExact": true,
           "fastestTime": "0:49:47",
           "medianTime": "1:03:53",
@@ -72059,7 +72059,7 @@
             },
             {
               "rank": 2,
-              "name": "Beau Smith, Sam Craig",
+              "name": "Beau Smith, Samuel Craig",
               "time": "0:50:08",
               "country": null,
               "ageGroup": "30-34"
@@ -72108,7 +72108,7 @@
             },
             {
               "rank": 9,
-              "name": "Dan Nota, Ben Wright",
+              "name": "Dan Nota, Benjamin Wright",
               "time": "0:51:35",
               "country": null,
               "ageGroup": "25-29"
@@ -72300,10 +72300,10 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 3477,
+          "fieldSize": 3478,
           "fieldSizeExact": true,
           "fastestTime": "0:54:28",
-          "medianTime": "1:25:56",
+          "medianTime": "1:25:55",
           "top": [
             {
               "rank": 1,
@@ -72548,14 +72548,14 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-11-02"
     },
     "2026/hamburg": {
       "slug": "hamburg",
       "year": 2026,
       "city": "Hamburg",
       "season": "season-9",
-      "syncedAt": "2026-11-02",
+      "syncedAt": "2026-11-09",
       "raceEndDate": "2026-11-01",
       "totalFinishers": 10146,
       "divisions": [
@@ -72907,7 +72907,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 2489,
+          "fieldSize": 2490,
           "fieldSizeExact": true,
           "fastestTime": "0:55:36",
           "medianTime": "1:29:16",
@@ -72992,10 +72992,10 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 1671,
+          "fieldSize": 1670,
           "fieldSizeExact": true,
           "fastestTime": "1:00:35",
-          "medianTime": "1:35:15",
+          "medianTime": "1:35:13",
           "top": [
             {
               "rank": 1,
@@ -73750,14 +73750,14 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-11-02"
     },
     "2026/mexico-city": {
       "slug": "mexico-city",
       "year": 2026,
       "city": "Mexico City",
       "season": "season-9",
-      "syncedAt": "2026-11-02",
+      "syncedAt": "2026-11-09",
       "raceEndDate": "2026-11-01",
       "totalFinishers": 10099,
       "divisions": [
@@ -74024,7 +74024,7 @@
           ],
           "note": null,
           "isTeam": false,
-          "fieldSize": 2078,
+          "fieldSize": 2077,
           "fieldSizeExact": true,
           "fastestTime": "1:08:52",
           "medianTime": "1:49:49",
@@ -74279,7 +74279,7 @@
           ],
           "note": null,
           "isTeam": true,
-          "fieldSize": 1593,
+          "fieldSize": 1594,
           "fieldSizeExact": true,
           "fastestTime": "0:56:44",
           "medianTime": "1:24:54",
@@ -74612,7 +74612,7 @@
           ]
         }
       ],
-      "previousSyncedAt": null
+      "previousSyncedAt": "2026-11-02"
     }
   }
 }
