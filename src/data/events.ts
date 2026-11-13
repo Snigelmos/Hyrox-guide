@@ -2621,7 +2621,7 @@ export const EVENTS: HyroxEvent[] = [
     startDate: "2026-11-21",
     venue: "Riocentro",
     venueAddress: "Av. Salvador Allende 6555, Barra da Tijuca, Rio de Janeiro, RJ 22783-127",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/11/HYROX_RioDeJaneiro_VenueMap_PRINT_2215x1864mm-2.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/HYROX_RioDeJaneiro_VenueMap_PRINT_2215x1864mm-3.pdf",
     courseMapImageUrl: "/images/events/rio-de-janeiro-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
