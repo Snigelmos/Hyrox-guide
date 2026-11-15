@@ -2595,6 +2595,8 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-22",
     venue: "Canton Fair Complex",
     venueAddress: "380 Yuejiang Middle Road, Haizhu District, Guangzhou 510308",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/HYROX_Guangzhou_venue_map.pdf",
+    courseMapImageUrl: "/images/events/guangzhou-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
     region: "APAC",
