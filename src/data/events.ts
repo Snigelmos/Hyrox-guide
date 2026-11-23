@@ -2652,7 +2652,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-11-29",
     venue: "Jaarbeurs Utrecht",
     venueAddress: "Jaarbeursplein 6, 3521 AL Utrecht, Netherlands",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/HYS-VenueMap-Utrecht.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/HYROX_Utrecht_VenueMap_PRINT_2215x1864mm-2-1.pdf",
     courseMapImageUrl: "/images/events/utrecht-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
