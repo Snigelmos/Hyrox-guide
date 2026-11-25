@@ -2742,7 +2742,7 @@ export const EVENTS: HyroxEvent[] = [
     endDate: "2026-12-06",
     venue: "Anaheim Convention Center",
     venueAddress: "800 W Katella Avenue, Anaheim, CA 92802",
-    courseMapUrl: "https://hyrox.com/wp-content/uploads/2025/12/2026_HYROX_Anaheim_VenueMap_PRINT_79x73-1.pdf",
+    courseMapUrl: "https://hyrox.com/wp-content/uploads/2026/11/HYROX_Anaheim_VenueMap_PRINT_79x73-2.pdf",
     courseMapImageUrl: "/images/events/anaheim-course-map-2026.jpg",
     officialUrl: HYROX_OFFICIAL,
     confirmed: true,
